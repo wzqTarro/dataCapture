@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SupplyMapper">
+  <resultMap id="BaseResultMap" type="com.zhongmin.bean.Supply">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="region" jdbcType="VARCHAR" property="region" />
+    <result column="sell_store" jdbcType="VARCHAR" property="sellStore" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="login_user_name" jdbcType="VARCHAR" property="loginUserName" />
+    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
+    <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, region, sell_store, url, login_user_name, login_password, company_code
+  </sql>
+  <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" />
+  	FROM supply
+  	LIMIT #{pageNum}, #{pageSize}
+  </select>
+  <select id="selectCountByCondition" resultType="int">
+  	SELECT COUNT(0)
+  	FROM supply
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from supply
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from supply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhongmin.bean.Supply">
+    insert into supply (id, region, sell_store, 
+      url, login_user_name, login_password, 
+      company_code)
+    values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sellStore,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
+      #{companyCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhongmin.bean.Supply">
+    insert into supply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="region != null">
+        region,
+      </if>
+      <if test="sellStore != null">
+        sell_store,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="loginUserName != null">
+        login_user_name,
+      </if>
+      <if test="loginPassword != null">
+        login_password,
+      </if>
+      <if test="companyCode != null">
+        company_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="region != null">
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="sellStore != null">
+        #{sellStore,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="loginUserName != null">
+        #{loginUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhongmin.bean.Supply">
+    update supply
+    <set>
+      <if test="region != null">
+        region = #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="sellStore != null">
+        sell_store = #{sellStore,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="loginUserName != null">
+        login_user_name = #{loginUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        login_password = #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        company_code = #{companyCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhongmin.bean.Supply">
+    update supply
+    set region = #{region,jdbcType=VARCHAR},
+      sell_store = #{sellStore,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      login_user_name = #{loginUserName,jdbcType=VARCHAR},
+      login_password = #{loginPassword,jdbcType=VARCHAR},
+      company_code = #{companyCode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
