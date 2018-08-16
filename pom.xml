@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.zhongmin</groupId>
-  <artifactId>zm-parent</artifactId>
+  <groupId>com.data</groupId>
+  <artifactId>data-capture-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>父工程</name>
@@ -9,7 +9,7 @@
   <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.1.RELEASE</version>
+		<version>2.0.3.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
   </parent>
   <properties>
@@ -135,10 +135,10 @@
 		</dependency>
 	</dependencies>
   <modules>
-  	<module>zm-util</module>
-  	<module>zm-api</module>
-  	<module>zm-controller</module>
-  	<module>zm-service</module>
+  	<module>data-capture-util</module>
+  	<module>data-capture-api</module>
+  	<module>data-capture-controller</module>
+  	<module>data-capture-service</module>
   </modules>
   <build>
   	<plugins>
