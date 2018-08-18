@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="SupplyMapper">
-  <resultMap id="BaseResultMap" type="com.zhongmin.bean.Supply">
+  <resultMap id="BaseResultMap" type="com.data.bean.Supply">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="region" jdbcType="VARCHAR" property="region" />
     <result column="sell_store" jdbcType="VARCHAR" property="sellStore" />
@@ -13,35 +13,36 @@
   <sql id="Base_Column_List">
     id, region, sell_store, url, login_user_name, login_password, company_code
   </sql>
+  <sql id="tableName">db_supply</sql>
   <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List" />
-  	FROM supply
+  	FROM db_supply
   	LIMIT #{pageNum}, #{pageSize}
   </select>
   <select id="selectCountByCondition" resultType="int">
   	SELECT COUNT(0)
-  	FROM supply
+  	FROM db_supply
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from supply
+    from db_supply
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from supply
+    delete from db_supply
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zhongmin.bean.Supply">
-    insert into supply (id, region, sell_store, 
+  <insert id="insert" parameterType="com.data.bean.Supply">
+    insert into db_supply (id, region, sell_store, 
       url, login_user_name, login_password, 
       company_code)
     values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sellStore,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
       #{companyCode,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhongmin.bean.Supply">
-    insert into supply
+  <insert id="insertSelective" parameterType="com.data.bean.Supply">
+    insert into db_supply
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -89,8 +90,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhongmin.bean.Supply">
-    update supply
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Supply">
+    update db_supply
     <set>
       <if test="region != null">
         region = #{region,jdbcType=VARCHAR},
@@ -113,8 +114,8 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhongmin.bean.Supply">
-    update supply
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Supply">
+    update db_supply
     set region = #{region,jdbcType=VARCHAR},
       sell_store = #{sellStore,jdbcType=VARCHAR},
       url = #{url,jdbcType=VARCHAR},
