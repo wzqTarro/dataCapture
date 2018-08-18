@@ -21,6 +21,6 @@ public interface IOrderService {
 	 * @param pageSize
 	 * @return
 	 */
-	ResultUtil queryOrderByCondition(String startDate, String endDate, String companyCode, String pageNum, String pageSize) throws Exception ;
+	ResultUtil queryOrderByCondition(String param) throws Exception ;
 
 }

@@ -28,6 +28,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.dto.CommonDTO;
 import com.data.service.IOrderService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
@@ -45,12 +46,24 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 
 	
 	@Override
-	public ResultUtil queryOrderByCondition(String startDate, String endDate, String companyCode, String pageNum, String pageSize) throws Exception {
+	public ResultUtil queryOrderByCondition(String param) throws Exception {
+		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
+		Order order = FastJsonUtil.jsonToObject(param, Order.class);
 		Map<String, Object> map = Maps.newHashMap();
-		map.put("startDate", startDate);
-		map.put("endDate", endDate);
-		map.put("companyCode", companyCode);
-		PageRecord<Order> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, pageNum, pageSize);
-		return ResultUtil.success(page);
+		if (null != common) {
+			if (StringUtils.isNoneBlank(common.getStartDate())) {
+				map.put("startDate", common.getStartDate());	
+			}
+			if (StringUtils.isNoneBlank(common.getEndDate())) {
+				map.put("endDate", common.getEndDate());
+			}
+			}
+		if (null != order) {
+			if (StringUtils.isNoneBlank(order.getCompanyCode())) {
+				map.put("companyCode", order.getCompanyCode());
+			}
+		}
+		PageRecord<Order> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, common.getPage(), common.getLimit());
+		return ResultUtil.success(page.getList(), page.getPageTotal());
 	}
 }

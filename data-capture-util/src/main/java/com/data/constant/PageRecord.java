@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * 分页bean
- * @author Tarro
+ * @author Alex
+ * @update Tarro 2018年8月18日
  *
  */
 public class PageRecord<T> implements Serializable {
@@ -14,7 +15,7 @@ public class PageRecord<T> implements Serializable {
 	
 	private int pageNum;
 	private int pageSize;
-	private int pageTotal;
+	private long pageTotal;
 	private List<T> list;
 	
 	public int getPageNum() {
@@ -29,10 +30,10 @@ public class PageRecord<T> implements Serializable {
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
 	}
-	public int getPageTotal() {
+	public long getPageTotal() {
 		return pageTotal;
 	}
-	public void setPageTotal(int pageTotal) {
+	public void setPageTotal(long pageTotal) {
 		this.pageTotal = pageTotal;
 	}
 	public List<T> getList() {

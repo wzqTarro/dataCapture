@@ -52,17 +52,17 @@
     <!--<logger name="com.dudu.controller"/>-->
     <!--logback.LogbackDemo：类的全路径 -->
     <!-- 只在控制台输出WARN及其以上级别的日志信息  additivity=false表示不使用父节点设置 -->
-    <logger name="com.data" level="WARN" additivity="false">
+    <logger name="com.data.controller" level="WARN" additivity="false">
         <appender-ref ref="console"/>
     </logger>
 
     <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
     <springProfile name="test,dev">
-        <logger name="com.data" level="info" />
+        <logger name="com.data.controller" level="info" />
     </springProfile>
     <!-- 生产环境. -->
     <springProfile name="prod">
-        <logger name="com.data" level="ERROR" />
+        <logger name="com.data.controller" level="ERROR" />
     </springProfile>
 	
 </configuration>

@@ -1,6 +1,7 @@
 package com.data.utils;
 
 import java.io.Serializable;
+import java.util.Collections;
 
 import com.data.constant.TipsEnum;
 
@@ -15,65 +16,71 @@ public class ResultUtil implements Serializable {
 	private static final long serialVersionUID = 130769520693217001L;
 
 	/**00:成功  99:失败**/
-	private String respCode;
+	private String code;
 	
-	private Object respData;
+	private Object data;
 	
-	private String respMsg;
+	private String msg;
+	
+	private long count;
 	
 	public ResultUtil() {}
 
-	public ResultUtil(String respCode) {
-		this.respCode = respCode;
+	public ResultUtil(String code) {
+		this.code = code;
 	}
 	
-	public ResultUtil(String respCode, String respMsg) {
-		this.respCode = respCode;
-		this.respMsg = respMsg;
+	public ResultUtil(String code, String msg) {
+		this.code = code;
+		this.msg = msg;
 	}
 	
-	public ResultUtil(String respCode, Object respData, String respMsg) {
-		this.respCode = respCode;
-		this.respData = respData;
-		this.respMsg = respMsg;
+	public ResultUtil(String code, Object data, String msg) {
+		this.code = code;
+		this.data = data;
+		this.msg = msg;
 	}
 
-	public String getRespCode() {
-		return respCode;
-	}
-
-	public Object getRespData() {
-		return respData;
-	}
-
-	public String getRespMsg() {
-		return respMsg;
-	}
-
-	public void setRespCode(String respCode) {
-		this.respCode = respCode;
-	}
-
-	public void setRespData(Object respData) {
-		this.respData = respData;
-	}
-
-	public void setRespMsg(String respMsg) {
-		this.respMsg = respMsg;
-	}
 	
 	/**成功**/
 	public static ResultUtil success(Object data, String msg) {
 		ResultUtil result = new ResultUtil("00");
-		result.setRespData(data);
-		result.setRespMsg(msg);
+		if (null == data) {
+			result.setData(Collections.EMPTY_LIST);
+		}else {
+			result.setData(data);	
+		}
+		result.setMsg(msg);
+		return result;
+	}
+	
+	public static ResultUtil success(Object data, long count, String msg) {
+		ResultUtil result = new ResultUtil("00");
+		if (null == data) {
+			result.setData(Collections.EMPTY_LIST);
+		}else {
+			result.setData(data);	
+		}
+		result.setMsg(msg);
+		result.setCount(count);
+		return result;
+	}
+	
+	public static ResultUtil success(Object data, long count) {
+		ResultUtil result = new ResultUtil("00", TipsEnum.OPERATE_SUCCESS.getValue());
+		if (null == data) {
+			result.setData(Collections.EMPTY_LIST);
+		}else {
+			result.setData(data);	
+		}
+		result.setCount(count);
 		return result;
 	}
 	
 	/**自定义成功**/
 	public static ResultUtil success(String msg) {
 		ResultUtil result = new ResultUtil("00");
-		result.setRespMsg(msg);
+		result.setMsg(msg);
 		return result;
 	}
 	
@@ -86,22 +93,26 @@ public class ResultUtil implements Serializable {
 	/**成功**/
 	public static ResultUtil success(Object data) {
 		ResultUtil result = new ResultUtil("00", TipsEnum.OPERATE_SUCCESS.getValue());
-		result.setRespData(data);
+		if (null == data) {
+			result.setData(Collections.EMPTY_LIST);
+		}else {
+			result.setData(data);	
+		}
 		return result;
 	}
 	
 	/**自定义错误**/
 	public static ResultUtil error(String msg) {
 		ResultUtil result = new ResultUtil("99");
-		result.setRespMsg(msg);
+		result.setMsg(msg);
 		return result;
 	}
 	
 	/**错误**/
 	public static ResultUtil error(String msg, Object data) {
 		ResultUtil result = new ResultUtil("99");
-		result.setRespMsg(msg);
-		result.setRespData(data);
+		result.setMsg(msg);
+		result.setData(data);
 		return result;
 	}
 	
@@ -114,7 +125,41 @@ public class ResultUtil implements Serializable {
 	/**错误**/
 	public static ResultUtil error(Object data) {
 		ResultUtil result = new ResultUtil("99", TipsEnum.OPERATE_ERROR.getValue());
-		result.setRespData(data);
+		result.setData(data);
 		return result;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+	
+	
 }

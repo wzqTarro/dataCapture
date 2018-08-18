@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/supply")
-@Api(value = "供应链服务接口")
+@Api(tags = "供应链服务接口")
 public class SupplyController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

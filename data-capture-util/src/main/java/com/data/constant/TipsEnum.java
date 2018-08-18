@@ -2,7 +2,7 @@ package com.data.constant;
 
 /**
  * 提示枚举类
- * @author Tarro
+ * @author Alex
  *
  */
 public enum TipsEnum {

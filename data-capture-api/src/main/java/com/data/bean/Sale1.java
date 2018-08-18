@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Tarro
  * 创建时间：2018年8月2日
  */
-public class Sale implements Serializable{
+public class Sale1 implements Serializable{
 
 	/**
 	 * 

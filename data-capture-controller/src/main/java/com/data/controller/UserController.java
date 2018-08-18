@@ -9,7 +9,7 @@ import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/user")
-@Api(value = "用户服务接口")
+@Api(tags = "用户服务接口")
 public class UserController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

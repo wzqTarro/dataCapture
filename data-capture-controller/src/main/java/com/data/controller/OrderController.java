@@ -52,15 +52,10 @@ public class OrderController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "queryOrderByCondition", method = RequestMethod.GET)
-	@ApiOperation(value = "分页查询抓取的数据", httpMethod = "GET")
-	public ResultUtil queryOrderByCondition(@RequestParam(value="startDate", required=false)String startDate,
-			@RequestParam(value = "endDate", required = false)String endDate, String companyCode,
-			@RequestParam(value = "page", required=false)String pageNum, @RequestParam(value = "limit", required = false)String pageSize
-			) throws Exception{
-		logger.info("---------->>>>>>>>>queryOrderByCondition start<<<<<<<<<-------------");
-		ResultUtil result = orderService.queryOrderByCondition(startDate, endDate, companyCode, pageNum, pageSize);
-		logger.info("---------->>>>>>>>>queryOrderByCondition end<<<<<<<<<--------------");
+	@RequestMapping(value = "queryOrderByCondition", method = RequestMethod.POST)
+	@ApiOperation(value = "分页查询抓取的数据", httpMethod = "POST")
+	public ResultUtil queryOrderByCondition(@RequestBody String param) throws Exception{
+		ResultUtil result = orderService.queryOrderByCondition(param);
 		return result;
 	}
 }

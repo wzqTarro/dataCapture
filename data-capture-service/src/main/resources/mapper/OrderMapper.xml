@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="OrderMapper" >
-  <resultMap id="BaseResultMap" type="com.zhongmin.bean.Order" >
+  <resultMap id="BaseResultMap" type="com.data.bean.Order" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="order_id" property="orderId" jdbcType="VARCHAR" />
     <result column="no" property="no" jdbcType="VARCHAR" />
@@ -45,7 +45,7 @@
     brand, part_content 'partContent', persent_num 'persentNum', contain_tax_price 'containTaxPrice', contain_tax_money 'containTaxMoney', remark
   </sql>
   
-  <select id="selectByParam" parameterType = "com.zhongmin.bean.Order" resultType="com.zhongmin.bean.Order">
+  <select id="selectByParam" parameterType = "com.data.bean.Order" resultType="com.data.bean.Order">
   	SELECT <include refid="myBaseColumn" />
   	FROM db_order
   	WHERE 1=1
@@ -60,17 +60,12 @@
   <select id="selectByCondtion" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List" />
   	FROM db_order
-  	WHERE 1=1
-  	<if test="companyCode != '' and companyCode != null">
-  		AND company_code = #{companyCode}
-  	</if>
-  	<if test="startDate != null and startDate != ''">
+  	WHERE 1=1	
+  	<if test="startDate != null and endDate != null">
   		AND create_time &gt;= #{startDate}
-  	</if> 
-  	<if test="endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}
-  	</if>
-  	<if test="companyCode != null and companyCode != ''">
+  	</if> 
+  	<if test="companyCode != '' and companyCode != null">
   		AND company_code = #{companyCode}
   	</if>
   	ORDER BY create_time DESC
@@ -79,12 +74,10 @@
   	SELECT COUNT(0)
   	FROM db_order
   	WHERE 1=1
-  	<if test="startDate != null and startDate != ''">
+  	<if test="startDate != null and endDate != null">
   		AND create_time &gt;= #{startDate}
-  	</if> 
-  	<if test="endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}
-  	</if>
+  	</if> 
   	<if test="companyCode != null and companyCode != ''">
   		AND company_code = #{companyCode}
   	</if>
@@ -99,7 +92,7 @@
     delete from db_order
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zhongmin.bean.Order" >
+  <insert id="insert" parameterType="com.data.bean.Order" >
     insert into db_order (id, order_id, no, 
       contract_code, good_name, good_bar_code, 
       good_code, order_type, good_type, 
@@ -121,7 +114,7 @@
       #{partContent,jdbcType=DOUBLE}, #{persentNum,jdbcType=DOUBLE}, #{containTaxPrice,jdbcType=DOUBLE}, 
       #{containTaxMoney,jdbcType=DOUBLE}, #{remark,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhongmin.bean.Order" >
+  <insert id="insertSelective" parameterType="com.data.bean.Order" >
     insert into db_order
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -302,7 +295,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhongmin.bean.Order" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Order" >
     update db_order
     <set >
       <if test="orderId != null" >
@@ -392,7 +385,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByOrderIdSelective" parameterType="com.zhongmin.bean.Order">
+  <update id="updateByOrderIdSelective" parameterType="com.data.bean.Order">
   	update db_order
     <set >
       <if test="no != null" >
@@ -478,7 +471,7 @@
     	order_id = #{orderId,jdbcType=VARCHAR}
     	AND good_bar_code = #{goodBarCode,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhongmin.bean.Order" >
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Order" >
     update db_order
     set order_id = #{orderId,jdbcType=VARCHAR},
       no = #{no,jdbcType=VARCHAR},

@@ -35,7 +35,7 @@ public interface ICommonService {
 	 * @param pageSize
 	 * @return
 	 */
-	<T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter, String pageNum, String pageSize) throws Exception;
+	<T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter, Integer pageNum, Integer pageSize) throws Exception;
 	
 	/**
 	 * 查询总数

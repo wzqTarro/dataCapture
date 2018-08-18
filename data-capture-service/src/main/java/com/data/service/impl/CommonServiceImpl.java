@@ -24,23 +24,23 @@ public class CommonServiceImpl implements ICommonService{
 
 	@Override
 	public <T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter,
-			String pageNum, String pageSize) throws Exception {
+			Integer pageNum, Integer pageSize) throws Exception {
 		Map<String, Object> params = Maps.newHashMap();
-		if(parameter != null) {
+		if (parameter != null) {
 			params = FastJsonUtil.jsonToObject(FastJsonUtil.objectToString(parameter), Map.class);		
 		}
-		if(StringUtils.isBlank(pageNum) || "0".equals(pageNum)) {
+		if (null == pageNum || "0".equals(pageNum)) {
 			pageNum = CommonValue.PAGE;
 		}
-		if(StringUtils.isBlank(pageSize) || "0".equals(pageSize)) {
+		if (null == pageSize || "0".equals(pageSize)) {
 			pageSize = CommonValue.SIZE;
 		}
 		/**
 		 * TODO
 		 * 报空指针异常 需处理
 		 */
-		int num = (Integer.valueOf(pageNum) - 1) * Integer.valueOf(pageSize);
-		int size = Integer.valueOf(pageSize);
+		int num = (pageNum - 1) * pageSize;
+		int size = pageSize;
 		params.put("pageNum", num);
 		params.put("pageSize", size);
 		PageRecord<T> page = new PageRecord<>();

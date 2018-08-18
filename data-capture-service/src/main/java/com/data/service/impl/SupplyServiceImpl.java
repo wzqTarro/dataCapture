@@ -40,8 +40,8 @@ public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyServi
 
 	@Override
 	public PageRecord<Supply> queryByConditiion(String pageNum, String pageSize) throws Exception {
-		PageRecord<Supply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, null, pageNum, pageSize);
-		return page;
+		//PageRecord<Supply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, null, pageNum, pageSize);
+		return null;
 	}
 	
 	

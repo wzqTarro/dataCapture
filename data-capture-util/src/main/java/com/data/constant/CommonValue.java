@@ -2,14 +2,15 @@ package com.data.constant;
 
 /**
  * 字符串常量类
- * @author Tarro
+ * @author Alex
+ * @update Tarro 2018年8月18日
  *
  */
 public class CommonValue {
 
-	public static final String PAGE = "1";
+	public static final int PAGE = 1;
 	
-	public static final String SIZE = "10";
+	public static final int SIZE = 10;
 	
 	public static final String DELETE_OPERATE = "delete";
 	
