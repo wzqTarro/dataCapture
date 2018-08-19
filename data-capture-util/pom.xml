@@ -8,4 +8,23 @@
   <artifactId>data-capture-util</artifactId>
   <name>工具</name>
   <description>子模块</description>
+  <dependencies>
+  	<!-- redis lettuce -->
+	<dependency>
+		<groupId>biz.paluch.redis</groupId>
+		<artifactId>lettuce</artifactId>
+		<version>4.4.5.Final</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-pool2</artifactId>
+		<version>2.4.2</version>
+	</dependency>
+	<!-- dom4j -->
+	<dependency>
+		<groupId>dom4j</groupId>
+		<artifactId>dom4j</artifactId>
+		<version>1.6.1</version>
+	</dependency>
+  </dependencies>
 </project>
