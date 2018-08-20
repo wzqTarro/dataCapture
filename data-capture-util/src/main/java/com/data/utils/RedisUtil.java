@@ -133,7 +133,7 @@ public class RedisUtil {
 	/**
 	 * 保存值并设置时间
 	 * @param key
-	 * @param seconds 毫秒
+	 * @param seconds 秒
 	 * @param value
 	 */
 	public static void setex(String key, long seconds, String value) {
@@ -176,7 +176,7 @@ public class RedisUtil {
 	/**
 	 * 给对应的key值设置存活时间
 	 * @param key
-	 * @param seconds 毫秒
+	 * @param seconds 秒
 	 * @return
 	 */
 	public static Boolean expire(String key, long seconds) {

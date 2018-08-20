@@ -30,22 +30,22 @@ public class JobConfig {
 	
 	public ScheduledFuture<?> future;
 	
-	private String express = "";
+	private String expression = "";
 	
-	public void setJob(String express) {
+	public void setJob(String expression) {
 		stopJob();
 		future = threadPoolTaskScheduler.schedule(() -> {
 			//业务代码
 			logger.info("--->>>定时任务开启<<<---");
 		}, (context) -> {
-			logger.info("--->>>定时任务更改***新的cron表达式=" + express + "<<<---");
-			CronTrigger cronTrigger = new CronTrigger(express);
+			logger.info("--->>>定时任务更改***新的cron表达式 = " + expression + "<<<---");
+			CronTrigger cronTrigger = new CronTrigger(expression);
 			return cronTrigger.nextExecutionTime(context);
 		});
 	}
 	
 	public String getJob() {
-		return express;
+		return expression;
 	}
 	
 	public void stopJob() {

@@ -19,8 +19,8 @@ public class JobController {
 	private JobConfig config;
 	
 	@RequestMapping(value = "/startJob", method = RequestMethod.POST)
-	public String startJob(String express) {
-		config.setJob(express);
+	public String startJob(String expression) {
+		config.setJob(expression);
 		logger.info("--->>>开始定时任务<<<---");
 		return "success";
 	}
@@ -31,9 +31,9 @@ public class JobController {
 		return "stop";
 	}
 	
-	@RequestMapping(value = "/stopJob", method = RequestMethod.POST)
-	public String changeJob(String express) {
-		config.setJob(express);
+	@RequestMapping(value = "/updateJob", method = RequestMethod.POST)
+	public String changeJob(String expression) {
+		config.setJob(expression);
 		logger.info("--->>>更新定时任务<<<---");
 		return "change";
 	}
