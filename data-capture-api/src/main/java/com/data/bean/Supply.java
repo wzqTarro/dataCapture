@@ -1,7 +1,16 @@
 package com.data.bean;
 
-public class Supply {
-    private Integer id;
+import java.io.Serializable;
+
+import com.alibaba.fastjson.annotation.JSONField;
+
+public class Supply implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8086505396834955857L;
+
+	private Integer id;
 
     private String region;
 
@@ -14,6 +23,9 @@ public class Supply {
     private String loginPassword;
 
     private String companyCode;
+    
+    @JSONField(serialize = false)
+    private String controllerName;
 
     public Integer getId() {
         return id;
@@ -70,4 +82,12 @@ public class Supply {
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode == null ? null : companyCode.trim();
     }
+
+	public String getControllerName() {
+		return controllerName;
+	}
+
+	public void setControllerName(String controllerName) {
+		this.controllerName = controllerName;
+	}
 }

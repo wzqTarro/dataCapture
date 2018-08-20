@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SimpleCodeMapper" >
+  <resultMap id="BaseResultMap" type="com.data.bean.SimpleCode" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="simple_name" property="simpleName" jdbcType="VARCHAR" />
+    <result column="bar_code" property="barCode" jdbcType="VARCHAR" />
+    <result column="bbg" property="bbg" jdbcType="VARCHAR" />
+    <result column="rrl" property="rrl" jdbcType="VARCHAR" />
+    <result column="jrd" property="jrd" jdbcType="VARCHAR" />
+    <result column="yc" property="yc" jdbcType="VARCHAR" />
+    <result column="hnth" property="hnth" jdbcType="VARCHAR" />
+    <result column="os" property="os" jdbcType="VARCHAR" />
+    <result column="bl" property="bl" jdbcType="VARCHAR" />
+    <result column="bjhl" property="bjhl" jdbcType="VARCHAR" />
+    <result column="ws" property="ws" jdbcType="VARCHAR" />
+    <result column="gcs" property="gcs" jdbcType="VARCHAR" />
+    <result column="oycb" property="oycb" jdbcType="VARCHAR" />
+    <result column="jh" property="jh" jdbcType="VARCHAR" />
+    <result column="drf" property="drf" jdbcType="VARCHAR" />
+    <result column="wem" property="wem" jdbcType="VARCHAR" />
+    <result column="zb" property="zb" jdbcType="VARCHAR" />
+    <result column="cb" property="cb" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, simple_name, bar_code, bbg, rrl, jrd, yc, hnth, os, bl, bjhl, ws, gcs, oycb, 
+    jh, drf, wem, zb, cb
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from db_simple_code
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from db_simple_code
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.SimpleCode" >
+    insert into db_simple_code (id, simple_name, bar_code, 
+      bbg, rrl, jrd, yc, 
+      hnth, os, bl, bjhl, 
+      ws, gcs, oycb, jh, 
+      drf, wem, zb, cb
+      )
+    values (#{id,jdbcType=INTEGER}, #{simpleName,jdbcType=VARCHAR}, #{barCode,jdbcType=VARCHAR}, 
+      #{bbg,jdbcType=VARCHAR}, #{rrl,jdbcType=VARCHAR}, #{jrd,jdbcType=VARCHAR}, #{yc,jdbcType=VARCHAR}, 
+      #{hnth,jdbcType=VARCHAR}, #{os,jdbcType=VARCHAR}, #{bl,jdbcType=VARCHAR}, #{bjhl,jdbcType=VARCHAR}, 
+      #{ws,jdbcType=VARCHAR}, #{gcs,jdbcType=VARCHAR}, #{oycb,jdbcType=VARCHAR}, #{jh,jdbcType=VARCHAR}, 
+      #{drf,jdbcType=VARCHAR}, #{wem,jdbcType=VARCHAR}, #{zb,jdbcType=VARCHAR}, #{cb,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.SimpleCode" >
+    insert into db_simple_code
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="simpleName != null" >
+        simple_name,
+      </if>
+      <if test="barCode != null" >
+        bar_code,
+      </if>
+      <if test="bbg != null" >
+        bbg,
+      </if>
+      <if test="rrl != null" >
+        rrl,
+      </if>
+      <if test="jrd != null" >
+        jrd,
+      </if>
+      <if test="yc != null" >
+        yc,
+      </if>
+      <if test="hnth != null" >
+        hnth,
+      </if>
+      <if test="os != null" >
+        os,
+      </if>
+      <if test="bl != null" >
+        bl,
+      </if>
+      <if test="bjhl != null" >
+        bjhl,
+      </if>
+      <if test="ws != null" >
+        ws,
+      </if>
+      <if test="gcs != null" >
+        gcs,
+      </if>
+      <if test="oycb != null" >
+        oycb,
+      </if>
+      <if test="jh != null" >
+        jh,
+      </if>
+      <if test="drf != null" >
+        drf,
+      </if>
+      <if test="wem != null" >
+        wem,
+      </if>
+      <if test="zb != null" >
+        zb,
+      </if>
+      <if test="cb != null" >
+        cb,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="simpleName != null" >
+        #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="barCode != null" >
+        #{barCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bbg != null" >
+        #{bbg,jdbcType=VARCHAR},
+      </if>
+      <if test="rrl != null" >
+        #{rrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jrd != null" >
+        #{jrd,jdbcType=VARCHAR},
+      </if>
+      <if test="yc != null" >
+        #{yc,jdbcType=VARCHAR},
+      </if>
+      <if test="hnth != null" >
+        #{hnth,jdbcType=VARCHAR},
+      </if>
+      <if test="os != null" >
+        #{os,jdbcType=VARCHAR},
+      </if>
+      <if test="bl != null" >
+        #{bl,jdbcType=VARCHAR},
+      </if>
+      <if test="bjhl != null" >
+        #{bjhl,jdbcType=VARCHAR},
+      </if>
+      <if test="ws != null" >
+        #{ws,jdbcType=VARCHAR},
+      </if>
+      <if test="gcs != null" >
+        #{gcs,jdbcType=VARCHAR},
+      </if>
+      <if test="oycb != null" >
+        #{oycb,jdbcType=VARCHAR},
+      </if>
+      <if test="jh != null" >
+        #{jh,jdbcType=VARCHAR},
+      </if>
+      <if test="drf != null" >
+        #{drf,jdbcType=VARCHAR},
+      </if>
+      <if test="wem != null" >
+        #{wem,jdbcType=VARCHAR},
+      </if>
+      <if test="zb != null" >
+        #{zb,jdbcType=VARCHAR},
+      </if>
+      <if test="cb != null" >
+        #{cb,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.SimpleCode" >
+    update db_simple_code
+    <set >
+      <if test="simpleName != null" >
+        simple_name = #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="barCode != null" >
+        bar_code = #{barCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bbg != null" >
+        bbg = #{bbg,jdbcType=VARCHAR},
+      </if>
+      <if test="rrl != null" >
+        rrl = #{rrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jrd != null" >
+        jrd = #{jrd,jdbcType=VARCHAR},
+      </if>
+      <if test="yc != null" >
+        yc = #{yc,jdbcType=VARCHAR},
+      </if>
+      <if test="hnth != null" >
+        hnth = #{hnth,jdbcType=VARCHAR},
+      </if>
+      <if test="os != null" >
+        os = #{os,jdbcType=VARCHAR},
+      </if>
+      <if test="bl != null" >
+        bl = #{bl,jdbcType=VARCHAR},
+      </if>
+      <if test="bjhl != null" >
+        bjhl = #{bjhl,jdbcType=VARCHAR},
+      </if>
+      <if test="ws != null" >
+        ws = #{ws,jdbcType=VARCHAR},
+      </if>
+      <if test="gcs != null" >
+        gcs = #{gcs,jdbcType=VARCHAR},
+      </if>
+      <if test="oycb != null" >
+        oycb = #{oycb,jdbcType=VARCHAR},
+      </if>
+      <if test="jh != null" >
+        jh = #{jh,jdbcType=VARCHAR},
+      </if>
+      <if test="drf != null" >
+        drf = #{drf,jdbcType=VARCHAR},
+      </if>
+      <if test="wem != null" >
+        wem = #{wem,jdbcType=VARCHAR},
+      </if>
+      <if test="zb != null" >
+        zb = #{zb,jdbcType=VARCHAR},
+      </if>
+      <if test="cb != null" >
+        cb = #{cb,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.SimpleCode" >
+    update db_simple_code
+    set simple_name = #{simpleName,jdbcType=VARCHAR},
+      bar_code = #{barCode,jdbcType=VARCHAR},
+      bbg = #{bbg,jdbcType=VARCHAR},
+      rrl = #{rrl,jdbcType=VARCHAR},
+      jrd = #{jrd,jdbcType=VARCHAR},
+      yc = #{yc,jdbcType=VARCHAR},
+      hnth = #{hnth,jdbcType=VARCHAR},
+      os = #{os,jdbcType=VARCHAR},
+      bl = #{bl,jdbcType=VARCHAR},
+      bjhl = #{bjhl,jdbcType=VARCHAR},
+      ws = #{ws,jdbcType=VARCHAR},
+      gcs = #{gcs,jdbcType=VARCHAR},
+      oycb = #{oycb,jdbcType=VARCHAR},
+      jh = #{jh,jdbcType=VARCHAR},
+      drf = #{drf,jdbcType=VARCHAR},
+      wem = #{wem,jdbcType=VARCHAR},
+      zb = #{zb,jdbcType=VARCHAR},
+      cb = #{cb,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,7 +1,14 @@
 package com.data.bean;
 
-public class User {
-    private Integer id;
+import java.io.Serializable;
+
+public class User implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8656323180076070493L;
+
+	private Integer id;
 
     private String userName;
 

@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SaleMapper" >
+  <resultMap id="BaseResultMap" type="com.data.bean.Sale" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sys_id" property="sysId" jdbcType="INTEGER" />
+    <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
+    <result column="store_code" property="storeCode" jdbcType="VARCHAR" />
+    <result column="store_name" property="storeName" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="province_area" property="provinceArea" jdbcType="VARCHAR" />
+    <result column="ascription" property="ascription" jdbcType="CHAR" />
+    <result column="ascription_sole" property="ascriptionSole" jdbcType="CHAR" />
+    <result column="simple_code" property="simpleCode" jdbcType="VARCHAR" />
+    <result column="simple_bar_code" property="simpleBarCode" jdbcType="VARCHAR" />
+    <result column="stock_code" property="stockCode" jdbcType="VARCHAR" />
+    <result column="simple_name" property="simpleName" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="series" property="series" jdbcType="VARCHAR" />
+    <result column="day_night" property="dayNight" jdbcType="VARCHAR" />
+    <result column="material" property="material" jdbcType="VARCHAR" />
+    <result column="pieces_num" property="piecesNum" jdbcType="INTEGER" />
+    <result column="box_standard" property="boxStandard" jdbcType="VARCHAR" />
+    <result column="stock_no" property="stockNo" jdbcType="VARCHAR" />
+    <result column="sell_num" property="sellNum" jdbcType="INTEGER" />
+    <result column="sell_price" property="sellPrice" jdbcType="DOUBLE" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
+    ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
+    day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from db_sale
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from db_sale
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.Sale" >
+    insert into db_sale (id, sys_id, sys_name, 
+      store_code, store_name, region, 
+      province_area, ascription, ascription_sole, 
+      simple_code, simple_bar_code, stock_code, 
+      simple_name, brand, series, 
+      day_night, material, pieces_num, 
+      box_standard, stock_no, sell_num, 
+      sell_price, create_time)
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, 
+      #{storeCode,jdbcType=VARCHAR}, #{storeName,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
+      #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, #{ascriptionSole,jdbcType=CHAR}, 
+      #{simpleCode,jdbcType=VARCHAR}, #{simpleBarCode,jdbcType=VARCHAR}, #{stockCode,jdbcType=VARCHAR}, 
+      #{simpleName,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, 
+      #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
+      #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
+      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.Sale" >
+    insert into db_sale
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sysId != null" >
+        sys_id,
+      </if>
+      <if test="sysName != null" >
+        sys_name,
+      </if>
+      <if test="storeCode != null" >
+        store_code,
+      </if>
+      <if test="storeName != null" >
+        store_name,
+      </if>
+      <if test="region != null" >
+        region,
+      </if>
+      <if test="provinceArea != null" >
+        province_area,
+      </if>
+      <if test="ascription != null" >
+        ascription,
+      </if>
+      <if test="ascriptionSole != null" >
+        ascription_sole,
+      </if>
+      <if test="simpleCode != null" >
+        simple_code,
+      </if>
+      <if test="simpleBarCode != null" >
+        simple_bar_code,
+      </if>
+      <if test="stockCode != null" >
+        stock_code,
+      </if>
+      <if test="simpleName != null" >
+        simple_name,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="series != null" >
+        series,
+      </if>
+      <if test="dayNight != null" >
+        day_night,
+      </if>
+      <if test="material != null" >
+        material,
+      </if>
+      <if test="piecesNum != null" >
+        pieces_num,
+      </if>
+      <if test="boxStandard != null" >
+        box_standard,
+      </if>
+      <if test="stockNo != null" >
+        stock_no,
+      </if>
+      <if test="sellNum != null" >
+        sell_num,
+      </if>
+      <if test="sellPrice != null" >
+        sell_price,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sysId != null" >
+        #{sysId,jdbcType=INTEGER},
+      </if>
+      <if test="sysName != null" >
+        #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeCode != null" >
+        #{storeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="storeName != null" >
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null" >
+        #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="ascription != null" >
+        #{ascription,jdbcType=CHAR},
+      </if>
+      <if test="ascriptionSole != null" >
+        #{ascriptionSole,jdbcType=CHAR},
+      </if>
+      <if test="simpleCode != null" >
+        #{simpleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleBarCode != null" >
+        #{simpleBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stockCode != null" >
+        #{stockCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleName != null" >
+        #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="series != null" >
+        #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="dayNight != null" >
+        #{dayNight,jdbcType=VARCHAR},
+      </if>
+      <if test="material != null" >
+        #{material,jdbcType=VARCHAR},
+      </if>
+      <if test="piecesNum != null" >
+        #{piecesNum,jdbcType=INTEGER},
+      </if>
+      <if test="boxStandard != null" >
+        #{boxStandard,jdbcType=VARCHAR},
+      </if>
+      <if test="stockNo != null" >
+        #{stockNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellNum != null" >
+        #{sellNum,jdbcType=INTEGER},
+      </if>
+      <if test="sellPrice != null" >
+        #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Sale" >
+    update db_sale
+    <set >
+      <if test="sysId != null" >
+        sys_id = #{sysId,jdbcType=INTEGER},
+      </if>
+      <if test="sysName != null" >
+        sys_name = #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeCode != null" >
+        store_code = #{storeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="storeName != null" >
+        store_name = #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="region != null" >
+        region = #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null" >
+        province_area = #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="ascription != null" >
+        ascription = #{ascription,jdbcType=CHAR},
+      </if>
+      <if test="ascriptionSole != null" >
+        ascription_sole = #{ascriptionSole,jdbcType=CHAR},
+      </if>
+      <if test="simpleCode != null" >
+        simple_code = #{simpleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleBarCode != null" >
+        simple_bar_code = #{simpleBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stockCode != null" >
+        stock_code = #{stockCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleName != null" >
+        simple_name = #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="series != null" >
+        series = #{series,jdbcType=VARCHAR},
+      </if>
+      <if test="dayNight != null" >
+        day_night = #{dayNight,jdbcType=VARCHAR},
+      </if>
+      <if test="material != null" >
+        material = #{material,jdbcType=VARCHAR},
+      </if>
+      <if test="piecesNum != null" >
+        pieces_num = #{piecesNum,jdbcType=INTEGER},
+      </if>
+      <if test="boxStandard != null" >
+        box_standard = #{boxStandard,jdbcType=VARCHAR},
+      </if>
+      <if test="stockNo != null" >
+        stock_no = #{stockNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellNum != null" >
+        sell_num = #{sellNum,jdbcType=INTEGER},
+      </if>
+      <if test="sellPrice != null" >
+        sell_price = #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Sale" >
+    update db_sale
+    set sys_id = #{sysId,jdbcType=INTEGER},
+      sys_name = #{sysName,jdbcType=VARCHAR},
+      store_code = #{storeCode,jdbcType=VARCHAR},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      region = #{region,jdbcType=VARCHAR},
+      province_area = #{provinceArea,jdbcType=VARCHAR},
+      ascription = #{ascription,jdbcType=CHAR},
+      ascription_sole = #{ascriptionSole,jdbcType=CHAR},
+      simple_code = #{simpleCode,jdbcType=VARCHAR},
+      simple_bar_code = #{simpleBarCode,jdbcType=VARCHAR},
+      stock_code = #{stockCode,jdbcType=VARCHAR},
+      simple_name = #{simpleName,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      series = #{series,jdbcType=VARCHAR},
+      day_night = #{dayNight,jdbcType=VARCHAR},
+      material = #{material,jdbcType=VARCHAR},
+      pieces_num = #{piecesNum,jdbcType=INTEGER},
+      box_standard = #{boxStandard,jdbcType=VARCHAR},
+      stock_no = #{stockNo,jdbcType=VARCHAR},
+      sell_num = #{sellNum,jdbcType=INTEGER},
+      sell_price = #{sellPrice,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

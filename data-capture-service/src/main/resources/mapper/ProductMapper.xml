@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ProductMapper" >
+  <resultMap id="BaseResultMap" type="com.data.bean.Product" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="sys_name" property="sysName" jdbcType="CHAR" />
+    <result column="simple_code" property="simpleCode" jdbcType="VARCHAR" />
+    <result column="simple_bar_code" property="simpleBarCode" jdbcType="VARCHAR" />
+    <result column="stock_code" property="stockCode" jdbcType="VARCHAR" />
+    <result column="simple_name" property="simpleName" jdbcType="VARCHAR" />
+    <result column="standard_name" property="standardName" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="CHAR" />
+    <result column="classify" property="classify" jdbcType="CHAR" />
+    <result column="series" property="series" jdbcType="CHAR" />
+    <result column="func" property="func" jdbcType="CHAR" />
+    <result column="material" property="material" jdbcType="CHAR" />
+    <result column="pack_num" property="packNum" jdbcType="INTEGER" />
+    <result column="box_standard" property="boxStandard" jdbcType="VARCHAR" />
+    <result column="stock_no" property="stockNo" jdbcType="VARCHAR" />
+    <result column="sell_price" property="sellPrice" jdbcType="DOUBLE" />
+    <result column="exclude_tax_price" property="excludeTaxPrice" jdbcType="DOUBLE" />
+    <result column="include_tax_price" property="includeTaxPrice" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_id, sys_name, simple_code, simple_bar_code, stock_code, simple_name, 
+    standard_name, brand, classify, series, func, material, pack_num, box_standard, stock_no, 
+    sell_price, exclude_tax_price, include_tax_price
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from db_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from db_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.Product" >
+    insert into db_product (id, product_id, sys_name, 
+      simple_code, simple_bar_code, stock_code, 
+      simple_name, standard_name, brand, 
+      classify, series, func, material, 
+      pack_num, box_standard, stock_no, 
+      sell_price, exclude_tax_price, include_tax_price
+      )
+    values (#{id,jdbcType=INTEGER}, #{productId,jdbcType=VARCHAR}, #{sysName,jdbcType=CHAR}, 
+      #{simpleCode,jdbcType=VARCHAR}, #{simpleBarCode,jdbcType=VARCHAR}, #{stockCode,jdbcType=VARCHAR}, 
+      #{simpleName,jdbcType=VARCHAR}, #{standardName,jdbcType=VARCHAR}, #{brand,jdbcType=CHAR}, 
+      #{classify,jdbcType=CHAR}, #{series,jdbcType=CHAR}, #{func,jdbcType=CHAR}, #{material,jdbcType=CHAR}, 
+      #{packNum,jdbcType=INTEGER}, #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, 
+      #{sellPrice,jdbcType=DOUBLE}, #{excludeTaxPrice,jdbcType=DOUBLE}, #{includeTaxPrice,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.Product" >
+    insert into db_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="sysName != null" >
+        sys_name,
+      </if>
+      <if test="simpleCode != null" >
+        simple_code,
+      </if>
+      <if test="simpleBarCode != null" >
+        simple_bar_code,
+      </if>
+      <if test="stockCode != null" >
+        stock_code,
+      </if>
+      <if test="simpleName != null" >
+        simple_name,
+      </if>
+      <if test="standardName != null" >
+        standard_name,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="classify != null" >
+        classify,
+      </if>
+      <if test="series != null" >
+        series,
+      </if>
+      <if test="func != null" >
+        func,
+      </if>
+      <if test="material != null" >
+        material,
+      </if>
+      <if test="packNum != null" >
+        pack_num,
+      </if>
+      <if test="boxStandard != null" >
+        box_standard,
+      </if>
+      <if test="stockNo != null" >
+        stock_no,
+      </if>
+      <if test="sellPrice != null" >
+        sell_price,
+      </if>
+      <if test="excludeTaxPrice != null" >
+        exclude_tax_price,
+      </if>
+      <if test="includeTaxPrice != null" >
+        include_tax_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null" >
+        #{sysName,jdbcType=CHAR},
+      </if>
+      <if test="simpleCode != null" >
+        #{simpleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleBarCode != null" >
+        #{simpleBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stockCode != null" >
+        #{stockCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleName != null" >
+        #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="standardName != null" >
+        #{standardName,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        #{brand,jdbcType=CHAR},
+      </if>
+      <if test="classify != null" >
+        #{classify,jdbcType=CHAR},
+      </if>
+      <if test="series != null" >
+        #{series,jdbcType=CHAR},
+      </if>
+      <if test="func != null" >
+        #{func,jdbcType=CHAR},
+      </if>
+      <if test="material != null" >
+        #{material,jdbcType=CHAR},
+      </if>
+      <if test="packNum != null" >
+        #{packNum,jdbcType=INTEGER},
+      </if>
+      <if test="boxStandard != null" >
+        #{boxStandard,jdbcType=VARCHAR},
+      </if>
+      <if test="stockNo != null" >
+        #{stockNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellPrice != null" >
+        #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="excludeTaxPrice != null" >
+        #{excludeTaxPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="includeTaxPrice != null" >
+        #{includeTaxPrice,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Product" >
+    update db_product
+    <set >
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null" >
+        sys_name = #{sysName,jdbcType=CHAR},
+      </if>
+      <if test="simpleCode != null" >
+        simple_code = #{simpleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleBarCode != null" >
+        simple_bar_code = #{simpleBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stockCode != null" >
+        stock_code = #{stockCode,jdbcType=VARCHAR},
+      </if>
+      <if test="simpleName != null" >
+        simple_name = #{simpleName,jdbcType=VARCHAR},
+      </if>
+      <if test="standardName != null" >
+        standard_name = #{standardName,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null" >
+        brand = #{brand,jdbcType=CHAR},
+      </if>
+      <if test="classify != null" >
+        classify = #{classify,jdbcType=CHAR},
+      </if>
+      <if test="series != null" >
+        series = #{series,jdbcType=CHAR},
+      </if>
+      <if test="func != null" >
+        func = #{func,jdbcType=CHAR},
+      </if>
+      <if test="material != null" >
+        material = #{material,jdbcType=CHAR},
+      </if>
+      <if test="packNum != null" >
+        pack_num = #{packNum,jdbcType=INTEGER},
+      </if>
+      <if test="boxStandard != null" >
+        box_standard = #{boxStandard,jdbcType=VARCHAR},
+      </if>
+      <if test="stockNo != null" >
+        stock_no = #{stockNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sellPrice != null" >
+        sell_price = #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="excludeTaxPrice != null" >
+        exclude_tax_price = #{excludeTaxPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="includeTaxPrice != null" >
+        include_tax_price = #{includeTaxPrice,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Product" >
+    update db_product
+    set product_id = #{productId,jdbcType=VARCHAR},
+      sys_name = #{sysName,jdbcType=CHAR},
+      simple_code = #{simpleCode,jdbcType=VARCHAR},
+      simple_bar_code = #{simpleBarCode,jdbcType=VARCHAR},
+      stock_code = #{stockCode,jdbcType=VARCHAR},
+      simple_name = #{simpleName,jdbcType=VARCHAR},
+      standard_name = #{standardName,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=CHAR},
+      classify = #{classify,jdbcType=CHAR},
+      series = #{series,jdbcType=CHAR},
+      func = #{func,jdbcType=CHAR},
+      material = #{material,jdbcType=CHAR},
+      pack_num = #{packNum,jdbcType=INTEGER},
+      box_standard = #{boxStandard,jdbcType=VARCHAR},
+      stock_no = #{stockNo,jdbcType=VARCHAR},
+      sell_price = #{sellPrice,jdbcType=DOUBLE},
+      exclude_tax_price = #{excludeTaxPrice,jdbcType=DOUBLE},
+      include_tax_price = #{includeTaxPrice,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -13,4 +13,12 @@ public class DeleteId {
 	
 	public static final String DELETE_SUPPLY_BY_ID = "SupplyMapper.deleteByPrimaryKey";
 	
+	public static final String DELETE_PRODUCT_BY_ID = "ProductMapper.deleteByPrimaryKey";
+	
+	public static final String DELETE_SALE_BY_ID = "SaleMapper.deleteByPrimaryKey";
+	
+	public static final String DELETE_SIMPLE_CODE_BY_ID = "SimpleCodeMapper.deleteByPrimaryKey";
+	
+	public static final String DELETE_STORE_BY_ID = "StoreMapper.deleteByPrimaryKey";
+	
 }

@@ -3,6 +3,7 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Order implements Serializable{
@@ -33,9 +34,9 @@ public class Order implements Serializable{
     private String unit;//单位
     private String stageCount;//场次
     private String orderState;//订单状态
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
+    @JSONField(format = "yyyy-MM-dd")
     private Date endTime;//有效截止时间
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
+    @JSONField(format = "yyyy-MM-dd")
     private Date createTime;//创建时间
     private String operatorName;//审核人
     private String companyCode;//企业编号
