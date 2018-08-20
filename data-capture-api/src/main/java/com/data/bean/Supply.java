@@ -23,11 +23,21 @@ public class Supply implements Serializable{
     private String loginPassword;
 
     private String companyCode;
+    // 是否开通
+    private Boolean isVal;
     
     @JSONField(serialize = false)
     private String controllerName;
 
-    public Integer getId() {
+    public Boolean getIsVal() {
+		return isVal;
+	}
+
+	public void setIsVal(Boolean isVal) {
+		this.isVal = isVal;
+	}
+
+	public Integer getId() {
         return id;
     }
 

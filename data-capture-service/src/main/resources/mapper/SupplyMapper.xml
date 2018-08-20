@@ -10,9 +10,10 @@
     <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
     <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
     <result column="controller_name" jdbcType="VARCHAR" property="controllerName" />
+    <result column="is_val" jdbcType="BIT" property="isVal" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, region, sell_store, url, login_user_name, login_password, company_code, controller_name
+    id, region, sell_store, url, login_user_name, login_password, company_code, controller_name, is_val
   </sql>
   <sql id="tableName">db_supply</sql>
   <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
@@ -37,10 +38,10 @@
   <insert id="insert" parameterType="com.data.bean.Supply">
     insert into db_supply (id, region, sell_store, 
       url, login_user_name, login_password, 
-      company_code, controller_name)
+      company_code, controller_name, is_val)
     values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sellStore,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
-      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbc=VARCHAR})
+      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbc=VARCHAR}, #{isVal,jdbc=BIT})
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Supply">
     insert into db_supply
@@ -69,6 +70,9 @@
       <if test="controllerName != null">
         controller_name,
       </if>
+      <if test="isVal != null">
+        is_val,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -94,6 +98,9 @@
       </if>
       <if test="controllerName != null">
         #{controllerName,jdbcType=VARCHAR},
+      </if>
+      <if test="isVal != null">
+        #{isVal,jdbc=BIT},
       </if>
     </trim>
   </insert>
@@ -121,6 +128,9 @@
       <if test="controllerName != null">
         controller_name = #{controllerName,jdbcType=VARCHAR},
       </if>
+       <if test="isVal != null">
+        is_val = #{isVal,jdbcType=BIT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -132,7 +142,8 @@
       login_user_name = #{loginUserName,jdbcType=VARCHAR},
       login_password = #{loginPassword,jdbcType=VARCHAR},
       company_code = #{companyCode,jdbcType=VARCHAR},
-      controller_name = #{controllerName,jdbcType=VARCHAR}
+      controller_name = #{controllerName,jdbcType=VARCHAR},
+      is_val = #{isVal,jdbcType=BIT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
