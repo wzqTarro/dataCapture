@@ -99,4 +99,40 @@ public class CommonUtil {
 			System.err.println(arr[i]);			
 		}
 	}
+	
+	/**
+	 * 判断元素是否在数组里
+	 * @param obj
+	 * @param array
+	 * @return
+	 */
+	public static boolean isInArray(Object obj, Object[] array) {
+		if(array == null || array.length == 0) {
+			return false;
+		}
+		for(int i = 0; i < array.length; i++) {
+			if(obj.equals(array[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 判断元素是否在集合列表里
+	 * @param obj
+	 * @param list
+	 * @return
+	 */
+	public static boolean isInList(Object obj, List<?> list) {
+		if(list == null || list.size() == 0) {
+			return false;
+		}
+		for(int i = 0; i < list.size(); i++) {
+			if(obj.equals(list.get(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -43,16 +43,16 @@ public class RedisAPI {
 	private static final String REDIS_PATTERN = ":";
 	
 	/**订单库**/
-	private static final String REDIS_ORDER_DATABASE = "order:";
+	private static final String REDIS_ORDER_DATABASE = "order";
 	
 	/**销售库**/
-	private static final String REDIS_SALE_DATABASE = "sale:";
+	private static final String REDIS_SALE_DATABASE = "sale";
 	
 	/**库存库**/
-	private static final String REDIS_ACOUNT_DATABASE = "acount:";
+	private static final String REDIS_ACOUNT_DATABASE = "acount";
 	
 	/**退货库**/
-	private static final String REDIS_REJECT_DATABASE = "reject:";
+	private static final String REDIS_REJECT_DATABASE = "reject";
 	
 	/**
 	 * 得到存入缓存中的key值
@@ -65,8 +65,8 @@ public class RedisAPI {
 			StringBuilder builder = new StringBuilder();
 			builder.append(database);
 			for(int i = 0; i < keys.length; i++) {
-				builder.append(keys[i]);
 				builder.append(REDIS_PATTERN);
+				builder.append(keys[i]);
 			}
 			return builder.toString();
 		}
