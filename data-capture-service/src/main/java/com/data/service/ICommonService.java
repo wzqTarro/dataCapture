@@ -3,6 +3,7 @@ package com.data.service;
 import java.util.List;
 
 import com.data.constant.PageRecord;
+import com.data.exception.DataException;
 
 /**
  * 公共服务层接口
@@ -50,4 +51,11 @@ public interface ICommonService {
 	int update(String statement, Object parameter);
 	
 	int delete(String statement, Object parameter);
+	
+	/**
+	 * python抓取数据
+	 * @param dataType
+	 * @return
+	 */
+	public String getDataByWeb(String param, int dataType) throws DataException;
 }

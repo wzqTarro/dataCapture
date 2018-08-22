@@ -1,19 +1,31 @@
 package com.data.dto;
 
-import java.util.Date;
+import java.io.Serializable;
 
-public class CommonDTO {
+public class CommonDTO implements Serializable {
+
+	private static final long serialVersionUID = 1685003548696455015L;
+	
 	//
 	private String token;
-	//当前页号
+	// 编号
+	private int id;
+	// 当前页号
 	private int page;
-	//当前行数
+	// 当前行数
 	private int limit;
-	//开始时间
+	// 开始时间
 	private String startDate;
-	//结束时间
+	// 结束时间
 	private String endDate;
 	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getToken() {
 		return token;
 	}
