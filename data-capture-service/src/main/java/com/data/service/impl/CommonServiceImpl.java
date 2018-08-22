@@ -3,7 +3,6 @@ package com.data.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.data.constant.CommonValue;
@@ -22,6 +21,7 @@ public class CommonServiceImpl implements ICommonService{
 		return dao.queryListByObject(statement, parameter);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter,
 			Integer pageNum, Integer pageSize) throws Exception {

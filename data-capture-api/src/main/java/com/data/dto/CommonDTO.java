@@ -1,8 +1,11 @@
 package com.data.dto;
 
-import java.util.Date;
+import java.io.Serializable;
 
-public class CommonDTO {
+public class CommonDTO implements Serializable {
+
+	private static final long serialVersionUID = 1685003548696455015L;
+	
 	//
 	private String token;
 	//当前页号

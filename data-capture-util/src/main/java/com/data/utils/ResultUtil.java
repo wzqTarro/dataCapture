@@ -3,6 +3,7 @@ package com.data.utils;
 import java.io.Serializable;
 import java.util.Collections;
 
+import com.data.constant.CodeEnum;
 import com.data.constant.TipsEnum;
 
 
@@ -44,7 +45,7 @@ public class ResultUtil implements Serializable {
 	
 	/**成功**/
 	public static ResultUtil success(Object data, String msg) {
-		ResultUtil result = new ResultUtil("00");
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue());
 		if (null == data) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
@@ -55,7 +56,7 @@ public class ResultUtil implements Serializable {
 	}
 	
 	public static ResultUtil success(Object data, long count, String msg) {
-		ResultUtil result = new ResultUtil("00");
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue());
 		if (null == data) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
@@ -67,7 +68,7 @@ public class ResultUtil implements Serializable {
 	}
 	
 	public static ResultUtil success(Object data, long count) {
-		ResultUtil result = new ResultUtil("00", TipsEnum.OPERATE_SUCCESS.getValue());
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
 		if (null == data) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
@@ -79,20 +80,20 @@ public class ResultUtil implements Serializable {
 	
 	/**自定义成功**/
 	public static ResultUtil success(String msg) {
-		ResultUtil result = new ResultUtil("00");
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue());
 		result.setMsg(msg);
 		return result;
 	}
 	
 	/**默认成功**/
 	public static ResultUtil success() {
-		ResultUtil result = new ResultUtil("00", TipsEnum.OPERATE_SUCCESS.getValue());
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
 		return result;
 	}
 	
 	/**成功**/
 	public static ResultUtil success(Object data) {
-		ResultUtil result = new ResultUtil("00", TipsEnum.OPERATE_SUCCESS.getValue());
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
 		if (null == data) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
@@ -103,14 +104,14 @@ public class ResultUtil implements Serializable {
 	
 	/**自定义错误**/
 	public static ResultUtil error(String msg) {
-		ResultUtil result = new ResultUtil("99");
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_99_CODE.getValue());
 		result.setMsg(msg);
 		return result;
 	}
 	
 	/**错误**/
 	public static ResultUtil error(String msg, Object data) {
-		ResultUtil result = new ResultUtil("99");
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_99_CODE.getValue());
 		result.setMsg(msg);
 		result.setData(data);
 		return result;
@@ -118,13 +119,13 @@ public class ResultUtil implements Serializable {
 	
 	/**默认错误**/
 	public static ResultUtil error() {
-		ResultUtil result = new ResultUtil("99", TipsEnum.OPERATE_ERROR.getValue());
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_99_CODE.getValue(), TipsEnum.OPERATE_ERROR.getValue());
 		return result;
 	}
 	
 	/**错误**/
 	public static ResultUtil error(Object data) {
-		ResultUtil result = new ResultUtil("99", TipsEnum.OPERATE_ERROR.getValue());
+		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_99_CODE.getValue(), TipsEnum.OPERATE_ERROR.getValue());
 		result.setData(data);
 		return result;
 	}
@@ -160,6 +161,4 @@ public class ResultUtil implements Serializable {
 	public void setCount(long count) {
 		this.count = count;
 	}
-	
-	
 }
