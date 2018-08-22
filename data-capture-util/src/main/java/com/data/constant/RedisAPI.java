@@ -60,10 +60,10 @@ public class RedisAPI {
 	 * @param keys 要存入的key值
 	 * @return
 	 */
-	public static String getPrefix(String database, String...keys) {
-		if(CommonUtil.isNotBlank(database) && CommonUtil.isNotBlank(keys)) {
+	public static String getPrefix(String prefix, String...keys) {
+		if(CommonUtil.isNotBlank(prefix) && CommonUtil.isNotBlank(keys)) {
 			StringBuilder builder = new StringBuilder();
-			builder.append(database);
+			builder.append(prefix);
 			for(int i = 0; i < keys.length; i++) {
 				builder.append(REDIS_PATTERN);
 				builder.append(keys[i]);
