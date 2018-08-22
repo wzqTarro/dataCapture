@@ -43,6 +43,19 @@
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
       #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbc=VARCHAR}, #{isVal,jdbc=BIT})
   </insert>
+  
+  <insert id="insertBatch" parameterType="list">
+    insert into db_supply (id, region, sell_store, 
+      url, login_user_name, login_password, 
+      company_code, controller_name, is_val)
+    values 
+    <foreach collection="list" item="supply" separator=",">
+    (#{supply.id,jdbcType=INTEGER}, #{supply.region,jdbcType=VARCHAR}, #{supply.sellStore,jdbcType=VARCHAR}, 
+      #{supply.url,jdbcType=VARCHAR}, #{supply.loginUserName,jdbcType=VARCHAR}, #{supply.loginPassword,jdbcType=VARCHAR}, 
+      #{supply.companyCode,jdbcType=VARCHAR}, #{supply.controllerName,jdbc=VARCHAR}, #{supply.isVal,jdbc=BIT})    
+    </foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.Supply">
     insert into db_supply
     <trim prefix="(" suffix=")" suffixOverrides=",">

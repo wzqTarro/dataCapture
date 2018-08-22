@@ -55,7 +55,4 @@ public class CommonDaoImpl implements ICommonDao {
 	public Object queryObjectByParameter(String statement, Object parameter) {
 		return sqlSessionTemplate.selectOne(statement, parameter);
 	}
-	
-	
-
 }

@@ -114,6 +114,33 @@
       #{partContent,jdbcType=DOUBLE}, #{persentNum,jdbcType=DOUBLE}, #{containTaxPrice,jdbcType=DOUBLE}, 
       #{containTaxMoney,jdbcType=DOUBLE}, #{remark,jdbcType=VARCHAR})
   </insert>
+  
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_order (id, order_id, no, 
+      contract_code, good_name, good_bar_code, 
+      good_code, order_type, good_type, 
+      order_shop, address, sell_price, 
+      count, simple_count, little_count, 
+      real_count, unit, stage_count, 
+      order_state, end_time, create_time, 
+      operator_name, company_code, brand, 
+      part_content, persent_num, contain_tax_price, 
+      contain_tax_money, remark)
+    values 
+    <foreach collection="list" item="order" separator=",">
+    	(#{order.id,jdbcType=INTEGER}, #{order.orderId,jdbcType=VARCHAR}, #{order.no,jdbcType=VARCHAR}, 
+	      #{order.contractCode,jdbcType=VARCHAR}, #{order.goodName,jdbcType=VARCHAR}, #{order.goodBarCode,jdbcType=VARCHAR}, 
+	      #{order.goodCode,jdbcType=VARCHAR}, #{order.orderType,jdbcType=VARCHAR}, #{order.goodType,jdbcType=VARCHAR}, 
+	      #{order.orderShop,jdbcType=VARCHAR}, #{order.address,jdbcType=VARCHAR}, #{order.sellPrice,jdbcType=DOUBLE}, 
+	      #{order.count,jdbcType=DOUBLE}, #{order.simpleCount,jdbcType=DOUBLE}, #{order.littleCount,jdbcType=DOUBLE}, 
+	      #{order.realCount,jdbcType=DOUBLE}, #{order.unit,jdbcType=VARCHAR}, #{order.stageCount,jdbcType=VARCHAR}, 
+	      #{order.orderState,jdbcType=VARCHAR}, #{order.endTime,jdbcType=DATE}, #{order.createTime,jdbcType=DATE}, 
+	      #{order.operatorName,jdbcType=VARCHAR}, #{order.companyCode,jdbcType=VARCHAR}, #{order.brand,jdbcType=VARCHAR}, 
+	      #{order.partContent,jdbcType=DOUBLE}, #{order.persentNum,jdbcType=DOUBLE}, #{order.containTaxPrice,jdbcType=DOUBLE}, 
+	      #{order.containTaxMoney,jdbcType=DOUBLE}, #{order.remark,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.Order" >
     insert into db_order
     <trim prefix="(" suffix=")" suffixOverrides="," >

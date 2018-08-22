@@ -13,6 +13,7 @@ import com.data.utils.FastJsonUtil;
 import com.google.common.collect.Maps;
 
 public class CommonServiceImpl implements ICommonService{
+	
 	@Autowired
 	private ICommonDao dao;
 

@@ -53,6 +53,27 @@
       #{sellPrice,jdbcType=DOUBLE}, #{excludeTaxPrice,jdbcType=DOUBLE}, #{includeTaxPrice,jdbcType=DOUBLE}
       )
   </insert>
+  
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_product (id, product_id, sys_name, 
+      simple_code, simple_bar_code, stock_code, 
+      simple_name, standard_name, brand, 
+      classify, series, func, material, 
+      pack_num, box_standard, stock_no, 
+      sell_price, exclude_tax_price, include_tax_price
+      )
+    values 
+    <foreach collection="list" item="product" separator=",">
+    (#{product.id,jdbcType=INTEGER}, #{product.productId,jdbcType=VARCHAR}, #{product.sysName,jdbcType=CHAR}, 
+      #{product.simpleCode,jdbcType=VARCHAR}, #{product.simpleBarCode,jdbcType=VARCHAR}, #{product.stockCode,jdbcType=VARCHAR}, 
+      #{product.simpleName,jdbcType=VARCHAR}, #{product.standardName,jdbcType=VARCHAR}, #{product.brand,jdbcType=CHAR}, 
+      #{product.classify,jdbcType=CHAR}, #{product.series,jdbcType=CHAR}, #{product.func,jdbcType=CHAR}, #{product.material,jdbcType=CHAR}, 
+      #{product.packNum,jdbcType=INTEGER}, #{product.boxStandard,jdbcType=VARCHAR}, #{product.stockNo,jdbcType=VARCHAR}, 
+      #{product.sellPrice,jdbcType=DOUBLE}, #{product.excludeTaxPrice,jdbcType=DOUBLE}, #{product.includeTaxPrice,jdbcType=DOUBLE}
+      )    	
+    </foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.Product" >
     insert into db_product
     <trim prefix="(" suffix=")" suffixOverrides="," >
