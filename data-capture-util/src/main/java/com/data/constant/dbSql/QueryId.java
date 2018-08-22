@@ -31,4 +31,8 @@ public class QueryId {
 	
 	public static final String QUERY_COUNT_SUPPLY_BY_CONDITION = "SupplyMapper.selectCountByCondition";
 	
+	public static final String QUERY_SALE_BY_PARAM = "SaleMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_SALE_BY_PARAM = "SaleMapper.selectCountByParam";
+	
 }

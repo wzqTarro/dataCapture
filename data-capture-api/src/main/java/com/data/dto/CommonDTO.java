@@ -8,15 +8,24 @@ public class CommonDTO implements Serializable {
 	
 	//
 	private String token;
-	//当前页号
+	// 编号
+	private int id;
+	// 当前页号
 	private int page;
-	//当前行数
+	// 当前行数
 	private int limit;
-	//开始时间
+	// 开始时间
 	private String startDate;
-	//结束时间
+	// 结束时间
 	private String endDate;
 	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getToken() {
 		return token;
 	}
