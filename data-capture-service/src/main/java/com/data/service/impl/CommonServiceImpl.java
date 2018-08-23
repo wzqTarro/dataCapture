@@ -27,7 +27,6 @@ import com.google.common.collect.Maps;
 public class CommonServiceImpl implements ICommonService{
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
 	@Autowired
 	private ICommonDao dao;
 	
