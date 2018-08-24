@@ -14,7 +14,7 @@ public class Supply implements Serializable{
 
     private String region;
 
-    private String sellStore;
+    private String sysName;
 
     private String url;
 
@@ -53,15 +53,15 @@ public class Supply implements Serializable{
         this.region = region == null ? null : region.trim();
     }
 
-    public String getSellStore() {
-        return sellStore;
-    }
+    public String getSysName() {
+		return sysName;
+	}
 
-    public void setSellStore(String sellStore) {
-        this.sellStore = sellStore == null ? null : sellStore.trim();
-    }
+	public void setSysName(String sysName) {
+		this.sysName = sysName;
+	}
 
-    public String getUrl() {
+	public String getUrl() {
         return url;
     }
 

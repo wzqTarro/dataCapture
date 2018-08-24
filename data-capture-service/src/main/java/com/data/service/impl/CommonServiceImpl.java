@@ -112,7 +112,7 @@ public class CommonServiceImpl implements ICommonService{
 		Supply supply = (Supply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
-		sb.append(supply.getUrl());
+		sb.append(supply.getControllerName());
 		sb.append("day1=");
 		sb.append(start);
 		sb.append("&day2=");
