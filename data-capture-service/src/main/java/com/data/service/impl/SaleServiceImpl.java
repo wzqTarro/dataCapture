@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import com.data.bean.Supply;
 import com.data.constant.PageRecord;
 import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
+import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
@@ -30,16 +32,23 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
 
 	@Override
 	public ResultUtil getSaleByWeb(String param) {
+		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
 		String saleJson = null;
+		List<Sale> saleList = null;
 		try {
 			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-			saleJson = getDataByWeb(param, WebConstant.SALE);
+			
+			// 抓取数据
+			saleJson = getDataByWeb(common, WebConstant.SALE);
 			logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
+			
+			// 数据插入数据库
+			insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
 			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		} catch (DataException e) {
 			return ResultUtil.error(e.getMessage());
 		}
-		return ResultUtil.success();
+		return ResultUtil.success(saleList.subList(0, common.getLimit()), saleList.size());
 	}
 
 	@Override

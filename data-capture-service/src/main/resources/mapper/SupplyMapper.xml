@@ -41,7 +41,7 @@
       company_code, controller_name, is_val)
     values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sellStore,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
-      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbc=VARCHAR}, #{isVal,jdbc=BIT})
+      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbcType=VARCHAR}, #{isVal,jdbcType=BIT})
   </insert>
   
   <insert id="insertBatch" parameterType="list">
@@ -52,7 +52,7 @@
     <foreach collection="list" item="supply" separator=",">
     (#{supply.id,jdbcType=INTEGER}, #{supply.region,jdbcType=VARCHAR}, #{supply.sellStore,jdbcType=VARCHAR}, 
       #{supply.url,jdbcType=VARCHAR}, #{supply.loginUserName,jdbcType=VARCHAR}, #{supply.loginPassword,jdbcType=VARCHAR}, 
-      #{supply.companyCode,jdbcType=VARCHAR}, #{supply.controllerName,jdbc=VARCHAR}, #{supply.isVal,jdbc=BIT})    
+      #{supply.companyCode,jdbcType=VARCHAR}, #{supply.controllerName,jdbcType=VARCHAR}, #{supply.isVal,jdbcType=BIT})    
     </foreach>
   </insert>
   
@@ -113,7 +113,7 @@
         #{controllerName,jdbcType=VARCHAR},
       </if>
       <if test="isVal != null">
-        #{isVal,jdbc=BIT},
+        #{isVal,jdbcType=BIT},
       </if>
     </trim>
   </insert>

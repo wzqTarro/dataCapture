@@ -9,11 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
+import com.data.bean.Sale;
 import com.data.bean.Supply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
+import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dao.ICommonDao;
 import com.data.dto.CommonDTO;
@@ -94,8 +96,7 @@ public class CommonServiceImpl implements ICommonService{
 	}
 	
 	@Override
-	public String getDataByWeb(String param, int dataType) throws DataException {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
+	public String getDataByWeb(CommonDTO common, int dataType) throws DataException {		
 		String start = null;
 		String end = null;
 		if (null != common && StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
@@ -117,9 +118,25 @@ public class CommonServiceImpl implements ICommonService{
 		sb.append("&day2=");
 		sb.append(end);
 		sb.append("&value=");
-		sb.append(WebConstant.SALE);
+		sb.append(dataType);
 		logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
 		String saleJson = restTemplate.getForObject(sb.toString(), String.class);
 		return saleJson;
+	}
+
+	@Override
+	public <T> void insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException {
+		if (StringUtils.isBlank(json)) {
+			logger.info("------>>>>>抓取数据为空<<<<<--------");
+			throw new DataException(TipsEnum.GRAB_DATA_IS_NULL.getValue());
+		}
+		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);
+		
+		if (null == list) {
+			logger.info("----->>>>>>抓取数据转换List为空<<<<<<------");
+			throw new DataException(TipsEnum.GRAB_DATA_TO_LIST_ERROR.getValue());
+		}
+		// 插入到数据库
+		insert(mapper, list);
 	}
 }

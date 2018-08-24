@@ -88,6 +88,7 @@ public class ResultUtil implements Serializable {
 	/**默认成功**/
 	public static ResultUtil success() {
 		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
+		result.setData(Collections.EMPTY_LIST);
 		return result;
 	}
 	

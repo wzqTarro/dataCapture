@@ -3,6 +3,7 @@ package com.data.service;
 import java.util.List;
 
 import com.data.constant.PageRecord;
+import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 
 /**
@@ -57,5 +58,13 @@ public interface ICommonService {
 	 * @param dataType
 	 * @return
 	 */
-	public String getDataByWeb(String param, int dataType) throws DataException;
+	public String getDataByWeb(CommonDTO common, int dataType) throws DataException;
+	/**
+	 * 批量插入抓取到的数据
+	 * @param json
+	 * @param clazz
+	 * @param mapper
+	 * @return
+	 */
+	public <T> void insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException;
 }
