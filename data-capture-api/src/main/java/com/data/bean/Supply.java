@@ -11,17 +11,17 @@ public class Supply implements Serializable{
 	private static final long serialVersionUID = 8086505396834955857L;
 
 	private Integer id;
-
+	// 區域
     private String region;
-
+    // 系統名稱
     private String sysName;
-
+    // 鏈接
     private String url;
-
+    // 登錄賬號
     private String loginUserName;
-
+    // 登錄密碼
     private String loginPassword;
-
+    // 企業編號
     private String companyCode;
     // 是否开通
     private Boolean isVal;
