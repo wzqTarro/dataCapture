@@ -8,4 +8,11 @@
   <artifactId>data-capture-api</artifactId>
   <name>api</name>
   <description>子模块</description>
+  <dependencies>
+	<!-- fastjson依赖 -->
+	<dependency>
+		<groupId>com.alibaba</groupId>
+		<artifactId>fastjson</artifactId>
+	</dependency>
+  </dependencies>
 </project>

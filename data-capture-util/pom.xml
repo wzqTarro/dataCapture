@@ -26,5 +26,75 @@
 		<artifactId>dom4j</artifactId>
 		<version>1.6.1</version>
 	</dependency>
+
+	<!-- Apache工具组件 -->
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>${commons-lang3.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>${commons-io.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-net</groupId>
+		<artifactId>commons-net</artifactId>
+		<version>${commons-net.version}</version>
+	</dependency>
+
+	<!-- 文件上传组件 -->
+	<dependency>
+		<groupId>commons-fileupload</groupId>
+		<artifactId>commons-fileupload</artifactId>
+		<version>${commons-fileupload.version}</version>
+	</dependency>
+
+	<!-- poi -->
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>${poi.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-ooxml</artifactId>
+		<version>${poi.version}</version>
+	</dependency>
+
+	<!-- fastjson依赖 -->
+	<dependency>
+		<groupId>com.alibaba</groupId>
+		<artifactId>fastjson</artifactId>
+		<version>${fastjson.version}</version>
+	</dependency>
+
+	<!-- jsonpath -->
+	<dependency>
+		<groupId>com.jayway.jsonpath</groupId>
+		<artifactId>json-path</artifactId>
+		<version>${json-path.version}</version>
+	</dependency>
+
+	<!-- redis -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-redis</artifactId>
+		<version>${spring-boot-starter-data-redis.version}</version>
+	</dependency>
+	<!--spring2.0集成redis所需common-pool2 -->
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-pool2</artifactId>
+		<version>${commons-pool2.version}</version>
+	</dependency>
+
+	<!-- google -->
+	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>${guava.version}</version>
+	</dependency>
   </dependencies>
 </project>

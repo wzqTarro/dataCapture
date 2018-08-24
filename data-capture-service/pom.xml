@@ -20,5 +20,36 @@
   		<artifactId>data-capture-api</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<version>${spring-boot-starter-web.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-aop</artifactId>
+		<version>${spring-boot-starter-aop.version}</version>
+	</dependency>
+	<!-- mybatis -->
+	<dependency>
+		<groupId>org.mybatis.spring.boot</groupId>
+		<artifactId>mybatis-spring-boot-starter</artifactId>
+		<version>${mybatis.spring.version}</version>
+	</dependency>
+
+	<!-- mysql -->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>${mysql.version}</version>
+	</dependency>
+
+	<!-- durid -->
+	<dependency>
+		<groupId>com.alibaba</groupId>
+		<artifactId>druid</artifactId>
+		<version>${druid.version}</version>
+	</dependency>
+	
   </dependencies>
 </project>
