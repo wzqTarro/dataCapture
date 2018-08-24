@@ -16,14 +16,28 @@
     id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, is_val
   </sql>
   <sql id="tableName">db_supply</sql>
+  <sql id="Query_Condition">
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name = #{sysName}
+  	</if>
+  	<if test="region != null and region != ''">
+  		AND region = #{region}
+  	</if>
+  </sql>
   <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List" />
   	FROM db_supply
-  	LIMIT #{pageNum}, #{pageSize}
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>
   </select>
-  <select id="selectCountByCondition" resultType="int">
-  	SELECT COUNT(0)
+  <select id="selectCountByCondition" parameterType="map" resultType="int">
+  	SELECT COUNT(1)
   	FROM db_supply
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 

@@ -27,7 +27,7 @@ public class SaleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/getDataByWeb", method = RequestMethod.POST)
-	@ApiOperation(value = "/getDataByWeb", httpMethod = "POST")
+	@ApiOperation(value = "python抓取销售数据", httpMethod = "POST")
 	public String getDataByWeb(@RequestBody String param) {
 		ResultUtil result = saleService.getSaleByWeb(param);
 		return FastJsonUtil.objectToString(result);
@@ -39,7 +39,7 @@ public class SaleController {
 	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/getDataByParam", method = RequestMethod.POST)
-	@ApiOperation(value = "/getDataByParam", httpMethod = "POST")
+	@ApiOperation(value = "多条件分页查询销售数据", httpMethod = "POST")
 	public String getDataByParam(@RequestBody String param) throws Exception {
 		ResultUtil result = saleService.getSaleByParam(param);
 		return FastJsonUtil.objectToString(result);

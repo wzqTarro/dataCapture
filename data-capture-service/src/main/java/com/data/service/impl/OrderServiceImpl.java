@@ -41,7 +41,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			if (StringUtils.isNoneBlank(common.getEndDate())) {
 				map.put("endDate", common.getEndDate());
 			}
-			}
+		}
 		if (null != order) {
 			if (StringUtils.isNoneBlank(order.getCompanyCode())) {
 				map.put("companyCode", order.getCompanyCode());
@@ -49,6 +49,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		}
 		PageRecord<Order> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, common.getPage(), common.getLimit());
 		logger.info("--->>>订单查询结果分页: " + FastJsonUtil.objectToString(page) + "<<<---");
-		return ResultUtil.success(page.getList(), page.getPageTotal());
+		return ResultUtil.success(page);
 	}
 }

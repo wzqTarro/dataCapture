@@ -66,5 +66,5 @@ public interface ICommonService {
 	 * @param mapper
 	 * @return
 	 */
-	public <T> void insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException;
+	public <T> PageRecord<T> insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException;
 }

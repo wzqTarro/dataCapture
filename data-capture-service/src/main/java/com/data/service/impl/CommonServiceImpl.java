@@ -48,10 +48,10 @@ public class CommonServiceImpl implements ICommonService{
 		if (parameter != null) {
 			params = FastJsonUtil.jsonToObject(FastJsonUtil.objectToString(parameter), Map.class);		
 		}
-		if (null == pageNum || "0".equals(pageNum)) {
+		if (null == pageNum || 0 == pageNum) {
 			pageNum = CommonValue.PAGE;
 		}
-		if (null == pageSize || "0".equals(pageSize)) {
+		if (null == pageSize || 0 == pageSize) {
 			pageSize = CommonValue.SIZE;
 		}
 		/**
@@ -110,6 +110,9 @@ public class CommonServiceImpl implements ICommonService{
 			throw new DataException(TipsEnum.ID_ERROR.getValue());
 		}
 		Supply supply = (Supply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
+		if (false == supply.getIsVal()) {
+			throw new DataException(TipsEnum.SYS_NOT_VAL.getValue());
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
 		sb.append(supply.getControllerName());
@@ -125,7 +128,7 @@ public class CommonServiceImpl implements ICommonService{
 	}
 
 	@Override
-	public <T> void insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException {
+	public <T> PageRecord<T> insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException {
 		if (StringUtils.isBlank(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
 			throw new DataException(TipsEnum.GRAB_DATA_IS_NULL.getValue());
@@ -138,5 +141,10 @@ public class CommonServiceImpl implements ICommonService{
 		}
 		// 插入到数据库
 		insert(mapper, list);
+		
+		PageRecord<T> page = new PageRecord<>();
+		page.setList(list);
+		page.setPageTotal(list.size());
+		return page;
 	}
 }

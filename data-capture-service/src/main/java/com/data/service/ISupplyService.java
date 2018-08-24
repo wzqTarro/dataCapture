@@ -2,6 +2,7 @@ package com.data.service;
 
 import com.data.bean.Supply;
 import com.data.constant.PageRecord;
+import com.data.utils.ResultUtil;
 
 public interface ISupplyService {
 
@@ -10,24 +11,24 @@ public interface ISupplyService {
 	 * @param supply
 	 * @return
 	 */
-	int insert(Supply supply);
+	ResultUtil insertSupply(Supply supply);
 	/**
 	 * 更新
 	 * @param supply
 	 * @return
 	 */
-	int update(Supply supply);
+	ResultUtil updateSupply(Supply supply);
 	/**
 	 * 删除
 	 * @param id
 	 * @return
 	 */
-	int delete(Integer id);
+	ResultUtil deleteSupply(Integer id);
 	/**
 	 * 分页
 	 * @param pageNum
 	 * @param pageSize
 	 * @return
 	 */
-	PageRecord<Supply> queryByConditiion(String pageNum, String pageSize) throws Exception ;
+	ResultUtil querySupplyByConditiion(String param) throws Exception ;
 }

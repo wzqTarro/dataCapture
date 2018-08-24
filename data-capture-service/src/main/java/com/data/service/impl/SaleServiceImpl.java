@@ -34,7 +34,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
 	public ResultUtil getSaleByWeb(String param) {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
 		String saleJson = null;
-		List<Sale> saleList = null;
+		PageRecord<Sale> page = null;
 		try {
 			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 			
@@ -43,12 +43,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
 			logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
 			
 			// 数据插入数据库
-			insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
+			page = insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
 			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		} catch (DataException e) {
 			return ResultUtil.error(e.getMessage());
 		}
-		return ResultUtil.success(saleList.subList(0, common.getLimit()), saleList.size());
+		return ResultUtil.success(page);
 	}
 
 	@Override
@@ -59,30 +59,39 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
 		Map<String, Object> map = Maps.newHashMap();
-		logger.info("--------->>>>>>>>common:" + FastJsonUtil.objectToString(common) + "<<<<<<<-----------");
+		logger.info("--------->>>>>>>>common:" + FastJsonUtil.objectToString(common) + "<<<<<<<-----------");		
 		if (StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
 			map.put("startDate", common.getStartDate());
 			map.put("endDate", common.getEndDate());
 		} else {
+			// 默认查询当天数据
 			map.put("startDate", DateUtil.getDate());
 			map.put("endDate", DateUtil.getDate());
 		}
 		logger.info("--------->>>>>>>>sale:" + FastJsonUtil.objectToString(sale) + "<<<<<<<<----------");
 		if (null != sale) {
+			
+			// 门店名称
 			if (StringUtils.isNoneBlank(sale.getStoreName())) {
 				map.put("storeName", sale.getStoreName());
 			}
+			 
+			// 区域
 			if (StringUtils.isNoneBlank(sale.getRegion())) {
 				map.put("region", sale.getRegion());
 			}
+			
+			// 系列
 			if (StringUtils.isNoneBlank(sale.getSeries())) {
 				map.put("series", sale.getSeries());
 			}
+			
+			// 单品名称
 			if (StringUtils.isNoneBlank(sale.getSimpleName())) {
 				map.put("simpleName", sale.getSimpleName());
 			}
 		}
 		PageRecord<Sale> page = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, QueryId.QUERY_SALE_BY_PARAM, map, common.getPage(), common.getLimit());
-		return ResultUtil.success(page.getList(), page.getPageTotal());
+		return ResultUtil.success(page);
 	}
 }

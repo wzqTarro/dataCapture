@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/dataResolve")
-@Api(value = "抓取订单数据")
+@Api(tags = "订单数据接口")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class OrderController {
 

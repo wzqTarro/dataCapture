@@ -58,7 +58,7 @@
   		LIMIT #{pageNum}, #{pageSize}
   	</if>
   </select>
-  <select id="selectCountByParam" resultMap="BaseResultMap" parameterType="map">
+  <select id="selectCountByParam" resultType="int" parameterType="map">
   	SELECT COUNT(1)
   	FROM db_sale
   	WHERE 1=1

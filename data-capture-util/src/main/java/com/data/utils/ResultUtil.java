@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 
 import com.data.constant.CodeEnum;
+import com.data.constant.PageRecord;
 import com.data.constant.TipsEnum;
 
 
@@ -67,14 +68,14 @@ public class ResultUtil implements Serializable {
 		return result;
 	}
 	
-	public static ResultUtil success(Object data, long count) {
+	public static <T> ResultUtil success(PageRecord<T> data) {
 		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
 		if (null == data) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
-			result.setData(data);	
+			result.setData(data.getList());	
 		}
-		result.setCount(count);
+		result.setCount(data.getPageTotal());
 		return result;
 	}
 	

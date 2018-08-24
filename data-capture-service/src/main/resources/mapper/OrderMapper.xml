@@ -44,43 +44,43 @@
     stage_count 'stageCount', order_state 'orderState', end_time 'endTime', create_time 'createTime', operator_name 'operatorName', company_code 'companyCode',
     brand, part_content 'partContent', persent_num 'persentNum', contain_tax_price 'containTaxPrice', contain_tax_money 'containTaxMoney', remark
   </sql>
-  
-  <select id="selectByParam" parameterType = "com.data.bean.Order" resultType="com.data.bean.Order">
-  	SELECT <include refid="myBaseColumn" />
-  	FROM db_order
-  	WHERE 1=1
+  <sql id="Query_Condition">
   	<if test="orderId != null and orderId != ''">
   		AND order_id = #{orderId}
   	</if>
   	<if test="goodBarCode != null and goodBarCode != ''">
   		AND good_bar_code = #{goodBarCode}
   	</if>
-  	
-  </select>
-  <select id="selectByCondtion" parameterType="map" resultMap="BaseResultMap">
-  	SELECT <include refid="Base_Column_List" />
-  	FROM db_order
-  	WHERE 1=1	
-  	<if test="startDate != null and endDate != null">
+  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND create_time &gt;= #{startDate}
   		AND create_time &lt;= #{endDate}
   	</if> 
   	<if test="companyCode != '' and companyCode != null">
   		AND company_code = #{companyCode}
   	</if>
-  	ORDER BY create_time DESC
-  </select>
-  <select id="selectCountByCondtion" parameterType="map" resultType="int">
-  	SELECT COUNT(0)
+  </sql>
+  <select id="selectByParam" parameterType = "com.data.bean.Order" resultType="com.data.bean.Order">
+  	SELECT <include refid="myBaseColumn" />
   	FROM db_order
   	WHERE 1=1
-  	<if test="startDate != null and endDate != null">
-  		AND create_time &gt;= #{startDate}
-  		AND create_time &lt;= #{endDate}
-  	</if> 
-  	<if test="companyCode != null and companyCode != ''">
-  		AND company_code = #{companyCode}
+  	<include refid="Query_Condition"></include>
+  	
+  </select>
+  <select id="selectByCondtion" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" />
+  	FROM db_order
+  	WHERE 1=1	
+  	<include refid="Query_Condition"></include>
+  	ORDER BY create_time DESC
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
   	</if>
+  </select>
+  <select id="selectCountByCondtion" parameterType="map" resultType="int">
+  	SELECT COUNT(1)
+  	FROM db_order
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

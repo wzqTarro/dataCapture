@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.Supply;
 import com.data.constant.PageRecord;
 import com.data.service.ISupplyService;
+import com.data.utils.FastJsonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,10 +34,10 @@ public class SupplyController {
 	 * @param supply
 	 * @return
 	 */
-	@PostMapping("/insertSupply")
+	@RequestMapping(value = "/insertSupply", method = RequestMethod.POST)
 	@ApiOperation(value="插入供应链厂商", httpMethod = "POST")
-	public int insertSupply(Supply supply){
-		return supplyService.insert(supply);
+	public String insertSupply(Supply supply){
+		return FastJsonUtil.objectToString(supplyService.insertSupply(supply));
 	}
 	/**
 	 * 查询
@@ -43,29 +46,29 @@ public class SupplyController {
 	 * @return
 	 * @throws Exception
 	 */
-	@GetMapping("/querySupplyByCondition")
-	@ApiOperation(value = "分页查询供应链厂商", httpMethod = "GET")
-	public PageRecord<Supply> querySupplyByCondition(String pageNum, String pageSize) throws Exception{
-		return supplyService.queryByConditiion(pageNum, pageSize);
+	@RequestMapping(value = "/querySupplyByCondition", method = RequestMethod.POST)
+	@ApiOperation(value = "多条件分页查询供应链厂商", httpMethod = "POST")
+	public String querySupplyByCondition(@RequestBody String param) throws Exception{
+		return FastJsonUtil.objectToString(supplyService.querySupplyByConditiion(param));
 	}
 	/**
 	 * 更新
 	 * @param supply
 	 * @return
 	 */
-	@PutMapping("/updateSupply")
+	@RequestMapping(value = "/updateSupply", method = RequestMethod.PUT)
 	@ApiOperation(value = "更新供应链厂商", httpMethod = "PUT")
-	public int updateSupply(Supply supply){
-		return supplyService.update(supply);
+	public String updateSupply(Supply supply){
+		return FastJsonUtil.objectToString(supplyService.updateSupply(supply));
 	}
 	/**
 	 * 删除
 	 * @param supply
 	 * @return
 	 */
-	@DeleteMapping("/deleteSupply")
+	@RequestMapping(value = "/deleteSupply", method = RequestMethod.DELETE)
 	@ApiOperation(value = "删除供应链厂商", httpMethod = "DELETE")
-	public int deleteSupply(Integer id){
-		return supplyService.delete(id);
+	public String deleteSupply(Integer id){
+		return FastJsonUtil.objectToString(supplyService.deleteSupply(id));
 	}
 }
