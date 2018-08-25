@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
  * @author Alex
  *
  */
-public class MessageUtil {
+public class PropertiesUtil {
 	
-	private static Logger logger = LoggerFactory.getLogger(MessageUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
 
 	public static Properties prop;
 	
@@ -26,7 +26,7 @@ public class MessageUtil {
 	}
 	
 	public static void loadProperties() {
-		in = MessageUtil.class.getResourceAsStream("/exception.properties");
+		in = PropertiesUtil.class.getResourceAsStream("/exception.properties");
 		try {
 			BufferedInputStream buf = new BufferedInputStream(in);
 			prop.load(buf);

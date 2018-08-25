@@ -3,28 +3,50 @@
 <mapper namespace="UserMapper">
   <resultMap id="BaseResultMap" type="com.data.bean.User">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="work_no" jdbcType="VARCHAR" property="workNo" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="mobile_code" jdbcType="VARCHAR" property="mobileCode" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="login_times" jdbcType="INTEGER" property="loginTimes" />
+    <result column="last_login_date" jdbcType="DATE" property="lastLoginDate" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_alive" jdbcType="VARCHAR" property="isAlive" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, db_user_name, password
+    id, work_no, username, password, gender, mobile_code, email, department, position, 
+    login_times, last_login_date, remark, is_alive
   </sql>
-  <sql id="tableName">db_user</sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from db_user
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <select id="queryUserDetail" parameterType="string" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> FROM db_user 
+  	WHERE work_no=#{workNo}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.data.bean.User">
-    insert into db_user (id, user_name, password
-      )
-    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}
-      )
+    insert into db_user (id, work_no, username, 
+      password, gender, mobile_code, 
+      email, department, position, 
+      login_times, last_login_date, remark, 
+      is_alive)
+    values (#{id,jdbcType=INTEGER}, #{workNo,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{mobileCode,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
+      #{loginTimes,jdbcType=INTEGER}, #{lastLoginDate,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, 
+      #{isAlive,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.User">
     insert into db_user
@@ -32,41 +54,141 @@
       <if test="id != null">
         id,
       </if>
-      <if test="db_userName != null">
-        user_name,
+      <if test="workNo != null">
+        work_no,
+      </if>
+      <if test="username != null">
+        username,
       </if>
       <if test="password != null">
         password,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="mobileCode != null">
+        mobile_code,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="department != null">
+        department,
+      </if>
+      <if test="position != null">
+        position,
+      </if>
+      <if test="loginTimes != null">
+        login_times,
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="isAlive != null">
+        is_alive,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="db_userName != null">
-        #{userName,jdbcType=VARCHAR},
+      <if test="workNo != null">
+        #{workNo,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
       </if>
       <if test="password != null">
         #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCode != null">
+        #{mobileCode,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTimes != null">
+        #{loginTimes,jdbcType=INTEGER},
+      </if>
+      <if test="lastLoginDate != null">
+        #{lastLoginDate,jdbcType=DATE},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isAlive != null">
+        #{isAlive,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.User">
     update db_user
     <set>
-      <if test="db_userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
+      <if test="workNo != null">
+        work_no = #{workNo,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
       </if>
       <if test="password != null">
         password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCode != null">
+        mobile_code = #{mobileCode,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        department = #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTimes != null">
+        login_times = #{loginTimes,jdbcType=INTEGER},
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date = #{lastLoginDate,jdbcType=DATE},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isAlive != null">
+        is_alive = #{isAlive,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.data.bean.User">
     update db_user
-    set user_name = #{userName,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR}
+    set work_no = #{workNo,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      mobile_code = #{mobileCode,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      department = #{department,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      login_times = #{loginTimes,jdbcType=INTEGER},
+      last_login_date = #{lastLoginDate,jdbcType=DATE},
+      remark = #{remark,jdbcType=VARCHAR},
+      is_alive = #{isAlive,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

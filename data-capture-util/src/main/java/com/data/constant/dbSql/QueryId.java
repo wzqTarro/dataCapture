@@ -35,4 +35,10 @@ public class QueryId {
 	
 	public static final String QUERY_COUNT_SALE_BY_PARAM = "SaleMapper.selectCountByParam";
 	
+	public static final String QUERY_COUNT_USER_BY_CONDITION = "UserMapper.queryCountUserByCondition";
+	
+	public static final String QUERY_USER_BY_CONDITION = "UserMapper.queryUserByCondition";
+	
+	public static final String QUERY_USER_DETAIL = "UserMapper.queryUserDetail";
+	
 }
