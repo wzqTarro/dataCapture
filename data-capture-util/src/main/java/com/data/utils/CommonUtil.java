@@ -5,17 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 公共工具类
  * @author alex
  *
  */
 public class CommonUtil {
-
-	private static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 	
 	/**
 	 * 判断一个对象是否为空

@@ -15,6 +15,12 @@
   		<artifactId>data-capture-service</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.data</groupId>
+  		<artifactId>data-capture-util</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	
   	<!-- swagger2 -->
 	<dependency>
 		<groupId>io.springfox</groupId>

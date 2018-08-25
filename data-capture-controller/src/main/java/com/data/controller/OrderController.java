@@ -1,7 +1,5 @@
 package com.data.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +18,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "订单数据接口")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class OrderController {
-
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private IOrderService orderService;

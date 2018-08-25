@@ -1,7 +1,6 @@
 package com.data.service;
 
 import com.data.bean.Supply;
-import com.data.constant.PageRecord;
 import com.data.utils.ResultUtil;
 
 public interface ISupplyService {

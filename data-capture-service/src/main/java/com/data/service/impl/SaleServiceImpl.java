@@ -1,17 +1,13 @@
 package com.data.service.impl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.Sale;
-import com.data.bean.Supply;
 import com.data.constant.PageRecord;
 import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
@@ -20,13 +16,14 @@ import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.ISaleService;
+import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
 
 @Service
-public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
+public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -38,12 +35,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService{
 		try {
 			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 			
+			DataCaptureUtil dataCaptureUtil = new DataCaptureUtil();
 			// 抓取数据
-			saleJson = getDataByWeb(common, WebConstant.SALE);
+			saleJson = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE);
 			logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
 			
 			// 数据插入数据库
-			page = insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
+			page = dataCaptureUtil.insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
 			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		} catch (DataException e) {
 			return ResultUtil.error(e.getMessage());
