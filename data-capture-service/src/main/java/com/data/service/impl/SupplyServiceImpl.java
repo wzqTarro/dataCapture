@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.data.bean.Supply;
+import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
 import com.data.constant.TipsEnum;
 import com.data.constant.dbSql.DeleteId;
@@ -28,7 +28,7 @@ public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyServi
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil insertSupply(Supply supply) {
+	public ResultUtil insertSupply(TemplateSupply supply) {
 		if (null == supply) {
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
@@ -68,7 +68,7 @@ public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyServi
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil updateSupply(Supply supply) {
+	public ResultUtil updateSupply(TemplateSupply supply) {
 		if (null == supply) {
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
@@ -94,7 +94,7 @@ public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyServi
 	@Override
 	public ResultUtil querySupplyByConditiion(String param) throws Exception {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		Supply supply = FastJsonUtil.jsonToObject(param, Supply.class);
+		TemplateSupply supply = FastJsonUtil.jsonToObject(param, TemplateSupply.class);
 		logger.info("----->>>>>common:"+ FastJsonUtil.objectToString(common) +"<<<<<------");
 		logger.info("----->>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<------");
 		if (null == common) {
@@ -113,7 +113,7 @@ public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyServi
 				map.put("region", supply.getRegion());
 			}
 		}
-		PageRecord<Supply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, map, common.getPage(), common.getLimit());
+		PageRecord<TemplateSupply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, map, common.getPage(), common.getLimit());
 		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(page) +"<<<<<<--------");
 		return ResultUtil.success(page);
 	}

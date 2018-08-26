@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TemplateSupplyMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.TemplateSupply">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="region" jdbcType="VARCHAR" property="region" />
+    <result column="sys_name" jdbcType="VARCHAR" property="sysName" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="login_user_name" jdbcType="VARCHAR" property="loginUserName" />
+    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
+    <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
+    <result column="controller_name" jdbcType="VARCHAR" property="controllerName" />
+    <result column="is_val" jdbcType="BIT" property="isVal" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, 
+    is_val
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_template_supply
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_template_supply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.TemplateSupply">
+    insert into db_template_supply (id, region, sys_name, 
+      url, login_user_name, login_password, 
+      company_code, controller_name, is_val
+      )
+    values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sysName,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
+      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbcType=VARCHAR}, #{isVal,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.TemplateSupply">
+    insert into db_template_supply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="region != null">
+        region,
+      </if>
+      <if test="sysName != null">
+        sys_name,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="loginUserName != null">
+        login_user_name,
+      </if>
+      <if test="loginPassword != null">
+        login_password,
+      </if>
+      <if test="companyCode != null">
+        company_code,
+      </if>
+      <if test="controllerName != null">
+        controller_name,
+      </if>
+      <if test="isVal != null">
+        is_val,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="region != null">
+        #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null">
+        #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="loginUserName != null">
+        #{loginUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="controllerName != null">
+        #{controllerName,jdbcType=VARCHAR},
+      </if>
+      <if test="isVal != null">
+        #{isVal,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.TemplateSupply">
+    update db_template_supply
+    <set>
+      <if test="region != null">
+        region = #{region,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null">
+        sys_name = #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="loginUserName != null">
+        login_user_name = #{loginUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassword != null">
+        login_password = #{loginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        company_code = #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="controllerName != null">
+        controller_name = #{controllerName,jdbcType=VARCHAR},
+      </if>
+      <if test="isVal != null">
+        is_val = #{isVal,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.TemplateSupply">
+    update db_template_supply
+    set region = #{region,jdbcType=VARCHAR},
+      sys_name = #{sysName,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      login_user_name = #{loginUserName,jdbcType=VARCHAR},
+      login_password = #{loginPassword,jdbcType=VARCHAR},
+      company_code = #{companyCode,jdbcType=VARCHAR},
+      controller_name = #{controllerName,jdbcType=VARCHAR},
+      is_val = #{isVal,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

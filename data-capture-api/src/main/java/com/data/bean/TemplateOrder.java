@@ -3,54 +3,72 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.alibaba.fastjson.annotation.JSONField;
+/**
+ * 订单模板实体类
+ * @author Alex
+ *
+ */
+public class TemplateOrder implements Serializable {
 
-public class Order implements Serializable{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6727601445060057901L;
+	private static final long serialVersionUID = 5885036937790616913L;
 
 	private Integer id;
 
-	private String orderId;//订单编号
-    private String no;//序号
-    private String contractCode;//合同号
-    private String goodName;//商品名称
-    private String goodBarCode;//商品条码
-    private String goodCode;//商品编码
-    private String orderType;//订单类型
-    private String goodType;//商品类型
-    private String orderShop;//订单类型
-    private String address;//收货地址
+    private String orderId;
 
-    private Double sellPrice;//销售价格
+    private String no;
 
-    private Double count;//件数
-    private Double simpleCount;//零散数
-    private Double littleCount;//细数
-    private Double realCount;//实收数
-    private String unit;//单位
-    private String stageCount;//场次
-    private String orderState;//订单状态
-    @JSONField(format = "yyyy-MM-dd")
-    private Date endTime;//有效截止时间
-    @JSONField(format = "yyyy-MM-dd")
-    private Date createTime;//创建时间
-    private String operatorName;//审核人
-    private String companyCode;//企业编号
-    
-    private String brand;//品牌
+    private String contractCode;
 
-    private Double partContent;//件含量
+    private String goodName;
 
-    private Double persentNum;//赠品数量
+    private String goodBarCode;
 
-    private Double containTaxPrice;//含税进价
+    private String goodCode;
 
-    private Double containTaxMoney;//含税进价金额
+    private String orderType;
 
-    private String remark;//备注
+    private String goodType;
+
+    private String orderShop;
+
+    private String address;
+
+    private Double sellPrice;
+
+    private Double count;
+
+    private Double simpleCount;
+
+    private Double littleCount;
+
+    private Double realCount;
+
+    private String unit;
+
+    private String stageCount;
+
+    private String orderState;
+
+    private Date endTime;
+
+    private Date createTime;
+
+    private String operatorName;
+
+    private String companyCode;
+
+    private String brand;
+
+    private Double partContent;
+
+    private Double persentNum;
+
+    private Double containTaxPrice;
+
+    private Double containTaxMoney;
+
+    private String remark;
 
     public Integer getId() {
         return id;

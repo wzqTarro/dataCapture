@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 
-import com.data.bean.Supply;
+import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
@@ -41,7 +41,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		if (0 == common.getId()) {
 			throw new DataException("503");
 		}
-		Supply supply = (Supply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
 		if (false == supply.getIsVal()) {
 			throw new DataException("504");
 		}

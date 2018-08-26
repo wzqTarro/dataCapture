@@ -3,51 +3,51 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.alibaba.fastjson.annotation.JSONField;
+/**
+ * 库存模板实体类
+ * @author Alex
+ *
+ */
+public class TemplateStore implements Serializable {
 
-public class Store implements Serializable{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 5897200404726879461L;
+	private static final long serialVersionUID = -3480747372133854332L;
 
 	private Integer id;
-	// 门店编码
+
     private String storeCode;
-    // 供应链订单店称
+
     private String orderStoreName;
-    // 供应链退单店称
+
     private String returnStoreName;
-    // 供应链销量店称
+
     private String saleStoreName;
-    // 百亚标准门店名称
+
     private String standardStoreName;
-    // 门店所在市场
+
     private String storeMarket;
-    // 门店所在城市
+
     private String storeCity;
-    // 网站名称
+
     private String sysName;
-    // 门店负责人
+
     private String storeUser;
-    // 物流模式
+
     private String logisticsModel;
-    // 开业时间
-    @JSONField(format = "yyyy-MM-dd")
+
     private Date practiceTime;
-    // 配送商编码
+
     private String distributionCode;
-    // 配送商名称
+
     private String distributionName;
-    // 配送商负责人
+
     private String distributionUser;
-    // 大区
+
     private String region;
-    // 省区
+
     private String provinceArea;
-    // 归属
+
     private String ascription;
-    // 业绩归属
+
     private String ascriptionSole;
 
     public Integer getId() {

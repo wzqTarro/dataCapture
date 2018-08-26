@@ -2,48 +2,51 @@ package com.data.bean;
 
 import java.io.Serializable;
 
-public class Product implements Serializable{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4165714932752567317L;
+/**
+ * 商品模板实体类
+ * @author Alex
+ *
+ */
+public class TemplateProduct implements Serializable {
+	
+	private static final long serialVersionUID = -4931532837429985816L;
 
 	private Integer id;
-	// 商品编号
+
     private String productId;
-    // 网站名
+
     private String sysName;
-    // 单品编号
+
     private String simpleCode;
-    // 条码
+
     private String simpleBarCode;
-    // 存货编码
+
     private String stockCode;
-    // 单品名称
+
     private String simpleName;
-    // 标准名称
+
     private String standardName;
-    // 品牌
+
     private String brand;
-    // 分类
+
     private String classify;
-    // 系列
+
     private String series;
-    // 功能
+
     private String func;
-    // 材质
+
     private String material;
-    // 包装数量
+
     private Integer packNum;
-    // 箱装规格
+
     private String boxStandard;
-    // 货号
+
     private String stockNo;
-    // 零售价格
+
     private Double sellPrice;
-    // 不含税供价
+
     private Double excludeTaxPrice;
-    // 含税供价
+
     private Double includeTaxPrice;
 
     public Integer getId() {

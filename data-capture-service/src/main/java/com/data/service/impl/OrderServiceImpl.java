@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.data.bean.Order;
+import com.data.bean.TemplateOrder;
 import com.data.constant.PageRecord;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
@@ -24,7 +24,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Override
 	public ResultUtil queryOrderByCondition(String param) throws Exception {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		Order order = FastJsonUtil.jsonToObject(param, Order.class);
+		TemplateOrder order = FastJsonUtil.jsonToObject(param, TemplateOrder.class);
 		logger.info("--->>>订单查询参数: {}<<<---", param);
 		Map<String, Object> map = Maps.newHashMap();
 		if (null != common) {
@@ -40,7 +40,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				map.put("companyCode", order.getCompanyCode());
 			}
 		}
-		PageRecord<Order> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, common.getPage(), common.getLimit());
+		PageRecord<TemplateOrder> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, common.getPage(), common.getLimit());
 		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(page));
 		return ResultUtil.success(page);
 	}

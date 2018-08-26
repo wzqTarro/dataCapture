@@ -2,42 +2,34 @@ package com.data.bean;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.annotation.JSONField;
+/**
+ * 供应模板品实体类
+ * @author Alex
+ *
+ */
+public class TemplateSupply implements Serializable {
 
-public class Supply implements Serializable{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 8086505396834955857L;
+	private static final long serialVersionUID = -5728805033153815227L;
 
 	private Integer id;
-	// 區域
+
     private String region;
-    // 系統名稱
+
     private String sysName;
-    // 鏈接
+
     private String url;
-    // 登錄賬號
+
     private String loginUserName;
-    // 登錄密碼
+
     private String loginPassword;
-    // 企業編號
+
     private String companyCode;
-    // 是否开通
-    private Boolean isVal;
-    
-    @JSONField(serialize = false)
+
     private String controllerName;
 
-    public Boolean getIsVal() {
-		return isVal;
-	}
+    private Boolean isVal;
 
-	public void setIsVal(Boolean isVal) {
-		this.isVal = isVal;
-	}
-
-	public Integer getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -54,14 +46,14 @@ public class Supply implements Serializable{
     }
 
     public String getSysName() {
-		return sysName;
-	}
+        return sysName;
+    }
 
-	public void setSysName(String sysName) {
-		this.sysName = sysName;
-	}
+    public void setSysName(String sysName) {
+        this.sysName = sysName == null ? null : sysName.trim();
+    }
 
-	public String getUrl() {
+    public String getUrl() {
         return url;
     }
 
@@ -93,11 +85,19 @@ public class Supply implements Serializable{
         this.companyCode = companyCode == null ? null : companyCode.trim();
     }
 
-	public String getControllerName() {
-		return controllerName;
-	}
+    public String getControllerName() {
+        return controllerName;
+    }
 
-	public void setControllerName(String controllerName) {
-		this.controllerName = controllerName;
-	}
+    public void setControllerName(String controllerName) {
+        this.controllerName = controllerName == null ? null : controllerName.trim();
+    }
+
+    public Boolean getIsVal() {
+        return isVal;
+    }
+
+    public void setIsVal(Boolean isVal) {
+        this.isVal = isVal;
+    }
 }

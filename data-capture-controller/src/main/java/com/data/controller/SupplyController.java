@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.data.bean.Supply;
+import com.data.bean.TemplateSupply;
 import com.data.service.ISupplyService;
 import com.data.utils.FastJsonUtil;
 
@@ -27,7 +27,7 @@ public class SupplyController {
 	 */
 	@RequestMapping(value = "/insertSupply", method = RequestMethod.POST)
 	@ApiOperation(value="插入供应链厂商", httpMethod = "POST")
-	public String insertSupply(Supply supply){
+	public String insertSupply(TemplateSupply supply){
 		return FastJsonUtil.objectToString(supplyService.insertSupply(supply));
 	}
 	/**
@@ -49,7 +49,7 @@ public class SupplyController {
 	 */
 	@RequestMapping(value = "/updateSupply", method = RequestMethod.PUT)
 	@ApiOperation(value = "更新供应链厂商", httpMethod = "PUT")
-	public String updateSupply(Supply supply){
+	public String updateSupply(TemplateSupply supply){
 		return FastJsonUtil.objectToString(supplyService.updateSupply(supply));
 	}
 	/**

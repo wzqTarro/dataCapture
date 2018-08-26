@@ -1,6 +1,6 @@
 package com.data.service;
 
-import com.data.bean.Supply;
+import com.data.bean.TemplateSupply;
 import com.data.utils.ResultUtil;
 
 public interface ISupplyService {
@@ -10,13 +10,13 @@ public interface ISupplyService {
 	 * @param supply
 	 * @return
 	 */
-	ResultUtil insertSupply(Supply supply);
+	ResultUtil insertSupply(TemplateSupply supply);
 	/**
 	 * 更新
 	 * @param supply
 	 * @return
 	 */
-	ResultUtil updateSupply(Supply supply);
+	ResultUtil updateSupply(TemplateSupply supply);
 	/**
 	 * 删除
 	 * @param id

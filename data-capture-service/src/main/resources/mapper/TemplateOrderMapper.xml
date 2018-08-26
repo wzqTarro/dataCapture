@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TemplateOrderMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.TemplateOrder">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="no" jdbcType="VARCHAR" property="no" />
+    <result column="contract_code" jdbcType="VARCHAR" property="contractCode" />
+    <result column="good_name" jdbcType="VARCHAR" property="goodName" />
+    <result column="good_bar_code" jdbcType="VARCHAR" property="goodBarCode" />
+    <result column="good_code" jdbcType="VARCHAR" property="goodCode" />
+    <result column="order_type" jdbcType="VARCHAR" property="orderType" />
+    <result column="good_type" jdbcType="VARCHAR" property="goodType" />
+    <result column="order_shop" jdbcType="VARCHAR" property="orderShop" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="sell_price" jdbcType="DOUBLE" property="sellPrice" />
+    <result column="count" jdbcType="DOUBLE" property="count" />
+    <result column="simple_count" jdbcType="DOUBLE" property="simpleCount" />
+    <result column="little_count" jdbcType="DOUBLE" property="littleCount" />
+    <result column="real_count" jdbcType="DOUBLE" property="realCount" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="stage_count" jdbcType="VARCHAR" property="stageCount" />
+    <result column="order_state" jdbcType="VARCHAR" property="orderState" />
+    <result column="end_time" jdbcType="DATE" property="endTime" />
+    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+    <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
+    <result column="brand" jdbcType="VARCHAR" property="brand" />
+    <result column="part_content" jdbcType="DOUBLE" property="partContent" />
+    <result column="persent_num" jdbcType="DOUBLE" property="persentNum" />
+    <result column="contain_tax_price" jdbcType="DOUBLE" property="containTaxPrice" />
+    <result column="contain_tax_money" jdbcType="DOUBLE" property="containTaxMoney" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, no, contract_code, good_name, good_bar_code, good_code, order_type, 
+    good_type, order_shop, address, sell_price, count, simple_count, little_count, real_count, 
+    unit, stage_count, order_state, end_time, create_time, operator_name, company_code, 
+    brand, part_content, persent_num, contain_tax_price, contain_tax_money, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_template_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_template_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.TemplateOrder">
+    insert into db_template_order (id, order_id, no, 
+      contract_code, good_name, good_bar_code, 
+      good_code, order_type, good_type, 
+      order_shop, address, sell_price, 
+      count, simple_count, little_count, 
+      real_count, unit, stage_count, 
+      order_state, end_time, create_time, 
+      operator_name, company_code, brand, 
+      part_content, persent_num, contain_tax_price, 
+      contain_tax_money, remark)
+    values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=VARCHAR}, #{no,jdbcType=VARCHAR}, 
+      #{contractCode,jdbcType=VARCHAR}, #{goodName,jdbcType=VARCHAR}, #{goodBarCode,jdbcType=VARCHAR}, 
+      #{goodCode,jdbcType=VARCHAR}, #{orderType,jdbcType=VARCHAR}, #{goodType,jdbcType=VARCHAR}, 
+      #{orderShop,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{sellPrice,jdbcType=DOUBLE}, 
+      #{count,jdbcType=DOUBLE}, #{simpleCount,jdbcType=DOUBLE}, #{littleCount,jdbcType=DOUBLE}, 
+      #{realCount,jdbcType=DOUBLE}, #{unit,jdbcType=VARCHAR}, #{stageCount,jdbcType=VARCHAR}, 
+      #{orderState,jdbcType=VARCHAR}, #{endTime,jdbcType=DATE}, #{createTime,jdbcType=DATE}, 
+      #{operatorName,jdbcType=VARCHAR}, #{companyCode,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, 
+      #{partContent,jdbcType=DOUBLE}, #{persentNum,jdbcType=DOUBLE}, #{containTaxPrice,jdbcType=DOUBLE}, 
+      #{containTaxMoney,jdbcType=DOUBLE}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.TemplateOrder">
+    insert into db_template_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="no != null">
+        no,
+      </if>
+      <if test="contractCode != null">
+        contract_code,
+      </if>
+      <if test="goodName != null">
+        good_name,
+      </if>
+      <if test="goodBarCode != null">
+        good_bar_code,
+      </if>
+      <if test="goodCode != null">
+        good_code,
+      </if>
+      <if test="orderType != null">
+        order_type,
+      </if>
+      <if test="goodType != null">
+        good_type,
+      </if>
+      <if test="orderShop != null">
+        order_shop,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="sellPrice != null">
+        sell_price,
+      </if>
+      <if test="count != null">
+        count,
+      </if>
+      <if test="simpleCount != null">
+        simple_count,
+      </if>
+      <if test="littleCount != null">
+        little_count,
+      </if>
+      <if test="realCount != null">
+        real_count,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="stageCount != null">
+        stage_count,
+      </if>
+      <if test="orderState != null">
+        order_state,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="operatorName != null">
+        operator_name,
+      </if>
+      <if test="companyCode != null">
+        company_code,
+      </if>
+      <if test="brand != null">
+        brand,
+      </if>
+      <if test="partContent != null">
+        part_content,
+      </if>
+      <if test="persentNum != null">
+        persent_num,
+      </if>
+      <if test="containTaxPrice != null">
+        contain_tax_price,
+      </if>
+      <if test="containTaxMoney != null">
+        contain_tax_money,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="no != null">
+        #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="contractCode != null">
+        #{contractCode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodName != null">
+        #{goodName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodBarCode != null">
+        #{goodBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodCode != null">
+        #{goodCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null">
+        #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodType != null">
+        #{goodType,jdbcType=VARCHAR},
+      </if>
+      <if test="orderShop != null">
+        #{orderShop,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="sellPrice != null">
+        #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="count != null">
+        #{count,jdbcType=DOUBLE},
+      </if>
+      <if test="simpleCount != null">
+        #{simpleCount,jdbcType=DOUBLE},
+      </if>
+      <if test="littleCount != null">
+        #{littleCount,jdbcType=DOUBLE},
+      </if>
+      <if test="realCount != null">
+        #{realCount,jdbcType=DOUBLE},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="stageCount != null">
+        #{stageCount,jdbcType=VARCHAR},
+      </if>
+      <if test="orderState != null">
+        #{orderState,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="operatorName != null">
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="partContent != null">
+        #{partContent,jdbcType=DOUBLE},
+      </if>
+      <if test="persentNum != null">
+        #{persentNum,jdbcType=DOUBLE},
+      </if>
+      <if test="containTaxPrice != null">
+        #{containTaxPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="containTaxMoney != null">
+        #{containTaxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.TemplateOrder">
+    update db_template_order
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="no != null">
+        no = #{no,jdbcType=VARCHAR},
+      </if>
+      <if test="contractCode != null">
+        contract_code = #{contractCode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodName != null">
+        good_name = #{goodName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodBarCode != null">
+        good_bar_code = #{goodBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodCode != null">
+        good_code = #{goodCode,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null">
+        order_type = #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodType != null">
+        good_type = #{goodType,jdbcType=VARCHAR},
+      </if>
+      <if test="orderShop != null">
+        order_shop = #{orderShop,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="sellPrice != null">
+        sell_price = #{sellPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="count != null">
+        count = #{count,jdbcType=DOUBLE},
+      </if>
+      <if test="simpleCount != null">
+        simple_count = #{simpleCount,jdbcType=DOUBLE},
+      </if>
+      <if test="littleCount != null">
+        little_count = #{littleCount,jdbcType=DOUBLE},
+      </if>
+      <if test="realCount != null">
+        real_count = #{realCount,jdbcType=DOUBLE},
+      </if>
+      <if test="unit != null">
+        unit = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="stageCount != null">
+        stage_count = #{stageCount,jdbcType=VARCHAR},
+      </if>
+      <if test="orderState != null">
+        order_state = #{orderState,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=DATE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="operatorName != null">
+        operator_name = #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyCode != null">
+        company_code = #{companyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="partContent != null">
+        part_content = #{partContent,jdbcType=DOUBLE},
+      </if>
+      <if test="persentNum != null">
+        persent_num = #{persentNum,jdbcType=DOUBLE},
+      </if>
+      <if test="containTaxPrice != null">
+        contain_tax_price = #{containTaxPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="containTaxMoney != null">
+        contain_tax_money = #{containTaxMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.TemplateOrder">
+    update db_template_order
+    set order_id = #{orderId,jdbcType=VARCHAR},
+      no = #{no,jdbcType=VARCHAR},
+      contract_code = #{contractCode,jdbcType=VARCHAR},
+      good_name = #{goodName,jdbcType=VARCHAR},
+      good_bar_code = #{goodBarCode,jdbcType=VARCHAR},
+      good_code = #{goodCode,jdbcType=VARCHAR},
+      order_type = #{orderType,jdbcType=VARCHAR},
+      good_type = #{goodType,jdbcType=VARCHAR},
+      order_shop = #{orderShop,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      sell_price = #{sellPrice,jdbcType=DOUBLE},
+      count = #{count,jdbcType=DOUBLE},
+      simple_count = #{simpleCount,jdbcType=DOUBLE},
+      little_count = #{littleCount,jdbcType=DOUBLE},
+      real_count = #{realCount,jdbcType=DOUBLE},
+      unit = #{unit,jdbcType=VARCHAR},
+      stage_count = #{stageCount,jdbcType=VARCHAR},
+      order_state = #{orderState,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=DATE},
+      create_time = #{createTime,jdbcType=DATE},
+      operator_name = #{operatorName,jdbcType=VARCHAR},
+      company_code = #{companyCode,jdbcType=VARCHAR},
+      brand = #{brand,jdbcType=VARCHAR},
+      part_content = #{partContent,jdbcType=DOUBLE},
+      persent_num = #{persentNum,jdbcType=DOUBLE},
+      contain_tax_price = #{containTaxPrice,jdbcType=DOUBLE},
+      contain_tax_money = #{containTaxMoney,jdbcType=DOUBLE},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
