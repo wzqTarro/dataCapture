@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.Supply;
 import com.data.constant.PageRecord;
-import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
@@ -40,11 +39,11 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			end = DateUtil.getDate();
 		}
 		if (0 == common.getId()) {
-			throw new DataException(TipsEnum.ID_ERROR.getValue());
+			throw new DataException("503");
 		}
 		Supply supply = (Supply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
 		if (false == supply.getIsVal()) {
-			throw new DataException(TipsEnum.SYS_NOT_VAL.getValue());
+			throw new DataException("504");
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
@@ -64,13 +63,13 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	public <T> PageRecord<T> insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException {
 		if (StringUtils.isBlank(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
-			throw new DataException(TipsEnum.GRAB_DATA_IS_NULL.getValue());
+			throw new DataException("505");
 		}
 		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);
 		
 		if (null == list) {
 			logger.info("----->>>>>>抓取数据转换List为空<<<<<<------");
-			throw new DataException(TipsEnum.GRAB_DATA_TO_LIST_ERROR.getValue());
+			throw new DataException("506");
 		}
 		// 插入到数据库
 		insert(mapper, list);

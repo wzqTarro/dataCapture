@@ -82,7 +82,6 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			throw new DataException("401");
 		}
 		insert(InsertId.INSERT_NEW_USER_MESSAGE, user);
-		redisService.saveUserModel(user);
 		return ResultUtil.success();
 	}
 
@@ -94,7 +93,6 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			throw new DataException("401");
 		}
 		update(UpdateId.UPDATE_USER_MESSAGE, user);
-		redisService.updateUserModel(user);
 		return ResultUtil.success();
 	}
 
