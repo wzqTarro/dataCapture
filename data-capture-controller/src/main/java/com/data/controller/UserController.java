@@ -1,6 +1,7 @@
 package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +12,12 @@ import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/user")
 @Api(tags = "用户服务接口")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 	
 	@Autowired
@@ -29,6 +32,7 @@ public class UserController {
 	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/queryUserList", method = RequestMethod.GET)
+	@ApiOperation(value = "用户列表查询", httpMethod = "GET")
 	public String queryUserByCondition(User user, String pageNum, String pageSize) throws Exception {
 		ResultUtil result = userService.queryUserByCondition(user, pageNum, pageSize);
 		return FastJsonUtil.objectToString(result);
@@ -40,6 +44,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveUser", method = RequestMethod.POST)
+	@ApiOperation(value = "保存用户信息", httpMethod = "POST")
 	public String saveUser(User user) {
 		ResultUtil result = userService.saveUser(user);
 		return FastJsonUtil.objectToString(result);
@@ -51,6 +56,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
+	@ApiOperation(value = "更新用户信息", httpMethod = "POST")
 	public String updateUser(User user) {
 		ResultUtil result = userService.updateUser(user);
 		return FastJsonUtil.objectToString(result);
@@ -62,6 +68,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryUserDetail", method = RequestMethod.GET)
+	@ApiOperation(value = "查看用户信息", httpMethod = "GET")
 	public String queryUserDetail(String id) {
 		ResultUtil result = userService.queryUserDetail(id);
 		return FastJsonUtil.objectToString(result);
@@ -73,6 +80,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
+	@ApiOperation(value = "删除用户信息", httpMethod = "POST")
 	public String deleteUser(String id) {
 		ResultUtil result = userService.deleteUser(id);
 		return FastJsonUtil.objectToString(result);
