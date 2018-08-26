@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.TemplateSupply;
-import com.data.service.ISupplyService;
+import com.data.service.ITemplateSupplyService;
 import com.data.utils.FastJsonUtil;
 
 import io.swagger.annotations.Api;
@@ -16,10 +16,10 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/supply")
 @Api(tags = "供应链服务接口")
-public class SupplyController {
+public class TemplateSupplyController {
 	
 	@Autowired
-	private ISupplyService supplyService;
+	private ITemplateSupplyService supplyService;
 	/**
 	 * 插入
 	 * @param supply

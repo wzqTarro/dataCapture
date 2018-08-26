@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.data.service.IOrderService;
+import com.data.service.ITemplateOrderService;
 import com.data.utils.ResultUtil;
 
 import io.swagger.annotations.Api;
@@ -17,10 +17,10 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/dataResolve")
 @Api(tags = "订单数据接口")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class OrderController {
+public class TemplateOrderController {
 	
 	@Autowired
-	private IOrderService orderService;
+	private ITemplateOrderService orderService;
 	
 	/**
 	 * 查询抓取数据分页显示

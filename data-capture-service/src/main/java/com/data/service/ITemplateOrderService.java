@@ -2,7 +2,7 @@ package com.data.service;
 
 import com.data.utils.ResultUtil;
 
-public interface IOrderService {
+public interface ITemplateOrderService {
 	/**
 	 * 分页查询
 	 * @param queryDate

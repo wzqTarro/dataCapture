@@ -11,15 +11,15 @@ import com.data.bean.TemplateOrder;
 import com.data.constant.PageRecord;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
-import com.data.service.IOrderService;
+import com.data.service.ITemplateOrderService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
 
 @Service
-public class OrderServiceImpl extends CommonServiceImpl implements IOrderService {
+public class TemplateOrderServiceImpl extends CommonServiceImpl implements ITemplateOrderService {
 	
-	private static Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(TemplateOrderServiceImpl.class);
 	
 	@Override
 	public ResultUtil queryOrderByCondition(String param) throws Exception {

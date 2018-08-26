@@ -3,7 +3,7 @@ package com.data.service;
 import com.data.bean.TemplateSupply;
 import com.data.utils.ResultUtil;
 
-public interface ISupplyService {
+public interface ITemplateSupplyService {
 
 	/**
 	 * 插入

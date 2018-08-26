@@ -16,15 +16,15 @@ import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.dto.CommonDTO;
-import com.data.service.ISupplyService;
+import com.data.service.ITemplateSupplyService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
 
 @Service
-public class SupplyServiceImpl extends CommonServiceImpl implements ISupplyService {
+public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITemplateSupplyService {
 
-	private static Logger logger = LoggerFactory.getLogger(SupplyServiceImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(TemplateSupplyServiceImpl.class);
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
