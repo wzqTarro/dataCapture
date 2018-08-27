@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RejectMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.Reject">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="system" jdbcType="VARCHAR" property="system" />
+    <result column="reject_department_id" jdbcType="VARCHAR" property="rejectDepartmentId" />
+    <result column="main_area" jdbcType="VARCHAR" property="mainArea" />
+    <result column="province_area" jdbcType="VARCHAR" property="provinceArea" />
+    <result column="reject_department_name" jdbcType="VARCHAR" property="rejectDepartmentName" />
+    <result column="receipt_code" jdbcType="VARCHAR" property="receiptCode" />
+    <result column="product_code" jdbcType="VARCHAR" property="productCode" />
+    <result column="product_bar_code" jdbcType="VARCHAR" property="productBarCode" />
+    <result column="product_store_code" jdbcType="VARCHAR" property="productStoreCode" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="tax_rate" jdbcType="DECIMAL" property="taxRate" />
+    <result column="product_amount" jdbcType="DECIMAL" property="productAmount" />
+    <result column="reject_price_with_rate" jdbcType="DECIMAL" property="rejectPriceWithRate" />
+    <result column="reject_price" jdbcType="DECIMAL" property="rejectPrice" />
+    <result column="reject_date" jdbcType="DATE" property="rejectDate" />
+    <result column="discount_price" jdbcType="DECIMAL" property="discountPrice" />
+    <result column="discount_start_date" jdbcType="DATE" property="discountStartDate" />
+    <result column="discount_end_date" jdbcType="DATE" property="discountEndDate" />
+    <result column="diff_price_discount" jdbcType="DECIMAL" property="diffPriceDiscount" />
+    <result column="diff_price_discount_total" jdbcType="DECIMAL" property="diffPriceDiscountTotal" />
+    <result column="discount_alarm_flag" jdbcType="VARCHAR" property="discountAlarmFlag" />
+    <result column="contract_price" jdbcType="DECIMAL" property="contractPrice" />
+    <result column="diff_price_contract" jdbcType="DECIMAL" property="diffPriceContract" />
+    <result column="diff_price_contract_total" jdbcType="DECIMAL" property="diffPriceContractTotal" />
+    <result column="contract_alarm_flag" jdbcType="VARCHAR" property="contractAlarmFlag" />
+    <result column="diff_price" jdbcType="DECIMAL" property="diffPrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, system, reject_department_id, main_area, province_area, reject_department_name, 
+    receipt_code, product_code, product_bar_code, product_store_code, product_name, tax_rate, 
+    product_amount, reject_price_with_rate, reject_price, reject_date, discount_price, 
+    discount_start_date, discount_end_date, diff_price_discount, diff_price_discount_total, 
+    discount_alarm_flag, contract_price, diff_price_contract, diff_price_contract_total, 
+    contract_alarm_flag, diff_price
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_reject
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_reject
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.Reject">
+    insert into db_reject (id, system, reject_department_id, 
+      main_area, province_area, reject_department_name, 
+      receipt_code, product_code, product_bar_code, 
+      product_store_code, product_name, tax_rate, 
+      product_amount, reject_price_with_rate, reject_price, 
+      reject_date, discount_price, discount_start_date, 
+      discount_end_date, diff_price_discount, diff_price_discount_total, 
+      discount_alarm_flag, contract_price, diff_price_contract, 
+      diff_price_contract_total, contract_alarm_flag, 
+      diff_price)
+    values (#{id,jdbcType=INTEGER}, #{system,jdbcType=VARCHAR}, #{rejectDepartmentId,jdbcType=VARCHAR}, 
+      #{mainArea,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, #{rejectDepartmentName,jdbcType=VARCHAR}, 
+      #{receiptCode,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, #{productBarCode,jdbcType=VARCHAR}, 
+      #{productStoreCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, 
+      #{productAmount,jdbcType=DECIMAL}, #{rejectPriceWithRate,jdbcType=DECIMAL}, #{rejectPrice,jdbcType=DECIMAL}, 
+      #{rejectDate,jdbcType=DATE}, #{discountPrice,jdbcType=DECIMAL}, #{discountStartDate,jdbcType=DATE}, 
+      #{discountEndDate,jdbcType=DATE}, #{diffPriceDiscount,jdbcType=DECIMAL}, #{diffPriceDiscountTotal,jdbcType=DECIMAL}, 
+      #{discountAlarmFlag,jdbcType=VARCHAR}, #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, 
+      #{diffPriceContractTotal,jdbcType=DECIMAL}, #{contractAlarmFlag,jdbcType=VARCHAR}, 
+      #{diffPrice,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.Reject">
+    insert into db_reject
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="system != null">
+        system,
+      </if>
+      <if test="rejectDepartmentId != null">
+        reject_department_id,
+      </if>
+      <if test="mainArea != null">
+        main_area,
+      </if>
+      <if test="provinceArea != null">
+        province_area,
+      </if>
+      <if test="rejectDepartmentName != null">
+        reject_department_name,
+      </if>
+      <if test="receiptCode != null">
+        receipt_code,
+      </if>
+      <if test="productCode != null">
+        product_code,
+      </if>
+      <if test="productBarCode != null">
+        product_bar_code,
+      </if>
+      <if test="productStoreCode != null">
+        product_store_code,
+      </if>
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="taxRate != null">
+        tax_rate,
+      </if>
+      <if test="productAmount != null">
+        product_amount,
+      </if>
+      <if test="rejectPriceWithRate != null">
+        reject_price_with_rate,
+      </if>
+      <if test="rejectPrice != null">
+        reject_price,
+      </if>
+      <if test="rejectDate != null">
+        reject_date,
+      </if>
+      <if test="discountPrice != null">
+        discount_price,
+      </if>
+      <if test="discountStartDate != null">
+        discount_start_date,
+      </if>
+      <if test="discountEndDate != null">
+        discount_end_date,
+      </if>
+      <if test="diffPriceDiscount != null">
+        diff_price_discount,
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        diff_price_discount_total,
+      </if>
+      <if test="discountAlarmFlag != null">
+        discount_alarm_flag,
+      </if>
+      <if test="contractPrice != null">
+        contract_price,
+      </if>
+      <if test="diffPriceContract != null">
+        diff_price_contract,
+      </if>
+      <if test="diffPriceContractTotal != null">
+        diff_price_contract_total,
+      </if>
+      <if test="contractAlarmFlag != null">
+        contract_alarm_flag,
+      </if>
+      <if test="diffPrice != null">
+        diff_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="system != null">
+        #{system,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectDepartmentId != null">
+        #{rejectDepartmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="mainArea != null">
+        #{mainArea,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null">
+        #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectDepartmentName != null">
+        #{rejectDepartmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiptCode != null">
+        #{receiptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productBarCode != null">
+        #{productBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productStoreCode != null">
+        #{productStoreCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxRate != null">
+        #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="productAmount != null">
+        #{productAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectPriceWithRate != null">
+        #{rejectPriceWithRate,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectPrice != null">
+        #{rejectPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectDate != null">
+        #{rejectDate,jdbcType=DATE},
+      </if>
+      <if test="discountPrice != null">
+        #{discountPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountStartDate != null">
+        #{discountStartDate,jdbcType=DATE},
+      </if>
+      <if test="discountEndDate != null">
+        #{discountEndDate,jdbcType=DATE},
+      </if>
+      <if test="diffPriceDiscount != null">
+        #{diffPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAlarmFlag != null">
+        #{discountAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null">
+        #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContract != null">
+        #{diffPriceContract,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContractTotal != null">
+        #{diffPriceContractTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="contractAlarmFlag != null">
+        #{contractAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPrice != null">
+        #{diffPrice,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Reject">
+    update db_reject
+    <set>
+      <if test="system != null">
+        system = #{system,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectDepartmentId != null">
+        reject_department_id = #{rejectDepartmentId,jdbcType=VARCHAR},
+      </if>
+      <if test="mainArea != null">
+        main_area = #{mainArea,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null">
+        province_area = #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectDepartmentName != null">
+        reject_department_name = #{rejectDepartmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiptCode != null">
+        receipt_code = #{receiptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productBarCode != null">
+        product_bar_code = #{productBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productStoreCode != null">
+        product_store_code = #{productStoreCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxRate != null">
+        tax_rate = #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="productAmount != null">
+        product_amount = #{productAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectPriceWithRate != null">
+        reject_price_with_rate = #{rejectPriceWithRate,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectPrice != null">
+        reject_price = #{rejectPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rejectDate != null">
+        reject_date = #{rejectDate,jdbcType=DATE},
+      </if>
+      <if test="discountPrice != null">
+        discount_price = #{discountPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountStartDate != null">
+        discount_start_date = #{discountStartDate,jdbcType=DATE},
+      </if>
+      <if test="discountEndDate != null">
+        discount_end_date = #{discountEndDate,jdbcType=DATE},
+      </if>
+      <if test="diffPriceDiscount != null">
+        diff_price_discount = #{diffPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        diff_price_discount_total = #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAlarmFlag != null">
+        discount_alarm_flag = #{discountAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null">
+        contract_price = #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContract != null">
+        diff_price_contract = #{diffPriceContract,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContractTotal != null">
+        diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="contractAlarmFlag != null">
+        contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPrice != null">
+        diff_price = #{diffPrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Reject">
+    update db_reject
+    set system = #{system,jdbcType=VARCHAR},
+      reject_department_id = #{rejectDepartmentId,jdbcType=VARCHAR},
+      main_area = #{mainArea,jdbcType=VARCHAR},
+      province_area = #{provinceArea,jdbcType=VARCHAR},
+      reject_department_name = #{rejectDepartmentName,jdbcType=VARCHAR},
+      receipt_code = #{receiptCode,jdbcType=VARCHAR},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      product_bar_code = #{productBarCode,jdbcType=VARCHAR},
+      product_store_code = #{productStoreCode,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      tax_rate = #{taxRate,jdbcType=DECIMAL},
+      product_amount = #{productAmount,jdbcType=DECIMAL},
+      reject_price_with_rate = #{rejectPriceWithRate,jdbcType=DECIMAL},
+      reject_price = #{rejectPrice,jdbcType=DECIMAL},
+      reject_date = #{rejectDate,jdbcType=DATE},
+      discount_price = #{discountPrice,jdbcType=DECIMAL},
+      discount_start_date = #{discountStartDate,jdbcType=DATE},
+      discount_end_date = #{discountEndDate,jdbcType=DATE},
+      diff_price_discount = #{diffPriceDiscount,jdbcType=DECIMAL},
+      diff_price_discount_total = #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      discount_alarm_flag = #{discountAlarmFlag,jdbcType=VARCHAR},
+      contract_price = #{contractPrice,jdbcType=DECIMAL},
+      diff_price_contract = #{diffPriceContract,jdbcType=DECIMAL},
+      diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
+      contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
+      diff_price = #{diffPrice,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

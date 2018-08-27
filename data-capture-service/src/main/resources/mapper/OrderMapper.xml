@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.Order">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="system" jdbcType="VARCHAR" property="system" />
+    <result column="main_area" jdbcType="VARCHAR" property="mainArea" />
+    <result column="province_area" jdbcType="VARCHAR" property="provinceArea" />
+    <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+    <result column="receipt_code" jdbcType="VARCHAR" property="receiptCode" />
+    <result column="product_code" jdbcType="VARCHAR" property="productCode" />
+    <result column="product_bar_code" jdbcType="VARCHAR" property="productBarCode" />
+    <result column="product_store_code" jdbcType="VARCHAR" property="productStoreCode" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="tax_rate" jdbcType="DECIMAL" property="taxRate" />
+    <result column="standard" jdbcType="INTEGER" property="standard" />
+    <result column="product_amount" jdbcType="DECIMAL" property="productAmount" />
+    <result column="buying_price_with_rate" jdbcType="DECIMAL" property="buyingPriceWithRate" />
+    <result column="buying_price" jdbcType="DECIMAL" property="buyingPrice" />
+    <result column="deliver_start_date" jdbcType="DATE" property="deliverStartDate" />
+    <result column="deliver_end_date" jdbcType="DATE" property="deliverEndDate" />
+    <result column="deliver_address" jdbcType="VARCHAR" property="deliverAddress" />
+    <result column="discount_price" jdbcType="DECIMAL" property="discountPrice" />
+    <result column="discount_start_date" jdbcType="DATE" property="discountStartDate" />
+    <result column="discount_end_date" jdbcType="DATE" property="discountEndDate" />
+    <result column="order_effective_judge" jdbcType="VARCHAR" property="orderEffectiveJudge" />
+    <result column="balance_way" jdbcType="VARCHAR" property="balanceWay" />
+    <result column="diff_price_discount" jdbcType="DECIMAL" property="diffPriceDiscount" />
+    <result column="diff_price_discount_total" jdbcType="DECIMAL" property="diffPriceDiscountTotal" />
+    <result column="discount_alarm_flag" jdbcType="VARCHAR" property="discountAlarmFlag" />
+    <result column="contract_price" jdbcType="DECIMAL" property="contractPrice" />
+    <result column="diff_price_contract" jdbcType="DECIMAL" property="diffPriceContract" />
+    <result column="diff_price_contract_total" jdbcType="DECIMAL" property="diffPriceContractTotal" />
+    <result column="contract_alarm_flag" jdbcType="VARCHAR" property="contractAlarmFlag" />
+    <result column="diff_price" jdbcType="DECIMAL" property="diffPrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, system, main_area, province_area, department_name, receipt_code, product_code, 
+    product_bar_code, product_store_code, product_name, tax_rate, standard, product_amount, 
+    buying_price_with_rate, buying_price, deliver_start_date, deliver_end_date, deliver_address, 
+    discount_price, discount_start_date, discount_end_date, order_effective_judge, balance_way, 
+    diff_price_discount, diff_price_discount_total, discount_alarm_flag, contract_price, 
+    diff_price_contract, diff_price_contract_total, contract_alarm_flag, diff_price
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.Order">
+    insert into db_order (id, system, main_area, 
+      province_area, department_name, receipt_code, 
+      product_code, product_bar_code, product_store_code, 
+      product_name, tax_rate, standard, 
+      product_amount, buying_price_with_rate, buying_price, 
+      deliver_start_date, deliver_end_date, deliver_address, 
+      discount_price, discount_start_date, discount_end_date, 
+      order_effective_judge, balance_way, diff_price_discount, 
+      diff_price_discount_total, discount_alarm_flag, 
+      contract_price, diff_price_contract, diff_price_contract_total, 
+      contract_alarm_flag, diff_price)
+    values (#{id,jdbcType=INTEGER}, #{system,jdbcType=VARCHAR}, #{mainArea,jdbcType=VARCHAR}, 
+      #{provinceArea,jdbcType=VARCHAR}, #{departmentName,jdbcType=VARCHAR}, #{receiptCode,jdbcType=VARCHAR}, 
+      #{productCode,jdbcType=VARCHAR}, #{productBarCode,jdbcType=VARCHAR}, #{productStoreCode,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, #{standard,jdbcType=INTEGER}, 
+      #{productAmount,jdbcType=DECIMAL}, #{buyingPriceWithRate,jdbcType=DECIMAL}, #{buyingPrice,jdbcType=DECIMAL}, 
+      #{deliverStartDate,jdbcType=DATE}, #{deliverEndDate,jdbcType=DATE}, #{deliverAddress,jdbcType=VARCHAR}, 
+      #{discountPrice,jdbcType=DECIMAL}, #{discountStartDate,jdbcType=DATE}, #{discountEndDate,jdbcType=DATE}, 
+      #{orderEffectiveJudge,jdbcType=VARCHAR}, #{balanceWay,jdbcType=VARCHAR}, #{diffPriceDiscount,jdbcType=DECIMAL}, 
+      #{diffPriceDiscountTotal,jdbcType=DECIMAL}, #{discountAlarmFlag,jdbcType=VARCHAR}, 
+      #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, #{diffPriceContractTotal,jdbcType=DECIMAL}, 
+      #{contractAlarmFlag,jdbcType=VARCHAR}, #{diffPrice,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.Order">
+    insert into db_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="system != null">
+        system,
+      </if>
+      <if test="mainArea != null">
+        main_area,
+      </if>
+      <if test="provinceArea != null">
+        province_area,
+      </if>
+      <if test="departmentName != null">
+        department_name,
+      </if>
+      <if test="receiptCode != null">
+        receipt_code,
+      </if>
+      <if test="productCode != null">
+        product_code,
+      </if>
+      <if test="productBarCode != null">
+        product_bar_code,
+      </if>
+      <if test="productStoreCode != null">
+        product_store_code,
+      </if>
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="taxRate != null">
+        tax_rate,
+      </if>
+      <if test="standard != null">
+        standard,
+      </if>
+      <if test="productAmount != null">
+        product_amount,
+      </if>
+      <if test="buyingPriceWithRate != null">
+        buying_price_with_rate,
+      </if>
+      <if test="buyingPrice != null">
+        buying_price,
+      </if>
+      <if test="deliverStartDate != null">
+        deliver_start_date,
+      </if>
+      <if test="deliverEndDate != null">
+        deliver_end_date,
+      </if>
+      <if test="deliverAddress != null">
+        deliver_address,
+      </if>
+      <if test="discountPrice != null">
+        discount_price,
+      </if>
+      <if test="discountStartDate != null">
+        discount_start_date,
+      </if>
+      <if test="discountEndDate != null">
+        discount_end_date,
+      </if>
+      <if test="orderEffectiveJudge != null">
+        order_effective_judge,
+      </if>
+      <if test="balanceWay != null">
+        balance_way,
+      </if>
+      <if test="diffPriceDiscount != null">
+        diff_price_discount,
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        diff_price_discount_total,
+      </if>
+      <if test="discountAlarmFlag != null">
+        discount_alarm_flag,
+      </if>
+      <if test="contractPrice != null">
+        contract_price,
+      </if>
+      <if test="diffPriceContract != null">
+        diff_price_contract,
+      </if>
+      <if test="diffPriceContractTotal != null">
+        diff_price_contract_total,
+      </if>
+      <if test="contractAlarmFlag != null">
+        contract_alarm_flag,
+      </if>
+      <if test="diffPrice != null">
+        diff_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="system != null">
+        #{system,jdbcType=VARCHAR},
+      </if>
+      <if test="mainArea != null">
+        #{mainArea,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null">
+        #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null">
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiptCode != null">
+        #{receiptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productBarCode != null">
+        #{productBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productStoreCode != null">
+        #{productStoreCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxRate != null">
+        #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="standard != null">
+        #{standard,jdbcType=INTEGER},
+      </if>
+      <if test="productAmount != null">
+        #{productAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="buyingPriceWithRate != null">
+        #{buyingPriceWithRate,jdbcType=DECIMAL},
+      </if>
+      <if test="buyingPrice != null">
+        #{buyingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="deliverStartDate != null">
+        #{deliverStartDate,jdbcType=DATE},
+      </if>
+      <if test="deliverEndDate != null">
+        #{deliverEndDate,jdbcType=DATE},
+      </if>
+      <if test="deliverAddress != null">
+        #{deliverAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="discountPrice != null">
+        #{discountPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountStartDate != null">
+        #{discountStartDate,jdbcType=DATE},
+      </if>
+      <if test="discountEndDate != null">
+        #{discountEndDate,jdbcType=DATE},
+      </if>
+      <if test="orderEffectiveJudge != null">
+        #{orderEffectiveJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceWay != null">
+        #{balanceWay,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPriceDiscount != null">
+        #{diffPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAlarmFlag != null">
+        #{discountAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null">
+        #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContract != null">
+        #{diffPriceContract,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContractTotal != null">
+        #{diffPriceContractTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="contractAlarmFlag != null">
+        #{contractAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPrice != null">
+        #{diffPrice,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Order">
+    update db_order
+    <set>
+      <if test="system != null">
+        system = #{system,jdbcType=VARCHAR},
+      </if>
+      <if test="mainArea != null">
+        main_area = #{mainArea,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceArea != null">
+        province_area = #{provinceArea,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null">
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiptCode != null">
+        receipt_code = #{receiptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productBarCode != null">
+        product_bar_code = #{productBarCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productStoreCode != null">
+        product_store_code = #{productStoreCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxRate != null">
+        tax_rate = #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="standard != null">
+        standard = #{standard,jdbcType=INTEGER},
+      </if>
+      <if test="productAmount != null">
+        product_amount = #{productAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="buyingPriceWithRate != null">
+        buying_price_with_rate = #{buyingPriceWithRate,jdbcType=DECIMAL},
+      </if>
+      <if test="buyingPrice != null">
+        buying_price = #{buyingPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="deliverStartDate != null">
+        deliver_start_date = #{deliverStartDate,jdbcType=DATE},
+      </if>
+      <if test="deliverEndDate != null">
+        deliver_end_date = #{deliverEndDate,jdbcType=DATE},
+      </if>
+      <if test="deliverAddress != null">
+        deliver_address = #{deliverAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="discountPrice != null">
+        discount_price = #{discountPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="discountStartDate != null">
+        discount_start_date = #{discountStartDate,jdbcType=DATE},
+      </if>
+      <if test="discountEndDate != null">
+        discount_end_date = #{discountEndDate,jdbcType=DATE},
+      </if>
+      <if test="orderEffectiveJudge != null">
+        order_effective_judge = #{orderEffectiveJudge,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceWay != null">
+        balance_way = #{balanceWay,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPriceDiscount != null">
+        diff_price_discount = #{diffPriceDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceDiscountTotal != null">
+        diff_price_discount_total = #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAlarmFlag != null">
+        discount_alarm_flag = #{discountAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="contractPrice != null">
+        contract_price = #{contractPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContract != null">
+        diff_price_contract = #{diffPriceContract,jdbcType=DECIMAL},
+      </if>
+      <if test="diffPriceContractTotal != null">
+        diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="contractAlarmFlag != null">
+        contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="diffPrice != null">
+        diff_price = #{diffPrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Order">
+    update db_order
+    set system = #{system,jdbcType=VARCHAR},
+      main_area = #{mainArea,jdbcType=VARCHAR},
+      province_area = #{provinceArea,jdbcType=VARCHAR},
+      department_name = #{departmentName,jdbcType=VARCHAR},
+      receipt_code = #{receiptCode,jdbcType=VARCHAR},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      product_bar_code = #{productBarCode,jdbcType=VARCHAR},
+      product_store_code = #{productStoreCode,jdbcType=VARCHAR},
+      product_name = #{productName,jdbcType=VARCHAR},
+      tax_rate = #{taxRate,jdbcType=DECIMAL},
+      standard = #{standard,jdbcType=INTEGER},
+      product_amount = #{productAmount,jdbcType=DECIMAL},
+      buying_price_with_rate = #{buyingPriceWithRate,jdbcType=DECIMAL},
+      buying_price = #{buyingPrice,jdbcType=DECIMAL},
+      deliver_start_date = #{deliverStartDate,jdbcType=DATE},
+      deliver_end_date = #{deliverEndDate,jdbcType=DATE},
+      deliver_address = #{deliverAddress,jdbcType=VARCHAR},
+      discount_price = #{discountPrice,jdbcType=DECIMAL},
+      discount_start_date = #{discountStartDate,jdbcType=DATE},
+      discount_end_date = #{discountEndDate,jdbcType=DATE},
+      order_effective_judge = #{orderEffectiveJudge,jdbcType=VARCHAR},
+      balance_way = #{balanceWay,jdbcType=VARCHAR},
+      diff_price_discount = #{diffPriceDiscount,jdbcType=DECIMAL},
+      diff_price_discount_total = #{diffPriceDiscountTotal,jdbcType=DECIMAL},
+      discount_alarm_flag = #{discountAlarmFlag,jdbcType=VARCHAR},
+      contract_price = #{contractPrice,jdbcType=DECIMAL},
+      diff_price_contract = #{diffPriceContract,jdbcType=DECIMAL},
+      diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
+      contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
+      diff_price = #{diffPrice,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
