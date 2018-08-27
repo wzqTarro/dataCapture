@@ -26,14 +26,15 @@ public class DataBaseException {
 	public String resolveException(Exception e) {
 		
 		ResultUtil result = new ResultUtil();
-		if(e instanceof DataException) {
+//		if(e instanceof DataException) {
 			String errorCode = e.getMessage();
 			String errorMessage = PropertiesUtil.getMessage(errorCode);
 			if(CommonUtil.isNotBlank(errorMessage)) {
 				result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
 				result.setMsg(errorMessage);
 			}
-		}
+			
+//		}
 		return FastJsonUtil.objectToString(result);
 	}
 }
