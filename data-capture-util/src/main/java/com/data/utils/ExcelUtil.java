@@ -19,6 +19,8 @@ import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.data.exception.DataException;
+
 /**
  * excel操作工具类
  * @author Alex
@@ -74,11 +76,11 @@ public class ExcelUtil<T> {
 	public void excel2003(String title, String[] header, Collection<T> collection, OutputStream out) throws Exception {
 		if(null != header && header.length > MAX_COL_COUNT_2003) {
 			logger.info("--->>>导出excel2003表头部大于最大限定列值<<<---");
-			throw new Exception("507");
+			throw new DataException("507");
 		}
 		if(null != collection && collection.size() > MAX_ROW_COUNT_2003) {
 			logger.info("--->>>导出excel2003内容大于最大限定行值<<<---");
-			throw new Exception("508");
+			throw new DataException("508");
 		}
 		if(CommonUtil.isNotBlank(title)) {
 			SXSSFWorkbook workBook = new SXSSFWorkbook();
@@ -183,11 +185,11 @@ public class ExcelUtil<T> {
 	public void excel2007(String title, String[] header, Collection<T> collection, OutputStream out) throws Exception {
 		if(null != header && header.length > MAX_COL_COUNT_2007) {
 			logger.info("--->>>导出excel表头部大于最大限定列值<<<---");
-			throw new Exception("509");
+			throw new DataException("509");
 		}
 		if(null != collection && collection.size() > MAX_ROW_COUNT_2007) {
 			logger.info("--->>>导出excel内容大于最大限定行值<<<---");
-			throw new Exception("510");
+			throw new DataException("510");
 		}
 		if(CommonUtil.isNotBlank(title)) {
 			SXSSFWorkbook workBook = new SXSSFWorkbook();

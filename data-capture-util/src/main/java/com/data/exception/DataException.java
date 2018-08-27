@@ -1,13 +1,8 @@
 package com.data.exception;
 
-/**
- * 数据自定义异常
- * @author Tarro
- *
- */
 public class DataException extends RuntimeException {
 
-	private static final long serialVersionUID = -4751684850728689888L;
+	private static final long serialVersionUID = -8737961208848992533L;
 
 	public DataException() {
 		super();
