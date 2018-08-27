@@ -102,6 +102,9 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static boolean isInArray(Object obj, Object[] array) {
+		if(obj == null) {
+			return false;
+		}
 		if(array == null || array.length == 0) {
 			return false;
 		}
@@ -120,6 +123,9 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static boolean isInList(Object obj, List<?> list) {
+		if(obj == null) {
+			return false;
+		}
 		if(list == null || list.size() == 0) {
 			return false;
 		}
