@@ -41,4 +41,6 @@ public class QueryId {
 	
 	public static final String QUERY_USER_DETAIL = "UserMapper.queryUserDetail";
 	
+	public static final String QUERY_COUNT_SALE_LIST = "SaleMapper.queryCountSaleList";
+	
 }

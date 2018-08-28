@@ -83,7 +83,8 @@ public class ExcelUtil<T> {
 			throw new DataException("508");
 		}
 		if(CommonUtil.isNotBlank(title)) {
-			SXSSFWorkbook workBook = new SXSSFWorkbook();
+			//将数据放置在磁盘中 减缓压力
+			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
 			Sheet sheet = workBook.createSheet(title);
 			
 			Row row = null;
@@ -192,7 +193,7 @@ public class ExcelUtil<T> {
 			throw new DataException("510");
 		}
 		if(CommonUtil.isNotBlank(title)) {
-			SXSSFWorkbook workBook = new SXSSFWorkbook();
+			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
 			Sheet sheet = workBook.createSheet(title);
 			
 			Row row = null;

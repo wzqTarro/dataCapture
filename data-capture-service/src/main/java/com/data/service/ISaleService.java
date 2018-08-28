@@ -1,5 +1,6 @@
 package com.data.service;
 
+import com.data.bean.Sale;
 import com.data.utils.ResultUtil;
 
 public interface ISaleService {
@@ -15,4 +16,12 @@ public interface ISaleService {
 	 * @return
 	 */
 	ResultUtil getSaleByParam(String param) throws Exception;
+	
+	/**
+	 * 查询集合列表
+	 * 主要可以拿来做导出用
+	 * @param sale
+	 * @return
+	 */
+	ResultUtil querySaleList(Sale sale);
 }
