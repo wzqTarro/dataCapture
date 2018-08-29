@@ -40,20 +40,16 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
 		String saleJson = null;
 		PageRecord<Sale> page = null;
-		try {
-			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-			
-			DataCaptureUtil dataCaptureUtil = new DataCaptureUtil();
-			// 抓取数据
-			saleJson = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE);
-			logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
-			
-			// 数据插入数据库
-			page = dataCaptureUtil.insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
-			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
-		} catch (DataException e) {
-			return ResultUtil.error(e.getMessage());
-		}
+		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
+
+		DataCaptureUtil dataCaptureUtil = new DataCaptureUtil();
+		// 抓取数据
+		saleJson = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE);
+		logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
+
+		// 数据插入数据库
+		page = dataCaptureUtil.insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
+		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		return ResultUtil.success(page);
 	}
 
