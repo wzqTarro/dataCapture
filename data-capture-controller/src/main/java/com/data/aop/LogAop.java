@@ -20,24 +20,20 @@ public class LogAop {
 	 * controller方法执行前后输出日志
 	 * @param point
 	 * @return
+	 * @throws Throwable 
 	 */
 	@Around("execution(* com.data.controller..*.*(..))")
-	public Object doAroundAdvice(ProceedingJoinPoint point) {
+	public Object doAroundAdvice(ProceedingJoinPoint point) throws Throwable {
 		long start = System.currentTimeMillis();
-		logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() 
-				+ "方法：" + point.getSignature().getName() + " start at：" + start + "<<<<<<-----");
-		try {
-			Object obj = point.proceed();
-			long end = System.currentTimeMillis();
-			logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() 
-					+ "方法：" + point.getSignature().getName() + " end at：" + end + ", total：" + (end - start) + "<<<<<<-----");
-			return obj;
-		} catch (Throwable e) {
-			logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() 
-					+ "方法：" + point.getSignature().getName() + " 失败<<<<<<-----");
-			e.printStackTrace();
-		}
-		return null;
+		logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
+				+ point.getSignature().getName() + " start at：" + start + "<<<<<<-----");
+
+		Object obj = point.proceed();
+		long end = System.currentTimeMillis();
+		logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
+				+ point.getSignature().getName() + " end at：" + end + ", total：" + (end - start) + "<<<<<<-----");
+		return obj;
+
 	}
 	/**
 	 * 前置通知

@@ -27,6 +27,54 @@
     standard_name, brand, classify, series, func, material, pack_num, box_standard, stock_no, 
     sell_price, exclude_tax_price, include_tax_price
   </sql>
+  <sql id="Query_Condition">
+  	<if test="productId != null and productId != ''">
+  		AND product_id = #{productId}
+  	</if>
+  	<if test="simpleName != null and simpleName != ''">
+  		AND simple_name = #{simpleName}
+  	</if>
+  	<if test="standardName != null and standardName != ''">
+  		AND standard_name = #{standardName}
+  	</if>
+  	<if test="simpleBarCode != null and simpleBarCode != ''">
+  		AND simple_bar_code = #{simpleBarCode}
+  	</if>
+  	<if test="simpleCode != null and simpleCode != ''">
+  		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="stockCode != null and stockCode != ''">
+  		AND stock_code = #{stockCode}
+  	</if>
+  	<if test="stockNo != null and stockNo != ''">
+  		AND stock_no = #{stockNo}
+  	</if>
+  	<if test="brand != null and brand != ''">
+  		AND brand = #{brand}
+  	</if>
+  	<if test="classify != null and classify != ''">
+  		AND classify = #{classify}
+  	</if>
+  	<if test="series != null and series != ''">
+  		AND series = #{series}
+  	</if>
+  </sql>
+  <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_template_product
+    where 1=1
+    <include refid="Query_Condition"></include>
+    <if test="pageNum != null and pageSize != null">
+    LIMIT #{pageNum}, #{pageSize}
+    </if>
+  </select>
+  <select id="selectCountByParam" parameterType="map" resultType="int">
+    select COUNT(1)
+    from db_template_product
+    where 1=1
+    <include refid="Query_Condition"></include>
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

@@ -43,4 +43,9 @@ public class QueryId {
 	
 	public static final String QUERY_COUNT_SALE_LIST = "SaleMapper.queryCountSaleList";
 	
+	public static final String QUERY_PRODUCT_BY_PARAM = "TemplateProductMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_PRODUCT_BY_PARAM = "TemplateProductMapper.selectCountByParam";
+	
+	
 }

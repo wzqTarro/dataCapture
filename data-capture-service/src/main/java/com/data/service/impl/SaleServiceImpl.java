@@ -61,9 +61,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	public ResultUtil getSaleByParam(String param) throws Exception {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
 		Sale sale = FastJsonUtil.jsonToObject(param, Sale.class);
-		if (null == common) {
-			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
-		}
 		Map<String, Object> map = Maps.newHashMap();
 		logger.info("--------->>>>>>>>common:" + FastJsonUtil.objectToString(common) + "<<<<<<<-----------");		
 		if (StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
