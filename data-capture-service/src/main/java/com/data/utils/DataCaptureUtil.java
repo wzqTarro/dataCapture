@@ -1,14 +1,19 @@
 package com.data.utils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.TemplateSupply;
+import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
@@ -72,11 +77,23 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			throw new DataException("506");
 		}
 		// 插入到数据库
-		insert(mapper, list);
-		
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			executorService.execute(new Runnable() {	
+				@Override
+				public void run() {
+					insert(mapper, list);
+				}
+			});
+		} finally {
+			if (null != executorService) {
+				executorService.shutdown();
+			}
+		}
 		PageRecord<T> page = new PageRecord<>();
-		page.setList(list);
-		page.setPageTotal(list.size());
+		page.setList(Collections.EMPTY_LIST);
+		page.setPageTotal(0);
+		page.setPageSize(CommonValue.SIZE);
 		return page;
 	}
 }
