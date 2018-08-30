@@ -27,6 +27,11 @@
     standard_name, brand, classify, series, func, material, pack_num, box_standard, stock_no, 
     sell_price, exclude_tax_price, include_tax_price
   </sql>
+  <sql id="Column_List">
+    p.id, p.product_id, p.sys_name, p.simple_code, p.simple_bar_code, p.stock_code, p.simple_name, 
+    p.standard_name, p.brand, p.classify, p.series, p.func, p.material, p.pack_num, p.box_standard, p.stock_no, 
+    p.sell_price, p.exclude_tax_price, p.include_tax_price
+  </sql>
   <sql id="Query_Condition">
   	<if test="productId != null and productId != ''">
   		AND product_id = #{productId}
@@ -60,14 +65,16 @@
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from db_template_product
-    where 1=1
-    <include refid="Query_Condition"></include>
-    <if test="pageNum != null and pageSize != null">
-    LIMIT #{pageNum}, #{pageSize}
-    </if>
+    SELECT 
+    <include refid="Column_List" />
+    FROM db_template_product p
+    INNER JOIN (
+    	SELECT id 
+    	FROM db_template_product
+    	WHERE 1=1
+    	<include refid="Query_Condition"></include>
+    	LIMIT #{pageNum}, #{pageSize}
+    ) t ON(p.id = t.id)
   </select>
   <select id="selectCountByParam" parameterType="map" resultType="int">
     select COUNT(1)
