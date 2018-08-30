@@ -60,4 +60,16 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		deleteUserModel(user.getWorkNo());
 		saveUserModel(user);
 	}
+
+	@Override
+	public void setUserId(String userId, String token) {
+		String key = RedisAPI.getPrefix(RedisAPI.REDIS_USER_DATABASE, token);
+		redisUtil.setex(key, RedisAPI.EXPIRE_30_MINUTES, userId);
+	}
+
+	@Override
+	public String getUserId(String token) {
+		String key = RedisAPI.getPrefix(RedisAPI.REDIS_USER_DATABASE, token);
+		return redisUtil.get(key);
+	}
 }

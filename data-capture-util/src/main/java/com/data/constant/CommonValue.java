@@ -15,4 +15,6 @@ public class CommonValue {
 	public static final String DELETE_OPERATE = "delete";
 	
 	public static final String RECOVERY_OPERATE = "recovery";
+	
+	public static final String USER_ID = "userId";
 }

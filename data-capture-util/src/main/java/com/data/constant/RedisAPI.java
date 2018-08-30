@@ -49,7 +49,7 @@ public class RedisAPI {
 	public static final String REDIS_SALE_DATABASE = "sale";
 	
 	/**库存库**/
-	public static final String REDIS_ACOUNT_DATABASE = "acount";
+	public static final String REDIS_STORE_DATABASE = "store";
 	
 	/**退货库**/
 	public static final String REDIS_REJECT_DATABASE = "reject";

@@ -33,5 +33,18 @@ public interface IRedisService {
 	 * @param workNo
 	 */
 	void deleteUserModel(String workNo);
+	
+	/**
+	 * 生成token时插入的userId 30分钟
+	 * @param userId
+	 */
+	void setUserId(String userId, String token);
+	
+	/**
+	 * 取token中的userId
+	 * @param token
+	 * @return
+	 */
+	String getUserId(String token);
 
 }

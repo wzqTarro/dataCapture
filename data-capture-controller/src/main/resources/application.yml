@@ -31,6 +31,8 @@ spring:
     encoding:
       enabled: true
       charset: utf-8
+  jwt: 
+    secretKey: H5hjgbDSAyyteE23uMNveppCUl
       
 mybatis:
   mapper-locations: classpath:mapper/*.xml
