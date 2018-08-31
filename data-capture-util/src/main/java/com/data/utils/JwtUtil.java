@@ -3,14 +3,15 @@ package com.data.utils;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
+import com.data.constant.CommonValue;
 import com.data.exception.DataException;
 
 import io.jsonwebtoken.Claims;
@@ -30,6 +31,18 @@ public class JwtUtil {
 	private static Base64.Decoder DECODER = Base64.getDecoder();
 	
 	private static final int EXPIRE_DATE = 60 * 60 * 30 * 1000; 
+	
+	/**
+	 * 生成jwt
+	 * @param userId
+	 * @param secret
+	 * @return
+	 */
+	public static String createJwt(String userId, String secret) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put(CommonValue.USER_ID, userId);
+		return createJwt(SignatureAlgorithm.HS256, EXPIRE_DATE, secret, claims);
+	}
 	
 	/**
 	 * 生成jwt

@@ -72,4 +72,22 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		String key = RedisAPI.getPrefix(RedisAPI.REDIS_USER_DATABASE, token);
 		return redisUtil.get(key);
 	}
+
+	@Override
+	public void setAccessToken(String key, String token) {
+		String tokenKey = RedisAPI.getPrefix(RedisAPI.REDIS_TOKEN_AUTHENTICATE, key);
+		redisUtil.setex(tokenKey, RedisAPI.EXPIRE_30_MINUTES, token);
+	}
+
+	@Override
+	public String getAccessToken(String key) {
+		String tokenKey = RedisAPI.getPrefix(RedisAPI.REDIS_TOKEN_AUTHENTICATE, key);
+		return redisUtil.get(tokenKey);
+	}
+
+	@Override
+	public void deleteAccessToken(String key) {
+		String tokenKey = RedisAPI.getPrefix(RedisAPI.REDIS_TOKEN_AUTHENTICATE, key);
+		redisUtil.del(tokenKey);
+	}
 }

@@ -39,6 +39,9 @@ public class JwtServiceImpl extends CommonServiceImpl implements IJwtService {
 		if(CommonUtil.isBlank(userId)) {
 			throw new DataException("403");
 		}
+		/**
+		 * TODO 将生成token的代码放至在服务中
+		 */
 		String token = JwtUtil.createJwt(params, secret, 60 * 60 * 30 * 1000);
 		redisService.setUserId(userId, token);
 		return ResultUtil.success(token);
@@ -60,7 +63,7 @@ public class JwtServiceImpl extends CommonServiceImpl implements IJwtService {
 			logger.info("--->>>身份已失效， 请重新登录<<<---");
 			throw new DataException("516");
 		} catch (Exception e) {
-			logger.info("--->>>认证不通过， 请重新登录<<<---");
+			logger.info("--->>>系统异常， 请重新登录<<<---");
 			throw new DataException("517");
 		}
 		if(claims == null) {
@@ -76,6 +79,9 @@ public class JwtServiceImpl extends CommonServiceImpl implements IJwtService {
 			if(CommonUtil.isBlank(id)) {
 				throw new DataException("403");
 			}
+			/**
+			 * 此处校验代码参考拦截器校验 需修改
+			 */
 			if(!id.equals(userId)) {
 				throw new DataException("515");
 			}

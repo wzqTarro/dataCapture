@@ -1,5 +1,7 @@
 package com.data.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +85,31 @@ public class UserController {
 	@ApiOperation(value = "删除用户信息", httpMethod = "POST")
 	public String deleteUser(String id) {
 		ResultUtil result = userService.deleteUser(id);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 用户登录
+	 * @param userId
+	 * @param password
+	 * @return
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@ApiOperation(value = "用户登录", httpMethod = "POST")
+	public String login(String userId, String password) {
+		ResultUtil result = userService.login(userId, password);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 用户退出
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ApiOperation(value = "用户退出", httpMethod = "GET")
+	public String logout(String userId) {
+		ResultUtil result = userService.logout(userId);
 		return FastJsonUtil.objectToString(result);
 	}
 }

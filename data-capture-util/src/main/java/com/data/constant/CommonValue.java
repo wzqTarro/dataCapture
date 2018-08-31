@@ -16,5 +16,12 @@ public class CommonValue {
 	
 	public static final String RECOVERY_OPERATE = "recovery";
 	
+	/**全局用户id标识**/
 	public static final String USER_ID = "userId";
+	
+	/**全局jwt生成token字段标识**/
+	public static final String ACCESS_TOKEN_KEY = "accessToken";
+	
+	/**token前面自定义标识**/
+	public static final String ELLE = "elle";
 }

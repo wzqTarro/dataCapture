@@ -46,5 +46,25 @@ public interface IRedisService {
 	 * @return
 	 */
 	String getUserId(String token);
+	
+	/**
+	 * 保存token
+	 * @param key
+	 * @param token
+	 */
+	void setAccessToken(String key, String token);
+	
+	/**
+	 * 得到token
+	 * @param key
+	 * @return
+	 */
+	String getAccessToken(String key);
+	
+	/**
+	 * 删除token
+	 * @param key
+	 */
+	void deleteAccessToken(String key);
 
 }

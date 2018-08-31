@@ -1,5 +1,7 @@
 package com.data.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.data.bean.User;
 import com.data.utils.ResultUtil;
 
@@ -46,4 +48,20 @@ public interface IUserService {
 	 * @return
 	 */
 	ResultUtil deleteUser(String workNo);
+	
+	/**
+	 * 用户登录
+	 * @param userId
+	 * @param password
+	 * @param request
+	 * @return
+	 */
+	ResultUtil login(String userId, String password);
+	
+	/**
+	 * 用户退出
+	 * @param userId
+	 * @return
+	 */
+	ResultUtil logout(String userId);
 }

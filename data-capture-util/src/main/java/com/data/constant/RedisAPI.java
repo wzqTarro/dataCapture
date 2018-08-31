@@ -57,6 +57,8 @@ public class RedisAPI {
 	/**用户库**/
 	public static final String REDIS_USER_DATABASE = "user";
 	
+	public static final String REDIS_TOKEN_AUTHENTICATE = "data:token";
+	
 	/**
 	 * 得到存入缓存中的key值
 	 * @param database 存入哪种类型的库

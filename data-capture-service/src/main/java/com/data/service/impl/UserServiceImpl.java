@@ -3,22 +3,28 @@ package com.data.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.User;
+import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.exception.DataException;
-import com.data.service.IUserService;
 import com.data.service.IRedisService;
+import com.data.service.IUserService;
 import com.data.utils.CommonUtil;
+import com.data.utils.EncryptUtil;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.JwtUtil;
 import com.data.utils.ResultUtil;
 
 /**
@@ -30,6 +36,9 @@ import com.data.utils.ResultUtil;
 public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	
 	private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	
+	@Value("${spring.jwt.secretKey}")
+	private String secret;
 	
 	@Autowired
 	private IRedisService redisService;
@@ -122,6 +131,41 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		user.setIsAlive("01");
 		user.setWorkNo(workNo);
 		update(UpdateId.UPDATE_USER_MESSAGE, user);
+		return ResultUtil.success();
+	}
+
+	@Override
+	public ResultUtil login(String userId, String password) {
+		logger.info("--->>>登录前台传回用户id: {} 密码: {} <<<---", userId, password);
+		if(CommonUtil.isBlank(userId) || CommonUtil.isBlank(password)) {
+			throw new DataException("405");
+		}
+		int count = queryCountByObject(QueryId.QUERY_COUNT_USER_BY_USER_ID, userId);
+		if(count == 0) {
+			logger.info("--->>>用户不存在<<<---");
+			throw new DataException("406");
+		}
+		User user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_ID, userId);
+		String md5Password = EncryptUtil.Md5Encrypt(password);
+		if(!EncryptUtil.verify(md5Password, user.getPassword())) {
+			logger.info("--->>>密码校验不通过<<<---");
+			throw new DataException("407");
+		}
+		//生成token并且放入缓存中
+		String accessToken = JwtUtil.createJwt(userId, secret);
+		accessToken = CommonValue.ELLE + accessToken;
+		redisService.setAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId, accessToken);
+		Map<String, Object> map = new HashMap<>();
+		map.put("userId", userId);
+		map.put("accessToken", accessToken);
+		logger.info("--->>>用户登录通过: {} <<<---", FastJsonUtil.objectToString(map));
+		return ResultUtil.success(map);
+	}
+
+	@Override
+	public ResultUtil logout(String userId) {
+		logger.info("--->>>用户退出 userId: {} <<<---", userId);
+		redisService.deleteAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId);
 		return ResultUtil.success();
 	}
 
