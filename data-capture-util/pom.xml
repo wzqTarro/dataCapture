@@ -83,11 +83,11 @@
 	</dependency>
 
 	<!-- redis -->
-	<dependency>
+	<!-- <dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-data-redis</artifactId>
 		<version>${spring-boot-starter-data-redis.version}</version>
-	</dependency>
+	</dependency> -->
 	<!--spring2.0集成redis所需common-pool2 -->
 	<dependency>
 		<groupId>org.apache.commons</groupId>

@@ -32,9 +32,10 @@ spring:
       enabled: true
       charset: utf-8
   redis: 
-    host: 127.0.0.1
-    password: 123456
-    port: 6379
+    #host: 127.0.0.1
+    host: 0.0.0.0
+    password: OIUBmgvR983VVTHvr=
+    port: 16379
     timeout: 5000 #连接超时时间（毫秒）
     database: 0 #redis默认情况下有16个分片 这里配置具体使用的分片 默认是0
     lettuce: 
