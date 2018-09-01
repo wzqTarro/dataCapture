@@ -41,8 +41,10 @@ public class DataInterceptor implements HandlerInterceptor {
 	@PostConstruct
 	public void init() {
 		filterUrls = new String[] {
+				"/swagger-ui.html",
 				"/error",
 				"/user/login"
+				
 		};
 	}
 	
