@@ -38,13 +38,13 @@ public class RedisUtil {
 	public static StatefulRedisConnection<String, String> conn;
 	
 	//@Value("${spring.redis.host}")
-	private String host = "127.0.0.1";
+	private String host = "0.0.0.0";
 	
 	//@Value("${spring.redis.password}")
-	private String password = "123456";
+	private String password = "OIUBmgvR983VVTHvr=";
 	
 	//@Value("${spring.redis.port}")
-	private int port = 6379;
+	private int port = 16379;
 	
 	//@Value("${spring.redis.timeout}")
 	private long timeout = 5000;
