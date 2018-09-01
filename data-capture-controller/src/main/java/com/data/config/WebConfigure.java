@@ -22,12 +22,16 @@ public class WebConfigure implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
 						.excludePathPatterns("/webjars/**",
-											 "/swagger-resources/**",
-											 "/static/**",
+//											 "/swagger-resources/**",
+//											 "/static/**",
+//											 "/js/**",
+//											 "/css/**",
+//											 "/highcharts/**",
+//											 "/bootstrap/**",
+//											 "/layui/**");
+											 "/resource/**",
+											 "/html/**",
 											 "/js/**",
-											 "/css/**",
-											 "/highcharts/**",
-											 "/bootstrap/**",
-											 "/layui/**");
+											 "/css/**");
 	}
 }
