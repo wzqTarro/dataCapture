@@ -32,6 +32,10 @@
   	WHERE work_no=#{workNo}
   </select>
   
+  <select id="queryCountUserByUserId" parameterType="string" resultType="int">
+  	SELECT COUNT(1) FROM db_user WHERE work_no=#{userId}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_user
     where id = #{id,jdbcType=INTEGER}

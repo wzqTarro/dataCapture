@@ -3,8 +3,6 @@ package com.data.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +154,9 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		accessToken = CommonValue.ELLE + accessToken;
 		redisService.setAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId, accessToken);
 		Map<String, Object> map = new HashMap<>();
-		map.put("userId", userId);
+		//workNo就是userId
+		map.put("workNo", userId);
+		map.put("username", user.getUsername());
 		map.put("accessToken", accessToken);
 		logger.info("--->>>用户登录通过: {} <<<---", FastJsonUtil.objectToString(map));
 		return ResultUtil.success(map);

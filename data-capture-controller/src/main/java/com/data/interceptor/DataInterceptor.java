@@ -62,14 +62,14 @@ public class DataInterceptor implements HandlerInterceptor {
 			Claims claims = JwtUtil.parseJwt(accessToken, secret);
 			if(isAuthenticate(request, accessToken, claims)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
-				request.setAttribute("userId", userId);
+				request.setAttribute("workNo", userId);
+				return true;
 			} else {
 				//认证失败
 				logger.info("--->>>token校验失败<<<---");
 				throw new DataException("521");
 			}
 		}
-		return true;
 	}
 	
 	private boolean isAuthenticate(HttpServletRequest request, String accessToken, Claims claims) {
