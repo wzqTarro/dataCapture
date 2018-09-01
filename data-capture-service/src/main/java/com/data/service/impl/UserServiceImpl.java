@@ -144,6 +144,10 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			throw new DataException("406");
 		}
 		User user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_ID, userId);
+		if("01".equals(user.getIsAlive())) {
+			logger.info("--->>>用户已失效<<<---");
+			throw new DataException("406");
+		}
 		String md5Password = EncryptUtil.Md5Encrypt(password);
 		if(!EncryptUtil.verify(md5Password, user.getPassword())) {
 			logger.info("--->>>密码校验不通过<<<---");

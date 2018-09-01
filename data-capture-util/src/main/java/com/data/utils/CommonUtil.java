@@ -1,8 +1,11 @@
 package com.data.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -86,6 +89,16 @@ public class CommonUtil {
 	 */
 	public static String generateUUID() {
 		return UUID.randomUUID().toString().replace("-", "");
+	}
+	
+	public static String createWorkNo() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("by");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyss");
+		builder.append(sdf.format(new Date()));
+		Random random = new Random();
+		builder.append(random.nextInt(1000));
+		return builder.toString();
 	}
 
 	public static void main(String[] args) {
