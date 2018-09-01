@@ -38,7 +38,8 @@ public class RedisUtil {
 	public static StatefulRedisConnection<String, String> conn;
 	
 	//@Value("${spring.redis.host}")
-	private String host = "0.0.0.0";
+	//private String host = "127.0.0.1";
+	private String host = "120.77.153.124";
 	
 	//@Value("${spring.redis.password}")
 	private String password = "OIUBmgvR983VVTHvr=";
@@ -96,9 +97,9 @@ public class RedisUtil {
 		config.setMinIdle(minIdle);
 		config.setMaxWaitMillis(maxWait);
 		pool = ConnectionPoolSupport.createGenericObjectPool(() -> client.connect(), config);
-		logger.info("--->>>redis客户端初始化完成<<<---");
 		try {
 			conn = pool.borrowObject();
+			logger.info("--->>>redis客户端初始化完成<<<---");
 		} catch (Exception e) {
 			logger.info("--->>>连接初始化失败" + e.getMessage());
 		}
