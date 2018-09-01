@@ -8,9 +8,6 @@ import java.util.Map;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.data.constant.CommonValue;
 import com.data.exception.DataException;
 
@@ -25,8 +22,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
  *
  */
 public class JwtUtil {
-	
-	private static Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 	
 	private static Base64.Decoder DECODER = Base64.getDecoder();
 	

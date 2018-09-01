@@ -23,5 +23,5 @@ public class CommonValue {
 	public static final String ACCESS_TOKEN_KEY = "accessToken";
 	
 	/**token前面自定义标识**/
-	public static final String ELLE = "elle";
+	public static final String ELLE = "elle ";
 }

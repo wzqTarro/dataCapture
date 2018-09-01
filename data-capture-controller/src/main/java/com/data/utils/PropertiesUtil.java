@@ -1,6 +1,8 @@
 package com.data.utils;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -19,17 +21,22 @@ public class PropertiesUtil {
 
 	public static Properties prop;
 	
-	public static InputStream in;
+	//public static InputStream in;
 	
 	static {
 		loadProperties();
 	}
 	
 	public static void loadProperties() {
-		in = PropertiesUtil.class.getResourceAsStream("/exception.properties");
+		InputStream in = null;
+		prop = new Properties();
 		try {
-			BufferedInputStream buf = new BufferedInputStream(in);
-			prop.load(buf);
+			in = PropertiesUtil.class.getClassLoader().getResourceAsStream("exception.properties");
+			//BufferedInputStream buf = new BufferedInputStream(in);
+			prop.load(in);
+		} catch (FileNotFoundException e) {
+			logger.info("--->>>exception.properties文件未找到<<<---");
+			e.printStackTrace();
 		} catch (IOException e) {
 			logger.info("--->>>读取properties文件异常<<<---");
 			e.printStackTrace();

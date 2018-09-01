@@ -83,6 +83,7 @@ public class RedisUtil {
 	
 	@PostConstruct
 	public void init() {
+		logger.info("--->>>redis客户端初始化开始<<<---");
 		RedisURI uri = new RedisURI();
 		uri.setHost(host);
 		uri.setPassword(password);
@@ -95,6 +96,7 @@ public class RedisUtil {
 		config.setMinIdle(minIdle);
 		config.setMaxWaitMillis(maxWait);
 		pool = ConnectionPoolSupport.createGenericObjectPool(() -> client.connect(), config);
+		logger.info("--->>>redis客户端初始化完成<<<---");
 		try {
 			conn = pool.borrowObject();
 		} catch (Exception e) {

@@ -48,4 +48,6 @@ public class QueryId {
 	public static final String QUERY_COUNT_PRODUCT_BY_PARAM = "TemplateProductMapper.selectCountByParam";
 	
 	public static final String QUERY_COUNT_USER_BY_USER_ID = "UserMapper.queryCountUserByUserId";
+	
+	public static final String QUERY_USER_BY_WORK_NO = "UserMapper.queryUserByWorkNo";
 }

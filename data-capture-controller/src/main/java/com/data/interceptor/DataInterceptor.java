@@ -41,13 +41,26 @@ public class DataInterceptor implements HandlerInterceptor {
 	@PostConstruct
 	public void init() {
 		filterUrls = new String[] {
-				
+				"/error",
+				"/user/login"
 		};
 	}
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+		String requestUrl = request.getServletPath();
+		logger.info("--->>>请求url: {} <<<---", requestUrl);
+		
+		//如果是免拦截请求则放通
+		if(filterUrls != null && filterUrls.length != 0) {
+			for(String url : filterUrls) {
+				if(requestUrl.equals(url)) {
+					return true;
+				}
+			}
+		}
+		
 		//此处就从请求里面取
 		String accessToken = request.getParameter("accessToken");
 		logger.info("--->>>前台回传的token: {} <<<---", accessToken);
@@ -60,9 +73,10 @@ public class DataInterceptor implements HandlerInterceptor {
 			throw new DataException("519");
 		} else {
 			Claims claims = JwtUtil.parseJwt(accessToken, secret);
-			if(isAuthenticate(request, accessToken, claims)) {
+			if(isAuthenticate(accessToken, claims)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
 				request.setAttribute("workNo", userId);
+				logger.info("--->>>用户: {} 认证通过<<<---", userId);
 				return true;
 			} else {
 				//认证失败
@@ -72,18 +86,7 @@ public class DataInterceptor implements HandlerInterceptor {
 		}
 	}
 	
-	private boolean isAuthenticate(HttpServletRequest request, String accessToken, Claims claims) {
-		String requestUrl = request.getServletPath();
-		
-		//如果是免拦截请求则放通
-		if(filterUrls != null && filterUrls.length != 0) {
-			for(String url : filterUrls) {
-				if(requestUrl.equals(url)) {
-					return true;
-				}
-			}
-		}
-		
+	private boolean isAuthenticate(String accessToken, Claims claims) {
 		//否则必须认证
 		//将token生成重新匹对
 		//不对

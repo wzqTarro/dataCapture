@@ -1,5 +1,7 @@
 package com.data.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +21,8 @@ import com.data.utils.ResultUtil;
  */
 @ControllerAdvice
 public class DataBaseException {
+	
+	private static Logger logger = LoggerFactory.getLogger(DataBaseException.class);
 
 	@ResponseBody
 	@ExceptionHandler(Exception.class)
@@ -29,6 +33,7 @@ public class DataBaseException {
 		if(e instanceof DataException) {
 			String errorCode = e.getMessage();
 			String errorMessage = PropertiesUtil.getMessage(errorCode);
+			logger.info("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
 			if(CommonUtil.isNotBlank(errorMessage)) {
 				result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
 				result.setMsg(errorMessage);

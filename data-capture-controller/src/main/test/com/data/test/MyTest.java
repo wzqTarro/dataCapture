@@ -12,7 +12,11 @@ public class MyTest {
 		System.err.println("workNo: " + CommonUtil.createWorkNo());
 		
 		String password = "123456";
-		System.err.println("password: " + EncryptUtil.Md5Encrypt(password));
+		String md5Password = EncryptUtil.Md5Encrypt(password);
+		System.err.println("password: " + md5Password);
+		
+		String newPassword = EncryptUtil.Md5Encrypt(password);
+		System.err.println("newPassword: " + newPassword);
 		
 	}
 }
