@@ -70,7 +70,7 @@ public class ResultUtil implements Serializable {
 	
 	public static <T> ResultUtil success(PageRecord<T> data) {
 		ResultUtil result = new ResultUtil(CodeEnum.RESPONSE_00_CODE.getValue(), TipsEnum.OPERATE_SUCCESS.getValue());
-		if (null == data) {
+		if (null == data || null == data.getList()) {
 			result.setData(Collections.EMPTY_LIST);
 		}else {
 			result.setData(data.getList());	

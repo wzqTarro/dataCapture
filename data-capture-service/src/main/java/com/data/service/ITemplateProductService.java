@@ -28,5 +28,5 @@ public interface ITemplateProductService {
 	 * @param id
 	 * @return
 	 */
-	ResultUtil deleteTemplateProduct(Integer id);
+	ResultUtil deleteTemplateProduct(int id);
 }

@@ -50,4 +50,13 @@ public class QueryId {
 	public static final String QUERY_COUNT_USER_BY_USER_ID = "UserMapper.queryCountUserByUserId";
 	
 	public static final String QUERY_USER_BY_WORK_NO = "UserMapper.queryUserByWorkNo";
+
+	public static final String QUERY_STORE_BY_PARAM = "TemplateStoreMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_STORE_BY_PARAM = "TemplateStoreMapper.selectCountByParam";
+	
+	public static final String QUERY_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectCountByParam";
+	
 }

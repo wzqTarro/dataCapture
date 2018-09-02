@@ -113,6 +113,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 				map.put("region", supply.getRegion());
 			}
 		}
+		logger.info("------>>>>>供应链查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
 		PageRecord<TemplateSupply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, map, common.getPage(), common.getLimit());
 		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(page) +"<<<<<<--------");
 		return ResultUtil.success(page);

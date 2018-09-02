@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/templateProduct")
-@Api(tags = "商品模板数据接口")
+@Api(tags = "模板商品数据接口")
 public class TemplateProductController {
 
 	@Autowired

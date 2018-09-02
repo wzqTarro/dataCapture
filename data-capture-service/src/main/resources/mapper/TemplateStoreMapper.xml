@@ -27,6 +27,45 @@
     store_market, store_city, sys_name, store_user, logistics_model, practice_time, distribution_code, 
     distribution_name, distribution_user, region, province_area, ascription, ascription_sole
   </sql>
+  <sql id="Column_List">
+    s.id, s.store_code, s.order_store_name, s.return_store_name, s.sale_store_name, s.standard_store_name, 
+    s.store_market, s.store_city, s.sys_name, s.store_user, s.logistics_model, s.practice_time, s.distribution_code, 
+    s.distribution_name, s.distribution_user, s.region, s.province_area, s.ascription, s.ascription_sole
+  </sql>
+  <sql id="Query_Condition">
+  	<if test="region != '' and region != null">
+  		AND region = #{region}
+  	</if>
+  	<if test="provinceArea != '' and provinceArea != null">
+  		AND province_area = #{provinceArea}
+  	</if>
+  	<if test="distributionName != '' and distributionName != null">
+  		AND distribution_name = #{distributionName}
+  	</if>
+  	<if test="distributionCode != '' and distributionCode != null">
+  		AND distribution_code = #{distributionCode}
+  	</if>
+  	<if test="storeCode != '' and storeCode != null">
+  		AND store_code = #{storeCode}
+  	</if>
+  </sql>
+  <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Column_List"></include>
+  	FROM db_template_store s
+  	INNER JOIN (
+  		SELECT id
+  		FROM db_template_store
+  		WHERE 1=1
+  		<include refid="Query_Condition"></include>	
+  		LIMIT #{pageNum}, #{pageSize}
+  	) ts ON(ts.id = s.id)
+  </select>
+  <select id="selectCountByParam" parameterType="map" resultType="int">
+  	SELECT COUNT(1)
+  	FROM db_template_store 
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>	
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

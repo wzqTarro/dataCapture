@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.TemplateProduct;
 import com.data.constant.PageRecord;
@@ -83,13 +84,14 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 				map.put("series", product.getSeries());
 			}
 		}
-		logger.info("------>>>>>map:{}<<<<<------", FastJsonUtil.objectToString(map));
+		logger.info("------>>>>>模板商品查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
 		PageRecord<TemplateProduct> page = queryPageByObject(QueryId.QUERY_COUNT_PRODUCT_BY_PARAM, QueryId.QUERY_PRODUCT_BY_PARAM, 
 				map, common.getPage(), common.getLimit());
-		logger.info("------>>>>>page:{}<<<<<------", FastJsonUtil.objectToString(page));
+		logger.info("------>>>>>模板商品分页信息:{}<<<<<------", FastJsonUtil.objectToString(page));
 		return ResultUtil.success(page);
 	}
 
+	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil updateTemplateProduct(TemplateProduct product) {
 		if (null == product) {
@@ -103,6 +105,7 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success();
 	}
 
+	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil insertTemplateProduct(TemplateProduct product) {
 		if (null == product) {
@@ -114,9 +117,10 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success();
 	}
 
+	@Transactional(rollbackFor = {Exception.class})
 	@Override
-	public ResultUtil deleteTemplateProduct(Integer id) {
-		if (null == id || 0 == id) {
+	public ResultUtil deleteTemplateProduct(int id) {
+		if (0 == id) {
 			return ResultUtil.error(TipsEnum.ID_ERROR.getValue());
 		}
 		logger.info("------>>>>>>>id:{}<<<<<<<--------", id);
