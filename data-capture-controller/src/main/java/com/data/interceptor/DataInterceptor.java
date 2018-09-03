@@ -71,14 +71,11 @@ public class DataInterceptor implements HandlerInterceptor {
 			throw new DataException("518");
 		}
 		
-		// 永久权限
-		if ("CQBY".equals(accessToken)) {
-			return true;
-		}
 		String elle = accessToken.substring(0, 5).toLowerCase();
 		if(!CommonUtil.isNotBlank(elle) || elle.length() < 5) {
 			throw new DataException("519");
 		} else {
+			accessToken = accessToken.substring(5);
 			Claims claims = JwtUtil.parseJwt(accessToken, secret);
 			if(isAuthenticate(accessToken, claims)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
@@ -94,20 +91,13 @@ public class DataInterceptor implements HandlerInterceptor {
 	}
 	
 	private boolean isAuthenticate(String accessToken, Claims claims) {
-		//否则必须认证
-		//将token生成重新匹对
-		//不对
+		logger.info("--->>>前台传回生成的accessToken: {} <<<---", accessToken);
 		String token = redisService.getAccessToken(CommonValue.ACCESS_TOKEN_KEY + claims.get("userId").toString());
+		token = token.substring(5);
+		logger.info("--->>>后台保存的token: {} <<<---", token);
 		if(CommonUtil.isBlank(token)) {
 			throw new DataException("520");
 		}
-		String userId = claims.get(CommonValue.USER_ID).toString();
-		if(CommonUtil.isNotBlank(userId)) {
-			//匹配token
-			String shadowToken = JwtUtil.createJwt(userId, secret);
-			logger.info("--->>>前台传回生成的shadowToken: {} <<<---", shadowToken);
-			return shadowToken.equals(accessToken);
-		}
-		return false;
+		return token.equals(accessToken);
 	}
 }

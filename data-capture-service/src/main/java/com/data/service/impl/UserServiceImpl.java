@@ -148,9 +148,13 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			logger.info("--->>>用户已失效<<<---");
 			throw new DataException("406");
 		}
-		//String md5Password = EncryptUtil.Md5Encrypt(password);
-		if(!EncryptUtil.verify(password, user.getPassword())) {
-			logger.info("--->>>密码校验不通过<<<---");
+		try {
+			if(!EncryptUtil.verify(password, user.getPassword())) {
+				logger.info("--->>>密码校验不通过<<<---");
+				throw new DataException("407");
+			}
+		} catch (StringIndexOutOfBoundsException e) {
+			logger.info("--->>>密码校验异常: {}<<<---", e.getMessage());
 			throw new DataException("407");
 		}
 		//生成token并且放入缓存中
