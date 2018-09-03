@@ -76,7 +76,13 @@ public class DataInterceptor implements HandlerInterceptor {
 			throw new DataException("519");
 		} else {
 			accessToken = accessToken.substring(5);
-			Claims claims = JwtUtil.parseJwt(accessToken, secret);
+			Claims claims;
+			try {
+				claims = JwtUtil.parseJwt(accessToken, secret);
+			} catch (Exception e) {
+				logger.info("--->>>token解析失败<<<---");
+				throw new DataException("521");
+			}
 			if(isAuthenticate(accessToken, claims)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
 				request.setAttribute("workNo", userId);
