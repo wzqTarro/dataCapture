@@ -98,12 +98,18 @@ public class DataInterceptor implements HandlerInterceptor {
 	
 	private boolean isAuthenticate(String accessToken, Claims claims) {
 		logger.info("--->>>前台传回生成的accessToken: {} <<<---", accessToken);
-		String token = redisService.getAccessToken(CommonValue.ACCESS_TOKEN_KEY + claims.get("userId").toString());
-		token = token.substring(5);
-		logger.info("--->>>后台保存的token: {} <<<---", token);
-		if(CommonUtil.isBlank(token)) {
-			throw new DataException("520");
+		String token = "";
+		try {
+			token = redisService.getAccessToken(CommonValue.ACCESS_TOKEN_KEY + claims.get("userId").toString());
+			token = token.substring(5);
+			logger.info("--->>>后台保存的token: {} <<<---", token);
+			if(CommonUtil.isBlank(token)) {
+				throw new DataException("520");
+			}
+			return token.equals(accessToken);
+		} catch (Exception e) {
+			logger.info("--->>>令牌已失效，请重新登录<<<---");
+			return false;
 		}
-		return token.equals(accessToken);
 	}
 }

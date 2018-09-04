@@ -39,7 +39,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 			String json = redisUtil.get(key);
 			User user = FastJsonUtil.jsonToObject(json, User.class);
 			if(user == null) {
-				user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_ID, workNo);
+				user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_WORK_NO, workNo);
 				redisUtil.setex(key, RedisAPI.EXPIRE_30_MINUTES, FastJsonUtil.objectToString(user));
 			}
 			return user;

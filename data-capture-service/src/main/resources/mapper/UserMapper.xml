@@ -23,8 +23,9 @@
   
   <sql id="Query_Condition">
   	<where>
+  		is_alive='00' 
   		<if test="workNo != null and workNo != ''">
-  			work_no=#{workNo} 
+  			AND work_no=#{workNo} 
   		</if>
   		<if test="username != null and username != ''">
   			AND username=#{username} 
