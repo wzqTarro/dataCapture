@@ -25,16 +25,17 @@ public class LogAop {
 	@Around("execution(* com.data.controller..*.*(..))")
 	public Object doAroundAdvice(ProceedingJoinPoint point) throws Throwable {
 		long start = System.currentTimeMillis();
-		logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
-				+ point.getSignature().getName() + " start at：" + start + "<<<<<<-----");
+		logger.info("--->>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
+				+ point.getSignature().getName() + " start at：" + start + "<<<---");
 
 		Object obj = point.proceed();
 		long end = System.currentTimeMillis();
-		logger.info("----->>>>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
-				+ point.getSignature().getName() + " end at：" + end + ", total：" + (end - start) + "<<<<<<-----");
+		logger.info("--->>>调用" + point.getSignature().getDeclaringTypeName() + "方法："
+				+ point.getSignature().getName() + " end at：" + end + ", total：" + (end - start) + "<<<---");
 		return obj;
 
 	}
+	
 	/**
 	 * 前置通知
 	 * service方法执行前日志输出
@@ -42,8 +43,8 @@ public class LogAop {
 	 */
 	@Before("execution(* com.data.service..*.*(..))")
 	public void doBeginAdvice(JoinPoint point) {
-		logger.info("----->>>>>" + point.getSignature().getDeclaringTypeName() 
-				+ "方法：" + point.getSignature().getName() + "<<<<<<-----");
+		logger.info("--->>>" + point.getSignature().getDeclaringTypeName() 
+				+ "方法：" + point.getSignature().getName() + "<<<---");
 		/**
 		 * TODO
 		 * 缺少输出service方法的参数名及值的通用方法

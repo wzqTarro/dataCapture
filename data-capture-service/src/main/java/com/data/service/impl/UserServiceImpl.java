@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +87,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	public ResultUtil saveUser(User user) {
 		logger.info("--->>>保存用户信息: {}<<<---", FastJsonUtil.objectToString(user));
 		if(CommonUtil.isBlank(user)) {
-			throw new DataException("401");
+			//throw new DataException("401");
+			return ResultUtil.error("传入用户信息不存在");
 		}
 		insert(InsertId.INSERT_NEW_USER_MESSAGE, user);
 		return ResultUtil.success();
@@ -97,7 +99,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	public ResultUtil updateUser(User user) {
 		logger.info("--->>>更新用户信息: {}<<<---", FastJsonUtil.objectToString(user));
 		if(CommonUtil.isBlank(user)) {
-			throw new DataException("401");
+			//throw new DataException("401");
+			return ResultUtil.error("传入用户信息不存在");
 		}
 		update(UpdateId.UPDATE_USER_MESSAGE, user);
 		return ResultUtil.success();
@@ -107,7 +110,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	public ResultUtil queryUserDetail(String workNo) {
 		logger.info("--->>>查询用户详情 id编号: {} <<<---", workNo);
 		if(CommonUtil.isBlank(workNo)) {
-			throw new DataException("404");
+			//throw new DataException("404");
+			return ResultUtil.error("用工号不能为空");
 		}
 		User user = redisService.getUserModel(workNo);
 		if(CommonUtil.isBlank(user)) {
@@ -122,7 +126,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	public ResultUtil deleteUser(String workNo) {
 		logger.info("--->>>删除用户 workNo编号: {} <<<---", workNo);
 		if(CommonUtil.isBlank(workNo)) {
-			throw new DataException("404");
+			//throw new DataException("404");
+			return ResultUtil.error("用工号不能为空");
 		}
 		//此处用户删除采用逻辑删除
 		User user = new User();
@@ -136,31 +141,38 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	public ResultUtil login(String userId, String password) {
 		logger.info("--->>>登录前台传回用户id: {} 密码: {} <<<---", userId, password);
 		if(CommonUtil.isBlank(userId) || CommonUtil.isBlank(password)) {
-			throw new DataException("405");
+			//throw new DataException("405");
+			return ResultUtil.error("用工号或密码不能为空");
 		}
 		int count = queryCountByObject(QueryId.QUERY_COUNT_USER_BY_USER_ID, userId);
 		if(count == 0) {
 			logger.info("--->>>用户不存在<<<---");
-			throw new DataException("406");
+			//throw new DataException("406");
+			return ResultUtil.error("用户不存在，请重新数据");
 		}
 		User user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_WORK_NO, userId);
 		if("01".equals(user.getIsAlive())) {
 			logger.info("--->>>用户已失效<<<---");
-			throw new DataException("406");
+			//throw new DataException("406");
+			return ResultUtil.error("用户不存在，请重新数据");
 		}
 		try {
 			if(!EncryptUtil.verify(password, user.getPassword())) {
 				logger.info("--->>>密码校验不通过<<<---");
-				throw new DataException("407");
+				//throw new DataException("407");
+				return ResultUtil.error("密码不正确，请重新输入");
 			}
 		} catch (StringIndexOutOfBoundsException e) {
 			logger.info("--->>>密码校验异常: {}<<<---", e.getMessage());
-			throw new DataException("407");
+			//throw new DataException("407");
+			return ResultUtil.error("密码不正确，请重新输入");
 		}
 		//生成token并且放入缓存中
 		String accessToken = JwtUtil.createJwt(userId, secret);
 		accessToken = CommonValue.ELLE + accessToken;
 		redisService.setAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId, accessToken);
+		//更新用户登录次数及时间
+		updateUserLoginTrace(userId);
 		Map<String, Object> map = new HashMap<>();
 		//workNo就是userId
 		map.put("workNo", userId);
@@ -175,6 +187,17 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		logger.info("--->>>用户退出 userId: {} <<<---", userId);
 		redisService.deleteAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId);
 		return ResultUtil.success();
+	}
+	
+	private void updateUserLoginTrace(String workNo) {
+		User oldUser = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_WORK_NO, workNo);
+		logger.info("--->>>用户{}的信息为: {}<<<---", workNo, FastJsonUtil.objectToString(oldUser));
+		User user = new User();
+		user.setWorkNo(workNo);
+		user.setLoginTimes(oldUser.getLoginTimes() + 1);
+		user.setLastLoginDate(new Date(System.currentTimeMillis()));
+		update(UpdateId.UPDATE_USER_MESSAGE, user);
+		logger.info("--->>>更新用户登录信息成功<<<---");
 	}
 
 }
