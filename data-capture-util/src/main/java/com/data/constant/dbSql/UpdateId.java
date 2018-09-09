@@ -22,4 +22,6 @@ public class UpdateId {
 	public static final String UPDATE_SIMPLE_CODE_BY_MESSAGE = "SimpleCodeMapper.updateByPrimaryKeySelective";
 	
 	public static final String UPDATE_STORE_BY_MESSAGE = "TemplateStoreMapper.updateByPrimaryKeySelective";
+	
+	public static final String UPDATE_USER_MESSAGE_BY_WORK_NO = "UserMapper.updateUserMessageByWorkNo";
 }

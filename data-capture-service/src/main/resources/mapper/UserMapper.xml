@@ -183,6 +183,50 @@
       </if>
     </trim>
   </insert>
+  
+  <update id="updateUserMessageByWorkNo" parameterType="com.data.bean.User">
+    update db_user
+    <set>
+      <if test="workNo != null">
+        work_no = #{workNo,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileCode != null">
+        mobile_code = #{mobileCode,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        department = #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTimes != null">
+        login_times = #{loginTimes,jdbcType=INTEGER},
+      </if>
+      <if test="lastLoginDate != null">
+        last_login_date = #{lastLoginDate,jdbcType=DATE},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isAlive != null">
+        is_alive = #{isAlive,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where work_no = #{workNo,jdbcType=VARCHAR}
+  </update>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.User">
     update db_user
     <set>

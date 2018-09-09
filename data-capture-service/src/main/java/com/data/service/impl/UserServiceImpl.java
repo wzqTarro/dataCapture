@@ -102,7 +102,7 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			//throw new DataException("401");
 			return ResultUtil.error("传入用户信息不存在");
 		}
-		update(UpdateId.UPDATE_USER_MESSAGE, user);
+		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
 		return ResultUtil.success();
 	}
 
@@ -133,7 +133,7 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		User user = new User();
 		user.setIsAlive("01");
 		user.setWorkNo(workNo);
-		update(UpdateId.UPDATE_USER_MESSAGE, user);
+		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
 		return ResultUtil.success();
 	}
 
@@ -196,7 +196,7 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		user.setWorkNo(workNo);
 		user.setLoginTimes(oldUser.getLoginTimes() + 1);
 		user.setLastLoginDate(new Date(System.currentTimeMillis()));
-		update(UpdateId.UPDATE_USER_MESSAGE, user);
+		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
 		logger.info("--->>>更新用户登录信息成功<<<---");
 	}
 
