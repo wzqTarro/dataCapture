@@ -10,106 +10,75 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
 import io.lettuce.core.support.ConnectionPoolSupport;
 
 /**
- * redis工具类
- * 采用lettuce客户端
- * @author alex
+ * 集群redis工具类
+ * @author Alex
  *
  */
-@Component
-@Scope("singleton")
-public class RedisUtil {
+public class ClusterRedisUtil {
+
+	public static Logger logger = LoggerFactory.getLogger(ClusterRedisUtil.class);
 	
-	private static Logger logger = LoggerFactory.getLogger(RedisUtil.class);
+	public static GenericObjectPool<StatefulRedisClusterConnection<String, String>> pool;
 	
-	private static GenericObjectPool<StatefulRedisConnection<String, String>> pool;
+	public static StatefulRedisClusterConnection<String, String> conn; 
 	
-	public static RedisClient client;
+	public static RedisClusterClient client;
 	
-	public static StatefulRedisConnection<String, String> conn;
-	
-	//@Value("${spring.redis.host}")
-	//private String host = "127.0.0.1";
-	private String host = "120.77.153.124";
-	
-	//@Value("${spring.redis.password}")
+	private String hostName = "120.77.153.124";
+	// @Value("${spring.redis.password}")
 	private String password = "OIUBmgvR983VVTHvr=";
-	
-	//@Value("${spring.redis.port}")
-	private int port = 16379;
-	
-	//@Value("${spring.redis.database}")
-	private int database = 0;
-	
-	//@Value("${spring.redis.lettuce.pool.max-idle}")
+
+	// @Value("${spring.redis.lettuce.pool.max-idle}")
 	private int maxIdle = 8;
-	
-	//@Value("${spring.redis.lettuce.pool.min-idle}")
+
+	// @Value("${spring.redis.lettuce.pool.min-idle}")
 	private int minIdle = 0;
-	
-	//@Value("${spring.redis.lettuce.pool.max-active}")
+
+	// @Value("${spring.redis.lettuce.pool.max-active}")
 	private int maxActive = 8;
-	
-	//@Value("${spring.redis.lettuce.pool.max-wait}")
+
+	// @Value("${spring.redis.lettuce.pool.max-wait}")
 	private int maxWait = -1;
-	
-//	static {
-//		RedisURI uri = new RedisURI();
-//		uri.setHost(REDIS_HOST);
-//		uri.setPassword(REDIS_PASSWORD);
-//		uri.setPort(REDIS_PORT);
-//		uri.setTimeout(REDIS_TIMEOUT);
-//		uri.setDatabase(REDIS_DATABASE);
-//		client = RedisClient.create(uri);
-//		//pool = client.asyncPool(REDIS_MAX_IDLE, REDIS_MAX_IDLE);
-//		pool = ConnectionPoolSupport.createGenericObjectPool(() -> client.connect(), new GenericObjectPoolConfig());
-//		try {
-//			conn = pool.borrowObject();
-//		} catch (Exception e) {
-//			logger.info("--->>>连接初始化失败" + e.getMessage());
-//		}
-//	}
 	
 	@PostConstruct
 	public void init() {
-		logger.info("--->>>redis客户端初始化开始<<<---");
-		RedisURI uri = new RedisURI();
-		uri.setHost(host);
-		uri.setPassword(password);
-		uri.setPort(port);
-		uri.setTimeout(Duration.ofSeconds(60L));
-		uri.setDatabase(database);
-		client = RedisClient.create(uri);
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMaxIdle(maxIdle);
-		config.setMinIdle(minIdle);
-		config.setMaxTotal(maxActive);
-		config.setMaxWaitMillis(maxWait);
-		pool = ConnectionPoolSupport.createGenericObjectPool(() -> client.connect(), config);
-		try {
-			conn = pool.borrowObject();
-			logger.info("--->>>redis客户端初始化完成<<<---");
-		} catch (Exception e) {
-			logger.info("--->>>连接初始化失败" + e.getMessage());
+		logger.info("--->>>集群redis初始化开始<<<---");
+		if(client == null) {
+			synchronized (RedisClusterClient.class) {
+				RedisURI redisUri = RedisURI.builder()
+						.withHost(hostName).withPort(16379)
+						.withHost(hostName).withPort(16380)
+						.withHost(hostName).withPort(16381)
+						.withHost(hostName).withPort(16382)
+						.withHost(hostName).withPort(16383)
+						.withHost(hostName).withPort(16384)
+						.withPassword(password)
+						.withTimeout(Duration.ofSeconds(60L))
+						.build();
+				client = RedisClusterClient.create(redisUri);
+				GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+				config.setMaxIdle(maxIdle);
+				config.setMinIdle(minIdle);
+				config.setMaxTotal(maxActive);
+				config.setMaxWaitMillis(maxWait);
+				pool = ConnectionPoolSupport.createGenericObjectPool(() -> client.connect(), config);
+				try {
+					conn = pool.borrowObject();
+					logger.info("--->>>集群redis初始化完成<<<---");
+				} catch (Exception e) {
+					logger.info("--->>>集群redis初始化异常: {}<<<---", e.getMessage());
+				}
+			}
 		}
-	}
-	
-	/**
-	 * 得到异步连接命令对象
-	 * @return
-	 */
-	public static RedisAsyncCommands<String, String> getCommands() {
-		return conn.async();
 	}
 	
 	/**
@@ -121,13 +90,17 @@ public class RedisUtil {
 		client.shutdown();
 	}
 	
+	public static final RedisAdvancedClusterAsyncCommands<String, String> getCommands() {
+		return conn.async();
+	}
+	
 	/**
 	 * 保存值
 	 * @param key
 	 * @param value
 	 */
 	public static void set(String key, String value) {
-		RedisAsyncCommands<String, String> commands = getCommands();
+		RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 		commands.set(key, value);
 	}
 	
@@ -138,7 +111,7 @@ public class RedisUtil {
 	 * @param value
 	 */
 	public static void setex(String key, long seconds, String value) {
-		RedisAsyncCommands<String, String> commands = getCommands();
+		RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 		commands.setex(key, seconds, value);
 	}
 	
@@ -149,7 +122,7 @@ public class RedisUtil {
 	 */
 	public static String get(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<String> future = commands.get(key);
 			return future.get();
 		} catch (Exception e) {
@@ -165,7 +138,7 @@ public class RedisUtil {
 	 */
 	public static Long ttl(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<Long> future = commands.ttl(key);
 			return future.get();
 		} catch (Exception e) {
@@ -182,7 +155,7 @@ public class RedisUtil {
 	 */
 	public static Boolean expire(String key, long seconds) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<Boolean> future = commands.expire(key, seconds);
 			return future.get();
 		} catch (Exception e) {
@@ -198,7 +171,7 @@ public class RedisUtil {
 	 */
 	public static Boolean exists(String... key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			return commands.exists(key).get() > 0 ? true : false;
 		} catch (Exception e) {
 			logger.info(e.getMessage());
@@ -213,7 +186,7 @@ public class RedisUtil {
 	 */
 	public static Long incr(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<Long> future = commands.incr(key);
 			return future.get();
 		} catch (Exception e) {
@@ -229,7 +202,7 @@ public class RedisUtil {
 	 */
 	public static Long decr(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<Long> future = commands.decr(key);
 			return future.get();
 		} catch (Exception e) {
@@ -243,7 +216,7 @@ public class RedisUtil {
 	 * @param key
 	 */
 	public static void del(String... key) {
-		RedisAsyncCommands<String, String> commands = getCommands();
+		RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 		commands.del(key);
 	}
 	
@@ -253,7 +226,7 @@ public class RedisUtil {
 	 * @param value
 	 */
 	public static void append(String key, String value) {
-		RedisAsyncCommands<String, String> commands = getCommands();
+		RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 		commands.append(key, value);
 	}
 	
@@ -264,7 +237,7 @@ public class RedisUtil {
 	 */
 	public static String type(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<String> future = commands.type(key);
 			return future.get();
 		} catch (Exception e) {
@@ -279,7 +252,7 @@ public class RedisUtil {
 	 * @param map
 	 */
 	public static void hmset(String key, Map<String, String> map) {
-		RedisAsyncCommands<String, String> commands = getCommands();
+		RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 		commands.hmset(key, map);
 	}
 	
@@ -290,7 +263,7 @@ public class RedisUtil {
 	 */
 	public static Map<String, String> hgetall(String key) {
 		try {
-			RedisAsyncCommands<String, String> commands = getCommands();
+			RedisAdvancedClusterAsyncCommands<String, String> commands = getCommands();
 			RedisFuture<Map<String, String>> future = commands.hgetall(key);
 			return future.get();
 		} catch (Exception e) {
