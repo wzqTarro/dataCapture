@@ -50,6 +50,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Sale> list = dataCaptureUtil.translateData(saleJson, Sale.class);
 		for (int i = 0, size = list.size(); i < size; i++) {
 			
+			Sale sale = list.get(i);
+			
+			
 		}
 		
 		// 数据插入数据库
