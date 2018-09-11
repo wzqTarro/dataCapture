@@ -1,9 +1,9 @@
 package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.TemplateSupply;
@@ -39,7 +39,7 @@ public class TemplateSupplyController {
 	 */
 	@RequestMapping(value = "/querySupplyByCondition", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询供应链厂商", httpMethod = "POST")
-	public String querySupplyByCondition(@RequestBody String param) throws Exception{
+	public String querySupplyByCondition(@RequestParam("param") String param) throws Exception{
 		return FastJsonUtil.objectToString(supplyService.querySupplyByConditiion(param));
 	}
 	/**

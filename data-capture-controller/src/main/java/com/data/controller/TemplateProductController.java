@@ -1,9 +1,9 @@
 package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.TemplateProduct;
@@ -23,7 +23,7 @@ public class TemplateProductController {
 	
 	@RequestMapping(value = "getTemplateProductByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件查询商品模板信息", httpMethod = "POST")
-	public String getTemplateProductByParam(@RequestBody String param) throws Exception {
+	public String getTemplateProductByParam(@RequestParam("param") String param) throws Exception {
 		return FastJsonUtil.objectToString(templateProductService.getTemplateProductByParam(param));
 	}
 	

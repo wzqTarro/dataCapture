@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.TemplateSupply;
@@ -33,6 +32,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	/**
+	 * 获取python抓取的数据
+	 * @param common
+	 * @param dataType
+	 * @return
+	 */
 	public String getDataByWeb(CommonDTO common, int dataType) {		
 		String start = null;
 		String end = null;
@@ -63,26 +68,41 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		String saleJson = restTemplate.getForObject(sb.toString(), String.class);
 		return saleJson;
 	}
-	
+	/**
+	 * 转化json
+	 * @param json
+	 * @param clazz
+	 * @return
+	 * @throws DataException
+	 */
 	@SuppressWarnings("unchecked")
-	public <T> PageRecord<T> insertDataByParam(String json, Class<T> clazz, String mapper) throws DataException {
+	public <T> List<T> translateData(String json, Class<T> clazz) throws DataException {
 		if (StringUtils.isBlank(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
 			throw new DataException("505");
 		}
-		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);
-		
+		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);		
 		if (null == list) {
 			logger.info("----->>>>>>抓取数据转换List为空<<<<<<------");
 			throw new DataException("506");
 		}
+		return list;
+	}
+	/**
+	 * 批量插入数据库
+	 * @param dataList
+	 * @param clazz
+	 * @param mapper
+	 * @return
+	 */
+	public <T> PageRecord<T> insertData(List<T> dataList, Class<T> clazz, String mapper) {
 		// 插入到数据库
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
 			executorService.execute(new Runnable() {	
 				@Override
 				public void run() {
-					insert(mapper, list);
+					insert(mapper, dataList);
 				}
 			});
 		} finally {

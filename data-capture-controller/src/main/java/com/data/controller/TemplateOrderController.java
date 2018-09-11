@@ -2,9 +2,9 @@ package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.service.ITemplateOrderService;
@@ -32,7 +32,7 @@ public class TemplateOrderController {
 	 */
 	@RequestMapping(value = "queryOrderByCondition", method = RequestMethod.POST)
 	@ApiOperation(value = "分页查询抓取的数据", httpMethod = "POST")
-	public ResultUtil queryOrderByCondition(@RequestBody String param) throws Exception{
+	public ResultUtil queryOrderByCondition(@RequestParam("param") String param) throws Exception{
 		ResultUtil result = orderService.queryOrderByCondition(param);
 		return result;
 	}

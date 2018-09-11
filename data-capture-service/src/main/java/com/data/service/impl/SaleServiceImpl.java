@@ -13,12 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.data.bean.Sale;
 import com.data.constant.PageRecord;
-import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
-import com.data.exception.DataException;
 import com.data.service.ISaleService;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
@@ -43,12 +41,19 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 
 		DataCaptureUtil dataCaptureUtil = new DataCaptureUtil();
+		
 		// 抓取数据
 		saleJson = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE);
 		logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
 
+		// 转化为List
+		List<Sale> list = dataCaptureUtil.translateData(saleJson, Sale.class);
+		for (int i = 0, size = list.size(); i < size; i++) {
+			
+		}
+		
 		// 数据插入数据库
-		page = dataCaptureUtil.insertDataByParam(saleJson, Sale.class, InsertId.INSERT_BATCH_SALE);
+		page = dataCaptureUtil.insertData(list, Sale.class, InsertId.INSERT_BATCH_SALE);
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		return ResultUtil.success(page);
 	}
