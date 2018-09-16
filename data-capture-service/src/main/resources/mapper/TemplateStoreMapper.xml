@@ -48,6 +48,9 @@
   	<if test="storeCode != '' and storeCode != null">
   		AND store_code = #{storeCode}
   	</if>
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name = #{sysName}
+  	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>
@@ -56,8 +59,10 @@
   		SELECT id
   		FROM db_template_store
   		WHERE 1=1
-  		<include refid="Query_Condition"></include>	
-  		LIMIT #{pageNum}, #{pageSize}
+  		<include refid="Query_Condition"></include>
+  		<if test="pageNum != null and pageSize != Size">
+  			LIMIT #{pageNum}, #{pageSize}
+  		</if>	
   	) ts ON(ts.id = s.id)
   </select>
   <select id="selectCountByParam" parameterType="map" resultType="int">

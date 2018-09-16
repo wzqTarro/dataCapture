@@ -1,16 +1,25 @@
 package com.data.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.data.bean.TemplateProduct;
+import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
@@ -20,11 +29,14 @@ import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
 
+import ch.qos.logback.core.joran.spi.SimpleRuleStore;
+
 /**
  * 数据抓取方法工具类
  * @author Alex
  *
  */
+@Component
 public class DataCaptureUtil extends CommonServiceImpl {
 	
 	private static Logger logger = LoggerFactory.getLogger(DataCaptureUtil.class);
@@ -37,8 +49,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param common
 	 * @param dataType
 	 * @return
+	 * @throws IOException 
 	 */
-	public String getDataByWeb(CommonDTO common, int dataType) {		
+	public <T> List<T> getDataByWeb(CommonDTO common, int dataType, Class<T> clazz) throws IOException{		
 		String start = null;
 		String end = null;
 		if (null != common && StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
@@ -46,9 +59,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			end = common.getEndDate();
 		} else {
 			start = DateUtil.getDate();
-			end = DateUtil.getDate();
+			end = start;
 		}
-		if (0 == common.getId()) {
+		/*if (0 == common.getId()) {
 			throw new DataException("503");
 		}
 		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
@@ -65,8 +78,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		sb.append("&value=");
 		sb.append(dataType);
 		logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
-		String saleJson = restTemplate.getForObject(sb.toString(), String.class);
-		return saleJson;
+		String json = restTemplate.getForObject(sb.toString(), String.class);*/
+		
+		// 测试数据
+		String json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
+		logger.info(json);
+		// json转List
+		List<T> list = translateData(json, clazz);
+		
+ 		return list;
 	}
 	/**
 	 * 转化json
@@ -76,17 +96,48 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws DataException
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> List<T> translateData(String json, Class<T> clazz) throws DataException {
+	public <T> List<T> translateData(String json, Class<T> clazz){		
 		if (StringUtils.isBlank(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
 			throw new DataException("505");
 		}
 		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);		
-		if (null == list) {
+		if (CommonUtil.isBlank(list)) {
 			logger.info("----->>>>>>抓取数据转换List为空<<<<<<------");
 			throw new DataException("506");
 		}
 		return list;
+	}
+	/**
+	 * 设置分页
+	 * @param list
+	 * @param common
+	 * @return
+	 */
+	public <T> PageRecord<T> setPageRecord(List<T> list, CommonDTO common) {
+		PageRecord<T> page = new PageRecord();
+		if (CommonUtil.isNotBlank(common)) {
+			if (CommonUtil.isBlank(common.getPage())) {
+				page.setPageNum(CommonValue.PAGE);
+			} else {
+				page.setPageNum(common.getPage());
+			}
+			if (CommonUtil.isBlank(common.getLimit())) {
+				page.setPageSize(CommonValue.SIZE);
+			} else {
+				page.setPageSize(common.getLimit());
+			}
+		} else {
+			page.setPageNum(CommonValue.PAGE);
+			page.setPageSize(CommonValue.SIZE);
+		}
+		if (list.size() > page.getPageSize()) {
+			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), page.getPageSize()));
+		} else {
+			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), list.size()));
+		}
+	
+		return page;
 	}
 	/**
 	 * 批量插入数据库
@@ -95,13 +146,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param mapper
 	 * @return
 	 */
-	public <T> PageRecord<T> insertData(List<T> dataList, Class<T> clazz, String mapper) {
+	public <T> void insertData(List<T> dataList, String mapper) {
 		// 插入到数据库
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
 			executorService.execute(new Runnable() {	
 				@Override
 				public void run() {
+					//
+					System.err.println("sd");
 					insert(mapper, dataList);
 				}
 			});
@@ -110,10 +163,28 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				executorService.shutdown();
 			}
 		}
-		PageRecord<T> page = new PageRecord<>();
-		page.setList(Collections.EMPTY_LIST);
-		page.setPageTotal(0);
-		page.setPageSize(CommonValue.SIZE);
-		return page;
+	}
+	/**
+	 * 获取标准门店信息
+	 * @param sysName
+	 * @param storeCode
+	 * @return
+	 */
+	public TemplateStore getStandardStoreMessage(String sysName, String storeCode) {
+		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(storeCode)) {
+			return null;
+		}
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("sysName", sysName);
+		param.put("storeCode", storeCode);
+		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, param);
+		return store;
+	}
+	public TemplateProduct getStandardProductMessage(String sysName, String simpleCode) {
+		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
+			return null;
+		}
+		Map<String, Object> param = new HashMap<>(2);
+		return null;
 	}
 }

@@ -32,6 +32,12 @@
     day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time
   </sql>
   <sql id="Query_Condition">
+  	<if test="simpleCode != null and simpleCode != ''">
+  		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name = #{sysName}
+  	</if>
   	<if test="storeName != null and storeName != ''">
   		AND store_name = #{storeName}
   	</if>

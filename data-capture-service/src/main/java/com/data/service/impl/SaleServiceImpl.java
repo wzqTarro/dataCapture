@@ -1,22 +1,28 @@
 package com.data.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.Sale;
+import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
+import com.data.exception.DataException;
 import com.data.service.ISaleService;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
@@ -32,32 +38,42 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private static final int PAGE_NUM = 1;
 	
 	private static final int PAGE_SIZE = 50000;
+	
+	@Autowired
+	private DataCaptureUtil dataCaptureUtil;
 
 	@Override
-	public ResultUtil getSaleByWeb(String param) {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
+	public ResultUtil getSaleByWeb(CommonDTO common) throws IOException{
 		String saleJson = null;
 		PageRecord<Sale> page = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-
-		DataCaptureUtil dataCaptureUtil = new DataCaptureUtil();
 		
 		// 抓取数据
-		saleJson = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE);
-		logger.info("------>>>>>>>抓取到的销售数据：" + saleJson + "<<<<<<<<--------");
+		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE, Sale.class);
 
-		// 转化为List
-		List<Sale> list = dataCaptureUtil.translateData(saleJson, Sale.class);
-		for (int i = 0, size = list.size(); i < size; i++) {
+		
+		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
+		for (int i = 0, size = saleList.size(); i < size; i++) {
+			Sale sale = saleList.get(i);
 			
-			Sale sale = list.get(i);
+			// 单品编码
+			String simpleCode = sale.getSimpleCode();
+			
+			// 系统
+			String sysName = sale.getSysName();
+			
+			// 门店编码
+			String storeCode = sale.getStoreCode();
+			Map<String, Object> param = new HashMap(3); 
+			param.put("sysName", sysName);
+			param.put("simpleCode", simpleCode);
 			
 			
 		}
 		
 		// 数据插入数据库
-		page = dataCaptureUtil.insertData(list, Sale.class, InsertId.INSERT_BATCH_SALE);
-		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
+		dataCaptureUtil.insertData(saleList, InsertId.INSERT_BATCH_SALE);
+		page = dataCaptureUtil.setPageRecord(saleList, common);
 		return ResultUtil.success(page);
 	}
 
@@ -137,5 +153,18 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			}
 		}
 		return ResultUtil.success(resultList);
+	}
+	
+	public static void main(String[] args) {
+		String json = null;
+		try {
+			json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
+		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
+		System.err.println(FastJsonUtil.objectToString(list));
 	}
 }

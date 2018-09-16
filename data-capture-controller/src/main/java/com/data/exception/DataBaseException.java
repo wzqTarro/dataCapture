@@ -1,5 +1,8 @@
 package com.data.exception;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,19 @@ public class DataBaseException {
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.OK)
 	public String resolveException(Exception e) {
+        
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        String exceptionString = stringWriter.toString();
+        String separator = System.getProperty("line.separator") + "\t";
+        int i = exceptionString.indexOf(separator);
+        String errCause = "，详细错误信息：" + exceptionString.substring(0, i) + ", " + exceptionString.substring(i + 3, exceptionString.indexOf(separator, i + 6));
+        int j;
+        String cause = "Caused by:";
+        if ((j = exceptionString.lastIndexOf(cause)) != -1)
+            errCause += "；" + exceptionString.substring(j, exceptionString.indexOf(separator, j + 10));
+		logger.info("---->>>>{}<<<<-----", errCause);
 		
 		ResultUtil result = new ResultUtil();
 		if(e instanceof DataException) {
@@ -39,6 +55,9 @@ public class DataBaseException {
 				result.setMsg(errorMessage);
 			}
 			
+		} else {
+			result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
+			result.setMsg(e.getMessage());
 		}
 		return FastJsonUtil.objectToString(result);
 	}

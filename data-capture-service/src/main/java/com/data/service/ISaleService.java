@@ -1,15 +1,18 @@
 package com.data.service;
 
+import java.io.IOException;
+
 import com.data.bean.Sale;
+import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
 
 public interface ISaleService {
 	/**
 	 * python抓取销售数据
-	 * @param param
+	 * @param para
 	 * @return
 	 */
-	ResultUtil getSaleByWeb(String param);
+	ResultUtil getSaleByWeb(CommonDTO commonDTOs) throws Exception ;
 	/**
 	 * 多条件查询销售数据
 	 * @param param
