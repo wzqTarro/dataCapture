@@ -18,11 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
+import com.data.constant.SimpleCodeEnum;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
@@ -52,8 +54,11 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 */
 	public <T> List<T> getDataByWeb(CommonDTO common, int dataType, Class<T> clazz) throws IOException{		
-		String start = null;
+		/*String start = null;
 		String end = null;
+		if (null != null || 0 == common.getId()) {
+			throw new DataException("503");
+		}
 		if (null != common && StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
 			start = common.getStartDate();
 			end = common.getEndDate();
@@ -61,9 +66,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			start = DateUtil.getDate();
 			end = start;
 		}
-		/*if (0 == common.getId()) {
-			throw new DataException("503");
-		}
+		
 		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
 		if (false == supply.getIsVal()) {
 			throw new DataException("504");
@@ -153,8 +156,6 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			executorService.execute(new Runnable() {	
 				@Override
 				public void run() {
-					//
-					System.err.println("sd");
 					insert(mapper, dataList);
 				}
 			});
@@ -180,11 +181,38 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, param);
 		return store;
 	}
-	public TemplateProduct getStandardProductMessage(String sysName, String simpleCode) {
+	/**
+	 * 获取标准条码信息
+	 * @param sysName
+	 * @param simpleCode
+	 * @return
+	 */
+	public String getBarCodeMessage(String sysName, String simpleCode) {
 		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
 			return null;
 		}
 		Map<String, Object> param = new HashMap<>(2);
-		return null;
+		SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
+		String column = simpleCodeEnum.getValue();
+		param.put("columnName", column);
+		param.put("simpleCode", simpleCode);
+		SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
+		return code.getBarCode();
+	}
+	/**
+	 * 获取标准商品信息
+	 * @param sysName
+	 * @param simpleCode
+	 * @return
+	 */
+	public TemplateProduct getStandardProductMessage(String sysName, String simpleBarCode) {
+		if (CommonUtil.isBlank(sysName)) {
+			return null;
+		}
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("sysName", sysName);
+		param.put("simpleBarCode", simpleBarCode);
+		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
+		return CommonUtil.isBlank(product) ? null :product.get(0);
 	}
 }

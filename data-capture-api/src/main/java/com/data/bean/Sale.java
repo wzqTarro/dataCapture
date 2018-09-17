@@ -61,8 +61,28 @@ public class Sale implements Serializable{
     // 日期
     @JSONField(format = "yyyy-MM-dd")
     private Date createTime;
+    // 备注
+    private String remark;
+    // 门店负责人
+    private String storeManager;
 
-    public Integer getId() {
+    public String getStoreManager() {
+		return storeManager;
+	}
+
+	public void setStoreManager(String storeManager) {
+		this.storeManager = storeManager;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getId() {
         return id;
     }
 

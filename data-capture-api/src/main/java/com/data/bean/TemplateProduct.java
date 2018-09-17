@@ -37,7 +37,8 @@ public class TemplateProduct implements Serializable {
 
     private String material;
 
-    private Integer packNum;
+    // 包装数量（片数）
+    private Integer piecesNum;
 
     private String boxStandard;
 
@@ -153,15 +154,17 @@ public class TemplateProduct implements Serializable {
         this.material = material == null ? null : material.trim();
     }
 
-    public Integer getPackNum() {
-        return packNum;
-    }
+    
 
-    public void setPackNum(Integer packNum) {
-        this.packNum = packNum;
-    }
+    public Integer getPiecesNum() {
+		return piecesNum;
+	}
 
-    public String getBoxStandard() {
+	public void setPiecesNum(Integer piecesNum) {
+		this.piecesNum = piecesNum;
+	}
+
+	public String getBoxStandard() {
         return boxStandard;
     }
 

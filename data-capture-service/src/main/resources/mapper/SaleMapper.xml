@@ -25,11 +25,14 @@
     <result column="sell_num" property="sellNum" jdbcType="INTEGER" />
     <result column="sell_price" property="sellPrice" jdbcType="DOUBLE" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="store_manager" property="storeManager" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
-    day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time
+    day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time,
+    remark, store_manager
   </sql>
   <sql id="Query_Condition">
   	<if test="simpleCode != null and simpleCode != ''">
@@ -88,7 +91,8 @@
       simple_name, brand, series, 
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
-      sell_price, create_time)
+      sell_price, create_time, remark,
+      store_manager)
     values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, 
       #{storeCode,jdbcType=VARCHAR}, #{storeName,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
       #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, #{ascriptionSole,jdbcType=CHAR}, 
@@ -96,7 +100,8 @@
       #{simpleName,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, 
       #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
       #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
-      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP})
+      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+      #{storeManager,jdbcType=CHAR})
   </insert>
   
   <insert id="insertBatch" parameterType="list" >
@@ -107,7 +112,8 @@
       simple_name, brand, series, 
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
-      sell_price, create_time)
+      sell_price, create_time, remark, 
+      store_manager)
     values 
     <foreach collection="list" item="sale" separator=",">
     (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=INTEGER}, #{sale.sysName,jdbcType=VARCHAR}, 
@@ -117,7 +123,8 @@
       #{sale.simpleName,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
       #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
       #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
-      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=TIMESTAMP})    	
+      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=TIMESTAMP}, #{sale.remark,jdbcType=VARCHAR},
+      #{sale.storeManager,jdbcType=CHAR})    	
     </foreach>
   </insert>
   
@@ -193,6 +200,12 @@
       <if test="createTime != null" >
         create_time,
       </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="storeManager != null" >
+        store_manager,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -263,6 +276,12 @@
       </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="storeManager != null" >
+        #{storeManager,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
@@ -335,6 +354,12 @@
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="storeManager != null" >
+        store_manager = #{storeManager,jdbcType=CHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -361,7 +386,9 @@
       stock_no = #{stockNo,jdbcType=VARCHAR},
       sell_num = #{sellNum,jdbcType=INTEGER},
       sell_price = #{sellPrice,jdbcType=DOUBLE},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      store_manager=#{storeManager,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

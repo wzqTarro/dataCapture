@@ -35,7 +35,7 @@ public enum SimpleCodeEnum {
 	public String getValue() {
 		return value;
 	}
-	public SimpleCodeEnum getEnum(String msg) {
+	public static SimpleCodeEnum getEnum(String msg) {
 		for (SimpleCodeEnum e: SimpleCodeEnum.values()) {
 			if (e.getMsg().equals(msg)) {
 				return e;

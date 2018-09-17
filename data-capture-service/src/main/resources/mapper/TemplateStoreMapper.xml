@@ -11,7 +11,7 @@
     <result column="store_market" jdbcType="VARCHAR" property="storeMarket" />
     <result column="store_city" jdbcType="CHAR" property="storeCity" />
     <result column="sys_name" jdbcType="CHAR" property="sysName" />
-    <result column="store_user" jdbcType="CHAR" property="storeUser" />
+    <result column="store_manager" jdbcType="CHAR" property="storeManager" />
     <result column="logistics_model" jdbcType="VARCHAR" property="logisticsModel" />
     <result column="practice_time" jdbcType="TIMESTAMP" property="practiceTime" />
     <result column="distribution_code" jdbcType="VARCHAR" property="distributionCode" />
@@ -29,7 +29,7 @@
   </sql>
   <sql id="Column_List">
     s.id, s.store_code, s.order_store_name, s.return_store_name, s.sale_store_name, s.standard_store_name, 
-    s.store_market, s.store_city, s.sys_name, s.store_user, s.logistics_model, s.practice_time, s.distribution_code, 
+    s.store_market, s.store_city, s.sys_name, s.store_manager, s.logistics_model, s.practice_time, s.distribution_code, 
     s.distribution_name, s.distribution_user, s.region, s.province_area, s.ascription, s.ascription_sole
   </sql>
   <sql id="Query_Condition">

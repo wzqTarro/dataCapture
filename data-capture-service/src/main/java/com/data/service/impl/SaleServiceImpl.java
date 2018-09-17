@@ -16,14 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.Sale;
+import com.data.bean.TemplateProduct;
+import com.data.bean.TemplateStore;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
+import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.ISaleService;
+import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
@@ -55,6 +59,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		for (int i = 0, size = saleList.size(); i < size; i++) {
 			Sale sale = saleList.get(i);
+			//sale.setSysId(common.getId());
 			
 			// 单品编码
 			String simpleCode = sale.getSimpleCode();
@@ -64,11 +69,83 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			
 			// 门店编码
 			String storeCode = sale.getStoreCode();
-			Map<String, Object> param = new HashMap(3); 
-			param.put("sysName", sysName);
-			param.put("simpleCode", simpleCode);
+			
+			TemplateStore store = dataCaptureUtil.getStandardStoreMessage(sysName, storeCode);
+			
+			// 单品条码
+			String simpleBarCode = sale.getSimpleBarCode();
+			if (CommonUtil.isBlank(simpleBarCode)) {
+				simpleBarCode = dataCaptureUtil.getBarCodeMessage(sysName, simpleCode);
+			}
+			if (CommonUtil.isBlank(simpleBarCode)) {
+				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+				continue;
+			}
+			sale.setSimpleBarCode(simpleBarCode);
+			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(sysName, simpleBarCode);
+			
+			// 门店信息为空
+			if (CommonUtil.isBlank(store)) {
+				sale.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+			} else {
+				// 大区
+				sale.setRegion(store.getRegion());
+				
+				// 省区
+				sale.setProvinceArea(store.getProvinceArea());
+				
+				// 门店名称
+				sale.setStoreName(store.getStandardStoreName());
+				
+				// 归属
+				sale.setAscription(store.getAscription());
+				
+				// 业绩归属
+				sale.setAscriptionSole(store.getAscriptionSole());
+				
+				// 门店负责人
+				sale.setStoreManager(store.getStoreManager());
+			}
+			
+			// 单品信息为空
+			if (CommonUtil.isBlank(product)) {
+				sale.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+				continue;
+			} else {
+				// 单品名称
+				sale.setSimpleName(product.getStandardName());
+				
+				// 品牌
+				sale.setBrand(product.getBrand());
+				
+				// 销售价格
+				sale.setSellPrice(product.getSellPrice());
+				
+				// 系列
+				sale.setSeries(product.getSeries());
+				
+				// 材质
+				sale.setMaterial(product.getMaterial());
+				
+				// 片数
+				sale.setPiecesNum(product.getPiecesNum());
+				
+				// 日夜
+				sale.setDayNight(product.getFunc());
+				
+				// 货号
+				sale.setStockNo(product.getStockNo());
+				
+				// 箱规
+				sale.setBoxStandard(product.getBoxStandard());
+				
+				// 库存编号
+				sale.setStockCode(product.getStockCode());
+			}
 			
 			
+			
+		
 		}
 		
 		// 数据插入数据库

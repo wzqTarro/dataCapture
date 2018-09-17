@@ -14,7 +14,9 @@ public class Reject implements Serializable {
 
 	private Integer id;
 
-    private String system;
+	private Integer sysId;
+	
+    private String sysName;
 
     private String rejectDepartmentId;
 
@@ -74,15 +76,25 @@ public class Reject implements Serializable {
         this.id = id;
     }
 
-    public String getSystem() {
-        return system;
-    }
+   
 
-    public void setSystem(String system) {
-        this.system = system == null ? null : system.trim();
-    }
+    public Integer getSysId() {
+		return sysId;
+	}
 
-    public String getRejectDepartmentId() {
+	public void setSysId(Integer sysId) {
+		this.sysId = sysId;
+	}
+
+	public String getSysName() {
+		return sysName;
+	}
+
+	public void setSysName(String sysName) {
+		this.sysName = sysName;
+	}
+
+	public String getRejectDepartmentId() {
         return rejectDepartmentId;
     }
 
