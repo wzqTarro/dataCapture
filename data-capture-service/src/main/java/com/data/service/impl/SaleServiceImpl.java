@@ -158,9 +158,10 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	}
 
 	@Override
-	public ResultUtil getSaleByParam(String param) throws Exception {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		Sale sale = FastJsonUtil.jsonToObject(param, Sale.class);
+	public ResultUtil getSaleByParam(CommonDTO common, Sale sale) throws Exception {
+		if (null == common) {
+			common = new CommonDTO();
+		}
 		Map<String, Object> map = Maps.newHashMap();
 		logger.info("--------->>>>>>>>common:" + FastJsonUtil.objectToString(common) + "<<<<<<<-----------");		
 		if (StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {

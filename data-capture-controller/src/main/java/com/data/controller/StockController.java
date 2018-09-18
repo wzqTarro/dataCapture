@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.data.bean.Stock;
 import com.data.dto.CommonDTO;
 import com.data.service.IStockService;
 import com.data.utils.ResultUtil;
@@ -33,6 +34,20 @@ public class StockController {
 	@ApiOperation(value = "抓取库存数据", httpMethod = "POST")
 	public ResultUtil getStockByWeb(@RequestParam(required = false) CommonDTO common) throws IOException {
 		ResultUtil result = stockServiceImpl.getStockByWeb(common);
+		return result;
+	}
+	/**
+	 * 多条件查询
+	 * @param common
+	 * @param stock
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "getStockByParam", method = RequestMethod.POST)
+	@ApiOperation(value = "多条件查询库存数据", httpMethod = "POST")
+	public ResultUtil getStockByParam(@RequestParam(value = "common", required = false)CommonDTO common,
+			@RequestParam(value = "stock", required = false)Stock stock) throws Exception {
+		ResultUtil result = stockServiceImpl.getStockByParam(common, stock);
 		return result;
 	}
 }

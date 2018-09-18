@@ -33,9 +33,13 @@ public class QueryId {
 	
 	public static final String QUERY_COUNT_SUPPLY_BY_CONDITION = "TemplateSupplyMapper.selectCountByCondition";
 	
-	public static final String QUERY_SALE_BY_PARAM = "TemplateSaleMapper.selectByParam";
+	public static final String QUERY_SALE_BY_PARAM = "SaleMapper.selectByParam";
 	
 	public static final String QUERY_COUNT_SALE_BY_PARAM = "SaleMapper.selectCountByParam";
+	
+	public static final String QUERY_STOCK_BY_PARAM = "StockMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_STOCK_BY_PARAM = "StockMapper.selectCountByParam";
 	
 	public static final String QUERY_COUNT_USER_BY_CONDITION = "UserMapper.queryCountUserByCondition";
 	

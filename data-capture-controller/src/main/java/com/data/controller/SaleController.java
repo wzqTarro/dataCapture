@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.Sale;
+import com.data.bean.Stock;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.ISaleService;
@@ -50,8 +51,9 @@ public class SaleController {
 	 */
 	@RequestMapping(value = "/getDataByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询销售数据", httpMethod = "POST")
-	public String getDataByParam(@RequestBody String param) throws Exception {
-		ResultUtil result = saleService.getSaleByParam(param);
+	public String getDataByParam(@RequestParam(value = "common", required = false)CommonDTO common,
+			@RequestParam(value = "stock", required = false)Sale sale) throws Exception {
+		ResultUtil result = saleService.getSaleByParam(common, sale);
 		return FastJsonUtil.objectToString(result);
 	}
 }

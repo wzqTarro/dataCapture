@@ -36,6 +36,45 @@
     series, day_night, material, pieces_num, box_standard, stock_no, stock_num, tax_cost_price, 
     stock_price, create_time, remark, local_name
   </sql>
+  <sql id="Query_Condition">
+  	<if test="simpleCode != null and simpleCode != ''">
+  		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name = #{sysName}
+  	</if>
+  	<if test="storeName != null and storeName != ''">
+  		AND store_name = #{storeName}
+  	</if>
+  	<if test="region != null and region != ''">
+  		AND region = #{region}
+  	</if>
+  	<if test="series != null and series != ''">
+  		AND series = #{series}
+  	</if>
+  	<if test="simpleName != null and simpleName != ''">
+  		AND simple_name = #{simpleName}
+  	</if>
+  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+  		AND create_time &lt;= #{endDate}
+  		AND create_time &gt;= #{startDate}
+  	</if>
+  </sql>
+  <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
+  	SELECT <include refid="Base_Column_List"></include>
+  	FROM db_stock
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>
+  </select>
+  <select id="selectCountByParam" resultType="int" parameterType="map">
+  	SELECT COUNT(1)
+  	FROM db_stock
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
