@@ -2,6 +2,7 @@ package com.data.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,8 +20,16 @@ public class WebConfigure implements WebMvcConfigurer {
 	private DataInterceptor dataInterceptor;
 	
 	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+			.allowedOrigins("*")
+			.allowedMethods("PUT", "GET", "DELETE", "POST")
+			.maxAge(3600);
+	}
+	
+	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
+		/*registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
 						.excludePathPatterns("/webjars/**",
 											 "/swagger-resources/**",
 											 "/static/**",
@@ -28,6 +37,6 @@ public class WebConfigure implements WebMvcConfigurer {
 											 "/css/**",
 											 "/resource/**",
 											 "/html/**",
-											 "/img/**");
+											 "/img/**");*/
 	}
 }
