@@ -17,6 +17,8 @@ public class QueryId {
 	
 	public static final String QUERY_SALE_BY_ID = "SaleMapper.selectByPrimaryKey";
 	
+	public static final String QUERY_STOCK_BY_ID = "StockMapper.selectByPrimaryKey";
+	
 	public static final String QUERY_SIMPLE_CODE_BY_ID = "SimpleCodeMapper.selectByPrimaryKey";
 	
 	public static final String QUERY_STORE_BY_ID = "TemplateStoreMapper.selectByPrimaryKey";

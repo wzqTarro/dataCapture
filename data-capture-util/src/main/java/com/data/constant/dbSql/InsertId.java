@@ -30,4 +30,8 @@ public class InsertId {
 	public static final String INSERT_STORE_BY_MESSAGE = "TemplateStoreMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_STORE = "TemplateStoreMapper.insertBatch";
+	
+	public static final String INSERT_STOCK_BY_MESSAGE = "StockMapper.insertSelective";
+	
+	public static final String INSERT_BATCH_STOCK = "StockMapper.insertBatch";
 }

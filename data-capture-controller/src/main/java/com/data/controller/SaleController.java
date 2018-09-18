@@ -36,7 +36,7 @@ public class SaleController {
 	 */
 	@RequestMapping(value = "/getDataByWeb", method = RequestMethod.POST)
 	@ApiOperation(value = "python抓取销售数据", httpMethod = "POST")
-	public String getDataByWeb(@RequestParam(value = "commonDTO", required = false)CommonDTO commonDTO) throws Exception{
+	public String getDataByWeb(@RequestParam(required = false)CommonDTO commonDTO) throws Exception{
 		ResultUtil result = null;
 
 		result = saleService.getSaleByWeb(commonDTO);

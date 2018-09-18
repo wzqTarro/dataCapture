@@ -64,7 +64,7 @@
   		AND series = #{series}
   	</if>
   	<if test="sysName != null and sysName != ''">
-  		AND sys_name like '%${sysName}'
+  		AND sys_name = #{sysName}
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">

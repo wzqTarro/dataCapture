@@ -84,7 +84,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		String json = restTemplate.getForObject(sb.toString(), String.class);*/
 		
 		// 测试数据
-		String json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
+		String json = FileUtils.readFileToString(new File("E:\\baiya\\stock\\stock.txt"));
 		logger.info(json);
 		// json转List
 		List<T> list = translateData(json, clazz);
@@ -205,12 +205,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param simpleCode
 	 * @return
 	 */
-	public TemplateProduct getStandardProductMessage(String sysName, String simpleBarCode) {
+	public TemplateProduct getStandardProductMessage(String localName, String sysName, String simpleBarCode) {
 		if (CommonUtil.isBlank(sysName)) {
 			return null;
 		}
 		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", sysName);
+		param.put("sysName", CommonUtil.isBlank(localName) ? sysName : localName+sysName);
 		param.put("simpleBarCode", simpleBarCode);
 		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
 		return CommonUtil.isBlank(product) ? null :product.get(0);

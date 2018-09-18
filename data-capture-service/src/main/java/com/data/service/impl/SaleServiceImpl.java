@@ -70,6 +70,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			// 门店编码
 			String storeCode = sale.getStoreCode();
 			
+			// 地区
+			String localName = sale.getLocalName();
+			
 			TemplateStore store = dataCaptureUtil.getStandardStoreMessage(sysName, storeCode);
 			
 			// 单品条码
@@ -82,7 +85,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				continue;
 			}
 			sale.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(sysName, simpleBarCode);
+			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {

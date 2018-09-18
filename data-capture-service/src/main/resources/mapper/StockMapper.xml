@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="SaleMapper" >
-  <resultMap id="BaseResultMap" type="com.data.bean.Sale" >
+<mapper namespace="StockMapper" >
+  <resultMap id="BaseResultMap" type="com.data.bean.Stock" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="sys_id" property="sysId" jdbcType="INTEGER" />
     <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
@@ -16,121 +16,81 @@
     <result column="stock_code" property="stockCode" jdbcType="VARCHAR" />
     <result column="simple_name" property="simpleName" jdbcType="VARCHAR" />
     <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="classify" property="classify" jdbcType="CHAR" />
     <result column="series" property="series" jdbcType="VARCHAR" />
     <result column="day_night" property="dayNight" jdbcType="VARCHAR" />
     <result column="material" property="material" jdbcType="VARCHAR" />
     <result column="pieces_num" property="piecesNum" jdbcType="INTEGER" />
     <result column="box_standard" property="boxStandard" jdbcType="VARCHAR" />
     <result column="stock_no" property="stockNo" jdbcType="VARCHAR" />
-    <result column="sell_num" property="sellNum" jdbcType="INTEGER" />
-    <result column="sell_price" property="sellPrice" jdbcType="DOUBLE" />
+    <result column="stock_num" property="stockNum" jdbcType="INTEGER" />
+    <result column="tax_cost_price" property="taxCostPrice" jdbcType="DOUBLE" />
+    <result column="stock_price" property="stockPrice" jdbcType="DOUBLE" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
-    <result column="store_manager" property="storeManager" jdbcType="CHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
-    ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
-    day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time,
-    remark, store_manager, local_name
+    ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, classify, 
+    series, day_night, material, pieces_num, box_standard, stock_no, stock_num, tax_cost_price, 
+    stock_price, create_time, remark, local_name
   </sql>
-  <sql id="Query_Condition">
-  	<if test="simpleCode != null and simpleCode != ''">
-  		AND simple_code = #{simpleCode}
-  	</if>
-  	<if test="sysName != null and sysName != ''">
-  		AND sys_name = #{sysName}
-  	</if>
-  	<if test="storeName != null and storeName != ''">
-  		AND store_name = #{storeName}
-  	</if>
-  	<if test="region != null and region != ''">
-  		AND region = #{region}
-  	</if>
-  	<if test="series != null and series != ''">
-  		AND series = #{series}
-  	</if>
-  	<if test="simpleName != null and simpleName != ''">
-  		AND simple_name = #{simpleName}
-  	</if>
-  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
-  		AND create_time &lt;= #{endDate}
-  		AND create_time &gt;= #{startDate}
-  	</if>
-  </sql>
-  <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
-  	SELECT <include refid="Base_Column_List"></include>
-  	FROM db_sale
-  	WHERE 1=1
-  	<include refid="Query_Condition"></include>
-  	<if test="pageNum != null and pageSize != null">
-  		LIMIT #{pageNum}, #{pageSize}
-  	</if>
-  </select>
-  <select id="selectCountByParam" resultType="int" parameterType="map">
-  	SELECT COUNT(1)
-  	FROM db_sale
-  	WHERE 1=1
-  	<include refid="Query_Condition"></include>
-  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from db_sale
+    from db_stock
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from db_sale
+    delete from db_stock
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.data.bean.Sale" >
-    insert into db_sale (id, sys_id, sys_name, 
+  <insert id="insert" parameterType="com.data.bean.Stock" >
+    insert into db_stock (id, sys_id, sys_name, 
       store_code, store_name, region, 
       province_area, ascription, ascription_sole, 
       simple_code, simple_bar_code, stock_code, 
-      simple_name, brand, series, 
-      day_night, material, pieces_num, 
-      box_standard, stock_no, sell_num, 
-      sell_price, create_time, remark,
-      store_manager, local_name)
+      simple_name, brand, classify, 
+      series, day_night, material, 
+      pieces_num, box_standard, stock_no, 
+      stock_num, tax_cost_price, stock_price, 
+      create_time, remark, local_name)
     values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, 
       #{storeCode,jdbcType=VARCHAR}, #{storeName,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
       #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, #{ascriptionSole,jdbcType=CHAR}, 
       #{simpleCode,jdbcType=VARCHAR}, #{simpleBarCode,jdbcType=VARCHAR}, #{stockCode,jdbcType=VARCHAR}, 
-      #{simpleName,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, 
-      #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
-      #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
-      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
-      #{storeManager,jdbcType=CHAR},  #{localName,jdbcType=CHAR} )
+      #{simpleName,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{classify,jdbcType=CHAR}, 
+      #{series,jdbcType=VARCHAR}, #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, 
+      #{piecesNum,jdbcType=INTEGER}, #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, 
+      #{stockNum,jdbcType=INTEGER}, #{taxCostPrice,jdbcType=DOUBLE}, #{stockPrice,jdbcType=DOUBLE}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{localName,jdbcType=CHAR})
   </insert>
-  
-  <insert id="insertBatch" parameterType="list" >
-    insert into db_sale (id, sys_id, sys_name, 
+  <insert id="insertBatch" parameterType="list">
+  	insert into db_stock (id, sys_id, sys_name, 
       store_code, store_name, region, 
       province_area, ascription, ascription_sole, 
       simple_code, simple_bar_code, stock_code, 
-      simple_name, brand, series, 
-      day_night, material, pieces_num, 
-      box_standard, stock_no, sell_num, 
-      sell_price, create_time, remark, 
-      store_manager, local_name)
-    values 
-    <foreach collection="list" item="sale" separator=",">
-    (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=INTEGER}, #{sale.sysName,jdbcType=VARCHAR}, 
-      #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
-      #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 
-      #{sale.simpleCode,jdbcType=VARCHAR}, #{sale.simpleBarCode,jdbcType=VARCHAR}, #{sale.stockCode,jdbcType=VARCHAR}, 
-      #{sale.simpleName,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
-      #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
-      #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
-      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=TIMESTAMP}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
+      simple_name, brand, classify, 
+      series, day_night, material, 
+      pieces_num, box_standard, stock_no, 
+      stock_num, tax_cost_price, stock_price, 
+      create_time, remark, local_name)
+    values
+    <foreach collection="list" item="stock" separator=",">
+    (#{stock.id}, #{stock.sysId}, #{stock.sysName}, 
+      #{stock.storeCode}, #{stock.storeName}, #{stock.region}, 
+      #{stock.provinceArea}, #{stock.ascription}, #{stock.ascriptionSole}, 
+      #{stock.simpleCode}, #{stock.simpleBarCode}, #{stock.stockCode}, 
+      #{stock.simpleName}, #{stock.brand}, #{stock.classify}, 
+      #{stock.series}, #{stock.dayNight}, #{stock.material}, 
+      #{stock.piecesNum}, #{stock.boxStandard}, #{stock.stockNo}, 
+      #{stock.stockNum}, #{stock.taxCostPrice}, #{stock.stockPrice}, 
+      #{stock.createTime}, #{stock.remark}, #{stock.localName})
     </foreach>
   </insert>
-  
-  <insert id="insertSelective" parameterType="com.data.bean.Sale" >
-    insert into db_sale
+  <insert id="insertSelective" parameterType="com.data.bean.Stock" >
+    insert into db_stock
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -174,6 +134,9 @@
       <if test="brand != null" >
         brand,
       </if>
+      <if test="classify != null" >
+        classify,
+      </if>
       <if test="series != null" >
         series,
       </if>
@@ -192,20 +155,20 @@
       <if test="stockNo != null" >
         stock_no,
       </if>
-      <if test="sellNum != null" >
-        sell_num,
+      <if test="stockNum != null" >
+        stock_num,
       </if>
-      <if test="sellPrice != null" >
-        sell_price,
+      <if test="taxCostPrice != null" >
+        tax_cost_price,
+      </if>
+      <if test="stockPrice != null" >
+        stock_price,
       </if>
       <if test="createTime != null" >
         create_time,
       </if>
       <if test="remark != null" >
         remark,
-      </if>
-      <if test="storeManager != null" >
-        store_manager,
       </if>
       <if test="localName != null" >
         local_name,
@@ -254,6 +217,9 @@
       <if test="brand != null" >
         #{brand,jdbcType=VARCHAR},
       </if>
+      <if test="classify != null" >
+        #{classify,jdbcType=CHAR},
+      </if>
       <if test="series != null" >
         #{series,jdbcType=VARCHAR},
       </if>
@@ -272,11 +238,14 @@
       <if test="stockNo != null" >
         #{stockNo,jdbcType=VARCHAR},
       </if>
-      <if test="sellNum != null" >
-        #{sellNum,jdbcType=INTEGER},
+      <if test="stockNum != null" >
+        #{stockNum,jdbcType=INTEGER},
       </if>
-      <if test="sellPrice != null" >
-        #{sellPrice,jdbcType=DOUBLE},
+      <if test="taxCostPrice != null" >
+        #{taxCostPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="stockPrice != null" >
+        #{stockPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
@@ -284,16 +253,13 @@
       <if test="remark != null" >
         #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="storeManager != null" >
-        #{storeManager,jdbcType=CHAR},
-      </if>
       <if test="localName != null" >
         #{localName,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Sale" >
-    update db_sale
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Stock" >
+    update db_stock
     <set >
       <if test="sysId != null" >
         sys_id = #{sysId,jdbcType=INTEGER},
@@ -334,6 +300,9 @@
       <if test="brand != null" >
         brand = #{brand,jdbcType=VARCHAR},
       </if>
+      <if test="classify != null" >
+        classify = #{classify,jdbcType=CHAR},
+      </if>
       <if test="series != null" >
         series = #{series,jdbcType=VARCHAR},
       </if>
@@ -352,11 +321,14 @@
       <if test="stockNo != null" >
         stock_no = #{stockNo,jdbcType=VARCHAR},
       </if>
-      <if test="sellNum != null" >
-        sell_num = #{sellNum,jdbcType=INTEGER},
+      <if test="stockNum != null" >
+        stock_num = #{stockNum,jdbcType=INTEGER},
       </if>
-      <if test="sellPrice != null" >
-        sell_price = #{sellPrice,jdbcType=DOUBLE},
+      <if test="taxCostPrice != null" >
+        tax_cost_price = #{taxCostPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="stockPrice != null" >
+        stock_price = #{stockPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -364,17 +336,14 @@
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="storeManager != null" >
-        store_manager = #{storeManager,jdbcType=CHAR},
-      </if>
       <if test="localName != null" >
         local_name = #{localName,jdbcType=CHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.data.bean.Sale" >
-    update db_sale
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.Stock" >
+    update db_stock
     set sys_id = #{sysId,jdbcType=INTEGER},
       sys_name = #{sysName,jdbcType=VARCHAR},
       store_code = #{storeCode,jdbcType=VARCHAR},
@@ -388,18 +357,19 @@
       stock_code = #{stockCode,jdbcType=VARCHAR},
       simple_name = #{simpleName,jdbcType=VARCHAR},
       brand = #{brand,jdbcType=VARCHAR},
+      classify = #{classify,jdbcType=CHAR},
       series = #{series,jdbcType=VARCHAR},
       day_night = #{dayNight,jdbcType=VARCHAR},
       material = #{material,jdbcType=VARCHAR},
       pieces_num = #{piecesNum,jdbcType=INTEGER},
       box_standard = #{boxStandard,jdbcType=VARCHAR},
       stock_no = #{stockNo,jdbcType=VARCHAR},
-      sell_num = #{sellNum,jdbcType=INTEGER},
-      sell_price = #{sellPrice,jdbcType=DOUBLE},
+      stock_num = #{stockNum,jdbcType=INTEGER},
+      tax_cost_price = #{taxCostPrice,jdbcType=DOUBLE},
+      stock_price = #{stockPrice,jdbcType=DOUBLE},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       remark = #{remark,jdbcType=VARCHAR},
-      store_manager=#{storeManager,jdbcType=CHAR},
-      local_name=#{localName, jdbcType=CHAR}
+      local_name = #{localName,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

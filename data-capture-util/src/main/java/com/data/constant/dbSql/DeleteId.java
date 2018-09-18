@@ -21,4 +21,6 @@ public class DeleteId {
 	
 	public static final String DELETE_STORE_BY_ID = "TemplateStoreMapper.deleteByPrimaryKey";
 	
+	public static final String DELETE_STOCK_BY_ID = "StockMapper.deleteByPrimaryKey";
+	
 }

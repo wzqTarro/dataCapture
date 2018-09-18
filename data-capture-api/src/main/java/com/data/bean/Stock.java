@@ -3,68 +3,64 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.alibaba.fastjson.annotation.JSONField;
-/**
- * 销售数据
- * @author Tarro
- *
- */
-public class Sale implements Serializable{
+public class Stock implements Serializable{
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = -6501670935984328986L;
+	private static final long serialVersionUID = -5318128956742486961L;
 
 	private Integer id;
-	// 网站编号
+
     private Integer sysId;
-    // 网站名称
+
     private String sysName;
-    // 门店编号
+
     private String storeCode;
-    // 门店名称
+
     private String storeName;
-    // 大区
+
     private String region;
-    // 省区
+
     private String provinceArea;
-    // 归属
+
     private String ascription;
-    // 业绩归属
+
     private String ascriptionSole;
-    // 单品编码
+
     private String simpleCode;
-    // 单品条码
+
     private String simpleBarCode;
-    // 存货编码
+
     private String stockCode;
-    // 单品名称
+
     private String simpleName;
-    // 品牌
+
     private String brand;
-    // 系列
+
+    private String classify;
+
     private String series;
-    // 日夜
+
     private String dayNight;
-    // 材质
+
     private String material;
-    // 片数
+
     private Integer piecesNum;
-    // 箱规
+
     private String boxStandard;
-    // 货号
+
     private String stockNo;
-    // 销售数量
-    private Integer sellNum;
-    // 销售金额
-    private Double sellPrice;
-    // 日期
-    @JSONField(format = "yyyy-MM-dd")
+
+    private Integer stockNum;
+
+    private Double taxCostPrice;
+
+    private Double stockPrice;
+
     private Date createTime;
-    // 备注
+
     private String remark;
-    // 门店负责人
-    private String storeManager;
+    
     // 地区
     private String localName;
 
@@ -74,22 +70,6 @@ public class Sale implements Serializable{
 
 	public void setLocalName(String localName) {
 		this.localName = localName;
-	}
-
-	public String getStoreManager() {
-		return storeManager;
-	}
-
-	public void setStoreManager(String storeManager) {
-		this.storeManager = storeManager;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
 	}
 
 	public Integer getId() {
@@ -204,6 +184,14 @@ public class Sale implements Serializable{
         this.brand = brand == null ? null : brand.trim();
     }
 
+    public String getClassify() {
+        return classify;
+    }
+
+    public void setClassify(String classify) {
+        this.classify = classify == null ? null : classify.trim();
+    }
+
     public String getSeries() {
         return series;
     }
@@ -252,20 +240,28 @@ public class Sale implements Serializable{
         this.stockNo = stockNo == null ? null : stockNo.trim();
     }
 
-    public Integer getSellNum() {
-        return sellNum;
+    public Integer getStockNum() {
+        return stockNum;
     }
 
-    public void setSellNum(Integer sellNum) {
-        this.sellNum = sellNum;
+    public void setStockNum(Integer stockNum) {
+        this.stockNum = stockNum;
     }
 
-    public Double getSellPrice() {
-        return sellPrice;
+    public Double getTaxCostPrice() {
+        return taxCostPrice;
     }
 
-    public void setSellPrice(Double sellPrice) {
-        this.sellPrice = sellPrice;
+    public void setTaxCostPrice(Double taxCostPrice) {
+        this.taxCostPrice = taxCostPrice;
+    }
+
+    public Double getStockPrice() {
+        return stockPrice;
+    }
+
+    public void setStockPrice(Double stockPrice) {
+        this.stockPrice = stockPrice;
     }
 
     public Date getCreateTime() {
@@ -274,5 +270,13 @@ public class Sale implements Serializable{
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
     }
 }
