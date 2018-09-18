@@ -37,6 +37,9 @@
   	<if test="barCode != null and barCode != ''">
   		AND bar_code = #{barCode}
   	</if>
+  	<if test="columnName != null and columnName != '' and simpleCode != null and simpleCode != ''">
+  		AND ${columnName} = #{simpleCode}
+  	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>
@@ -46,7 +49,9 @@
   		FROM db_simple_code
   		WHERE 1=1 
   		<include refid="Query_Condition"></include>
-  		LIMIT #{pageNum}, #{pageSize}
+  		<if test="pageNum != null and pageSize != null">
+  			LIMIT #{pageNum}, #{pageSize}
+  		</if>	
   	) sc ON(sc.id = s.id)
   	
   </select>

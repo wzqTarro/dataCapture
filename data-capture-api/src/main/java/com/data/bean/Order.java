@@ -14,7 +14,9 @@ public class Order implements Serializable {
 
 	private Integer id;
 
-    private String system;
+	private Integer sysId;
+	
+    private String sysName;
 
     private String mainArea;
 
@@ -81,16 +83,26 @@ public class Order implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+    
+    
 
-    public String getSystem() {
-        return system;
-    }
+	public Integer getSysId() {
+		return sysId;
+	}
 
-    public void setSystem(String system) {
-        this.system = system == null ? null : system.trim();
-    }
+	public void setSysId(Integer sysId) {
+		this.sysId = sysId;
+	}
 
-    public String getMainArea() {
+	public String getSysName() {
+		return sysName;
+	}
+
+	public void setSysName(String sysName) {
+		this.sysName = sysName;
+	}
+
+	public String getMainArea() {
         return mainArea;
     }
 

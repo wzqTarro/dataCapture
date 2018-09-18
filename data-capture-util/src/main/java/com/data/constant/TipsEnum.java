@@ -21,7 +21,13 @@ public enum TipsEnum {
 	SYS_LOGIN_USER_NAME_IS_NULL("供应链登录账号不能为空"),
 	SYS_LOGIN_PWD_IS_NULL("供应链登录密码不能为空"),
 	SYS_REGION_IS_NULL("供应链区域不能为空"),
-	SYS_NOT_VAL("该供应链未启用")
+	SYS_NOT_VAL("该供应链未启用"),
+	
+	// 模板数据
+	PRODUCT_MESSAGE_IS_NULL("单品信息模板数据缺失"),
+	SIMPLE_CODE_IS_NULL("条码信息模板数据缺失"),
+	STORE_MESSAGE_IS_NULL("门店信息模板数据缺失")
+	
 	;
 	
 	String value;

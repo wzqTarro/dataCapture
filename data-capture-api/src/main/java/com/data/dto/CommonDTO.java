@@ -7,7 +7,7 @@ public class CommonDTO implements Serializable {
 	private static final long serialVersionUID = 1685003548696455015L;
 	
 	//
-	private String token;
+	private String accessToken;
 	// 编号
 	private int id;
 	// 当前页号
@@ -26,11 +26,12 @@ public class CommonDTO implements Serializable {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getToken() {
-		return token;
+	
+	public String getAccessToken() {
+		return accessToken;
 	}
-	public void setToken(String token) {
-		this.token = token;
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 	public int getPage() {
 		return page;

@@ -3,7 +3,8 @@
 <mapper namespace="RejectMapper">
   <resultMap id="BaseResultMap" type="com.data.bean.Reject">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="system" jdbcType="VARCHAR" property="system" />
+    <result column="sys_id" jdbcType="INTEGER" property="sysId" />
+    <result column="sys_name" jdbcType="VARCHAR" property="sysName" />
     <result column="reject_department_id" jdbcType="VARCHAR" property="rejectDepartmentId" />
     <result column="main_area" jdbcType="VARCHAR" property="mainArea" />
     <result column="province_area" jdbcType="VARCHAR" property="provinceArea" />
@@ -31,7 +32,7 @@
     <result column="diff_price" jdbcType="DECIMAL" property="diffPrice" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, system, reject_department_id, main_area, province_area, reject_department_name, 
+    id, sys_id, sys_name, reject_department_id, main_area, province_area, reject_department_name, 
     receipt_code, product_code, product_bar_code, product_store_code, product_name, tax_rate, 
     product_amount, reject_price_with_rate, reject_price, reject_date, discount_price, 
     discount_start_date, discount_end_date, diff_price_discount, diff_price_discount_total, 
@@ -49,7 +50,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.data.bean.Reject">
-    insert into db_reject (id, system, reject_department_id, 
+    insert into db_reject (id, sys_id, sys_name, reject_department_id, 
       main_area, province_area, reject_department_name, 
       receipt_code, product_code, product_bar_code, 
       product_store_code, product_name, tax_rate, 
@@ -59,7 +60,7 @@
       discount_alarm_flag, contract_price, diff_price_contract, 
       diff_price_contract_total, contract_alarm_flag, 
       diff_price)
-    values (#{id,jdbcType=INTEGER}, #{system,jdbcType=VARCHAR}, #{rejectDepartmentId,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, #{rejectDepartmentId,jdbcType=VARCHAR}, 
       #{mainArea,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, #{rejectDepartmentName,jdbcType=VARCHAR}, 
       #{receiptCode,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, #{productBarCode,jdbcType=VARCHAR}, 
       #{productStoreCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, 
@@ -76,8 +77,11 @@
       <if test="id != null">
         id,
       </if>
-      <if test="system != null">
-        system,
+      <if test="sysId != null">
+        sys_id,
+      </if>
+      <if test="sysName != null">
+        sys_name,
       </if>
       <if test="rejectDepartmentId != null">
         reject_department_id,
@@ -159,8 +163,11 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="system != null">
-        #{system,jdbcType=VARCHAR},
+      <if test="sysId != null">
+        #{sysId,jdbcType=INTEGER},
+      </if>
+      <if test="sysName != null">
+        #{sysName,jdbcType=VARCHAR},
       </if>
       <if test="rejectDepartmentId != null">
         #{rejectDepartmentId,jdbcType=VARCHAR},
@@ -242,8 +249,11 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Reject">
     update db_reject
     <set>
-      <if test="system != null">
-        system = #{system,jdbcType=VARCHAR},
+   	  <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=INTEGER},
+      </if>
+      <if test="sysName != null">
+        sys_name = #{sysName,jdbcType=VARCHAR},
       </if>
       <if test="rejectDepartmentId != null">
         reject_department_id = #{rejectDepartmentId,jdbcType=VARCHAR},
@@ -325,7 +335,9 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.data.bean.Reject">
     update db_reject
-    set system = #{system,jdbcType=VARCHAR},
+    set 
+      sys_id = #{sysId, jdbcType=INTEGER},
+      sys_name = #{sysName,jdbcType=VARCHAR},
       reject_department_id = #{rejectDepartmentId,jdbcType=VARCHAR},
       main_area = #{mainArea,jdbcType=VARCHAR},
       province_area = #{provinceArea,jdbcType=VARCHAR},

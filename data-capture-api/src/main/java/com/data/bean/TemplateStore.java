@@ -30,7 +30,8 @@ public class TemplateStore implements Serializable {
 
     private String sysName;
 
-    private String storeUser;
+    // 门店负责人
+    private String storeManager;
 
     private String logisticsModel;
 
@@ -122,15 +123,17 @@ public class TemplateStore implements Serializable {
         this.sysName = sysName == null ? null : sysName.trim();
     }
 
-    public String getStoreUser() {
-        return storeUser;
-    }
+    
 
-    public void setStoreUser(String storeUser) {
-        this.storeUser = storeUser == null ? null : storeUser.trim();
-    }
+    public String getStoreManager() {
+		return storeManager;
+	}
 
-    public String getLogisticsModel() {
+	public void setStoreManager(String storeManager) {
+		this.storeManager = storeManager;
+	}
+
+	public String getLogisticsModel() {
         return logisticsModel;
     }
 
