@@ -27,7 +27,6 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
-import com.data.exception.DataException;
 import com.data.service.ISaleService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
@@ -50,7 +49,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 	@Override
 	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
-		String saleJson = null;
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		

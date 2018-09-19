@@ -1,7 +1,5 @@
 package com.data.constant;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * 抓取数据路径
  * @author Tarro

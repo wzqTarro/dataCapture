@@ -1,7 +1,5 @@
 package com.data.service;
 
-import com.data.utils.ResultUtil;
-
 public interface ITemplateOrderService {
 	/**
 	 * 分页查询

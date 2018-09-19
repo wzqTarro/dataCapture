@@ -1,7 +1,6 @@
 package com.data.service;
 
 import com.data.bean.SimpleCode;
-import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
 
 public interface ISimpleCodeService {
