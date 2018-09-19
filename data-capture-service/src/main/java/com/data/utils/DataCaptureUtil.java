@@ -2,7 +2,6 @@ package com.data.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,23 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
-import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.SimpleCodeEnum;
-import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
-
-import ch.qos.logback.core.joran.spi.SimpleRuleStore;
 
 /**
  * 数据抓取方法工具类
@@ -53,7 +47,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public <T> List<T> getDataByWeb(CommonDTO common, int dataType, Class<T> clazz) throws IOException{		
+	public <T> List<T> getDataByWeb(CommonDTO common, int sysId, int dataType, Class<T> clazz) throws IOException{		
 		/*String start = null;
 		String end = null;
 		if (null != null || 0 == common.getId()) {
@@ -84,7 +78,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		String json = restTemplate.getForObject(sb.toString(), String.class);*/
 		
 		// 测试数据
-		String json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
+		String json = FileUtils.readFileToString(new File("E:\\baiya\\stock\\stock.txt"));
 		logger.info(json);
 		// json转List
 		List<T> list = translateData(json, clazz);
@@ -117,30 +111,25 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param common
 	 * @return
 	 */
-	public <T> PageRecord<T> setPageRecord(List<T> list, CommonDTO common) {
-		PageRecord<T> page = new PageRecord();
-		if (CommonUtil.isNotBlank(common)) {
-			if (CommonUtil.isBlank(common.getPage())) {
-				page.setPageNum(CommonValue.PAGE);
-			} else {
-				page.setPageNum(common.getPage());
-			}
-			if (CommonUtil.isBlank(common.getLimit())) {
-				page.setPageSize(CommonValue.SIZE);
-			} else {
-				page.setPageSize(common.getLimit());
-			}
-		} else {
-			page.setPageNum(CommonValue.PAGE);
-			page.setPageSize(CommonValue.SIZE);
+	public <T> PageRecord<T> setPageRecord(List<T> list, int page, int limit) {
+		PageRecord<T> pageRecord = new PageRecord();
+		if (0 == page) {
+			pageRecord.setPageNum(CommonValue.PAGE);			
+		} else {			
+			pageRecord.setPageNum(page);
 		}
-		if (list.size() > page.getPageSize()) {
-			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), page.getPageSize()));
+		if (0 == limit) {
+			pageRecord.setPageSize(limit);
 		} else {
-			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), list.size()));
+			pageRecord.setPageSize(CommonValue.SIZE);
+		}
+		if (list.size() > pageRecord.getPageSize()) {
+			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
+		} else {
+			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), list.size()));
 		}
 	
-		return page;
+		return pageRecord;
 	}
 	/**
 	 * 批量插入数据库
@@ -205,12 +194,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param simpleCode
 	 * @return
 	 */
-	public TemplateProduct getStandardProductMessage(String sysName, String simpleBarCode) {
+	public TemplateProduct getStandardProductMessage(String localName, String sysName, String simpleBarCode) {
 		if (CommonUtil.isBlank(sysName)) {
 			return null;
 		}
 		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", sysName);
+		param.put("sysName", CommonUtil.isBlank(localName) ? sysName : localName+sysName);
 		param.put("simpleBarCode", simpleBarCode);
 		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
 		return CommonUtil.isBlank(product) ? null :product.get(0);

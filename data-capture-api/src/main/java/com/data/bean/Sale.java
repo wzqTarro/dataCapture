@@ -65,8 +65,18 @@ public class Sale implements Serializable{
     private String remark;
     // 门店负责人
     private String storeManager;
+    // 地区
+    private String localName;
 
-    public String getStoreManager() {
+    public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
+
+	public String getStoreManager() {
 		return storeManager;
 	}
 

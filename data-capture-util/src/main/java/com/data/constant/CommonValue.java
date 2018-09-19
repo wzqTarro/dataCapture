@@ -24,4 +24,16 @@ public class CommonValue {
 	
 	/**token前面自定义标识**/
 	public static final String ELLE = "elle ";
+	
+	/**excel2003最大支持列数**/
+	public static final int MAX_COL_COUNT_2003 = 256;
+	
+	/**excel2003最大支持行数**/
+	public static final int MAX_ROW_COUNT_2003 = 65536;
+	
+	/**excel2007最大支持列数**/
+	public static final int MAX_COL_COUNT_2007 = 16384;
+	
+	/**excel2007最大支持行数**/
+	public static final int MAX_ROW_COUNT_2007 = 1048576;
 }

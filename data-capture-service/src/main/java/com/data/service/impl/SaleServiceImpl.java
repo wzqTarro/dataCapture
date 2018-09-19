@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,13 +49,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private DataCaptureUtil dataCaptureUtil;
 
 	@Override
-	public ResultUtil getSaleByWeb(CommonDTO common) throws IOException{
+	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
 		String saleJson = null;
-		PageRecord<Sale> page = null;
+		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
 		// 抓取数据
-		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE, Sale.class);
+		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.SALE, Sale.class);
 
 		
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
@@ -70,6 +72,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			// 门店编码
 			String storeCode = sale.getStoreCode();
 			
+			// 地区
+			String localName = sale.getLocalName();
+			
 			TemplateStore store = dataCaptureUtil.getStandardStoreMessage(sysName, storeCode);
 			
 			// 单品条码
@@ -82,7 +87,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				continue;
 			}
 			sale.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(sysName, simpleBarCode);
+			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {
@@ -150,14 +155,15 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		
 		// 数据插入数据库
 		dataCaptureUtil.insertData(saleList, InsertId.INSERT_BATCH_SALE);
-		page = dataCaptureUtil.setPageRecord(saleList, common);
-		return ResultUtil.success(page);
+		pageRecord = dataCaptureUtil.setPageRecord(saleList, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Override
-	public ResultUtil getSaleByParam(String param) throws Exception {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		Sale sale = FastJsonUtil.jsonToObject(param, Sale.class);
+	public ResultUtil getSaleByParam(CommonDTO common, Sale sale, Integer page, Integer limit) throws Exception {
+		if (null == common) {
+			common = new CommonDTO();
+		}
 		Map<String, Object> map = Maps.newHashMap();
 		logger.info("--------->>>>>>>>common:" + FastJsonUtil.objectToString(common) + "<<<<<<<-----------");		
 		if (StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
@@ -191,8 +197,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				map.put("simpleName", sale.getSimpleName());
 			}
 		}
-		PageRecord<Sale> page = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, QueryId.QUERY_SALE_BY_PARAM, map, common.getPage(), common.getLimit());
-		return ResultUtil.success(page);
+		PageRecord<Sale> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, 
+				QueryId.QUERY_SALE_BY_PARAM, map, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Override
@@ -243,5 +250,32 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
 		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
 		System.err.println(FastJsonUtil.objectToString(list));
+	}
+
+	@Override
+	public ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response) {
+		Map<String, Object> params = new HashMap<>(8);
+		params.put("system", system);
+		params.put("region", region);
+		params.put("province", province);
+		params.put("store", store);
+		//先判断数量 分批导出
+		int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT, params);
+		if(count >= CommonValue.MAX_ROW_COUNT_2007) {
+			return ResultUtil.error("下载超过excel2007最大行数");
+		}
+		/**
+		 * TODO
+		 * 如何按单元格导出
+		 */
+		try {
+			
+		} finally {
+			
+		}
+		
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
+		
+		return null;
 	}
 }

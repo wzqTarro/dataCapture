@@ -10,8 +10,11 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -31,16 +34,16 @@ public class ExcelUtil<T> {
 	private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 	
 	/**excel2003最大支持列数**/
-	private static final int MAX_COL_COUNT_2003 = 256;
+	public static final int MAX_COL_COUNT_2003 = 256;
 	
 	/**excel2003最大支持行数**/
-	private static final int MAX_ROW_COUNT_2003 = 65536;
+	public static final int MAX_ROW_COUNT_2003 = 65536;
 	
 	/**excel2007最大支持列数**/
-	private static final int MAX_COL_COUNT_2007 = 16384;
+	public static final int MAX_COL_COUNT_2007 = 16384;
 	
 	/**excel2007最大支持行数**/
-	private static final int MAX_ROW_COUNT_2007 = 1048576;
+	public static final int MAX_ROW_COUNT_2007 = 1048576;
 	
 	/**
 	 * 导出2003excel表
@@ -260,5 +263,38 @@ public class ExcelUtil<T> {
 			workBook.write(out);
 		}
 	}
-
+	/**
+	 * 创建Workbook
+	 * @return
+	 */
+	public SXSSFWorkbook createWorkBook() {
+		SXSSFWorkbook wb = new SXSSFWorkbook();
+		return wb;
+	}
+	/**
+	 * 构建行
+	 * @param row
+	 * @param header
+	 */
+	public void createRow(Row row, String[] header) {
+		for (int i = 0, size = header.length; i < size; i++) {
+			row.createCell(i).setCellValue(header[i]);
+		}
+	}
+	/**
+	 * 设置单元格样式
+	 * @param fill 图案样式
+	 * @param color 背景颜色
+	 * @return 
+	 */
+	public CellStyle setCellStyle(SXSSFWorkbook wb, short fill, short color) {
+		CellStyle cellStyle = wb.createCellStyle();
+		
+		// 填充单元格
+		cellStyle.setFillPattern(fill); 
+		
+		// 背景颜色
+		cellStyle.setFillForegroundColor(color); 
+		return cellStyle;
+	}
 }

@@ -27,12 +27,13 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="store_manager" property="storeManager" jdbcType="CHAR" />
+    <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
     day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time,
-    remark, store_manager
+    remark, store_manager, local_name
   </sql>
   <sql id="Query_Condition">
   	<if test="simpleCode != null and simpleCode != ''">
@@ -57,7 +58,40 @@
   		AND create_time &lt;= #{endDate}
   		AND create_time &gt;= #{startDate}
   	</if>
+  	<if test="queryDate != null and queryDate != ''">
+  		AND create_time = #{queryDate}
+  	</if>
   </sql>
+  
+  <sql id="Sale_List_Report">
+  	<if test="system != null and system != ''">
+  		AND sys_name LIKE CONCAT(CONCAT('%', #{system}), '%') 
+  	</if>
+  	<if test="region != null and region != ''">
+  		AND region LIKE CONCAT(CONCAT('%', #{region}), '%') 
+  	</if>
+  	<if test="province != null and province != ''">
+  		AND province_area LIKE CONCAT(CONCAT('%', #{province}), '%') 
+  	</if>
+  	<if test="store != null and store != ''">
+  		AND store_name LIKE CONCAT(CONCAT('%', #{store}), '%') 
+  	</if>
+  </sql>
+  
+  <select id="querySaleListReport" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include>
+  	FROM db_sale 
+  	WHERE 1=1
+  	<include refid="Sale_List_Report"></include>
+  </select>
+  
+  <select id="queryCountSaleListReport" parameterType="map" resultType="int">
+  	SELECT COUNT(1)
+  	FROM db_sale 
+  	WHERE 1=1
+  	<include refid="Sale_List_Report"></include>
+  </select>
+  
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Base_Column_List"></include>
   	FROM db_sale
@@ -101,7 +135,7 @@
       #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
       #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
       #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
-      #{storeManager,jdbcType=CHAR})
+      #{storeManager,jdbcType=CHAR},  #{localName,jdbcType=CHAR} )
   </insert>
   
   <insert id="insertBatch" parameterType="list" >
@@ -113,7 +147,7 @@
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
       sell_price, create_time, remark, 
-      store_manager)
+      store_manager, local_name)
     values 
     <foreach collection="list" item="sale" separator=",">
     (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=INTEGER}, #{sale.sysName,jdbcType=VARCHAR}, 
@@ -124,7 +158,7 @@
       #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
       #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
       #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=TIMESTAMP}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.storeManager,jdbcType=CHAR})    	
+      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
     </foreach>
   </insert>
   
@@ -206,6 +240,9 @@
       <if test="storeManager != null" >
         store_manager,
       </if>
+      <if test="localName != null" >
+        local_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -282,6 +319,9 @@
       </if>
       <if test="storeManager != null" >
         #{storeManager,jdbcType=CHAR},
+      </if>
+      <if test="localName != null" >
+        #{localName,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
@@ -360,6 +400,9 @@
       <if test="storeManager != null" >
         store_manager = #{storeManager,jdbcType=CHAR},
       </if>
+      <if test="localName != null" >
+        local_name = #{localName,jdbcType=CHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -388,7 +431,8 @@
       sell_price = #{sellPrice,jdbcType=DOUBLE},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       remark = #{remark,jdbcType=VARCHAR},
-      store_manager=#{storeManager,jdbcType=CHAR}
+      store_manager=#{storeManager,jdbcType=CHAR},
+      local_name=#{localName, jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

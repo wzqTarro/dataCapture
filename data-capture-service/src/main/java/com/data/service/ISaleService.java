@@ -1,6 +1,6 @@
 package com.data.service;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 import com.data.bean.Sale;
 import com.data.dto.CommonDTO;
@@ -12,13 +12,13 @@ public interface ISaleService {
 	 * @param para
 	 * @return
 	 */
-	ResultUtil getSaleByWeb(CommonDTO commonDTOs) throws Exception ;
+	ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 多条件查询销售数据
 	 * @param param
 	 * @return
 	 */
-	ResultUtil getSaleByParam(String param) throws Exception;
+	ResultUtil getSaleByParam(CommonDTO common, Sale sale, Integer page, Integer limit) throws Exception;
 	
 	/**
 	 * 查询集合列表
@@ -27,4 +27,10 @@ public interface ISaleService {
 	 * @return
 	 */
 	ResultUtil querySaleList(Sale sale);
+	
+	/**
+	 * 数据导出
+	 * @param response
+	 */
+	ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response);
 }
