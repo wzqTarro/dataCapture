@@ -21,4 +21,11 @@ public interface IStockService {
 	 * @return
 	 */
 	ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception ;
+	/**
+	 * 生成门店单品表
+	 * @param queryDate 查询时间
+	 * @param storeName 门店名称
+	 * @return
+	 */
+	ResultUtil createStoreProductExcel(String queryDate, String storeName);
 }

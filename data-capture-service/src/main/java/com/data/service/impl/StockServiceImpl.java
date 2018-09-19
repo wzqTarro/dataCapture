@@ -1,15 +1,31 @@
 package com.data.service.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Color;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.Sale;
 import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -23,6 +39,7 @@ import com.data.service.IStockService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
@@ -174,5 +191,181 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		}
 		PageRecord<Stock> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, QueryId.QUERY_STOCK_BY_PARAM, map, page, limit);
 		return ResultUtil.success(pageRecord);
+	}
+
+	@Override
+	public ResultUtil createStoreProductExcel(String queryDate, String storeName) {
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
+		}
+		if (CommonUtil.isBlank(storeName)) {
+			return ResultUtil.error(TipsEnum.STORE_NAME_IS_NULL.getValue());
+		}
+		
+		// 当天的库存数据
+		Map<String, Object> param = new HashMap<>(4);
+		param.put("queryDate", queryDate);
+		param.put("storeName", storeName);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("门店单品表");
+		Row title = sheet.createRow(0);
+		
+		// 表头
+		excelUtil.createRow(title, new String[]{"门店", "单品名称", "单品编码", "单品条码", "前一周销售数量", "库存数量", "库存天数"});
+		
+		// 填写数据
+		for (int i = 0, size = stockList.size(); i < size; i++) {
+			Stock stock = stockList.get(i);
+			Row row = sheet.createRow(i+1);
+			
+			// 上周一
+			LocalDate lastMonday = LocalDate.parse(queryDate).minusWeeks(1L).with(DayOfWeek.MONDAY);
+			
+			// 上周末
+			LocalDate lastSunday = lastMonday.with(DayOfWeek.SUNDAY);
+			
+			// 查询上周销量
+			param.clear();
+			param.put("startDate", lastMonday.toString());
+			param.put("endDate", lastSunday.toString());
+			param.put("simpleBarCode", stock.getSimpleBarCode());
+			param.put("storeName", stock.getStoreName());
+			List<Sale> saleWeekList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+			
+			// 上周该单品的销售数量
+			Integer sumSaleNumByWeek = saleWeekList.stream().collect(Collectors.summingInt(s -> s.getSellNum()));
+			
+			String[] cellValue = new String[]{
+					stock.getStoreName(),
+					stock.getSimpleName(),
+					stock.getSimpleCode(),
+					stock.getSimpleBarCode(),
+					String.valueOf(CommonUtil.toIntOrZero(sumSaleNumByWeek)),
+					String.valueOf(CommonUtil.toIntOrZero(stock.getStockNum()))
+			};
+			excelUtil.createRow(row, cellValue);
+			
+			// 前一天
+			LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+			
+			// 查询前一天销量
+			param.clear();
+			param.put("queryDate", lastDay.toString());
+			param.put("simpleBarCode", stock.getSimpleBarCode());
+			param.put("storeName", stock.getStoreName());
+			
+			// 查询前一天销量
+			List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+			
+			// 前一天单品的销售总量
+			Integer sumSaleNumByDay = CommonUtil.toIntOrZero(saleDayList.stream().collect(Collectors.summingInt(s -> s.getSellNum())));
+			
+			// 库存金额
+			Double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
+			
+			// 库存天数
+			Double stockDayNum = stockPrice / sumSaleNumByDay;
+			
+			CellStyle cellStyle = null;
+			
+			// 库存天数小于3 ，单元格黄底
+			if (stockDayNum < 3) {
+				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
+			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底
+				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+			}
+			
+			Cell stockDayNumCell = row.createCell(cellValue.length);
+			stockDayNumCell.setCellValue(stockDayNum);
+			if (null != cellStyle) {
+				stockDayNumCell.setCellStyle(cellStyle);
+			}
+		}
+		return ResultUtil.success(wb);
+	}
+	
+	public static void main(String[] args) {
+		List<Stock> stockList = new ArrayList<>();
+		Stock s1 = new Stock();
+		s1.setStockNum(2);
+		s1.setBrand("火腿");
+		stockList.add(s1);
+		Stock s2 = new Stock();
+		s2.setStockNum(3);
+		s2.setBrand("大巴");
+		stockList.add(s2);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("门店单品表");
+		Row title = sheet.createRow(0);
+		
+		File file = new File("D:\\excel.xls");
+		// 表头
+		excelUtil.createRow(title, new String[]{"门店", "单品名称", "单品编码", "单品条码", "前一周销售数量", "库存数量", "库存天数"});
+		
+		// 填写数据
+		for (int i = 0, size = stockList.size(); i < size; i++) {
+			Stock stock = stockList.get(i);
+			Row row = sheet.createRow(i+1);
+			
+			// 上周一
+			LocalDate lastMonday = LocalDate.parse("2018-09-20").minusWeeks(1L).with(DayOfWeek.MONDAY);
+			
+			// 上周末
+			LocalDate lastSunday = lastMonday.with(DayOfWeek.SUNDAY);
+			
+			
+			String[] cellValue = new String[]{
+					stock.getStoreName(),
+					stock.getSimpleName(),
+					stock.getSimpleCode(),
+					stock.getSimpleBarCode(),
+					String.valueOf(CommonUtil.toIntOrZero(stock.getStockNum()))
+			};
+			excelUtil.createRow(row, cellValue);
+			
+			// 前一天
+			LocalDate lastDay = LocalDate.parse("2018-09-20").minusDays(1L);
+			
+			
+			// 库存金额
+			Double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
+			
+			// 库存天数
+			Double stockDayNum = stockPrice / 1;
+			
+			CellStyle cellStyle = null;
+			
+			// 库存天数小于3 ，单元格黄底
+			if (stockDayNum < 3 && stockDayNum > 0) {
+				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
+			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底
+				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+			}
+			
+			Cell stockDayNumCell = row.createCell(cellValue.length);
+			stockDayNumCell.setCellValue(stockDayNum);
+			if (null != cellStyle) {
+				stockDayNumCell.setCellStyle(cellStyle);
+			}
+		}
+		
+		FileOutputStream output;
+		try {
+			output = new FileOutputStream(file);
+			wb.write(output);
+			output.flush();
+			output.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

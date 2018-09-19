@@ -59,6 +59,9 @@
   		AND create_time &lt;= #{endDate}
   		AND create_time &gt;= #{startDate}
   	</if>
+  	<if test="queryDate != null and queryDate != ''">
+  		AND create_time = #{queryDate}
+  	</if>
   </sql>
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Base_Column_List"></include>

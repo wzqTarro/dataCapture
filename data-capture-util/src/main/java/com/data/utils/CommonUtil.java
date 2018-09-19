@@ -149,4 +149,20 @@ public class CommonUtil {
 		}
 		return false;
 	}
+	/**
+	 * 浮点数为空返回0
+	 * @param d
+	 * @return
+	 */
+	public static double toDoubleOrZero(Double d) {
+		return (null == d) ? 0 : d;
+	}
+	/**
+	 * 整数为空返回0
+	 * @param i
+	 * @return
+	 */
+	public static int toIntOrZero(Integer i) {
+		return (null == i) ? 0 :i;
+	}
 }
