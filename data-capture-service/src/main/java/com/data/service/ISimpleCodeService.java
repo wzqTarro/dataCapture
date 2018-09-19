@@ -1,6 +1,7 @@
 package com.data.service;
 
 import com.data.bean.SimpleCode;
+import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
 
 public interface ISimpleCodeService {
@@ -10,7 +11,7 @@ public interface ISimpleCodeService {
 	 * @param param
 	 * @return
 	 */
-	ResultUtil getSimpleCodeByParam(String param)throws Exception ;
+	ResultUtil getSimpleCodeByParam(SimpleCode simpleCode, Integer page, Integer limit)throws Exception ;
 	/**
 	 * 更新
 	 * @param simpleCode

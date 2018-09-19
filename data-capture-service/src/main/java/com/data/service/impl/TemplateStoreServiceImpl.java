@@ -27,13 +27,8 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public ResultUtil getTemplateStoreByParam(String param) throws Exception {
-		logger.info("------>>>>>参数：{}<<<<<<-------", param);
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		TemplateStore store = FastJsonUtil.jsonToObject(param, TemplateStore.class);
-		if (null == common) {
-			common = new CommonDTO();
-		}
+	public ResultUtil getTemplateStoreByParam(TemplateStore store, Integer page, Integer limit) throws Exception {
+		logger.info("------>>>>>参数：{}<<<<<<-------", FastJsonUtil.objectToString(store));
 		Map<String, Object> map = null;
 		if (null != store) {
 			map = new HashMap<>(5);
@@ -65,10 +60,10 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 			
 		}
 		logger.info("------>>>>>模板门店查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateStore> page = queryPageByObject(QueryId.QUERY_COUNT_STORE_BY_PARAM, 
-				QueryId.QUERY_STORE_BY_PARAM, map, common.getPage(), common.getLimit());
-		logger.info("------>>>>>模板门店分页信息:{}<<<<<-------", FastJsonUtil.objectToString(page));
-		return ResultUtil.success(page);
+		PageRecord<TemplateStore> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STORE_BY_PARAM, 
+				QueryId.QUERY_STORE_BY_PARAM, map, page, limit);
+		logger.info("------>>>>>模板门店分页信息:{}<<<<<-------", FastJsonUtil.objectToString(pageRecord));
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Transactional(rollbackFor = {Exception.class})

@@ -28,13 +28,9 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public ResultUtil getSimpleCodeByParam(String param) throws Exception {
-		logger.info("---->>>>>前端参数param：{}<<<<<-------", param);
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		SimpleCode simpleCode = FastJsonUtil.jsonToObject(param, SimpleCode.class);
-		if (null == common) {
-			common = new CommonDTO();
-		}
+	public ResultUtil getSimpleCodeByParam(SimpleCode simpleCode, Integer page, Integer limit) throws Exception {
+		logger.info("---->>>>>前端参数simpleCode：{}, page:{}, limit:{}<<<<<-------", 
+				FastJsonUtil.objectToString(simpleCode), page, limit);
 		Map<String, Object> map = null;
 		if (null != simpleCode) {
 			map = new HashMap<>();
@@ -50,10 +46,10 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 			}
 		}
 		logger.info("------>>>>>标准条码查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateProduct> page = queryPageByObject(QueryId.QUERY_COUNT_SIMPLE_CODE_BY_PARAM, QueryId.QUERY_SIMPLE_CODE_BY_PARAM, 
-				map, common.getPage(), common.getLimit());
-		logger.info("------>>>>>模板商品分页信息:{}<<<<<------", FastJsonUtil.objectToString(page));
-		return ResultUtil.success(page);
+		PageRecord<TemplateProduct> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SIMPLE_CODE_BY_PARAM, QueryId.QUERY_SIMPLE_CODE_BY_PARAM, 
+				map, page, limit);
+		logger.info("------>>>>>模板商品分页信息:{}<<<<<------", FastJsonUtil.objectToString(pageRecord));
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Transactional(rollbackFor = {Exception.class})

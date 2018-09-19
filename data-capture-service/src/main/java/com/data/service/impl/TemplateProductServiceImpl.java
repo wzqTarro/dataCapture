@@ -27,11 +27,10 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Override
-	public ResultUtil getTemplateProductByParam(String param) throws Exception {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		TemplateProduct product = FastJsonUtil.jsonToObject(param, TemplateProduct.class);
-		logger.info("------>>>>>common:{}<<<<<------", FastJsonUtil.objectToString(common));
+	public ResultUtil getTemplateProductByParam(TemplateProduct product, Integer page, Integer limit) throws Exception {
+		
 		logger.info("------>>>>>product:{}<<<<<------", FastJsonUtil.objectToString(product));
+		logger.info("------>>>>>page:{},limit:{}<<<<<------", page, limit);
 		Map<String, Object> map = new HashMap<>(10);
 		if (null != product) {
 			// 商品编号
@@ -85,10 +84,10 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 			}
 		}
 		logger.info("------>>>>>模板商品查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateProduct> page = queryPageByObject(QueryId.QUERY_COUNT_PRODUCT_BY_PARAM, QueryId.QUERY_PRODUCT_BY_PARAM, 
-				map, common.getPage(), common.getLimit());
-		logger.info("------>>>>>模板商品分页信息:{}<<<<<------", FastJsonUtil.objectToString(page));
-		return ResultUtil.success(page);
+		PageRecord<TemplateProduct> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_PRODUCT_BY_PARAM, QueryId.QUERY_PRODUCT_BY_PARAM, 
+				map, page, limit);
+		logger.info("------>>>>>模板商品分页信息:{}<<<<<------", FastJsonUtil.objectToString(pageRecord));
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Transactional(rollbackFor = {Exception.class})

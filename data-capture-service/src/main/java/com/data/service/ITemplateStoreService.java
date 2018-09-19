@@ -10,7 +10,7 @@ public interface ITemplateStoreService {
 	 * @param param
 	 * @return
 	 */
-	ResultUtil getTemplateStoreByParam(String param) throws Exception ;
+	ResultUtil getTemplateStoreByParam(TemplateStore store, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 更新模板门店信息
 	 * @param templateStore

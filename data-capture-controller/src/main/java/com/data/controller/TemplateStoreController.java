@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.service.ITemplateStoreService;
 import com.data.utils.FastJsonUtil;
@@ -30,8 +31,10 @@ public class TemplateStoreController {
 	 */
 	@RequestMapping(value = "/getTemplateStoreByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询模板门店信息", httpMethod = "POST")
-	public String getTemplateStoreByParam(@RequestParam("param") String param) throws Exception {
-		ResultUtil result = storeService.getTemplateStoreByParam(param);
+	public String getTemplateStoreByParam(@RequestParam(value = "templateStore", required = false)TemplateStore templateStore,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+		ResultUtil result = storeService.getTemplateStoreByParam(templateStore, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**

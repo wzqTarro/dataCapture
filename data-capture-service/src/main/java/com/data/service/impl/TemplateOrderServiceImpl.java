@@ -21,7 +21,7 @@ public class TemplateOrderServiceImpl extends CommonServiceImpl implements ITemp
 	
 	private static Logger logger = LoggerFactory.getLogger(TemplateOrderServiceImpl.class);
 	
-	@Override
+	/*@Override
 	public ResultUtil queryOrderByCondition(String param) throws Exception {
 		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
 		TemplateOrder order = FastJsonUtil.jsonToObject(param, TemplateOrder.class);
@@ -43,5 +43,5 @@ public class TemplateOrderServiceImpl extends CommonServiceImpl implements ITemp
 		PageRecord<TemplateOrder> page = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, common.getPage(), common.getLimit());
 		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(page));
 		return ResultUtil.success(page);
-	}
+	}*/
 }

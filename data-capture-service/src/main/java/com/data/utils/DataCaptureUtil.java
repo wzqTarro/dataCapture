@@ -50,7 +50,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	public <T> List<T> getDataByWeb(CommonDTO common, int sysId, int dataType, Class<T> clazz) throws IOException{		
 		/*String start = null;
 		String end = null;
-		if (null != null || 0 == common.getId()) {
+		if (0 == sysId) {
 			throw new DataException("503");
 		}
 		if (null != common && StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
