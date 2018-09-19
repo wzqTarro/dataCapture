@@ -53,10 +53,10 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public <T> List<T> getDataByWeb(CommonDTO common, int dataType, Class<T> clazz) throws IOException{		
+	public <T> List<T> getDataByWeb(CommonDTO common, int sysId, int dataType, Class<T> clazz) throws IOException{		
 		/*String start = null;
 		String end = null;
-		if (null != null || 0 == common.getId()) {
+		if (0 == sysId) {
 			throw new DataException("503");
 		}
 		if (null != common && StringUtils.isNoneBlank(common.getStartDate()) && StringUtils.isNoneBlank(common.getEndDate())) {
@@ -117,30 +117,25 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param common
 	 * @return
 	 */
-	public <T> PageRecord<T> setPageRecord(List<T> list, CommonDTO common) {
-		PageRecord<T> page = new PageRecord();
-		if (CommonUtil.isNotBlank(common)) {
-			if (CommonUtil.isBlank(common.getPage())) {
-				page.setPageNum(CommonValue.PAGE);
-			} else {
-				page.setPageNum(common.getPage());
-			}
-			if (CommonUtil.isBlank(common.getLimit())) {
-				page.setPageSize(CommonValue.SIZE);
-			} else {
-				page.setPageSize(common.getLimit());
-			}
-		} else {
-			page.setPageNum(CommonValue.PAGE);
-			page.setPageSize(CommonValue.SIZE);
+	public <T> PageRecord<T> setPageRecord(List<T> list, int page, int limit) {
+		PageRecord<T> pageRecord = new PageRecord();
+		if (0 == page) {
+			pageRecord.setPageNum(CommonValue.PAGE);			
+		} else {			
+			pageRecord.setPageNum(page);
 		}
-		if (list.size() > page.getPageSize()) {
-			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), page.getPageSize()));
+		if (0 == limit) {
+			pageRecord.setPageSize(limit);
 		} else {
-			page.setList(list.subList((page.getPageNum() - 1)*page.getPageSize(), list.size()));
+			pageRecord.setPageSize(CommonValue.SIZE);
+		}
+		if (list.size() > pageRecord.getPageSize()) {
+			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
+		} else {
+			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), list.size()));
 		}
 	
-		return page;
+		return pageRecord;
 	}
 	/**
 	 * 批量插入数据库

@@ -12,13 +12,13 @@ public interface ISaleService {
 	 * @param para
 	 * @return
 	 */
-	ResultUtil getSaleByWeb(CommonDTO common) throws Exception ;
+	ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 多条件查询销售数据
 	 * @param param
 	 * @return
 	 */
-	ResultUtil getSaleByParam(CommonDTO common, Sale sale) throws Exception;
+	ResultUtil getSaleByParam(CommonDTO common, Sale sale, Integer page, Integer limit) throws Exception;
 	
 	/**
 	 * 查询集合列表

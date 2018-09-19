@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateSupply;
 import com.data.service.ITemplateSupplyService;
 import com.data.utils.FastJsonUtil;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -39,8 +42,10 @@ public class TemplateSupplyController {
 	 */
 	@RequestMapping(value = "/querySupplyByCondition", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询供应链厂商", httpMethod = "POST")
-	public String querySupplyByCondition(@RequestParam("param") String param) throws Exception{
-		return FastJsonUtil.objectToString(supplyService.querySupplyByConditiion(param));
+	public String querySupplyByCondition(@RequestParam(value = "templateSupply", required = false)TemplateSupply templateSupply,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception{
+		return FastJsonUtil.objectToString(supplyService.querySupplyByConditiion(templateSupply, page, limit));
 	}
 	/**
 	 * 更新

@@ -13,12 +13,12 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	ResultUtil getStockByWeb(CommonDTO common) throws IOException ;
+	ResultUtil getStockByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException ;
 	/**
 	 * 多条件查询库存
 	 * @param common
 	 * @param stock
 	 * @return
 	 */
-	ResultUtil getStockByParam(CommonDTO common, Stock stock) throws Exception ;
+	ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception ;
 }

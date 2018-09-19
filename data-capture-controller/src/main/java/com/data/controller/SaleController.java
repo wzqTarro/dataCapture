@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/sale")
-@Api(tags = "销售数据接口")
+// @Api(tags = "销售数据接口")
 public class SaleController {
 
 	@Autowired
@@ -37,10 +37,11 @@ public class SaleController {
 	 */
 	@RequestMapping(value = "/getDataByWeb", method = RequestMethod.POST)
 	@ApiOperation(value = "python抓取销售数据", httpMethod = "POST")
-	public String getDataByWeb(@RequestParam(required = false)CommonDTO commonDTO) throws Exception{
-		ResultUtil result = null;
-
-		result = saleService.getSaleByWeb(commonDTO);
+	public String getDataByWeb(@RequestParam(value = "common", required = false)CommonDTO commonDTO, 
+			@RequestParam(value = "sysId")int sysId,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception{
+		ResultUtil result = saleService.getSaleByWeb(commonDTO, sysId, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
@@ -52,8 +53,10 @@ public class SaleController {
 	@RequestMapping(value = "/getDataByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询销售数据", httpMethod = "POST")
 	public String getDataByParam(@RequestParam(value = "common", required = false)CommonDTO common,
-			@RequestParam(value = "stock", required = false)Sale sale) throws Exception {
-		ResultUtil result = saleService.getSaleByParam(common, sale);
+			@RequestParam(value = "sale", required = false)Sale sale,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+		ResultUtil result = saleService.getSaleByParam(common, sale, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 }

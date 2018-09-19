@@ -36,9 +36,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private DataCaptureUtil dataCaptureUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(CommonDTO common) throws IOException {
-		logger.info("------>>>>>>{}<<<<<<<-------", FastJsonUtil.objectToString(common));
-		List<Stock> stockList = dataCaptureUtil.getDataByWeb(common, WebConstant.STOCK, Stock.class);
+	public ResultUtil getStockByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException {
+		logger.info("------>>>>>>前端传递common：{}<<<<<<<-------", FastJsonUtil.objectToString(common));
+		List<Stock> stockList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.STOCK, Stock.class);
 		for (int i = 0, size = stockList.size(); i < size; i++) {
 			Stock stock = stockList.get(i);
 			
@@ -129,12 +129,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		}
 		logger.info("---->>>开始插入数据<<<-----");
 		dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
-		PageRecord<Stock> page = dataCaptureUtil.setPageRecord(stockList, common);
-		return ResultUtil.success(page);
+		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Override
-	public ResultUtil getStockByParam(CommonDTO common, Stock stock) throws Exception {
+	public ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception {
 		if (null == common) {
 			common = new CommonDTO();
 		}
@@ -172,7 +172,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				map.put("simpleName", stock.getSimpleName());
 			}
 		}
-		PageRecord<Stock> page = queryPageByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, QueryId.QUERY_STOCK_BY_PARAM, map, common.getPage(), common.getLimit());
-		return ResultUtil.success(page);
+		PageRecord<Stock> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, QueryId.QUERY_STOCK_BY_PARAM, map, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 }

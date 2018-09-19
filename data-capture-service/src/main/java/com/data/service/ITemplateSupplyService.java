@@ -29,5 +29,5 @@ public interface ITemplateSupplyService {
 	 * @param pageSize
 	 * @return
 	 */
-	ResultUtil querySupplyByConditiion(String param) throws Exception ;
+	ResultUtil querySupplyByConditiion(TemplateSupply templateSupply, Integer page, Integer limit) throws Exception ;
 }

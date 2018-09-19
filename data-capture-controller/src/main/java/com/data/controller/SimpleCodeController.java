@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.SimpleCode;
@@ -24,8 +25,10 @@ public class SimpleCodeController {
 
 	@RequestMapping(value = "/getSimpleCodeByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询标准条码信息", httpMethod = "POST")
-	public String getSimpleCodeByParam(@RequestBody String param) throws Exception {
-		ResultUtil result = simpleCodeService.getSimpleCodeByParam(param);
+	public String getSimpleCodeByParam(@RequestParam(value = "simpleCode", required = false) SimpleCode simpleCode,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+		ResultUtil result = simpleCodeService.getSimpleCodeByParam(simpleCode, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	

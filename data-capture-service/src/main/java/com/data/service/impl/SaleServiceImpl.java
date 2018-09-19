@@ -47,13 +47,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private DataCaptureUtil dataCaptureUtil;
 
 	@Override
-	public ResultUtil getSaleByWeb(CommonDTO common) throws IOException{
+	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
 		String saleJson = null;
-		PageRecord<Sale> page = null;
+		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
 		// 抓取数据
-		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, WebConstant.SALE, Sale.class);
+		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.SALE, Sale.class);
 
 		
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
@@ -153,12 +153,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		
 		// 数据插入数据库
 		dataCaptureUtil.insertData(saleList, InsertId.INSERT_BATCH_SALE);
-		page = dataCaptureUtil.setPageRecord(saleList, common);
-		return ResultUtil.success(page);
+		pageRecord = dataCaptureUtil.setPageRecord(saleList, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Override
-	public ResultUtil getSaleByParam(CommonDTO common, Sale sale) throws Exception {
+	public ResultUtil getSaleByParam(CommonDTO common, Sale sale, Integer page, Integer limit) throws Exception {
 		if (null == common) {
 			common = new CommonDTO();
 		}
@@ -195,8 +195,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				map.put("simpleName", sale.getSimpleName());
 			}
 		}
-		PageRecord<Sale> page = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, QueryId.QUERY_SALE_BY_PARAM, map, common.getPage(), common.getLimit());
-		return ResultUtil.success(page);
+		PageRecord<Sale> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, 
+				QueryId.QUERY_SALE_BY_PARAM, map, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 	@Override

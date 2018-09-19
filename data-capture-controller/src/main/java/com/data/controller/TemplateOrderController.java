@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/dataResolve")
-@Api(tags = "订单数据接口")
+// @Api(tags = "订单数据接口")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class TemplateOrderController {
 	
@@ -30,10 +30,10 @@ public class TemplateOrderController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "queryOrderByCondition", method = RequestMethod.POST)
+	/*@RequestMapping(value = "queryOrderByCondition", method = RequestMethod.POST)
 	@ApiOperation(value = "分页查询抓取的数据", httpMethod = "POST")
 	public ResultUtil queryOrderByCondition(@RequestParam("param") String param) throws Exception{
 		ResultUtil result = orderService.queryOrderByCondition(param);
 		return result;
-	}
+	}*/
 }

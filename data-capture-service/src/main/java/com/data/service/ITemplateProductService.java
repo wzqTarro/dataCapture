@@ -10,7 +10,7 @@ public interface ITemplateProductService {
 	 * @param param
 	 * @return
 	 */
-	ResultUtil getTemplateProductByParam(String param) throws Exception ;
+	ResultUtil getTemplateProductByParam(TemplateProduct template, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 更新
 	 * @param product

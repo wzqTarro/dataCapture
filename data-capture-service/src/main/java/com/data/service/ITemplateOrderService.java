@@ -10,6 +10,6 @@ public interface ITemplateOrderService {
 	 * @param pageSize
 	 * @return
 	 */
-	ResultUtil queryOrderByCondition(String param) throws Exception ;
+	//ResultUtil queryOrderByCondition(String param) throws Exception ;
 
 }

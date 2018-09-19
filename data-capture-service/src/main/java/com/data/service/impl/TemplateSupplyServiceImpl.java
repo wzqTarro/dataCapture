@@ -92,14 +92,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	}
 
 	@Override
-	public ResultUtil querySupplyByConditiion(String param) throws Exception {
-		CommonDTO common = FastJsonUtil.jsonToObject(param, CommonDTO.class);
-		TemplateSupply supply = FastJsonUtil.jsonToObject(param, TemplateSupply.class);
-		logger.info("----->>>>>common:"+ FastJsonUtil.objectToString(common) +"<<<<<------");
-		logger.info("----->>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<------");
-		if (null == common) {
-			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
-		} 
+	public ResultUtil querySupplyByConditiion(TemplateSupply supply, Integer page, Integer limit) throws Exception {
+		logger.info("----->>>>>supply:{}<<<<<------", FastJsonUtil.objectToString(supply));
+		logger.info("----->>>>>page:{}, limit:{}<<<<<------", page, limit);
 		Map<String, Object> map = Maps.newHashMap();
 		if (null != supply) {
 			
@@ -114,8 +109,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 			}
 		}
 		logger.info("------>>>>>供应链查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateSupply> page = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, QueryId.QUERY_SUPPLY_BY_CONDITION, map, common.getPage(), common.getLimit());
-		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(page) +"<<<<<<--------");
-		return ResultUtil.success(page);
+		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, 
+				QueryId.QUERY_SUPPLY_BY_CONDITION, map, page, limit);
+		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
+		return ResultUtil.success(pageRecord);
 	}
 }

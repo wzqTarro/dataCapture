@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.service.ITemplateProductService;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.ResultUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,8 +25,11 @@ public class TemplateProductController {
 	
 	@RequestMapping(value = "getTemplateProductByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件查询商品模板信息", httpMethod = "POST")
-	public String getTemplateProductByParam(@RequestParam("param") String param) throws Exception {
-		return FastJsonUtil.objectToString(templateProductService.getTemplateProductByParam(param));
+	public String getTemplateProductByParam(@RequestParam(value = "templateProduct", required = false)TemplateProduct templateProduct,
+			@RequestParam(value = "page", required = false)Integer page, 
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+		ResultUtil result = templateProductService.getTemplateProductByParam(templateProduct, page, limit);
+		return FastJsonUtil.objectToString(result);
 	}
 	
 	@RequestMapping(value = "insertProduct", method = RequestMethod.POST)
@@ -41,7 +46,7 @@ public class TemplateProductController {
 	
 	@RequestMapping(value = "deleteProduct", method = RequestMethod.DELETE)
 	@ApiOperation(value = "删除商品模板信息", httpMethod = "DELETE")
-	public String deleteProduct(Integer id) {
+	public String deleteProduct(int id) {
 		return FastJsonUtil.objectToString(templateProductService.deleteTemplateProduct(id));
 	}
 	
