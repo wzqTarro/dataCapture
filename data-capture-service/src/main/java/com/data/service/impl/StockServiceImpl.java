@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Color;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -274,8 +275,13 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 库存天数小于3 ，单元格黄底
 			if (stockDayNum < 3) {
 				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
-			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底
+			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底，字体白色
+				// 红底
 				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+				
+				// 字体样式
+				Font font = excelUtil.setFont(wb, HSSFColor.WHITE.index); 
+				cellStyle.setFont(font);
 			}
 			
 			Cell stockDayNumCell = row.createCell(cellValue.length);

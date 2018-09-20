@@ -15,6 +15,7 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -296,5 +297,16 @@ public class ExcelUtil<T> {
 		// 背景颜色
 		cellStyle.setFillForegroundColor(color); 
 		return cellStyle;
+	}
+	/**
+	 * 设置字体样式
+	 * @param wb
+	 * @param color 颜色
+	 * @return
+	 */
+	public Font setFont(SXSSFWorkbook wb, short color) {
+		Font font = wb.createFont();
+		font.setColor(color);
+		return font;
 	}
 }
