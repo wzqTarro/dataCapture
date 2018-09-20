@@ -2,7 +2,6 @@ package com.data.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,23 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
-import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.SimpleCodeEnum;
-import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
-
-import ch.qos.logback.core.joran.spi.SimpleRuleStore;
 
 /**
  * 数据抓取方法工具类

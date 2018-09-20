@@ -5,7 +5,7 @@ package com.data.constant.dbSql;
  * @author Tarro
  *
  */
-public class InsertId {
+public final class InsertId {
 
 	public static final String INSERT_NEW_USER_MESSAGE = "UserMapper.insertSelective";
 	

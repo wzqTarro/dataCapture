@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +27,6 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
-import com.data.exception.DataException;
 import com.data.service.ISaleService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
@@ -48,7 +49,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 	@Override
 	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
-		String saleJson = null;
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
@@ -248,5 +248,32 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
 		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
 		System.err.println(FastJsonUtil.objectToString(list));
+	}
+
+	@Override
+	public ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response) {
+		Map<String, Object> params = new HashMap<>(8);
+		params.put("system", system);
+		params.put("region", region);
+		params.put("province", province);
+		params.put("store", store);
+		//先判断数量 分批导出
+		int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT, params);
+		if(count >= CommonValue.MAX_ROW_COUNT_2007) {
+			return ResultUtil.error("下载超过excel2007最大行数");
+		}
+		/**
+		 * TODO
+		 * 如何按单元格导出
+		 */
+		try {
+			
+		} finally {
+			
+		}
+		
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
+		
+		return null;
 	}
 }

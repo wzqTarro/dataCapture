@@ -1,7 +1,5 @@
 package com.data.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.data.bean.User;
 import com.data.utils.ResultUtil;
 

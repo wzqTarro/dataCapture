@@ -1,20 +1,10 @@
 package com.data.service.impl;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.data.bean.TemplateOrder;
-import com.data.constant.PageRecord;
-import com.data.constant.dbSql.QueryId;
-import com.data.dto.CommonDTO;
 import com.data.service.ITemplateOrderService;
-import com.data.utils.FastJsonUtil;
-import com.data.utils.ResultUtil;
-import com.google.common.collect.Maps;
 
 @Service
 public class TemplateOrderServiceImpl extends CommonServiceImpl implements ITemplateOrderService {

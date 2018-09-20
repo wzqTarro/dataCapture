@@ -5,7 +5,7 @@ package com.data.constant.dbSql;
  * @author Tarro
  *
  */
-public class DeleteId {
+public final class DeleteId {
 	
 	public static final String DELETE_USER_BY_ID = "UserMapper.deleteByPrimaryKey";
 	

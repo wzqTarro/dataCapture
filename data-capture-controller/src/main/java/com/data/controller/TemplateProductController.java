@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.service.ITemplateProductService;
 import com.data.utils.FastJsonUtil;

@@ -5,7 +5,7 @@ package com.data.constant.dbSql;
  * @author Tarro
  *
  */
-public class QueryId {
+public final class QueryId {
 	
 	public static final String QUERY_USER_BY_ID = "UserMapper.selectByPrimaryKey";
 	
@@ -64,5 +64,11 @@ public class QueryId {
 	public static final String QUERY_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectByParam";
 	
 	public static final String QUERY_COUNT_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectCountByParam";
+	
+	/**销售日报表导出**/
+	public static final String QUERY_SALE_LIST_REPORT = "SaleMapper.querySaleListReport";
+	
+	/**查询销售日报表总数**/
+	public static final String QUERY_COUNT_SALE_LIST_REPORT = "SaleMapper.queryCountSaleListReport";
 	
 }

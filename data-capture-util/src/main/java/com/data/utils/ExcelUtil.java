@@ -35,16 +35,16 @@ public class ExcelUtil<T> {
 	private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 	
 	/**excel2003最大支持列数**/
-	private static final int MAX_COL_COUNT_2003 = 256;
+	public static final int MAX_COL_COUNT_2003 = 256;
 	
 	/**excel2003最大支持行数**/
-	private static final int MAX_ROW_COUNT_2003 = 65536;
+	public static final int MAX_ROW_COUNT_2003 = 65536;
 	
 	/**excel2007最大支持列数**/
-	private static final int MAX_COL_COUNT_2007 = 16384;
+	public static final int MAX_COL_COUNT_2007 = 16384;
 	
 	/**excel2007最大支持行数**/
-	private static final int MAX_ROW_COUNT_2007 = 1048576;
+	public static final int MAX_ROW_COUNT_2007 = 1048576;
 	
 	/**
 	 * 导出2003excel表

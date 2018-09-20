@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.data.constant.CommonValue;
-import com.data.exception.DataException;
 import com.data.service.IJwtService;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;

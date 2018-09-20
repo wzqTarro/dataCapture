@@ -16,7 +16,6 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
-import com.data.dto.CommonDTO;
 import com.data.service.ISimpleCodeService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;

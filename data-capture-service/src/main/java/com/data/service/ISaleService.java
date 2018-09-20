@@ -1,6 +1,6 @@
 package com.data.service;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
 import com.data.bean.Sale;
 import com.data.dto.CommonDTO;
@@ -27,4 +27,10 @@ public interface ISaleService {
 	 * @return
 	 */
 	ResultUtil querySaleList(Sale sale);
+	
+	/**
+	 * 数据导出
+	 * @param response
+	 */
+	ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response);
 }

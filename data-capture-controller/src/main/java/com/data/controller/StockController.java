@@ -19,7 +19,6 @@ import com.data.service.IStockService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 

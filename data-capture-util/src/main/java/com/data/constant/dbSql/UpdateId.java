@@ -5,7 +5,7 @@ package com.data.constant.dbSql;
  * @author Tarro
  *
  */
-public class UpdateId {
+public final class UpdateId {
 
 	public static final String UPDATE_USER_MESSAGE = "UserMapper.updateByPrimaryKeySelective";
 	

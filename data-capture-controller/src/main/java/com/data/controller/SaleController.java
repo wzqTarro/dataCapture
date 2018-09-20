@@ -2,22 +2,20 @@ package com.data.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.Sale;
-import com.data.bean.Stock;
 import com.data.dto.CommonDTO;
-import com.data.exception.DataException;
 import com.data.service.ISaleService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -44,6 +42,7 @@ public class SaleController {
 		ResultUtil result = saleService.getSaleByWeb(commonDTO, sysId, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
+	
 	/**
 	 * 多条件分页查询销售数据
 	 * @param param
@@ -58,5 +57,16 @@ public class SaleController {
 			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
 		ResultUtil result = saleService.getSaleByParam(common, sale, page, limit);
 		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 数据导出
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/excel", method = RequestMethod.GET)
+	@ApiOperation(value = "数据导出", httpMethod = "GET")
+	public void excel(String system, String region, String province, String store, HttpServletResponse response) {
+		saleService.excel(system, region, province, store, response);
 	}
 }
