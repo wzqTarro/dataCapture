@@ -33,6 +33,7 @@ import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
+import com.data.utils.TemplateDataUtil;
 import com.google.common.collect.Maps;
 
 @Service
@@ -46,6 +47,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private DataCaptureUtil dataCaptureUtil;
+	
+	@Autowired
+	private TemplateDataUtil templateDataUtil;
 
 	@Override
 	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
@@ -59,13 +63,10 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		for (int i = 0, size = saleList.size(); i < size; i++) {
 			Sale sale = saleList.get(i);
-			//sale.setSysId(common.getId());
+			sale.setSysId(sysId);
 			
 			// 单品编码
 			String simpleCode = sale.getSimpleCode();
-			
-			// 系统
-			String sysName = sale.getSysName();
 			
 			// 门店编码
 			String storeCode = sale.getStoreCode();
@@ -73,19 +74,26 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			// 地区
 			String localName = sale.getLocalName();
 			
-			TemplateStore store = dataCaptureUtil.getStandardStoreMessage(sysName, storeCode);
+			// 系统
+			String sysName = sale.getSysName();
+			
+			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
+			
+			sale.setSysName(sysName);
+			
+			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysName, storeCode);
 			
 			// 单品条码
 			String simpleBarCode = sale.getSimpleBarCode();
 			if (CommonUtil.isBlank(simpleBarCode)) {
-				simpleBarCode = dataCaptureUtil.getBarCodeMessage(sysName, simpleCode);
+				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
 			}
 			if (CommonUtil.isBlank(simpleBarCode)) {
 				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;
 			}
 			sale.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
+			TemplateProduct product = templateDataUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {
@@ -122,7 +130,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				sale.setBrand(product.getBrand());
 				
 				// 销售价格
-				sale.setSellPrice(product.getSellPrice());
+				// sale.setSellPrice(product.getSellPrice());
 				
 				// 系列
 				sale.setSeries(product.getSeries());

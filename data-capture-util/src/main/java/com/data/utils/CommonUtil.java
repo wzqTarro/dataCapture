@@ -1,5 +1,7 @@
 package com.data.utils;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import org.apache.poi.ss.usermodel.DataFormat;
 
 /**
  * 公共工具类
@@ -164,5 +168,16 @@ public class CommonUtil {
 	 */
 	public static int toIntOrZero(Integer i) {
 		return (null == i) ? 0 :i;
+	}
+	/**
+	 * 保留两位小数
+	 * @param condition
+	 * @param d
+	 * @return
+	 */
+	public static double setScale(String condition, double d) {
+		DecimalFormat dataFormat = new DecimalFormat(condition);
+		dataFormat.setRoundingMode(RoundingMode.HALF_UP);
+		return Double.valueOf(dataFormat.format(d));
 	}
 }

@@ -272,6 +272,9 @@ public class ExcelUtil<T> {
 		SXSSFWorkbook wb = new SXSSFWorkbook();
 		return wb;
 	}
+	public void createTitle(Row row, String title) {
+		
+	}
 	/**
 	 * 构建行
 	 * @param row

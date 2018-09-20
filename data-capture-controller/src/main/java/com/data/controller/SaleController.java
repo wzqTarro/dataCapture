@@ -16,11 +16,12 @@ import com.data.service.ISaleService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/sale")
-// @Api(tags = "销售数据接口")
+@Api(tags = "销售数据接口")
 public class SaleController {
 
 	@Autowired

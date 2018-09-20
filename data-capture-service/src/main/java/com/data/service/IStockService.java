@@ -28,4 +28,11 @@ public interface IStockService {
 	 * @return
 	 */
 	ResultUtil createStoreProductExcel(String queryDate, String storeName);
+	/**
+	 * 生成系统门店表
+	 * @param queryDate
+	 * @param sysName
+	 * @return
+	 */
+	ResultUtil createSysStoreExcel(String queryDate, String sysName);
 }

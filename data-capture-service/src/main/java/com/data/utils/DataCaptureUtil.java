@@ -78,7 +78,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		String json = restTemplate.getForObject(sb.toString(), String.class);*/
 		
 		// 测试数据
-		String json = FileUtils.readFileToString(new File("E:\\baiya\\stock\\stock.txt"));
+		String json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
 		logger.info(json);
 		// json转List
 		List<T> list = translateData(json, clazz);
@@ -111,17 +111,17 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param common
 	 * @return
 	 */
-	public <T> PageRecord<T> setPageRecord(List<T> list, int page, int limit) {
+	public <T> PageRecord<T> setPageRecord(List<T> list, Integer page, Integer limit) {
 		PageRecord<T> pageRecord = new PageRecord();
-		if (0 == page) {
+		if (null == page || 0 == page) {
 			pageRecord.setPageNum(CommonValue.PAGE);			
 		} else {			
 			pageRecord.setPageNum(page);
 		}
-		if (0 == limit) {
-			pageRecord.setPageSize(limit);
-		} else {
+		if (null == limit ||  0 == limit ) {
 			pageRecord.setPageSize(CommonValue.SIZE);
+		} else {
+			pageRecord.setPageSize(limit);
 		}
 		if (list.size() > pageRecord.getPageSize()) {
 			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
@@ -153,55 +153,5 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				executorService.shutdown();
 			}
 		}
-	}
-	/**
-	 * 获取标准门店信息
-	 * @param sysName
-	 * @param storeCode
-	 * @return
-	 */
-	public TemplateStore getStandardStoreMessage(String sysName, String storeCode) {
-		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(storeCode)) {
-			return null;
-		}
-		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", sysName);
-		param.put("storeCode", storeCode);
-		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, param);
-		return store;
-	}
-	/**
-	 * 获取标准条码信息
-	 * @param sysName
-	 * @param simpleCode
-	 * @return
-	 */
-	public String getBarCodeMessage(String sysName, String simpleCode) {
-		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
-			return null;
-		}
-		Map<String, Object> param = new HashMap<>(2);
-		SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
-		String column = simpleCodeEnum.getValue();
-		param.put("columnName", column);
-		param.put("simpleCode", simpleCode);
-		SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
-		return code.getBarCode();
-	}
-	/**
-	 * 获取标准商品信息
-	 * @param sysName
-	 * @param simpleCode
-	 * @return
-	 */
-	public TemplateProduct getStandardProductMessage(String localName, String sysName, String simpleBarCode) {
-		if (CommonUtil.isBlank(sysName)) {
-			return null;
-		}
-		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", CommonUtil.isBlank(localName) ? sysName : localName+sysName);
-		param.put("simpleBarCode", simpleBarCode);
-		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
-		return CommonUtil.isBlank(product) ? null :product.get(0);
 	}
 }

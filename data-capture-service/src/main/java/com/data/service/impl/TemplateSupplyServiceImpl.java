@@ -33,27 +33,27 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		}
 		logger.info("----->>>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<<-------");
 		// 区域
-		if (StringUtils.isNoneBlank(supply.getRegion())) {
+		if (StringUtils.isBlank(supply.getRegion())) {
 			return ResultUtil.error(TipsEnum.SYS_REGION_IS_NULL.getValue());
 		}
 		
 		// 系统名
-		if (StringUtils.isNoneBlank(supply.getSysName())) {
+		if (StringUtils.isBlank(supply.getSysName())) {
 			return ResultUtil.error(TipsEnum.SYS_NAME_IS_NULL.getValue());
 		}
 		
 		// 链接
-		if (StringUtils.isNoneBlank(supply.getUrl())) {
+		if (StringUtils.isBlank(supply.getUrl())) {
 			return ResultUtil.error(TipsEnum.SYS_URL_IS_NULL.getValue());
 		}
 		
 		// 登录账号
-		if (StringUtils.isNoneBlank(supply.getLoginUserName())) {
+		if (StringUtils.isBlank(supply.getLoginUserName())) {
 			return ResultUtil.error(TipsEnum.SYS_LOGIN_USER_NAME_IS_NULL.getValue());
 		}
 		
 		// 登录密码
-		if (StringUtils.isNoneBlank(supply.getLoginPassword())) {
+		if (StringUtils.isBlank(supply.getLoginPassword())) {
 			return ResultUtil.error(TipsEnum.SYS_LOGIN_PWD_IS_NULL.getValue());
 		}
 		

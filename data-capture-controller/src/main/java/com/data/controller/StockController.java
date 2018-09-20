@@ -77,7 +77,47 @@ public class StockController {
 		// 请求成功
 		if (!result.getCode().equals("99")) {
 			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
-			String fileName = "门店单品表" + queryDate;
+			String fileName = "缺货表报-门店单品表" + queryDate;
+			
+			// 设置响应头
+			setResponseHeader(response, fileName);
+			OutputStream output = null;
+			try {
+				output = response.getOutputStream();
+				wb.write(output);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (null != output) {
+					try {
+						output.flush();
+						output.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 生成系统门店表
+	 * @param queryDate
+	 * @param storeName
+	 * @return
+	 */
+	@RequestMapping(value = "createSysStoreExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "生成缺货报表-系统门店表", httpMethod = "POST")
+	public String createSysStoreExcel(String queryDate, String sysName, 
+			HttpServletResponse response) {
+		ResultUtil result = stockServiceImpl.createSysStoreExcel(queryDate, sysName);
+		
+		// 请求成功
+		if (!result.getCode().equals("99")) {
+			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
+			String fileName = "缺货表报-系统门店表" + queryDate;
 			
 			// 设置响应头
 			setResponseHeader(response, fileName);
