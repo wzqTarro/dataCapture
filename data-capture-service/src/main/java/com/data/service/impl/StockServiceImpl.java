@@ -238,8 +238,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			List<Sale> saleWeekList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
 			
 			// 上周该单品的销售数量
-			Integer sumSaleNumByWeek = saleWeekList.stream().collect(Collectors.summingInt(s -> s.getSellNum()));
+			Integer sumSaleNumByWeek = 0; 
 			
+			// 如果上周存在销售记录，否则默认为0
+			if (CommonUtil.isNotBlank(saleWeekList)) {
+				sumSaleNumByWeek = saleWeekList.stream().collect(Collectors.summingInt(s -> s.getSellNum()));
+			}
+			
+			// 行值
 			String[] cellValue = new String[]{
 					stock.getStoreName(),
 					stock.getSimpleName(),
@@ -263,7 +269,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
 			
 			// 前一天单品的销售总量
-			Integer sumSaleNumByDay = CommonUtil.toIntOrZero(saleDayList.stream().collect(Collectors.summingInt(s -> s.getSellNum())));
+			Integer sumSaleNumByDay = 0;
+			
+			// 如果前一天存在销售记录，否则默认为0
+			if (CommonUtil.isNotBlank(saleDayList)) {
+				sumSaleNumByDay = CommonUtil.toIntOrZero(saleDayList.stream().collect(Collectors.summingInt(s -> s.getSellNum())));
+			}
 			
 			// 库存金额
 			Double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
