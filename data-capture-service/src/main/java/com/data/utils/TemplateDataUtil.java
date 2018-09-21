@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
-import com.data.constant.SimpleCodeEnum;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.SimpleCodeEnum;
 import com.data.service.impl.CommonServiceImpl;
 
 @Component

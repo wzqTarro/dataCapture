@@ -1,4 +1,4 @@
-package com.data.constant;
+package com.data.constant.enums;
 
 /**
  * 提示枚举类
@@ -14,6 +14,7 @@ public enum TipsEnum {
 	ID_ERROR("ID不能为空"),
 	GRAB_DATA_IS_NULL("抓取数据为空"),
 	GRAB_DATA_TO_LIST_ERROR("数据转化List失败"),
+	DATE_IS_NULL("查询时间不能为空"),
 	
 	//供应链
 	SYS_NAME_IS_NULL("系统名称不能为空"),

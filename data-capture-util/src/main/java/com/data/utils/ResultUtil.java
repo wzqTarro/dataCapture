@@ -3,9 +3,9 @@ package com.data.utils;
 import java.io.Serializable;
 import java.util.Collections;
 
-import com.data.constant.CodeEnum;
 import com.data.constant.PageRecord;
-import com.data.constant.TipsEnum;
+import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.TipsEnum;
 
 
 /**

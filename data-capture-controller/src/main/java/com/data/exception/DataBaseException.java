@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.data.constant.CodeEnum;
+import com.data.constant.enums.CodeEnum;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.PropertiesUtil;

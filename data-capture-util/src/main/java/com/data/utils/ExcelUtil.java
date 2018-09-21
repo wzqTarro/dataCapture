@@ -124,7 +124,7 @@ public class ExcelUtil<T> {
 					//动态调用方法得到字段值
 					Object value = method.invoke(method, new Object[] {});
 					if(value == null) {
-						value = "";
+						continue;
 					}
 					
 					String text = "";
@@ -233,7 +233,7 @@ public class ExcelUtil<T> {
 					//动态调用方法得到字段值
 					Object value = method.invoke(method, new Object[] {});
 					if(value == null) {
-						value = "";
+						continue;
 					}
 					
 					String text = "";

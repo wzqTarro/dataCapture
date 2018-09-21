@@ -1,6 +1,7 @@
 package com.data.service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.data.bean.Stock;
 import com.data.dto.CommonDTO;
@@ -22,24 +23,31 @@ public interface IStockService {
 	 */
 	ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception ;
 	/**
-	 * 生成门店单品表
+	 * 导出门店单品表
 	 * @param queryDate 查询时间
 	 * @param storeName 门店名称
 	 * @return
 	 */
-	ResultUtil createStoreProductExcel(String queryDate, String storeName);
+	ResultUtil expertStoreProductExcel(String queryDate, String storeName, OutputStream output) throws IOException;
 	/**
-	 * 生成系统门店表
+	 * 导出系统门店表
 	 * @param queryDate
 	 * @param sysName
 	 * @return
 	 */
-	ResultUtil createSysStoreExcel(String queryDate, String sysName);
+	ResultUtil expertSysStoreExcel(String queryDate, String sysName, OutputStream output) throws IOException;
 	/**
-	 * 生成区域门店表
+	 * 导出区域门店表
 	 * @param queryDate
 	 * @param region
 	 * @return
 	 */
-	ResultUtil createRegionStoreExcel(String queryDate, String region);
+	ResultUtil expertRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException;
+	/**
+	 * 自定义字段导出库存数据表
+	 * @param stock
+	 * @param common
+	 * @return
+	 */
+	ResultUtil expertStockExcel(Stock stock, CommonDTO common, OutputStream output) throws IOException;
 }

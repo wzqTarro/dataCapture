@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
-import com.data.constant.TipsEnum;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateSupplyService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;

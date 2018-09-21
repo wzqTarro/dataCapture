@@ -1,4 +1,4 @@
-package com.data.constant;
+package com.data.constant.enums;
 
 public enum SimpleCodeEnum {
 	

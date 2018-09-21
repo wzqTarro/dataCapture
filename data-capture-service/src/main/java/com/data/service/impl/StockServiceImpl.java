@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
-import com.data.constant.TipsEnum;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IStockService;
 import com.data.utils.CommonUtil;
@@ -208,7 +209,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil createStoreProductExcel(String queryDate, String storeName) {
+	public ResultUtil expertStoreProductExcel(String queryDate, String storeName, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -294,7 +295,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				stockDayNumCell.setCellStyle(cellStyle);
 			}
 		}
-		return ResultUtil.success(wb);
+		wb.write(output);
+		return ResultUtil.success();
 	}
 	
 	public static void main(String[] args) {
@@ -314,7 +316,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil createSysStoreExcel(String queryDate, String sysName) {
+	public ResultUtil expertSysStoreExcel(String queryDate, String sysName, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -348,11 +350,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		index++;
 		// 生成表下部分数据
 		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, sysName, index);
-		return ResultUtil.success(wb);
+		wb.write(output);
+		return ResultUtil.success();
 	}
 
 	@Override
-	public ResultUtil createRegionStoreExcel(String queryDate, String region) {
+	public ResultUtil expertRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -386,6 +389,18 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		index++;
 		// 生成表下部分数据
 		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, region, index);
-		return ResultUtil.success(wb);
+		wb.write(output);
+		return ResultUtil.success();
 	}
+	@Override
+	public ResultUtil expertStockExcel(Stock stock, CommonDTO common, OutputStream output) throws IOException {
+		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		if (null == stock) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		return null;
+	}
+
 }

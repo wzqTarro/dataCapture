@@ -1,4 +1,4 @@
-package com.data.constant;
+package com.data.constant.enums;
 
 /**
  * 公共代码编码枚举类

@@ -3,6 +3,7 @@ package com.data.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.data.bean.Stock;
 import com.data.dto.CommonDTO;
 import com.data.service.IStockService;
+import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -63,125 +65,110 @@ public class StockController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
-	 * 生成门店单品表
+	 * 导出门店单品表
 	 * @param queryDate
 	 * @param storeName
 	 * @return
 	 */
-	@RequestMapping(value = "createStoreProductExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "生成门店单品表", httpMethod = "POST")
-	public String createStoreProductExcel(String queryDate, String storeName, 
+	@RequestMapping(value = "expertStoreProductExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "导出门店单品表", httpMethod = "POST")
+	public String expertStoreProductExcel(String queryDate, String storeName, 
 			HttpServletResponse response) {
-		ResultUtil result = stockServiceImpl.createStoreProductExcel(queryDate, storeName);
+		String fileName = "缺货表报-门店单品表" + queryDate;
 		
-		// 请求成功
-		if (!result.getCode().equals("99")) {
-			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
-			String fileName = "缺货表报-门店单品表" + queryDate;
-			
-			// 设置响应头
-			setResponseHeader(response, fileName);
-			OutputStream output = null;
-			try {
-				output = response.getOutputStream();
-				wb.write(output);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (null != output) {
-					try {
-						output.flush();
-						output.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertStoreProductExcel(queryDate, storeName, output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);
 	}
 	
 	/**
-	 * 生成系统门店表
+	 * 导出系统门店表
 	 * @param queryDate
 	 * @param storeName
 	 * @return
 	 */
-	@RequestMapping(value = "createSysStoreExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "生成缺货报表-系统门店表", httpMethod = "POST")
-	public String createSysStoreExcel(String queryDate, String sysName, 
+	@RequestMapping(value = "expertSysStoreExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "导出缺货报表-系统门店表", httpMethod = "POST")
+	public String expertSysStoreExcel(String queryDate, String sysName, 
 			HttpServletResponse response) {
-		ResultUtil result = stockServiceImpl.createSysStoreExcel(queryDate, sysName);
+		String fileName = "缺货表报-系统门店表" + queryDate;
 		
-		// 请求成功
-		if (!result.getCode().equals("99")) {
-			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
-			String fileName = "缺货表报-系统门店表" + queryDate;
-			
-			// 设置响应头
-			setResponseHeader(response, fileName);
-			OutputStream output = null;
-			try {
-				output = response.getOutputStream();
-				wb.write(output);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (null != output) {
-					try {
-						output.flush();
-						output.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertSysStoreExcel(queryDate, sysName, output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);
 	}
 	
 	/**
-	 * 生成区域门店表
+	 * 导出区域门店表
 	 * @param queryDate
 	 * @param storeName
 	 * @return
 	 */
-	@RequestMapping(value = "createRegionStoreExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "生成缺货报表-区域门店表", httpMethod = "POST")
-	public String createRegionStoreExcel(String queryDate, String region, 
+	@RequestMapping(value = "expertRegionStoreExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "POST")
+	public String expertRegionStoreExcel(String queryDate, String region, 
 			HttpServletResponse response) {
-		ResultUtil result = stockServiceImpl.createSysStoreExcel(queryDate, region);
 		
-		// 请求成功
-		if (!result.getCode().equals("99")) {
-			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
-			String fileName = "缺货表报-区域门店表" + queryDate;
-			
-			// 设置响应头
-			setResponseHeader(response, fileName);
-			OutputStream output = null;
-			try {
-				output = response.getOutputStream();
-				wb.write(output);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (null != output) {
-					try {
-						output.flush();
-						output.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
+		String fileName = "缺货表报-区域门店表" + queryDate;
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertRegionStoreExcel(queryDate, region, output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+
 		return FastJsonUtil.objectToString(result);
 	}
-	
+	/**
+	 * 自定义字段导出库存数据表
+	 * @param stock
+	 * @param common
+	 * @return
+	 */
+	@RequestMapping(value = "expertStockExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "自定义字段导出库存数据表", httpMethod = "POST")
+	public String expertStockExcel(Stock stock, CommonDTO common, HttpServletResponse response) {
+		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertStockExcel(stock, common, output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return FastJsonUtil.objectToString(null);
+	}
+ 
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {
         try {
