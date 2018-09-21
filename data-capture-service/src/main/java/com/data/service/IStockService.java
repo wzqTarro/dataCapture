@@ -35,4 +35,11 @@ public interface IStockService {
 	 * @return
 	 */
 	ResultUtil createSysStoreExcel(String queryDate, String sysName);
+	/**
+	 * 生成区域门店表
+	 * @param queryDate
+	 * @param region
+	 * @return
+	 */
+	ResultUtil createRegionStoreExcel(String queryDate, String region);
 }

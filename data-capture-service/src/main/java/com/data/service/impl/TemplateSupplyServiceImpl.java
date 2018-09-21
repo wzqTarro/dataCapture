@@ -34,7 +34,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		logger.info("----->>>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<<-------");
 		// 区域
 		if (StringUtils.isBlank(supply.getRegion())) {
-			return ResultUtil.error(TipsEnum.SYS_REGION_IS_NULL.getValue());
+			return ResultUtil.error(TipsEnum.REGION_IS_NULL.getValue());
 		}
 		
 		// 系统名

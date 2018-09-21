@@ -286,12 +286,12 @@ public class ExcelUtil<T> {
 		}
 	}
 	/**
-	 * 设置单元格样式
+	 * 设置单元格颜色
 	 * @param fill 图案样式
 	 * @param color 背景颜色
 	 * @return 
 	 */
-	public CellStyle setCellStyle(SXSSFWorkbook wb, short fill, short color) {
+	public CellStyle getCellStyle(SXSSFWorkbook wb, short fill, short color) {
 		CellStyle cellStyle = wb.createCellStyle();
 		
 		// 填充单元格
@@ -302,14 +302,31 @@ public class ExcelUtil<T> {
 		return cellStyle;
 	}
 	/**
-	 * 设置字体样式
+	 * 设置字体颜色
 	 * @param wb
 	 * @param color 颜色
 	 * @return
 	 */
-	public Font setFont(SXSSFWorkbook wb, short color) {
+	public Font getColorFont(SXSSFWorkbook wb, short color) {
 		Font font = wb.createFont();
 		font.setColor(color);
 		return font;
+	}
+	/**
+	 * 粗体、居中样式
+	 * @param wb
+	 * @return
+	 */
+	public CellStyle getBolderTitle(SXSSFWorkbook wb) {
+		// 字体设置
+		Font font = wb.createFont();
+		font.setBoldweight(Font.BOLDWEIGHT_BOLD);// 加粗
+		font.setFontHeightInPoints((short) 20);
+
+		// 单元格样式
+		CellStyle cellStyle = wb.createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setAlignment(CellStyle.ALIGN_CENTER);// 水平居中
+		return cellStyle;
 	}
 }

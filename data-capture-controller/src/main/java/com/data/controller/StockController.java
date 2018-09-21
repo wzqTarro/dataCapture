@@ -142,6 +142,46 @@ public class StockController {
 		return FastJsonUtil.objectToString(result);
 	}
 	
+	/**
+	 * 生成区域门店表
+	 * @param queryDate
+	 * @param storeName
+	 * @return
+	 */
+	@RequestMapping(value = "createRegionStoreExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "生成缺货报表-区域门店表", httpMethod = "POST")
+	public String createRegionStoreExcel(String queryDate, String region, 
+			HttpServletResponse response) {
+		ResultUtil result = stockServiceImpl.createSysStoreExcel(queryDate, region);
+		
+		// 请求成功
+		if (!result.getCode().equals("99")) {
+			SXSSFWorkbook wb = (SXSSFWorkbook) result.getData();
+			String fileName = "缺货表报-区域门店表" + queryDate;
+			
+			// 设置响应头
+			setResponseHeader(response, fileName);
+			OutputStream output = null;
+			try {
+				output = response.getOutputStream();
+				wb.write(output);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (null != output) {
+					try {
+						output.flush();
+						output.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {
         try {

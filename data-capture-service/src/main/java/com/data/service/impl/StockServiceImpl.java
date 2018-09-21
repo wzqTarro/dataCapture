@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ import com.data.utils.DateUtil;
 import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
-import com.data.utils.StockDataCalculateUtil;
+import com.data.utils.StockDataUtil;
 import com.data.utils.TemplateDataUtil;
 import com.google.common.collect.Maps;
 
@@ -62,7 +64,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private TemplateDataUtil templateDataUtil;
 	
 	@Autowired
-	private StockDataCalculateUtil stockDataUtil;
+	private StockDataUtil stockDataUtil;
 	
 	@Override
 	public ResultUtil getStockByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException {
@@ -266,32 +268,23 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			};
 			excelUtil.createRow(row, cellValue);
 			
-			// 前一天
-			LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
-			
-			// 查询前一天销量
-			param.clear();
-			param.put("queryDate", lastDay.toString());
-			param.put("simpleBarCode", stock.getSimpleBarCode());
-			param.put("storeName", stock.getStoreName());
-			
 			// 库存金额
 			double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
 			
 			// 库存天数
-			double stockDayNum = stockDataUtil.calculateStockDay(param, stockPrice);		
+			double stockDayNum = stockDataUtil.calculateStockDay(queryDate, stock.getSimpleBarCode(), stock.getStoreName(), stockPrice);		
 						
 			CellStyle cellStyle = null;
 			
 			// 库存天数小于3 ，单元格黄底
 			if (stockDayNum < 3) {
-				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
+				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
 			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底，字体白色
 				// 红底
-				cellStyle = excelUtil.setCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
 				
 				// 字体样式
-				Font font = excelUtil.setFont(wb, HSSFColor.WHITE.index); 
+				Font font = excelUtil.getColorFont(wb, HSSFColor.WHITE.index); 
 				cellStyle.setFont(font);
 			}
 			
@@ -311,9 +304,13 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		s1.setBrand("火腿");
 		stockList.add(s1);
 		Stock s2 = new Stock();
-		s2.setStockNum(3);
-		s2.setBrand("大巴");
+		s2.setStockNum(null);
+		s2.setBrand("火腿");
 		stockList.add(s2);
+		Map<String, IntSummaryStatistics> map = stockList.parallelStream()
+				.filter(s -> s.getStockNum() != null)
+				.collect(Collectors.groupingBy(Stock::getBrand, Collectors.summarizingInt(Stock::getStockNum)));
+		System.err.println(map.get("火腿").getSum());
 	}
 
 	@Override
@@ -329,34 +326,66 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		param.put("sysName", sysName);
-		List<Store> storeList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		SXSSFWorkbook wb = excelUtil.createWorkBook();
 		Sheet sheet = wb.createSheet("系统门店表");
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, (storeList.size() - 1)));
-		Row title = sheet.createRow(0);
-		title.createCell(0).setCellValue(sysName + "系统直营KA门店缺货日报表");
 		
-		// 字体设置 
-		Font font = wb.createFont();
-		font.setBoldweight(Font.BOLDWEIGHT_BOLD);// 加粗
-		font.setFontHeightInPoints((short)20);
+		// 标题
+		String title = sysName + "系统直营KA门店缺货日报表";
 		
-		// 单元格样式
-		CellStyle cellStyle = wb.createCellStyle();
-		cellStyle.setFont(font);
-		cellStyle.setAlignment(CellStyle.ALIGN_CENTER);// 水平居中
-		
+		// 生成表上部分
+		int index = stockDataUtil.createMissStockTop(wb, sheet, queryDate, title);
+			
 		// 表头
 		String[] headers = new String[]{"系统", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
-		Row headerRow = sheet.createRow(1);
+		Row headerRow = sheet.createRow(index);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers);
-		for (int i = 0, size = storeList.size(); i < size; i++) {
-			
+		
+		index++;
+		// 生成表下部分数据
+		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, sysName, index);
+		return ResultUtil.success(wb);
+	}
+
+	@Override
+	public ResultUtil createRegionStoreExcel(String queryDate, String region) {
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
-		return null;
+		if (CommonUtil.isBlank(region)) {
+			return ResultUtil.error(TipsEnum.REGION_IS_NULL.getValue());
+		}
+		
+		// 按系统名称和时间查询库存
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("queryDate", queryDate);
+		param.put("region", region);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("区域门店表");
+		
+		// 标题
+		String title = region + "大区直营KA门店缺货日报表";
+		
+		// 生成表上部分
+		int index = stockDataUtil.createMissStockTop(wb, sheet, queryDate, title);
+			
+		// 表头
+		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
+		Row headerRow = sheet.createRow(index);
+		
+		// 设置表头
+		excelUtil.createRow(headerRow, headers);
+	
+		index++;
+		// 生成表下部分数据
+		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, region, index);
+		return ResultUtil.success(wb);
 	}
 }
