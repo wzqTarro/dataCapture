@@ -7,7 +7,6 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,12 +20,13 @@ import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/stock")
-// @Api(tags = {"库存数据接口"})
+@Api(tags = {"库存数据接口"})
 public class StockController {
 	
 	@Autowired
@@ -42,7 +42,7 @@ public class StockController {
 	@ApiOperation(value = "抓取库存数据", httpMethod = "POST")
 	@ApiImplicitParam(name = "sysId", value = "系统ID", required = true)
 	public String getStockByWeb(@RequestParam(required = false) CommonDTO common,
-			@RequestParam(value = "sysId")int sysId, 
+			@RequestParam(value = "sysId")String sysId, 
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws IOException {
 		ResultUtil result = stockServiceImpl.getStockByWeb(common, sysId, page, limit);
@@ -152,7 +152,7 @@ public class StockController {
 	 */
 	@RequestMapping(value = "expertStockExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "自定义字段导出库存数据表", httpMethod = "POST")
-	public String expertStockExcel(Stock stock, CommonDTO common, HttpServletResponse response) {
+	public String expertStockExcel(String stockNameStr, CommonDTO common, HttpServletResponse response) {
 		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
 		
 		// 设置响应头
@@ -161,12 +161,12 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertStockExcel(stock, common, output);
-		} catch (IOException e) {
+			result = stockServiceImpl.expertStockExcel(stockNameStr, common, output);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return FastJsonUtil.objectToString(null);
+		return FastJsonUtil.objectToString(result);
 	}
  
 	//发送响应流方法

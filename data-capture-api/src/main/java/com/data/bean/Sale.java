@@ -17,7 +17,7 @@ public class Sale implements Serializable{
 
 	private Integer id;
 	// 网站编号
-    private Integer sysId;
+    private String sysId;
     // 网站名称
     private String sysName;
     // 门店编号
@@ -100,11 +100,11 @@ public class Sale implements Serializable{
         this.id = id;
     }
 
-    public Integer getSysId() {
+    public String getSysId() {
         return sysId;
     }
 
-    public void setSysId(Integer sysId) {
+    public void setSysId(String sysId) {
         this.sysId = sysId;
     }
 

@@ -16,6 +16,7 @@ import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateSupplyService;
+import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
@@ -62,6 +63,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		
 		// 供应链接口
 		supply.setControllerName("");
+		
+		// 系统编号
+		supply.setSysId(CommonUtil.createWorkNo());
 		return ResultUtil.success(insert(InsertId.INSERT_NEW_SUPPLY_MESSAGE, supply));
 	}
 

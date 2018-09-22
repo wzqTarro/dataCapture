@@ -58,7 +58,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private IRedisService redisService;
 
 	@Override
-	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
+	public ResultUtil getSaleByWeb(CommonDTO common, String sysId, Integer page, Integer limit) throws IOException{
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
@@ -81,13 +81,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			String localName = sale.getLocalName();
 			
 			// 系统
-			String sysName = sale.getSysName();
+			String sysName = sale.getSysName();			
 			
-			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
-			
-			sale.setSysName(sysName);
-			
-			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysName, storeCode);
+			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysId, storeCode);
 			
 			// 单品条码
 			String simpleBarCode = sale.getSimpleBarCode();
@@ -98,8 +94,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;
 			}
+			
+			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
+			
+			sale.setSysName(sysName);
+			
 			sale.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = templateDataUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
+			TemplateProduct product = templateDataUtil.getStandardProductMessage(sysId, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {
@@ -159,10 +160,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				// 库存编号
 				sale.setStockCode(product.getStockCode());
 			}
-			
-			
-			
-		
+
 		}
 		
 		// 数据插入数据库

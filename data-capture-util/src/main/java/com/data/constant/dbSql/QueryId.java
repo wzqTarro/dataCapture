@@ -37,6 +37,8 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_SALE_BY_PARAM = "SaleMapper.selectCountByParam";
 	
+	public static final String QUERY_STOCK_BY_ANY_COLUMN = "StockMapper.selectByAnyColumn";
+	
 	public static final String QUERY_STOCK_BY_PARAM = "StockMapper.selectByParam";
 	
 	public static final String QUERY_COUNT_STOCK_BY_PARAM = "StockMapper.selectCountByParam";

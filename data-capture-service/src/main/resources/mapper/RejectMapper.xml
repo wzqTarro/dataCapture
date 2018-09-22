@@ -3,7 +3,7 @@
 <mapper namespace="RejectMapper">
   <resultMap id="BaseResultMap" type="com.data.bean.Reject">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="sys_id" jdbcType="INTEGER" property="sysId" />
+    <result column="sys_id" jdbcType="CHAR" property="sysId" />
     <result column="sys_name" jdbcType="VARCHAR" property="sysName" />
     <result column="reject_department_id" jdbcType="VARCHAR" property="rejectDepartmentId" />
     <result column="main_area" jdbcType="VARCHAR" property="mainArea" />
@@ -60,7 +60,7 @@
       discount_alarm_flag, contract_price, diff_price_contract, 
       diff_price_contract_total, contract_alarm_flag, 
       diff_price)
-    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, #{rejectDepartmentId,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, #{rejectDepartmentId,jdbcType=VARCHAR}, 
       #{mainArea,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, #{rejectDepartmentName,jdbcType=VARCHAR}, 
       #{receiptCode,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, #{productBarCode,jdbcType=VARCHAR}, 
       #{productStoreCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, 
@@ -164,7 +164,7 @@
         #{id,jdbcType=INTEGER},
       </if>
       <if test="sysId != null">
-        #{sysId,jdbcType=INTEGER},
+        #{sysId,jdbcType=CHAR},
       </if>
       <if test="sysName != null">
         #{sysName,jdbcType=VARCHAR},
@@ -250,7 +250,7 @@
     update db_reject
     <set>
    	  <if test="sysId != null">
-        sys_id = #{sysId,jdbcType=INTEGER},
+        sys_id = #{sysId,jdbcType=CHAR},
       </if>
       <if test="sysName != null">
         sys_name = #{sysName,jdbcType=VARCHAR},
@@ -336,7 +336,7 @@
   <update id="updateByPrimaryKey" parameterType="com.data.bean.Reject">
     update db_reject
     set 
-      sys_id = #{sysId, jdbcType=INTEGER},
+      sys_id = #{sysId, jdbcType=CHAR},
       sys_name = #{sysName,jdbcType=VARCHAR},
       reject_department_id = #{rejectDepartmentId,jdbcType=VARCHAR},
       main_area = #{mainArea,jdbcType=VARCHAR},

@@ -28,8 +28,18 @@ public class TemplateSupply implements Serializable {
     private String controllerName;
 
     private Boolean isVal;
+    
+    private String sysId;
 
-    public Integer getId() {
+    public String getSysId() {
+		return sysId;
+	}
+
+	public void setSysId(String sysId) {
+		this.sysId = sysId;
+	}
+
+	public Integer getId() {
         return id;
     }
 

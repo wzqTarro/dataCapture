@@ -10,9 +10,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -112,6 +110,8 @@ public class ExcelUtil<T> {
 				Field[] newFields = new Field[fields.length - 1];
 				//去除序列化编号一列
 				System.arraycopy(fields, 1, newFields, 0, fields.length - 1);
+				
+				int cellIndex = 0;
 				for(int i = 0; i < newFields.length; i++) {
 					Field field = newFields[i];
 					String fieldName = field.getName();
@@ -122,7 +122,7 @@ public class ExcelUtil<T> {
 					Class<? extends Object> clazz = t.getClass();
 					Method method = clazz.getMethod(methodName, new Class[] {});
 					//动态调用方法得到字段值
-					Object value = method.invoke(method, new Object[] {});
+					Object value = method.invoke(t, new Object[] {});
 					if(value == null) {
 						continue;
 					}
@@ -138,7 +138,7 @@ public class ExcelUtil<T> {
 						text = value.toString();
 					}
 					
-					Cell cell = row.createCell(i);
+					Cell cell = row.createCell(cellIndex);
 					if(CommonUtil.isNotBlank(text)) {
 						//如果是非负浮点数则转换
 						Pattern pattern = Pattern.compile("^//d+(//.//d+)?$");
@@ -150,6 +150,7 @@ public class ExcelUtil<T> {
 							cell.setCellValue(richText);
 						}
 					}
+					cellIndex ++;
 				}
 			}
 			workBook.write(out);
@@ -231,7 +232,7 @@ public class ExcelUtil<T> {
 					Class<? extends Object> clazz = t.getClass();
 					Method method = clazz.getMethod(methodName, new Class[] {});
 					//动态调用方法得到字段值
-					Object value = method.invoke(method, new Object[] {});
+					Object value = method.invoke(t, new Object[] {});
 					if(value == null) {
 						continue;
 					}

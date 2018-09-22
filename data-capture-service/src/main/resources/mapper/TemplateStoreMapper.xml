@@ -21,16 +21,17 @@
     <result column="province_area" jdbcType="VARCHAR" property="provinceArea" />
     <result column="ascription" jdbcType="CHAR" property="ascription" />
     <result column="ascription_sole" jdbcType="CHAR" property="ascriptionSole" />
+    <result column="sys_id" jdbcType="CHAR" property="sysId" />
   </resultMap>
   <sql id="Base_Column_List">
     id, store_code, order_store_name, return_store_name, sale_store_name, standard_store_name, 
-    store_market, store_city, sys_name, store_user, logistics_model, practice_time, distribution_code, 
-    distribution_name, distribution_user, region, province_area, ascription, ascription_sole
+    store_market, store_city, sys_name, store_manager, logistics_model, practice_time, distribution_code, 
+    distribution_name, distribution_user, region, province_area, ascription, ascription_sole, sys_id
   </sql>
   <sql id="Column_List">
     s.id, s.store_code, s.order_store_name, s.return_store_name, s.sale_store_name, s.standard_store_name, 
     s.store_market, s.store_city, s.sys_name, s.store_manager, s.logistics_model, s.practice_time, s.distribution_code, 
-    s.distribution_name, s.distribution_user, s.region, s.province_area, s.ascription, s.ascription_sole
+    s.distribution_name, s.distribution_user, s.region, s.province_area, s.ascription, s.ascription_sole, s.sys_id
   </sql>
   <sql id="Query_Condition">
   	<if test="region != '' and region != null">
@@ -50,6 +51,9 @@
   	</if>
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
+  	</if>
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId} 
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
@@ -85,17 +89,17 @@
     insert into db_template_store (id, store_code, order_store_name, 
       return_store_name, sale_store_name, standard_store_name, 
       store_market, store_city, sys_name, 
-      store_user, logistics_model, practice_time, 
+      store_manager, logistics_model, practice_time, 
       distribution_code, distribution_name, distribution_user, 
       region, province_area, ascription, 
-      ascription_sole)
+      ascription_sole, sys_id)
     values (#{id,jdbcType=INTEGER}, #{storeCode,jdbcType=VARCHAR}, #{orderStoreName,jdbcType=VARCHAR}, 
       #{returnStoreName,jdbcType=VARCHAR}, #{saleStoreName,jdbcType=VARCHAR}, #{standardStoreName,jdbcType=VARCHAR}, 
       #{storeMarket,jdbcType=VARCHAR}, #{storeCity,jdbcType=CHAR}, #{sysName,jdbcType=CHAR}, 
-      #{storeUser,jdbcType=CHAR}, #{logisticsModel,jdbcType=VARCHAR}, #{practiceTime,jdbcType=TIMESTAMP}, 
+      #{storeManager,jdbcType=CHAR}, #{logisticsModel,jdbcType=VARCHAR}, #{practiceTime,jdbcType=TIMESTAMP}, 
       #{distributionCode,jdbcType=VARCHAR}, #{distributionName,jdbcType=VARCHAR}, #{distributionUser,jdbcType=CHAR}, 
       #{region,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, 
-      #{ascriptionSole,jdbcType=CHAR})
+      #{ascriptionSole,jdbcType=CHAR}, #{sysId,jdbcType=CHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.TemplateStore">
     insert into db_template_store
@@ -127,8 +131,11 @@
       <if test="sysName != null">
         sys_name,
       </if>
-      <if test="storeUser != null">
-        store_user,
+      <if test="sysId != null">
+        sys_id,
+      </if>
+      <if test="storeManager != null">
+        store_manager,
       </if>
       <if test="logisticsModel != null">
         logistics_model,
@@ -186,8 +193,11 @@
       <if test="sysName != null">
         #{sysName,jdbcType=CHAR},
       </if>
-      <if test="storeUser != null">
-        #{storeUser,jdbcType=CHAR},
+      <if test="sysId != null">
+        #{sysId,jdbcType=CHAR},
+      </if>
+      <if test="storeManager != null">
+        #{storeManager,jdbcType=CHAR},
       </if>
       <if test="logisticsModel != null">
         #{logisticsModel,jdbcType=VARCHAR},
@@ -245,8 +255,11 @@
       <if test="sysName != null">
         sys_name = #{sysName,jdbcType=CHAR},
       </if>
-      <if test="storeUser != null">
-        store_user = #{storeUser,jdbcType=CHAR},
+      <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=CHAR},
+      </if>
+      <if test="storeManager != null">
+        store_manager = #{storeManager,jdbcType=CHAR},
       </if>
       <if test="logisticsModel != null">
         logistics_model = #{logisticsModel,jdbcType=VARCHAR},
@@ -288,7 +301,8 @@
       store_market = #{storeMarket,jdbcType=VARCHAR},
       store_city = #{storeCity,jdbcType=CHAR},
       sys_name = #{sysName,jdbcType=CHAR},
-      store_user = #{storeUser,jdbcType=CHAR},
+      sys_id = #{sysId,jdbcType=CHAR},
+      store_manager = #{storeManager,jdbcType=CHAR},
       logistics_model = #{logisticsModel,jdbcType=VARCHAR},
       practice_time = #{practiceTime,jdbcType=TIMESTAMP},
       distribution_code = #{distributionCode,jdbcType=VARCHAR},

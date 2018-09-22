@@ -21,12 +21,12 @@ public class TemplateDataUtil extends CommonServiceImpl{
 	 * @param storeCode
 	 * @return
 	 */
-	public TemplateStore getStandardStoreMessage(String sysName, String storeCode) {
-		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(storeCode)) {
+	public TemplateStore getStandardStoreMessage(String sysId, String storeCode) {
+		if (CommonUtil.isBlank(sysId) || CommonUtil.isBlank(storeCode)) {
 			return null;
 		}
 		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", sysName);
+		param.put("sysId", sysId);
 		param.put("storeCode", storeCode);
 		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, param);
 		return store;
@@ -55,12 +55,12 @@ public class TemplateDataUtil extends CommonServiceImpl{
 	 * @param simpleCode
 	 * @return
 	 */
-	public TemplateProduct getStandardProductMessage(String localName, String sysName, String simpleBarCode) {
-		if (CommonUtil.isBlank(sysName)) {
+	public TemplateProduct getStandardProductMessage(String sysId, String simpleBarCode) {
+		if (CommonUtil.isBlank(sysId)) {
 			return null;
 		}
 		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysName", sysName);
+		param.put("sysId", sysId);
 		param.put("simpleBarCode", simpleBarCode);
 		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
 		return CommonUtil.isBlank(product) ? null :product.get(0);

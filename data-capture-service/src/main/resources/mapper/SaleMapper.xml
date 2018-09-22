@@ -3,7 +3,7 @@
 <mapper namespace="SaleMapper" >
   <resultMap id="BaseResultMap" type="com.data.bean.Sale" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="sys_id" property="sysId" jdbcType="INTEGER" />
+    <result column="sys_id" property="sysId" jdbcType="CHAR" />
     <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
     <result column="store_code" property="storeCode" jdbcType="VARCHAR" />
     <result column="store_name" property="storeName" jdbcType="VARCHAR" />
@@ -151,7 +151,7 @@
       box_standard, stock_no, sell_num, 
       sell_price, create_time, remark,
       store_manager, local_name)
-    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=INTEGER}, #{sysName,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{storeCode,jdbcType=VARCHAR}, #{storeName,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
       #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, #{ascriptionSole,jdbcType=CHAR}, 
       #{simpleCode,jdbcType=VARCHAR}, #{simpleBarCode,jdbcType=VARCHAR}, #{stockCode,jdbcType=VARCHAR}, 
@@ -174,7 +174,7 @@
       store_manager, local_name)
     values 
     <foreach collection="list" item="sale" separator=",">
-    (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=INTEGER}, #{sale.sysName,jdbcType=VARCHAR}, 
+    (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
       #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
       #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 
       #{sale.simpleCode,jdbcType=VARCHAR}, #{sale.simpleBarCode,jdbcType=VARCHAR}, #{sale.stockCode,jdbcType=VARCHAR}, 
@@ -273,7 +273,7 @@
         #{id,jdbcType=INTEGER},
       </if>
       <if test="sysId != null" >
-        #{sysId,jdbcType=INTEGER},
+        #{sysId,jdbcType=CHAR},
       </if>
       <if test="sysName != null" >
         #{sysName,jdbcType=VARCHAR},
@@ -353,7 +353,7 @@
     update db_sale
     <set >
       <if test="sysId != null" >
-        sys_id = #{sysId,jdbcType=INTEGER},
+        sys_id = #{sysId,jdbcType=CHAR},
       </if>
       <if test="sysName != null" >
         sys_name = #{sysName,jdbcType=VARCHAR},
@@ -432,7 +432,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.data.bean.Sale" >
     update db_sale
-    set sys_id = #{sysId,jdbcType=INTEGER},
+    set sys_id = #{sysId,jdbcType=CHAR},
       sys_name = #{sysName,jdbcType=VARCHAR},
       store_code = #{storeCode,jdbcType=VARCHAR},
       store_name = #{storeName,jdbcType=VARCHAR},
