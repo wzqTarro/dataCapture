@@ -47,7 +47,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public <T> List<T> getDataByWeb(CommonDTO common, int sysId, int dataType, Class<T> clazz) throws IOException{		
+	public <T> List<T> getDataByWeb(CommonDTO common, String sysId, int dataType, Class<T> clazz) throws IOException{		
 		/*String start = null;
 		String end = null;
 		if (0 == sysId) {
@@ -61,7 +61,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			end = start;
 		}
 		
-		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, common.getId());
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("sysId", sysId);
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_PARAM, param);
 		if (false == supply.getIsVal()) {
 			throw new DataException("504");
 		}

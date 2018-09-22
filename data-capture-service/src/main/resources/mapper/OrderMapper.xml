@@ -3,7 +3,8 @@
 <mapper namespace="OrderMapper">
   <resultMap id="BaseResultMap" type="com.data.bean.Order">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="system" jdbcType="VARCHAR" property="system" />
+    <result column="sys_id" jdbcType="CHAR" property="sys_id" />
+    <result column="sys_name" jdbcType="VARCHAR" property="sys_name" />
     <result column="main_area" jdbcType="VARCHAR" property="mainArea" />
     <result column="province_area" jdbcType="VARCHAR" property="provinceArea" />
     <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
@@ -35,7 +36,7 @@
     <result column="diff_price" jdbcType="DECIMAL" property="diffPrice" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, system, main_area, province_area, department_name, receipt_code, product_code, 
+    id, sys_id, sys_name, main_area, province_area, department_name, receipt_code, product_code, 
     product_bar_code, product_store_code, product_name, tax_rate, standard, product_amount, 
     buying_price_with_rate, buying_price, deliver_start_date, deliver_end_date, deliver_address, 
     discount_price, discount_start_date, discount_end_date, order_effective_judge, balance_way, 
@@ -53,7 +54,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.data.bean.Order">
-    insert into db_order (id, system, main_area, 
+    insert into db_order (id, sys_id, sys_name, main_area, 
       province_area, department_name, receipt_code, 
       product_code, product_bar_code, product_store_code, 
       product_name, tax_rate, standard, 
@@ -64,7 +65,7 @@
       diff_price_discount_total, discount_alarm_flag, 
       contract_price, diff_price_contract, diff_price_contract_total, 
       contract_alarm_flag, diff_price)
-    values (#{id,jdbcType=INTEGER}, #{system,jdbcType=VARCHAR}, #{mainArea,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, #{mainArea,jdbcType=VARCHAR}, 
       #{provinceArea,jdbcType=VARCHAR}, #{departmentName,jdbcType=VARCHAR}, #{receiptCode,jdbcType=VARCHAR}, 
       #{productCode,jdbcType=VARCHAR}, #{productBarCode,jdbcType=VARCHAR}, #{productStoreCode,jdbcType=VARCHAR}, 
       #{productName,jdbcType=VARCHAR}, #{taxRate,jdbcType=DECIMAL}, #{standard,jdbcType=INTEGER}, 
@@ -82,8 +83,11 @@
       <if test="id != null">
         id,
       </if>
-      <if test="system != null">
-        system,
+      <if test="sysId != null">
+        sys_id,
+      </if>
+      <if test="sysName != null">
+        sys_name,
       </if>
       <if test="mainArea != null">
         main_area,
@@ -177,8 +181,11 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="system != null">
-        #{system,jdbcType=VARCHAR},
+      <if test="sysId != null">
+        #{sysId,jdbcType=CHAR},
+      </if>
+      <if test="sysName != null">
+        #{sysName,jdbcType=VARCHAR},
       </if>
       <if test="mainArea != null">
         #{mainArea,jdbcType=VARCHAR},
@@ -272,8 +279,11 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.Order">
     update db_order
     <set>
-      <if test="system != null">
-        system = #{system,jdbcType=VARCHAR},
+      <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=CHAR},
+      </if>
+      <if test="sysName != null">
+        sys_name = #{sysName,jdbcType=VARCHAR},
       </if>
       <if test="mainArea != null">
         main_area = #{mainArea,jdbcType=VARCHAR},
@@ -367,7 +377,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.data.bean.Order">
     update db_order
-    set system = #{system,jdbcType=VARCHAR},
+    set sys_id = #{sysId,jdbcType=CHAR}, 
+      sys_name = #{sysName,jdbcType=VARCHAR},
       main_area = #{mainArea,jdbcType=VARCHAR},
       province_area = #{provinceArea,jdbcType=VARCHAR},
       department_name = #{departmentName,jdbcType=VARCHAR},

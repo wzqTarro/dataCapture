@@ -11,18 +11,22 @@
     <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
     <result column="controller_name" jdbcType="VARCHAR" property="controllerName" />
     <result column="is_val" jdbcType="BIT" property="isVal" />
+    <result column="sys_id" jdbcType="CHAR" property="sysId" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, 
+    id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, sys_id
     is_val
   </sql>
   <sql id="Column_List">
     s.id, region, s.sys_name, s.url, s.login_user_name, s.login_password, s.company_code, s.controller_name, 
-    s.is_val
+    s.is_val, s.sys_id
   </sql>
   <sql id="Query_Condition">
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
+  	</if>
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
   	</if>
   	<if test="region != null and region != ''">
   		AND region = #{region}
@@ -36,7 +40,10 @@
   		FROM db_template_supply 
   		WHERE 1=1
   		<include refid="Query_Condition"></include>
-  		LIMIT #{pageNum}, #{pageSize}
+  		<if test="pageNum != null and pageSize != null" >
+  			LIMIT #{pageNum}, #{pageSize}
+  		</if>
+  		
   	) ts ON(ts.id = s.id)
   </select>
   <select id="selectCountByCondition" parameterType="map" resultType="int">
@@ -58,11 +65,12 @@
   <insert id="insert" parameterType="com.data.bean.TemplateSupply">
     insert into db_template_supply (id, region, sys_name, 
       url, login_user_name, login_password, 
-      company_code, controller_name, is_val
+      company_code, controller_name, is_val, sys_id
       )
     values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
-      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbcType=VARCHAR}, #{isVal,jdbcType=BIT}
+      #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbcType=VARCHAR}, #{isVal,jdbcType=BIT},
+      #{sysId,jdbcType=CHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.TemplateSupply">
@@ -95,6 +103,9 @@
       <if test="isVal != null">
         is_val,
       </if>
+      <if test="sysId != null">
+        sys_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -123,6 +134,9 @@
       </if>
       <if test="isVal != null">
         #{isVal,jdbcType=BIT},
+      </if>
+      <if test="sysId != null">
+        #{sysId,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
@@ -153,6 +167,9 @@
       <if test="isVal != null">
         is_val = #{isVal,jdbcType=BIT},
       </if>
+      <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=CHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -165,7 +182,8 @@
       login_password = #{loginPassword,jdbcType=VARCHAR},
       company_code = #{companyCode,jdbcType=VARCHAR},
       controller_name = #{controllerName,jdbcType=VARCHAR},
-      is_val = #{isVal,jdbcType=BIT}
+      is_val = #{isVal,jdbcType=BIT},
+      sys_id = #{sysId, jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.data.bean.TemplateProduct">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="product_id" jdbcType="VARCHAR" property="productId" />
+    <result column="sys_id" jdbcType="CHAR" property="sysId" />
     <result column="sys_name" jdbcType="CHAR" property="sysName" />
     <result column="simple_code" jdbcType="VARCHAR" property="simpleCode" />
     <result column="simple_bar_code" jdbcType="VARCHAR" property="simpleBarCode" />
@@ -25,14 +26,17 @@
   <sql id="Base_Column_List">
     id, product_id, sys_name, simple_code, simple_bar_code, stock_code, simple_name, 
     standard_name, brand, classify, series, func, material, pieces_num, box_standard, stock_no, 
-    sell_price, exclude_tax_price, include_tax_price
+    sell_price, exclude_tax_price, include_tax_price, sys_id
   </sql>
   <sql id="Column_List">
     p.id, p.product_id, p.sys_name, p.simple_code, p.simple_bar_code, p.stock_code, p.simple_name, 
     p.standard_name, p.brand, p.classify, p.series, p.func, p.material, p.pieces_num, p.box_standard, p.stock_no, 
-    p.sell_price, p.exclude_tax_price, p.include_tax_price
+    p.sell_price, p.exclude_tax_price, p.include_tax_price, p.sys_id
   </sql>
   <sql id="Query_Condition">
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
+  	</if>
   	<if test="productId != null and productId != ''">
   		AND product_id = #{productId}
   	</if>
@@ -103,14 +107,15 @@
       simple_name, standard_name, brand, 
       classify, series, func, material, 
       pieces_num, box_standard, stock_no, 
-      sell_price, exclude_tax_price, include_tax_price
+      sell_price, exclude_tax_price, include_tax_price, sys_id
       )
     values (#{id,jdbcType=INTEGER}, #{productId,jdbcType=VARCHAR}, #{sysName,jdbcType=CHAR}, 
       #{simpleCode,jdbcType=VARCHAR}, #{simpleBarCode,jdbcType=VARCHAR}, #{stockCode,jdbcType=VARCHAR}, 
       #{simpleName,jdbcType=VARCHAR}, #{standardName,jdbcType=VARCHAR}, #{brand,jdbcType=CHAR}, 
       #{classify,jdbcType=CHAR}, #{series,jdbcType=CHAR}, #{func,jdbcType=CHAR}, #{material,jdbcType=CHAR}, 
       #{piecesNum,jdbcType=INTEGER}, #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, 
-      #{sellPrice,jdbcType=DOUBLE}, #{excludeTaxPrice,jdbcType=DOUBLE}, #{includeTaxPrice,jdbcType=DOUBLE}
+      #{sellPrice,jdbcType=DOUBLE}, #{excludeTaxPrice,jdbcType=DOUBLE}, #{includeTaxPrice,jdbcType=DOUBLE},
+      #{sysId,jdbcType=CHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.TemplateProduct">
@@ -124,6 +129,9 @@
       </if>
       <if test="sysName != null">
         sys_name,
+      </if>
+      <if test="sysId != null">
+        sys_id,
       </if>
       <if test="simpleCode != null">
         simple_code,
@@ -184,6 +192,9 @@
       <if test="sysName != null">
         #{sysName,jdbcType=CHAR},
       </if>
+      <if test="sysId != null">
+        #{sysId,jdbcType=CHAR},
+      </if>
       <if test="simpleCode != null">
         #{simpleCode,jdbcType=VARCHAR},
       </if>
@@ -243,6 +254,9 @@
       <if test="sysName != null">
         sys_name = #{sysName,jdbcType=CHAR},
       </if>
+      <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=CHAR},
+      </if>
       <if test="simpleCode != null">
         simple_code = #{simpleCode,jdbcType=VARCHAR},
       </if>
@@ -298,6 +312,7 @@
     update db_template_product
     set product_id = #{productId,jdbcType=VARCHAR},
       sys_name = #{sysName,jdbcType=CHAR},
+      sys_id = #{sysId,jdbcType=CHAR},
       simple_code = #{simpleCode,jdbcType=VARCHAR},
       simple_bar_code = #{simpleBarCode,jdbcType=VARCHAR},
       stock_code = #{stockCode,jdbcType=VARCHAR},

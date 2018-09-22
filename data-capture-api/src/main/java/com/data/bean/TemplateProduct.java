@@ -15,6 +15,8 @@ public class TemplateProduct implements Serializable {
 
     private String productId;
 
+    private String sysId;
+    
     private String sysName;
 
     private String simpleCode;
@@ -50,7 +52,15 @@ public class TemplateProduct implements Serializable {
 
     private Double includeTaxPrice;
 
-    public Integer getId() {
+    public String getSysId() {
+		return sysId;
+	}
+
+	public void setSysId(String sysId) {
+		this.sysId = sysId;
+	}
+
+	public Integer getId() {
         return id;
     }
 

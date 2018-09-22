@@ -14,7 +14,7 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	ResultUtil getStockByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException ;
+	ResultUtil getStockByWeb(CommonDTO common, String sysId, Integer page, Integer limit) throws IOException ;
 	/**
 	 * 多条件查询库存
 	 * @param common
@@ -49,5 +49,5 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	ResultUtil expertStockExcel(Stock stock, CommonDTO common, OutputStream output) throws IOException;
+	ResultUtil expertStockExcel(String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
 }

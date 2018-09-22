@@ -57,6 +57,11 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 				map.put("storeCode", store.getStoreCode());
 			}
 			
+			// 系统名称
+			if (CommonUtil.isNotBlank(store.getSysName())) {
+				map.put("sysName", store.getSysName());
+			}
+			
 		}
 		logger.info("------>>>>>模板门店查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
 		PageRecord<TemplateStore> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STORE_BY_PARAM, 

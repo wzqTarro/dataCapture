@@ -14,7 +14,7 @@ public class Reject implements Serializable {
 
 	private Integer id;
 
-	private Integer sysId;
+	private String sysId;
 	
     private String sysName;
 
@@ -78,11 +78,11 @@ public class Reject implements Serializable {
 
    
 
-    public Integer getSysId() {
+    public String getSysId() {
 		return sysId;
 	}
 
-	public void setSysId(Integer sysId) {
+	public void setSysId(String sysId) {
 		this.sysId = sysId;
 	}
 

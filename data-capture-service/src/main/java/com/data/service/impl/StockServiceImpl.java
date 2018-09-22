@@ -1,9 +1,5 @@
 package com.data.service.impl;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.DayOfWeek;
@@ -15,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.catalina.Store;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -25,7 +20,6 @@ import org.apache.poi.ss.usermodel.Font;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +34,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IStockService;
@@ -68,7 +63,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private StockDataUtil stockDataUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException {
+	public ResultUtil getStockByWeb(CommonDTO common, String sysId, Integer page, Integer limit) throws IOException {
 		logger.info("------>>>>>>前端传递common：{}<<<<<<<-------", FastJsonUtil.objectToString(common));
 		List<Stock> stockList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.STOCK, Stock.class);
 		for (int i = 0, size = stockList.size(); i < size; i++) {
@@ -83,7 +78,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 门店编号
 			String storeCode = stock.getStockCode();
 		
-			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysName, storeCode);
+			// 标准门店信息
+			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysId, storeCode);
 			
 			// 商品条码
 			String simpleBarCode = stock.getSimpleBarCode();		
@@ -91,6 +87,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 地区
 			String localName = stock.getLocalName();
 			if (CommonUtil.isBlank(simpleBarCode)) {
+				
+				// 标准条码匹配信息
 				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
 			}
 			if (CommonUtil.isBlank(simpleBarCode)) {
@@ -98,7 +96,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				continue;
 			}
 			stock.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = templateDataUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
+			
+			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
+			stock.setSysName(sysName);
+			
+			// 标准单品信息
+			TemplateProduct product = templateDataUtil.getStandardProductMessage(sysId, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {
@@ -393,13 +396,34 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	@Override
-	public ResultUtil expertStockExcel(Stock stock, CommonDTO common, OutputStream output) throws IOException {
+	public ResultUtil expertStockExcel(String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
+		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
 		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		if (null == stock) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		if (CommonUtil.isBlank(stockNameStr)) {
+			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
 		}
+		String[] stockNameArray = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		StringBuilder builder = new StringBuilder();
+		
+		// 拼接查询字段
+		for (String s : stockNameArray) {
+			StockEnum e = StockEnum.getEnum(s.trim());
+			builder.append(e.getValue());
+			builder.append(",");
+		}
+		builder.deleteCharAt(builder.length() - 1);
+		
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("column", builder.toString());
+		param.put("startDate", common.getStartDate());
+		param.put("endDate", common.getEndDate());
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		excelUtil.excel2003("库存处理表", stockNameArray, stockList, output);
 		return null;
 	}
 

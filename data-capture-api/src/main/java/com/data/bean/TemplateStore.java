@@ -29,6 +29,8 @@ public class TemplateStore implements Serializable {
     private String storeCity;
 
     private String sysName;
+    
+    private String sysId;
 
     // 门店负责人
     private String storeManager;
@@ -51,7 +53,15 @@ public class TemplateStore implements Serializable {
 
     private String ascriptionSole;
 
-    public Integer getId() {
+    public String getSysId() {
+		return sysId;
+	}
+
+	public void setSysId(String sysId) {
+		this.sysId = sysId;
+	}
+
+	public Integer getId() {
         return id;
     }
 
