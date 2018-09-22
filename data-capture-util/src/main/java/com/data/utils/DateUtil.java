@@ -109,6 +109,14 @@ public final class DateUtil {
 		calendar.add(field, amount);
 		return calendar.getTime();
 	}
+	
+	/**
+	 * 获取系统日期
+	 * @return
+	 */
+	public static final Date getSystemDate() {
+		return new Date(System.currentTimeMillis());
+	}
 
 	/**
 	 * 字符串转换为日期:不支持yyM[M]d[d]格式
@@ -316,6 +324,27 @@ public final class DateUtil {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	/**
+	 * 格式化当前日期
+	 * @param pattern
+	 * @return
+	 */
+	public static final String getCurrentDateStr() {
+		return new SimpleDateFormat(DATE_PATTERN.YYYY_MM_DD).format(getSystemDate());	
+	}
+	
+	/**
+	 * 根据days天数来得到几天前或几天后的数据
+	 * @param days
+	 * @return
+	 */
+	public static final Date getCustomDate(int days) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(getSystemDate());
+		calendar.add(Calendar.DATE, days);
+		return calendar.getTime();
 	}
 	
 	public static void main(String[] args) {

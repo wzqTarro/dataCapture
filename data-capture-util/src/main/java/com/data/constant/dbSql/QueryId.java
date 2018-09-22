@@ -71,4 +71,10 @@ public final class QueryId {
 	/**查询销售日报表总数**/
 	public static final String QUERY_COUNT_SALE_LIST_REPORT = "SaleMapper.queryCountSaleListReport";
 	
+	/**查询销售表信息**/
+	public static final String QUERY_SALE_MESSAGE_LIST = "SaleMapper.querySaleMessageList";
+	
+	/**根据门店编号查询销售表信息**/
+	public static final String QUERY_SALE_INFO_BY_STORE_CODE = "SaleMapper.querySaleInfoByStoreCode";
+	
 }

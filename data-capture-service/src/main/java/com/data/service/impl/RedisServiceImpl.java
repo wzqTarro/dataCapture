@@ -1,5 +1,9 @@
 package com.data.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,5 +93,56 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 	public void deleteAccessToken(String key) {
 		String tokenKey = RedisAPI.getPrefix(RedisAPI.REDIS_TOKEN_AUTHENTICATE, key);
 		redisUtil.del(tokenKey);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Map<String, Object>> querySaleDateMessageByStore(String dateStr) {
+		String key = RedisAPI.getPrefix(RedisAPI.DAILY_STORE_SALE_PREFIX, dateStr);
+		String json = redisUtil.get(key);
+		
+		if(CommonUtil.isBlank(json)) {
+			return new ArrayList<Map<String, Object>>(10);
+		}
+		
+		return FastJsonUtil.jsonToObject(json, List.class);
+	}
+
+	@Override
+	public void setSaleDailyMessageByStore(String dateStr, List<Map<String, Object>> storeDailySaleList) {
+		String key = RedisAPI.getPrefix(RedisAPI.DAILY_STORE_SALE_PREFIX, dateStr);
+		redisUtil.setex(key, RedisAPI.EXPIRE_1_MONTH, FastJsonUtil.objectToString(storeDailySaleList));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Map<String, Object>> querySaleList() {
+		String key = RedisAPI.getPrefix(RedisAPI.STORE_MESSAGE);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, List.class);
+		}
+		List<Map<String, Object>> saleList = queryListByObject(QueryId.QUERY_SALE_MESSAGE_LIST, null);
+		if(CommonUtil.isNotBlank(saleList)) {
+			redisUtil.set(key, FastJsonUtil.objectToString(saleList));
+			return saleList;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Object> querySaleInfo(String storeCode) {
+		String key = RedisAPI.getPrefix(RedisAPI.STORE_MESSAGE, storeCode);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return FastJsonUtil.jsonToObject(json, Map.class);
+		}
+		Map<String, Object> saleMap = (Map<String, Object>) queryObjectByParameter(QueryId.QUERY_SALE_INFO_BY_STORE_CODE, storeCode);
+		if(CommonUtil.isNotBlank(saleMap)) {
+			redisUtil.set(key, FastJsonUtil.objectToString(saleMap));
+			return saleMap;
+		}
+		return null;
 	}
 }

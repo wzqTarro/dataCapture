@@ -39,6 +39,9 @@ public class RedisAPI {
 	/**一天**/
 	public static final int EXPIRE_24_HOUR = 60 * 60 * 24;
 	
+	/**一个月**/
+	public static final int EXPIRE_1_MONTH = 60 * 60 * 24 * 31;
+	
 	/**key值分隔符**/
 	public static final String REDIS_PATTERN = ":";
 	
@@ -59,6 +62,12 @@ public class RedisAPI {
 	
 	public static final String REDIS_TOKEN_AUTHENTICATE = "data:token";
 	
+	/**门店日销售**/
+	public static final String DAILY_STORE_SALE_PREFIX = "store:daily";
+	
+	/**门店信息**/
+	public static final String STORE_MESSAGE = "store:info";
+	
 	/**
 	 * 得到存入缓存中的key值
 	 * @param database 存入哪种类型的库
@@ -69,9 +78,11 @@ public class RedisAPI {
 		if(CommonUtil.isNotBlank(prefix) && CommonUtil.isNotBlank(keys)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append(prefix);
-			for(int i = 0; i < keys.length; i++) {
-				builder.append(REDIS_PATTERN);
-				builder.append(keys[i]);
+			if(keys != null && keys.length != 0) {
+				for(int i = 0; i < keys.length; i++) {
+					builder.append(REDIS_PATTERN);
+					builder.append(keys[i]);
+				}				
 			}
 			return builder.toString();
 		}

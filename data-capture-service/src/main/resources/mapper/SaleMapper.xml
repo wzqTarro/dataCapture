@@ -61,9 +61,6 @@
   	<if test="queryDate != null and queryDate != ''">
   		AND create_time = #{queryDate}
   	</if>
-  	<if test="queryDate != null and queryDate != ''">
-  		AND create_time = #{queryDate}
-  	</if>
   </sql>
   
   <sql id="Sale_List_Report">
@@ -79,15 +76,35 @@
   	<if test="store != null and store != ''">
   		AND store_name LIKE CONCAT(CONCAT('%', #{store}), '%') 
   	</if>
+  	<if test="saleDate != null">
+  		AND create_time=#{saleDate}
+  	</if>
   </sql>
   
+  <!-- 查询导出信息 -->
   <select id="querySaleListReport" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include>
   	FROM db_sale 
   	WHERE 1=1
   	<include refid="Sale_List_Report"></include>
+  	<if test="pageNum != null and pageSize != null pageNum != '' and pageSize != ''">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>
   </select>
   
+  <!-- 查询门店信息列表 -->
+  <select id="querySaleMessageList" resultMap="BaseResultMap">
+  	SELECT sys_id, sys_name, region, province_area, store_code, store_name, store_manager 
+  	FROM db_sale GROUP BY store_code
+  </select>
+  
+  <!-- 根据storeCode查询门店信息 -->
+  <select id="querySaleInfoByStoreCode" parameterType="string" resultMap="BaseResultMap">
+  	SELECT sys_id, sys_name, region, province_area, store_code, store_name, store_manager 
+  	FROM db_sale WHERE store_code=#{storeCode}
+  </select>
+  
+  <!-- 查询导出报表信息数量 -->
   <select id="queryCountSaleListReport" parameterType="map" resultType="int">
   	SELECT COUNT(1)
   	FROM db_sale 
@@ -95,6 +112,7 @@
   	<include refid="Sale_List_Report"></include>
   </select>
   
+  <!-- 按条件查询销售信息 -->
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Base_Column_List"></include>
   	FROM db_sale
@@ -104,12 +122,15 @@
   		LIMIT #{pageNum}, #{pageSize}
   	</if>
   </select>
+  
+  <!-- 按条件查询销售信息数量 -->
   <select id="selectCountByParam" resultType="int" parameterType="map">
   	SELECT COUNT(1)
   	FROM db_sale
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
