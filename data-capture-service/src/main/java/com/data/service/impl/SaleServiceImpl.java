@@ -1,16 +1,18 @@
 package com.data.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.dto.CommonDTO;
+import com.data.service.IRedisService;
 import com.data.service.ISaleService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
@@ -46,6 +49,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private DataCaptureUtil dataCaptureUtil;
+	
+	@Autowired
+	private TemplateDataUtil templateDataUtil;
+	
+	@Autowired
+	private IRedisService redisService;
 
 	@Override
 	public ResultUtil getSaleByWeb(CommonDTO common, int sysId, Integer page, Integer limit) throws IOException{
@@ -59,13 +68,10 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		for (int i = 0, size = saleList.size(); i < size; i++) {
 			Sale sale = saleList.get(i);
-			//sale.setSysId(common.getId());
+			sale.setSysId(sysId);
 			
 			// 单品编码
 			String simpleCode = sale.getSimpleCode();
-			
-			// 系统
-			String sysName = sale.getSysName();
 			
 			// 门店编码
 			String storeCode = sale.getStoreCode();
@@ -73,19 +79,26 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			// 地区
 			String localName = sale.getLocalName();
 			
-			TemplateStore store = dataCaptureUtil.getStandardStoreMessage(sysName, storeCode);
+			// 系统
+			String sysName = sale.getSysName();
+			
+			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
+			
+			sale.setSysName(sysName);
+			
+			TemplateStore store = templateDataUtil.getStandardStoreMessage(sysName, storeCode);
 			
 			// 单品条码
 			String simpleBarCode = sale.getSimpleBarCode();
 			if (CommonUtil.isBlank(simpleBarCode)) {
-				simpleBarCode = dataCaptureUtil.getBarCodeMessage(sysName, simpleCode);
+				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
 			}
 			if (CommonUtil.isBlank(simpleBarCode)) {
 				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;
 			}
 			sale.setSimpleBarCode(simpleBarCode);
-			TemplateProduct product = dataCaptureUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
+			TemplateProduct product = templateDataUtil.getStandardProductMessage(localName, sysName, simpleBarCode);
 			
 			// 门店信息为空
 			if (CommonUtil.isBlank(store)) {
@@ -122,7 +135,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				sale.setBrand(product.getBrand());
 				
 				// 销售价格
-				sale.setSellPrice(product.getSellPrice());
+				// sale.setSellPrice(product.getSellPrice());
 				
 				// 系列
 				sale.setSeries(product.getSeries());
@@ -237,18 +250,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		return ResultUtil.success(resultList);
 	}
 	
-	public static void main(String[] args) {
-		String json = null;
-		try {
-			json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
-		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
-		System.err.println(FastJsonUtil.objectToString(list));
-	}
 
 	@Override
 	public ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response) {
@@ -257,23 +258,144 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		params.put("region", region);
 		params.put("province", province);
 		params.put("store", store);
+		//前一天的数据
+		params.put("saleDate", DateUtil.getCustomDate(-1));
 		//先判断数量 分批导出
 		int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT, params);
 		if(count >= CommonValue.MAX_ROW_COUNT_2007) {
 			return ResultUtil.error("下载超过excel2007最大行数");
+		} else {
+			int pageSize = (int) Math.ceil((double) count / 3);
+			ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			for(int i = 1; i <= 3; i++) {
+				//分三次
+				try {
+					params.put("pageNum", i);
+					params.put("pageSize", pageSize);
+					
+					//查询导出数据集合
+					executorService.execute(new Thread() {
+						@Override
+						public void run() {
+							List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
+							if(CommonUtil.isBlank(saleList)) {
+								logger.error("--->>>导出销售数据异常<<<---");
+								return;
+							}
+							buildDailyStoreSale(saleList);
+							
+							List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
+							String dateStr = DateUtil.getCurrentDateStr();
+							
+							List<Map<String, Object>> saleDataList = new ArrayList<>(10);
+							//日门店销售额集合
+							List<Map<String, Object>> storeDailyList = new ArrayList<>(10);
+							//取得系统当前时间在日期集合中的索引
+							int index = daysList.indexOf(dateStr);
+							for(int i = 0; i < index + 1; i++) {
+								//将之前天数的数据都进行组装
+								//到缓存查是否数据， 然后放置在saleDatePriceMap中
+								storeDailyList = redisService.querySaleDateMessageByStore(daysList.get(i));
+								for(Map<String, Object> store : storeDailyList) {
+									String storeCode = (String) store.get("storeCode");
+									//根据storeCode从缓存里面取得门店信息
+									Map<String, Object> saleInfo = redisService.querySaleInfo(storeCode);
+									//在门店信息里面添加日销售额
+									saleInfo.put(daysList.get(i), store.get("salePrice"));
+									//将信息放入在saleDataList集合里面
+									saleDataList.add(saleInfo);
+								}
+							}
+							//写入单元格
+						}
+					});
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("--->>>销售日报表导出异常<<<---");
+				} finally {
+					if(executorService != null) {
+						executorService.shutdown();
+					}
+				}
+			}
 		}
-		/**
-		 * TODO
-		 * 如何按单元格导出
-		 */
-		try {
-			
-		} finally {
-			
-		}
-		
-		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
-		
-		return null;
+		return ResultUtil.success();
 	}
+	
+	/**
+	 * 组装门店与销售额的集合
+	 * @param saleList
+	 * @return
+	 */
+	private Map<String, Object> buildDailyReportByStore(List<Sale> saleList) {
+		List<Sale> list = saleList;
+		Set<String> storeSet = new HashSet<>();
+		for(Sale sale : list) {
+			storeSet.add(sale.getStoreCode());
+		}
+		Map<String, Object> map = new HashMap<>();
+		String storeCode;
+		for(int i = 0; i < list.size(); i++) {
+			//统计同一个门店的销售额
+			storeCode = list.get(i).getStoreCode();
+			if(storeSet.contains(storeCode)) {
+				Double price = (Double) map.get(storeCode);
+				if(price == null) {
+					price = 0.0;
+				}
+				map.put(storeCode, price += list.get(i).getSellPrice());
+			}
+		}
+		return map;
+	}
+	
+	/***
+	 * 门店一天的销售额
+	 * 组装当天数据 然后放入缓存中
+	 * @param saleList
+	 * @return
+	 */
+	private void buildDailyStoreSale(List<Sale> saleList) {
+		Map<String, Object> salePriceMap = buildDailyReportByStore(saleList);
+		String dateStr = DateUtil.getCurrentDateStr();
+		List<Map<String, Object>> storeDailySaleList = new ArrayList<>(10);
+		//从缓存里面取得销售表中各个门店信息
+		List<Map<String, Object>> saleMessageList = redisService.querySaleList();
+		for(Map.Entry<String, Object> entry : salePriceMap.entrySet()) {
+			for(Map<String, Object> map : saleMessageList) {
+				String storeCode = (String) map.get("storeCode");
+				if(storeCode.equals(entry.getKey())) {
+					Map<String, Object> params = new HashMap<>(10);
+//					params.put("sysId", map.get("sysId"));
+//					params.put("sysName", map.get("sysName"));
+//					params.put("region", map.get("region"));
+//					params.put("provinceArea", map.get("provinceArea"));
+					params.put("storeCode", map.get("storeCode"));
+//					params.put("storeName", map.get("storeName"));
+//					params.put("storeManager", map.get("storeManager"));
+					//当天的数据
+					params.put("salePrice", entry.getValue());
+					storeDailySaleList.add(params);
+				}
+				break;
+			}
+		}
+		//将一天的门店信息存入缓存
+		redisService.setSaleDailyMessageByStore(dateStr, storeDailySaleList);
+	}
+	
+//	public static void main(String[] args) {
+//		String json = null;
+//		try {
+//			json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
+//		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
+//		System.err.println(FastJsonUtil.objectToString(list));
+//	}
+	
 }
