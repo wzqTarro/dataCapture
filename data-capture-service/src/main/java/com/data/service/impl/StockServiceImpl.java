@@ -340,19 +340,21 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 标题
 		String title = sysName + "系统直营KA门店缺货日报表";
 		
-		// 生成表上部分
-		int index = stockDataUtil.createMissStockTop(wb, sheet, queryDate, title);
+		// 生成日期
+		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);
 			
 		// 表头
 		String[] headers = new String[]{"系统", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
-		Row headerRow = sheet.createRow(index);
+		Row headerRow = sheet.createRow(3);
+				
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers);
-		
-		index++;
+
 		// 生成表下部分数据
-		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, sysName, index);
+		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, sysName, 4);
 		wb.write(output);
 		return ResultUtil.success();
 	}
@@ -379,19 +381,22 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 标题
 		String title = region + "大区直营KA门店缺货日报表";
 		
-		// 生成表上部分
-		int index = stockDataUtil.createMissStockTop(wb, sheet, queryDate, title);
+		// 生成日期
+		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);
 			
 		// 表头
 		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
-		Row headerRow = sheet.createRow(index);
+		Row headerRow = sheet.createRow(3);
+		
+		
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers);
-	
-		index++;
+
 		// 生成表下部分数据
-		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, region, index);
+		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, region, 4);
 		wb.write(output);
 		return ResultUtil.success();
 	}
@@ -426,5 +431,59 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		excelUtil.excel2003("库存处理表", stockNameArray, stockList, output);
 		return null;
 	}
-
+	@Override
+	public ResultUtil expertCompanyExcelBySys(String queryDate, OutputStream output) throws IOException {
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		// 按系统名称和时间查询库存
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("queryDate", queryDate);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("公司一级表");
+		
+		// 标题
+		String title = "全公司直营KA分系统库存日报表";
+		
+		// 生成日期
+		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);	
+		
+		List<String> brandList = stockList.parallelStream()
+				.map(Stock::getBrand)
+				.collect(Collectors.toList());
+		// 生成品牌
+		stockDataUtil.createDateRow(wb, sheet, 1, "品牌:", "全部", brandList.toArray());	
+			
+		// 表头
+		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
+		Row headerRow = sheet.createRow(2);
+		
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		
+		// 设置表头
+		excelUtil.createRow(headerRow, headers);
+		
+		// 按系统名称分组
+		Map<String, List<Stock>> stockMap = stockList.parallelStream()
+				.collect(Collectors.groupingBy(Stock::getSysName));
+		
+		int index = 0;
+		for (List<Stock> tempList : stockMap.values()) {
+			Stock stock = tempList.get(index);
+			index ++;
+			
+			// 系统名
+			String sysName = stock.getSysName();
+			
+			// 门店数量
+			/**
+			 * TODO
+			 */
+		}
+		return null;
+	}
 }

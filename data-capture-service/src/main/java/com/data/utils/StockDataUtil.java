@@ -30,41 +30,53 @@ import com.data.service.impl.CommonServiceImpl;
 public class StockDataUtil extends CommonServiceImpl{
 	
 	/**
-	 * 生成缺货门店表的上部
-	 * @param wb 
-	 * @param sheet 工作簿
-	 * @param queryDate 查询时间
-	 * @param title 标题
-	 * @return 起始行数
+	 * 生成蓝色字体样式日期行
+	 * @param wb
+	 * @param sheet 
+	 * @param rowIndex 行号
+	 * @param cellName 
+	 * @param cellValue
 	 */
-	public int createMissStockTop(SXSSFWorkbook wb, Sheet sheet, String queryDate, String title) {
+	public void createDateRow(SXSSFWorkbook wb, Sheet sheet, int rowIndex, String cellName, Object...cellValue) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		Row firstRow = sheet.createRow(0);
+		Row firstRow = sheet.createRow(rowIndex);
 		Cell firstCell = firstRow.createCell(0);
 		
 		// 蓝色字体
 		CellStyle firstCellStyle = wb.createCellStyle();
 		firstCellStyle.setFont(excelUtil.getColorFont(wb, HSSFColor.BLUE.index));
 		
-		firstCell.setCellValue("报表日期");
+		firstCell.setCellValue(cellName);
 		firstCell.setCellStyle(firstCellStyle);
 		
-		Cell firstCell2 = firstRow.createCell(1);
-		firstCell2.setCellValue(queryDate);
-		firstCell2.setCellStyle(firstCellStyle);
+		for (int i = 0, size = cellValue.length; i < size; i++) {
+			Cell firstCell2 = firstRow.createCell(i+1);
+			firstCell2.setCellValue(cellValue[i].toString());
+			firstCell2.setCellStyle(firstCellStyle);
+		}
+	}
+	
+	/**
+	 * 生成居中粗体标题
+	 * @param wb
+	 * @param sheet 工作簿
+	 * @param title 标题
+	 * @param rowIndex 行号
+	 * @param cellWidth 合并列数
+	 */
+	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellWidth) {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		
-		sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 6));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, cellWidth));
 
 		// 粗体、居中
 		CellStyle cellStyle = excelUtil.getBolderTitle(wb);
 		
 		// 标题
-		Row titleRow = sheet.createRow(2);
+		Row titleRow = sheet.createRow(rowIndex);
 		Cell titleCell = titleRow.createCell(0);
 		titleCell.setCellValue(title);
 		titleCell.setCellStyle(cellStyle);
-		
-		return 3;
 	}
 	/**
 	 * 生成缺货门店数据

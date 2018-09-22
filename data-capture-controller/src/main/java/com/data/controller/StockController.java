@@ -146,7 +146,7 @@ public class StockController {
 	}
 	/**
 	 * 自定义字段导出库存数据表
-	 * @param stock
+	 * @param stockNameStr
 	 * @param common
 	 * @return
 	 */
@@ -162,6 +162,29 @@ public class StockController {
 		try {
 			output = response.getOutputStream();
 			result = stockServiceImpl.expertStockExcel(stockNameStr, common, output);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
+	 * 按系统导出公司一级表
+	 * @param queryDate 查询时间
+	 * @return
+	 */
+	@RequestMapping(value = "expertCompanyExcelBySys", method = RequestMethod.POST)
+	@ApiOperation(value = "按系统导出公司一级表", httpMethod = "POST")
+	public String expertCompanyExcelBySys(String queryDate, HttpServletResponse response) {
+		String fileName = "库存-按系统公司一级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertCompanyExcelBySys(queryDate, output);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

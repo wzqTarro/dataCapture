@@ -50,4 +50,10 @@ public interface IStockService {
 	 * @return
 	 */
 	ResultUtil expertStockExcel(String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	/**
+	 * 按系统导出公司一级表
+	 * @param queryDate
+	 * @return
+	 */
+	ResultUtil expertCompanyExcelBySys(String queryDate, OutputStream output) throws IOException;
 }
