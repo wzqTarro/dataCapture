@@ -10,6 +10,8 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -45,6 +47,7 @@ import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.StockDataUtil;
+import com.data.utils.StreamUtil;
 import com.data.utils.TemplateDataUtil;
 import com.google.common.collect.Maps;
 
@@ -212,18 +215,18 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil expertStoreProductExcel(String queryDate, String storeName, OutputStream output) throws IOException {
+	public ResultUtil expertStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
-		if (CommonUtil.isBlank(storeName)) {
+		if (CommonUtil.isBlank(storeCode)) {
 			return ResultUtil.error(TipsEnum.STORE_NAME_IS_NULL.getValue());
 		}
 		
 		// 当天的库存数据
 		Map<String, Object> param = new HashMap<>(4);
 		param.put("queryDate", queryDate);
-		param.put("storeName", storeName);
+		param.put("storeCode", storeCode);
 		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
@@ -276,7 +279,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
 			
 			// 库存天数
-			double stockDayNum = stockDataUtil.calculateStockDay(queryDate, stock.getSimpleBarCode(), stock.getStoreName(), stockPrice);		
+			double stockDayNum = stockDataUtil.calculateStockDay(queryDate, stock.getSimpleBarCode(), stock.getStockCode(), stockPrice);		
 						
 			CellStyle cellStyle = null;
 			
@@ -319,18 +322,18 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil expertSysStoreExcel(String queryDate, String sysName, OutputStream output) throws IOException {
+	public ResultUtil expertSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
-		if (CommonUtil.isBlank(sysName)) {
-			return ResultUtil.error(TipsEnum.SYS_NAME_IS_NULL.getValue());
+		if (CommonUtil.isBlank(sysId)) {
+			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
 		}
 		
 		// 按系统名称和时间查询库存
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
-		param.put("sysName", sysName);
+		param.put("sysId", sysId);
 		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
@@ -338,7 +341,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Sheet sheet = wb.createSheet("系统门店表");
 		
 		// 标题
-		String title = sysName + "系统直营KA门店缺货日报表";
+		String title = stockList.get(0).getSysName() + "系统直营KA门店缺货日报表";
 		
 		// 生成日期
 		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);
@@ -354,7 +357,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		excelUtil.createRow(headerRow, headers);
 
 		// 生成表下部分数据
-		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, sysName, 4);
+		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, stockList.get(0).getSysName(), 4);
 		wb.write(output);
 		return ResultUtil.success();
 	}
@@ -436,7 +439,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		// 按系统名称和时间查询库存
+		// 按时间查询库存
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
@@ -458,8 +461,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		stockDataUtil.createDateRow(wb, sheet, 1, "品牌:", "全部", brandList.toArray());	
 			
 		// 表头
-		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
-		Row headerRow = sheet.createRow(2);
+		String[] headers = new String[]{"系统", "门店数量",	"库存金额", "店均库存", "昨日销售", "库存天数"};
+		Row headerRow = sheet.createRow(3);
 		
 		// 生成粗体剧中标题
 		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
@@ -469,21 +472,104 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		// 按系统名称分组
 		Map<String, List<Stock>> stockMap = stockList.parallelStream()
-				.collect(Collectors.groupingBy(Stock::getSysName));
+				.collect(Collectors.groupingBy(Stock::getSysId));
+	
+		stockDataUtil.createStockDayData(sheet, stockMap, "sysName", 4);
 		
-		int index = 0;
-		for (List<Stock> tempList : stockMap.values()) {
-			Stock stock = tempList.get(index);
-			index ++;
-			
-			// 系统名
-			String sysName = stock.getSysName();
-			
-			// 门店数量
-			/**
-			 * TODO
-			 */
+		wb.write(output);
+		return ResultUtil.success();
+	}
+	@Override
+	public ResultUtil expertRegionExcelBySys(String queryDate, String sysId, OutputStream output) throws IOException {
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		return null;
+		// 按时间查询库存
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("queryDate", queryDate);
+		param.put("sysId", sysId);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("区域表一级表");
+		
+		// 标题
+		String title = stockList.get(0).getSysName() + "直营KA分大区库存日报表";
+		
+		// 生成日期
+		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);	
+		
+		List<String> brandList = stockList.parallelStream()
+				.map(Stock::getBrand)
+				.collect(Collectors.toList());
+		// 生成品牌
+		stockDataUtil.createDateRow(wb, sheet, 1, "品牌:", "全部", brandList.toArray());	
+			
+		// 表头
+		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
+		Row headerRow = sheet.createRow(3);
+		
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		
+		// 设置表头
+		excelUtil.createRow(headerRow, headers);
+		
+		// 按大区分组
+		Map<String, List<Stock>> stockMap = stockList.parallelStream()
+				.collect(Collectors.groupingBy(Stock::getRegion));
+	
+		stockDataUtil.createStockDayData(sheet, stockMap, "regin", 4);
+		
+		wb.write(output);
+		return ResultUtil.success();
+	}
+	@Override
+	public ResultUtil expertRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException {
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		// 按时间查询库存
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("queryDate", queryDate);
+		param.put("sysId", sysId);
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet("区域表一级表");
+		
+		// 标题
+		String title = stockList.get(0).getSysName() + "直营KA分大区库存日报表";
+		
+		// 生成日期
+		stockDataUtil.createDateRow(wb, sheet, 0, "报表日期", queryDate);	
+		
+		List<String> brandList = stockList.parallelStream()
+				.map(Stock::getBrand)
+				.collect(Collectors.toList());
+		// 生成品牌
+		stockDataUtil.createDateRow(wb, sheet, 1, "品牌:", "全部", brandList.toArray());	
+			
+		// 表头
+		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
+		Row headerRow = sheet.createRow(3);
+		
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		
+		// 设置表头
+		excelUtil.createRow(headerRow, headers);
+		
+		// 按大区分组
+		Map<String, List<Stock>> stockMap = stockList.parallelStream()
+				.collect(Collectors.groupingBy(Stock::getRegion));
+	
+		/**
+		 * TODO 下半部分数据
+		 */
+		
+		return ResultUtil.success();
 	}
 }

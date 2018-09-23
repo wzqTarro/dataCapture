@@ -67,12 +67,12 @@ public class StockController {
 	/**
 	 * 导出门店单品表
 	 * @param queryDate
-	 * @param storeName
+	 * @param storeCode 门店编号
 	 * @return
 	 */
 	@RequestMapping(value = "expertStoreProductExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导出门店单品表", httpMethod = "POST")
-	public String expertStoreProductExcel(String queryDate, String storeName, 
+	public String expertStoreProductExcel(String queryDate, String storeCode, 
 			HttpServletResponse response) {
 		String fileName = "缺货表报-门店单品表" + queryDate;
 		
@@ -82,9 +82,8 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertStoreProductExcel(queryDate, storeName, output);
+			result = stockServiceImpl.expertStoreProductExcel(queryDate, storeCode, output);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);
@@ -93,12 +92,12 @@ public class StockController {
 	/**
 	 * 导出系统门店表
 	 * @param queryDate
-	 * @param storeName
+	 * @param sysId
 	 * @return
 	 */
 	@RequestMapping(value = "expertSysStoreExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导出缺货报表-系统门店表", httpMethod = "POST")
-	public String expertSysStoreExcel(String queryDate, String sysName, 
+	public String expertSysStoreExcel(String queryDate, String sysId, 
 			HttpServletResponse response) {
 		String fileName = "缺货表报-系统门店表" + queryDate;
 		
@@ -108,9 +107,8 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertSysStoreExcel(queryDate, sysName, output);
+			result = stockServiceImpl.expertSysStoreExcel(queryDate, sysId, output);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);
@@ -137,7 +135,6 @@ public class StockController {
 			output = response.getOutputStream();
 			result = stockServiceImpl.expertRegionStoreExcel(queryDate, region, output);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -163,7 +160,6 @@ public class StockController {
 			output = response.getOutputStream();
 			result = stockServiceImpl.expertStockExcel(stockNameStr, common, output);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);
@@ -186,7 +182,53 @@ public class StockController {
 			output = response.getOutputStream();
 			result = stockServiceImpl.expertCompanyExcelBySys(queryDate, output);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
+	 * 按系统导出区域表一级表
+	 * @param queryDate 查询时间
+	 * @param sysId 系统编号
+	 * @return
+	 */
+	@RequestMapping(value = "expertRegionExcelBySys", method = RequestMethod.POST)
+	@ApiOperation(value = "按系统导出区域表一级表", httpMethod = "POST")
+	public String expertRegionExcelBySys(String queryDate, String sysId, HttpServletResponse response) {
+		String fileName = "库存-按系统区域表一级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertRegionExcelBySys(queryDate, sysId, output);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
+	 * 按系统导出区域表二级表
+	 * @param queryDate 查询时间
+	 * @param sysId 系统编号
+	 * @param region 区域
+	 * @return
+	 */
+	@RequestMapping(value = "expertRegionSecondExcelBySys", method = RequestMethod.POST)
+	@ApiOperation(value = "按系统导出区域表二级表", httpMethod = "POST")
+	public String expertRegionSecondExcelBySys(String queryDate, String sysId, String region, HttpServletResponse response) {
+		String fileName = "库存-按系统区域表二级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.expertRegionSecondExcelBySys(queryDate, sysId, region, output);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return FastJsonUtil.objectToString(result);

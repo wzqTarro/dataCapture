@@ -28,14 +28,14 @@ public interface IStockService {
 	 * @param storeName 门店名称
 	 * @return
 	 */
-	ResultUtil expertStoreProductExcel(String queryDate, String storeName, OutputStream output) throws IOException;
+	ResultUtil expertStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException;
 	/**
 	 * 导出系统门店表
 	 * @param queryDate
 	 * @param sysName
 	 * @return
 	 */
-	ResultUtil expertSysStoreExcel(String queryDate, String sysName, OutputStream output) throws IOException;
+	ResultUtil expertSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException;
 	/**
 	 * 导出区域门店表
 	 * @param queryDate
@@ -56,4 +56,16 @@ public interface IStockService {
 	 * @return
 	 */
 	ResultUtil expertCompanyExcelBySys(String queryDate, OutputStream output) throws IOException;
+	/**
+	 * 按系统导出区域表一级表
+	 * @param queryDate
+	 * @return
+	 */
+	ResultUtil expertRegionExcelBySys(String queryDate, String sysId, OutputStream output) throws IOException;
+	/**
+	 * 按系统导出区域表二级表
+	 * @param queryDate
+	 * @return
+	 */
+	ResultUtil expertRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException;
 }

@@ -138,14 +138,16 @@ public class StockDataUtil extends CommonServiceImpl{
 	 * @param storeName 门店名称
 	 * @param stockPrice 库存金额
 	 */
-	public double calculateStockDay(String queryDay, String simpleBarCode, String storeName, Double stockPrice) {
+	public double calculateStockDay(String queryDay, String simpleBarCode, String storeCode, Double stockPrice) {
 		// 查询前一天
 		LocalDate lastDay = LocalDate.parse(queryDay).minusDays(1L);
 		
 		Map<String, Object> param = new HashMap<>(3);
 		param.put("queryDate", lastDay.toString());
-		param.put("simpleBarCode", simpleBarCode);
-		param.put("storeName", storeName);
+		if (CommonUtil.isBlank(simpleBarCode)) {
+			param.put("simpleBarCode", simpleBarCode);
+		}	
+		param.put("storeCode", storeCode);
 		
 		// 查询前一天销量
 		List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
@@ -169,5 +171,64 @@ public class StockDataUtil extends CommonServiceImpl{
 		
 		return stockDayNum;
 		
+	}
+	/**
+	 * 生成库存日报表
+	 * @param sheet
+	 * @param stockMap 导出数据
+	 * @param paramKey 查询字段
+	 */
+	public void createStockDayData(Sheet sheet, Map<String, List<Stock>> stockMap, String paramKey, int rowIndex) {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		int index = 0;
+		Map<String, Object> param = new HashMap<>(2);
+		for (Map.Entry<String, List<Stock>> m : stockMap.entrySet()) {
+			List<Stock> tempList = m.getValue();
+			
+			Stock stock = tempList.get(index);
+			index ++;
+			
+			// 系统名
+			String sysName = stock.getSysName();
+			
+			// 门店数量
+			long storeNum = tempList.stream().map(Stock::getStoreCode).count();
+			
+			// 库存总金额
+			double stockPriceSum = tempList.stream().mapToDouble(Stock::getStockPrice).sum();
+			
+			// 库存总数量
+			int stockNumSum = tempList.stream().mapToInt(Stock::getStockNum).sum();
+	
+			// 店均库存
+			double stockAverage = stockNumSum/storeNum;
+			
+			// 昨日销售信息
+			LocalDate lastDay = LocalDate.now().minusDays(1L);
+			param.clear();
+			param.put("queryDate", lastDay);
+			param.put(paramKey, m.getKey());
+			List<Sale> lastSaleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+			
+			// 昨日销售数量
+			int lastSaleNum = lastSaleList.stream().mapToInt(Sale::getSellNum).sum();
+			
+			// 库存天数
+			double stockDay = stockPriceSum/lastSaleNum;
+			
+			String[] cellValue = new String[]{
+					sysName, // 系统名称
+					String.valueOf(storeNum), // 门店数量
+					String.valueOf(stockPriceSum), // 库存金额
+					String.valueOf(stockAverage), // 店均库存
+					String.valueOf(lastSaleNum), // 昨日销量
+					String.valueOf(stockDay) + "天", // 库存天数
+			};
+			
+			// 行
+			Row row = sheet.createRow(rowIndex);
+			excelUtil.createRow(row, cellValue);
+			rowIndex++;
+		}
 	}
 }

@@ -18,6 +18,7 @@ public enum TipsEnum {
 	COLUMN_IS_NULL("自定义表头不能为空"),
 	
 	//供应链
+	SYS_ID_IS_NULL("系统编号不能为空"),
 	SYS_NAME_IS_NULL("系统名称不能为空"),
 	SYS_URL_IS_NULL("系统链接不能为空"),
 	SYS_LOGIN_USER_NAME_IS_NULL("系统登录账号不能为空"),
@@ -33,7 +34,7 @@ public enum TipsEnum {
 	// 库存信息
 	QUERY_DATE_IS_NULL("查询时间不能为空"),
 	STORE_NAME_IS_NULL("门店名称不能为空"),
-	
+	STORE_CODE_IS_NULL("门店编号不能为空"),
 	;
 	
 	String value;
