@@ -30,7 +30,7 @@ public class TemplateStoreController {
 	 */
 	@RequestMapping(value = "/getTemplateStoreByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询模板门店信息", httpMethod = "POST")
-	public String getTemplateStoreByParam(@RequestParam(value = "templateStore", required = false)TemplateStore templateStore,
+	public String getTemplateStoreByParam(TemplateStore templateStore,
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
 		ResultUtil result = storeService.getTemplateStoreByParam(templateStore, page, limit);

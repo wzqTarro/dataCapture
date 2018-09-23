@@ -24,7 +24,7 @@ public class TemplateProductController {
 	
 	@RequestMapping(value = "getTemplateProductByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件查询商品模板信息", httpMethod = "POST")
-	public String getTemplateProductByParam(@RequestParam(value = "templateProduct", required = false)TemplateProduct templateProduct,
+	public String getTemplateProductByParam(TemplateProduct templateProduct,
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
 		ResultUtil result = templateProductService.getTemplateProductByParam(templateProduct, page, limit);

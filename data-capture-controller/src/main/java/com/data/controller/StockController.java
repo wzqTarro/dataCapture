@@ -41,8 +41,7 @@ public class StockController {
 	@RequestMapping(value = "getStockByWeb", method = RequestMethod.POST)
 	@ApiOperation(value = "抓取库存数据", httpMethod = "POST")
 	@ApiImplicitParam(name = "sysId", value = "系统ID", required = true)
-	public String getStockByWeb(@RequestParam(required = false) CommonDTO common,
-			@RequestParam(value = "sysId")String sysId, 
+	public String getStockByWeb(CommonDTO common, @RequestParam(value = "sysId")String sysId, 
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws IOException {
 		ResultUtil result = stockServiceImpl.getStockByWeb(common, sysId, page, limit);

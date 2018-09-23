@@ -25,7 +25,7 @@ public class SimpleCodeController {
 
 	@RequestMapping(value = "/getSimpleCodeByParam", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询标准条码信息", httpMethod = "POST")
-	public String getSimpleCodeByParam(@RequestParam(value = "simpleCode", required = false) SimpleCode simpleCode,
+	public String getSimpleCodeByParam(SimpleCode simpleCode,
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
 		ResultUtil result = simpleCodeService.getSimpleCodeByParam(simpleCode, page, limit);

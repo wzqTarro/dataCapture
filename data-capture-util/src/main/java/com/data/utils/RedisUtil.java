@@ -40,7 +40,7 @@ public class RedisUtil {
 	
 	//@Value("${spring.redis.host}")
 	//private String host = "127.0.0.1";
-	private String host = "120.77.153.124";
+	private String host = "47.92.235.52";
 	
 	//@Value("${spring.redis.password}")
 	private String password = "OIUBmgvR983VVTHvr=";

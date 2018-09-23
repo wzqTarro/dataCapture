@@ -39,7 +39,7 @@ public class TemplateSupplyController {
 	 */
 	@RequestMapping(value = "/querySupplyByCondition", method = RequestMethod.POST)
 	@ApiOperation(value = "多条件分页查询供应链厂商", httpMethod = "POST")
-	public String querySupplyByCondition(@RequestParam(value = "templateSupply", required = false)TemplateSupply templateSupply,
+	public String querySupplyByCondition(TemplateSupply templateSupply,
 			@RequestParam(value = "page", required = false)Integer page, 
 			@RequestParam(value = "limit", required = false)Integer limit) throws Exception{
 		return FastJsonUtil.objectToString(supplyService.querySupplyByConditiion(templateSupply, page, limit));
