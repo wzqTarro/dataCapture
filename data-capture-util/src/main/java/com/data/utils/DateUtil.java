@@ -10,6 +10,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
 * 日期操作辅助类
 * @author Tarro
@@ -18,8 +20,8 @@ import org.slf4j.LoggerFactory;
 public final class DateUtil {
 	
 	private static Logger logger = LoggerFactory.getLogger(DateUtil.class);
-	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN.YYYYMM);
+
+	private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN.YYYY_MM_DD);
 	
 	private DateUtil() {
 	}
@@ -347,8 +349,17 @@ public final class DateUtil {
 		return calendar.getTime();
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(getMonthEndDate("2018-02"));
+	public static void main(String[] args) throws JsonProcessingException {
+//		System.out.println(getMonthEndDate("2018-02"));
+//		Map<String, Object> map = new HashMap<>(4);
+//		map.put("date", java.sql.Date.valueOf("2018-09-24"));
+//		System.err.println(FastJsonUtil.objectToString(map));
+		System.err.println(FastJsonUtil.objectToString(getMonthDays(getSystemDate())));
+		List<String> list = new ArrayList<>(6);
+		list.add("aaa");
+		list.add("bbb");
+		list.add("ccc");
+		System.err.println(JsonUtil.toJson(list));
 	}
 
 }

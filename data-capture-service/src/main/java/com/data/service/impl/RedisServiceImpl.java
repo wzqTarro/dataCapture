@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.data.constant.dbSql.QueryId;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.JsonUtil;
 import com.data.utils.RedisUtil;
 
 /**
@@ -105,26 +107,27 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 			return new ArrayList<Map<String, Object>>(10);
 		}
 		
-		return FastJsonUtil.jsonToObject(json, List.class);
+		return (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, Map.class);
 	}
 
 	@Override
-	public void setSaleDailyMessageByStore(String dateStr, List<Map<String, Object>> storeDailySaleList) {
+	public void setSaleDailyMessageByStore(String dateStr, List<Map<String, Object>> storeDailySaleList) throws Exception {
 		String key = RedisAPI.getPrefix(RedisAPI.DAILY_STORE_SALE_PREFIX, dateStr);
-		redisUtil.setex(key, RedisAPI.EXPIRE_1_MONTH, FastJsonUtil.objectToString(storeDailySaleList));
+		redisUtil.setex(key, RedisAPI.EXPIRE_1_MONTH, JsonUtil.toJson(storeDailySaleList));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Map<String, Object>> querySaleList() {
+	public List<Map<String, Object>> querySaleList() throws Exception {
 		String key = RedisAPI.getPrefix(RedisAPI.STORE_MESSAGE);
 		String json = redisUtil.get(key);
 		if(CommonUtil.isNotBlank(json)) {
-			return (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, List.class);
+			return (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, Map.class);
 		}
 		List<Map<String, Object>> saleList = queryListByObject(QueryId.QUERY_SALE_MESSAGE_LIST, null);
 		if(CommonUtil.isNotBlank(saleList)) {
-			redisUtil.set(key, FastJsonUtil.objectToString(saleList));
+			//System.err.println(JsonUtil.toJson(saleList));
+			redisUtil.set(key, JsonUtil.toJson(saleList));
 			return saleList;
 		}
 		return null;
@@ -132,17 +135,43 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Object> querySaleInfo(String storeCode) {
+	public Map<String, Object> querySaleInfo(String storeCode) throws Exception {
 		String key = RedisAPI.getPrefix(RedisAPI.STORE_MESSAGE, storeCode);
+		String json = redisUtil.get(key);
+		Map<String, Object> saleMap = new HashMap<>(8);
+		if(CommonUtil.isNotBlank(json)) {
+//			List<Map<String, Object>> saleList = (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, Map.class);
+//			for(Map<String, Object> map : saleList) {
+//				String code = (String) map.get("storeCode");
+//				if(code.equals(storeCode)) {
+//					saleMap = map;
+//					break;
+//				}
+//			}
+			return FastJsonUtil.jsonToObject(json, Map.class);
+		}
+		saleMap = (Map<String, Object>) queryObjectByParameter(QueryId.QUERY_SALE_INFO_BY_STORE_CODE, storeCode);
+		if(CommonUtil.isNotBlank(saleMap)) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_1_MONTH, FastJsonUtil.objectToString(saleMap));
+			return saleMap;
+		}
+		return null;
+	}
+
+	@Override
+	public void setTempSaleInfo(String storeCode, Map<String, Object> saleInfoMap) throws Exception {
+		String key = RedisAPI.getPrefix(RedisAPI.TEMP_STORE_INFO, storeCode);
+		redisUtil.setex(key, RedisAPI.EXPIRE_1_MINUTE, FastJsonUtil.objectToString(saleInfoMap));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Object> queryTempSaleInfo(String storeCode) throws Exception {
+		String key = RedisAPI.getPrefix(RedisAPI.TEMP_STORE_INFO, storeCode);
 		String json = redisUtil.get(key);
 		if(CommonUtil.isNotBlank(json)) {
 			return FastJsonUtil.jsonToObject(json, Map.class);
 		}
-		Map<String, Object> saleMap = (Map<String, Object>) queryObjectByParameter(QueryId.QUERY_SALE_INFO_BY_STORE_CODE, storeCode);
-		if(CommonUtil.isNotBlank(saleMap)) {
-			redisUtil.set(key, FastJsonUtil.objectToString(saleMap));
-			return saleMap;
-		}
-		return null;
+		return querySaleInfo(storeCode);
 	}
 }

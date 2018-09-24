@@ -59,7 +59,7 @@ public class Sale implements Serializable{
     // 销售金额
     private Double sellPrice;
     // 日期
-    @JSONField(format = "yyyy-MM-dd")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     // 备注
     private String remark;

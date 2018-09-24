@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = -7169336619709690949L;
@@ -27,6 +29,7 @@ public class User implements Serializable {
 
     private Integer loginTimes;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginDate;
 
     private String remark;

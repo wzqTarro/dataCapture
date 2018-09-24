@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class Stock implements Serializable{
     /**
 	 * 
@@ -57,6 +59,7 @@ public class Stock implements Serializable{
 
     private Double stockPrice;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     private String remark;

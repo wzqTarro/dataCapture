@@ -81,19 +81,35 @@ public interface IRedisService {
 	 * 保存门店信息日销售额
 	 * @param dateStr
 	 */
-	void setSaleDailyMessageByStore(String dateStr, List<Map<String, Object>> storeDailySaleList);
+	void setSaleDailyMessageByStore(String dateStr, List<Map<String, Object>> storeDailySaleList) throws Exception;
 	
 	/**
 	 * 查询销售门店数据
 	 * @return
 	 */
-	List<Map<String, Object>> querySaleList();
+	List<Map<String, Object>> querySaleList() throws Exception;
 	
 	/**
 	 * 根据门店信息查询sale信息
 	 * @param storeCode
 	 * @return
 	 */
-	Map<String, Object> querySaleInfo(String storeCode);
+	Map<String, Object> querySaleInfo(String storeCode) throws Exception;
+	
+	/**
+	 * 暂存销售信息
+	 * @param storeCode
+	 * @param saleInfoMap
+	 * @throws Exception
+	 */
+	void setTempSaleInfo(String storeCode, Map<String, Object> saleInfoMap) throws Exception;
+	
+	/**
+	 * 根据门店编号来查缓存
+	 * @param storeCode
+	 * @return
+	 * @throws Exception
+	 */
+	Map<String, Object> queryTempSaleInfo(String storeCode) throws Exception;
 
 }

@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 退单类
  * @author Alex
@@ -48,8 +50,10 @@ public class Reject implements Serializable {
 
     private Long discountPrice;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date discountStartDate;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date discountEndDate;
 
     private Long diffPriceDiscount;

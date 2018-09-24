@@ -76,7 +76,7 @@
   	<if test="store != null and store != ''">
   		AND store_name LIKE CONCAT(CONCAT('%', #{store}), '%') 
   	</if>
-  	<if test="saleDate != null">
+  	<if test="saleDate != null and saleDate != ''">
   		AND create_time=#{saleDate}
   	</if>
   </sql>
@@ -87,21 +87,22 @@
   	FROM db_sale 
   	WHERE 1=1
   	<include refid="Sale_List_Report"></include>
-  	<if test="pageNum != null and pageSize != null pageNum != '' and pageSize != ''">
+  	<if test="pageNum != null and pageSize != null and pageNum != '' and pageSize != ''">
   		LIMIT #{pageNum}, #{pageSize}
   	</if>
   </select>
   
   <!-- 查询门店信息列表 -->
-  <select id="querySaleMessageList" resultMap="BaseResultMap">
-  	SELECT sys_id, sys_name, region, province_area, store_code, store_name, store_manager 
-  	FROM db_sale GROUP BY store_code
+  <select id="querySaleMessageList" resultType="map">
+  	SELECT sys_id sysId, sys_name sysName, region, province_area provinceArea, store_code storeCode, store_name storeName, store_manager storeManager 
+  	FROM db_sale GROUP BY sys_id, sys_name, region, province_area, store_code, store_name, store_manager 
   </select>
   
   <!-- 根据storeCode查询门店信息 -->
-  <select id="querySaleInfoByStoreCode" parameterType="string" resultMap="BaseResultMap">
-  	SELECT sys_id, sys_name, region, province_area, store_code, store_name, store_manager 
+  <select id="querySaleInfoByStoreCode" parameterType="string" resultType="map">
+  	SELECT sys_id sysId, sys_name sysName, region, province_area provinceArea, store_code storeCode, store_name storeName, store_manager storeManager 
   	FROM db_sale WHERE store_code=#{storeCode}
+  	GROUP BY sys_id, sys_name, region, province_area, store_code, store_name, store_manager
   </select>
   
   <!-- 查询导出报表信息数量 -->

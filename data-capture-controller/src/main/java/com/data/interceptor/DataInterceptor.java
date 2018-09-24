@@ -43,7 +43,8 @@ public class DataInterceptor implements HandlerInterceptor {
 		filterUrls = new String[] {
 				"/swagger-ui.html",
 				"/error",
-				"/user/login"
+				"/user/login",
+				"/sale/excel"
 				
 		};
 	}

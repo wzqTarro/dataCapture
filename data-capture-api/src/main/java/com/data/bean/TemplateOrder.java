@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 订单模板实体类
  * @author Alex
@@ -50,8 +52,10 @@ public class TemplateOrder implements Serializable {
 
     private String orderState;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     private String operatorName;

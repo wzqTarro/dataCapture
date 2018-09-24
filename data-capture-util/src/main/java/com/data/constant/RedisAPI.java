@@ -68,6 +68,9 @@ public class RedisAPI {
 	/**门店信息**/
 	public static final String STORE_MESSAGE = "store:info";
 	
+	/**暂存门店销售信息**/
+	public static final String TEMP_STORE_INFO = "store:temp:info";
+	
 	/**
 	 * 得到存入缓存中的key值
 	 * @param database 存入哪种类型的库
@@ -75,16 +78,18 @@ public class RedisAPI {
 	 * @return
 	 */
 	public static String getPrefix(String prefix, String...keys) {
-		if(CommonUtil.isNotBlank(prefix) && CommonUtil.isNotBlank(keys)) {
+		if(CommonUtil.isNotBlank(prefix)) {
 			StringBuilder builder = new StringBuilder();
 			builder.append(prefix);
-			if(keys != null && keys.length != 0) {
-				for(int i = 0; i < keys.length; i++) {
-					builder.append(REDIS_PATTERN);
-					builder.append(keys[i]);
-				}				
+			if(CommonUtil.isNotBlank(keys)) {
+				if(keys != null && keys.length != 0) {
+					for(int i = 0; i < keys.length; i++) {
+						builder.append(REDIS_PATTERN);
+						builder.append(keys[i]);
+					}				
+				}
 			}
-			return builder.toString();
+			return builder.toString();				
 		}
 		return null;
 	}

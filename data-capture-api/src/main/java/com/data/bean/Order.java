@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 订单类
  * @author Alex
@@ -44,16 +46,20 @@ public class Order implements Serializable {
 
     private Long buyingPrice;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date deliverStartDate;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date deliverEndDate;
 
     private String deliverAddress;
 
     private Long discountPrice;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date discountStartDate;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date discountEndDate;
 
     private String orderEffectiveJudge;
