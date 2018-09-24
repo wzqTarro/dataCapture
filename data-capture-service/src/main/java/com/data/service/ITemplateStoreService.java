@@ -1,5 +1,7 @@
 package com.data.service;
 
+import java.text.ParseException;
+
 import com.data.bean.TemplateStore;
 import com.data.utils.ResultUtil;
 
@@ -16,13 +18,14 @@ public interface ITemplateStoreService {
 	 * @param templateStore
 	 * @return
 	 */
-	ResultUtil updateTemplateStore(TemplateStore templateStore);
+	ResultUtil updateTemplateStore(TemplateStore templateStore, String practiceDate)  throws ParseException ;
 	/**
 	 * 插入模板门店信息
 	 * @param templateStore
+	 * @param practiceDate开业时间
 	 * @return
 	 */
-	ResultUtil insertTemplateStore(TemplateStore templateStore);
+	ResultUtil insertTemplateStore(TemplateStore templateStore, String practiceDate) throws ParseException ;
 	/**
 	 * 删除模板门店信息
 	 * @param id

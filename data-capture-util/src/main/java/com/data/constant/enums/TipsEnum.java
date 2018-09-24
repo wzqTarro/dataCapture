@@ -30,6 +30,7 @@ public enum TipsEnum {
 	PRODUCT_MESSAGE_IS_NULL("单品信息模板数据缺失"),
 	SIMPLE_CODE_IS_NULL("条码信息模板数据缺失"),
 	STORE_MESSAGE_IS_NULL("门店信息模板数据缺失"),
+	PRAC_DATE_IS_NULL("开业时间不能为空"),
 	
 	// 库存信息
 	QUERY_DATE_IS_NULL("查询时间不能为空"),

@@ -1,10 +1,13 @@
 package com.data.service.impl;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,7 +78,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 
 	@Transactional(rollbackFor = {Exception.class})
 	@Override
-	public ResultUtil updateTemplateStore(TemplateStore templateStore) {
+	public ResultUtil updateTemplateStore(TemplateStore templateStore, String practiceDate)  throws ParseException {
 		logger.info("----->>>>参数：{}<<<<-----", FastJsonUtil.objectToString(templateStore));
 		if (null == templateStore) {
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
@@ -83,18 +86,25 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		if (null == templateStore.getId()) {
 			return ResultUtil.error(TipsEnum.ID_ERROR.getValue());
 		}
+		if (CommonUtil.isNotBlank(practiceDate)) {
+			templateStore.setPracticeTime(DateUtils.parseDate(practiceDate, "yyyy-MM-dd"));
+		}
 		update(UpdateId.UPDATE_STORE_BY_MESSAGE, templateStore);
 		return ResultUtil.success();
 	}
 
 	@Transactional(rollbackFor = {Exception.class})
 	@Override
-	public ResultUtil insertTemplateStore(TemplateStore templateStore) {
+	public ResultUtil insertTemplateStore(TemplateStore templateStore, String practiceDate) throws ParseException {
 		logger.info("----->>>>参数：{}<<<<-----", FastJsonUtil.objectToString(templateStore));
 		if (null == templateStore) {
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
 		templateStore.setId(null);
+		if (CommonUtil.isBlank(practiceDate)) {
+			return ResultUtil.error(TipsEnum.PRAC_DATE_IS_NULL.getValue());
+		}
+		templateStore.setPracticeTime(DateUtils.parseDate(practiceDate, "yyyy-MM-dd"));
 		insert(InsertId.INSERT_STORE_BY_MESSAGE, templateStore);
 		return ResultUtil.success();
 	}

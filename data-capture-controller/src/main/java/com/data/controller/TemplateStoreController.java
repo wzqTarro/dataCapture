@@ -1,5 +1,7 @@
 package com.data.controller;
 
+import java.text.ParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,8 +47,14 @@ public class TemplateStoreController {
 	 */
 	@RequestMapping(value = "/updateTemplateStore", method = RequestMethod.PUT)
 	@ApiOperation(value = "更新模板门店信息", httpMethod = "PUT")
-	public String updateTemplateStore(TemplateStore templateStore) {
-		ResultUtil result = storeService.updateTemplateStore(templateStore);
+	public String updateTemplateStore(TemplateStore templateStore, String practiceDate) {
+		ResultUtil result = null;
+		try {
+			result = storeService.updateTemplateStore(templateStore, practiceDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
@@ -56,8 +64,14 @@ public class TemplateStoreController {
 	 */
 	@RequestMapping(value = "/insertTemplateStore", method = RequestMethod.POST)
 	@ApiOperation(value = "插入模板门店信息", httpMethod = "POST")
-	public String insertTemplateStore(TemplateStore templateStore) {
-		ResultUtil result = storeService.insertTemplateStore(templateStore);
+	public String insertTemplateStore(TemplateStore templateStore, String practiceDate) {
+		ResultUtil result=null;
+		try {
+			result = storeService.insertTemplateStore(templateStore, practiceDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
