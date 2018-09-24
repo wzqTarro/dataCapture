@@ -56,6 +56,16 @@
   		AND sys_id = #{sysId} 
   	</if>
   </sql>
+  <select id="selectByAnyColumn" parameterType="map" resultMap="BaseResultMap">
+  	SELECT region, province_area
+  	FROM db_template_store
+  	WHERE 1=1 
+  		AND (region is not null or region &lt;&gt; '')
+  		AND (province_area is not null or province_area &lt;&gt; '')
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
+  	</if>
+  </select>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>
   	FROM db_template_store s

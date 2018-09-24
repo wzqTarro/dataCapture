@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/sale")
 @Api(tags = "销售数据接口")
+//@CrossOrigin(origins="*", maxAge=3600)
 public class SaleController {
 
 	@Autowired

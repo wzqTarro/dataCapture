@@ -1,6 +1,7 @@
 package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/store")
 @Api(tags = {"模板门店数据接口"})
+//@CrossOrigin(origins="*", maxAge=3600)
 public class TemplateStoreController {
 
 	@Autowired
@@ -67,6 +69,17 @@ public class TemplateStoreController {
 	@ApiOperation(value = "删除模板门店信息", httpMethod = "DELETE")
 	public String deleteTemplateStore(int id) {
 		ResultUtil result = storeService.deleteTemplateStoreById(id);
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
+	 * 获取系统大区及其对应省区菜单
+	 * @param sysId
+	 * @return
+	 */
+	@RequestMapping(value = "getRegionMenu", method = RequestMethod.GET)
+	@ApiOperation(value = "获取系统大区及其对应省区菜单", httpMethod =  "GET")
+	public String getRegionMenu(String sysId) {
+		ResultUtil result = storeService.getRegionMenu(sysId);
 		return FastJsonUtil.objectToString(result);
 	}
 }

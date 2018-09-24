@@ -1,6 +1,7 @@
 package com.data.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/supply")
 @Api(tags = "供应链服务接口")
+//@CrossOrigin(origins="*", maxAge=3600)
 public class TemplateSupplyController {
 	
 	@Autowired

@@ -10,7 +10,7 @@ import com.data.service.ITemplateOrderService;
 @RestController
 @RequestMapping("/dataResolve")
 // @Api(tags = "订单数据接口")
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
 public class TemplateOrderController {
 	
 	@Autowired

@@ -1,7 +1,9 @@
 package com.data.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import com.data.service.ITemplateStoreService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
+import com.data.utils.StreamUtil;
 
 @Service
 public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemplateStoreService{
@@ -105,5 +108,19 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		}
 		delete(DeleteId.DELETE_STORE_BY_ID, id);
 		return ResultUtil.success();
+	}
+	@Override
+	public ResultUtil getRegionMenu(String sysId) {
+		if (CommonUtil.isBlank(sysId)) {
+			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
+		}
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("sysId", sysId);
+		List<TemplateStore> storeList = queryListByObject(QueryId.QUERY_STORE_BY_ANY_COLUMN, param);
+		Map<String, List<TemplateStore>> regionMap = storeList.parallelStream()
+				.filter(StreamUtil.distinctByKey(TemplateStore::getProvinceArea))
+				.collect(Collectors.groupingBy(TemplateStore::getRegion));
+		
+		return ResultUtil.success(regionMap);
 	}
 }
