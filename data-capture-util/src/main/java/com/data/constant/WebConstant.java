@@ -8,7 +8,7 @@ package com.data.constant;
 public class WebConstant {
 	
 	//抓取数据网址
-	public static final String WEB = "http://120.77.153.124:8000";
+	public static final String WEB = "http://47.92.235.52:18079";
 	//抓取订单数据
 	public static final Integer ORDER = 1;
 	//抓取退货数据

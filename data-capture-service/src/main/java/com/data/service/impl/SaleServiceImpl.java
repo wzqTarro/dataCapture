@@ -62,17 +62,18 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private IRedisService redisService;
 
 	@Override
-	public ResultUtil getSaleByWeb(CommonDTO common, String sysId, Integer page, Integer limit) throws IOException{
+	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws IOException{
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
 		// 抓取数据
-		List<Sale> saleList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.SALE, Sale.class);
+		List<Sale> saleList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.SALE, Sale.class);
 
 		
 		logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 		for (int i = 0, size = saleList.size(); i < size; i++) {
 			Sale sale = saleList.get(i);
+			sale.setCreateTime(DateUtil.stringToDate(queryDate));
 			sale.setSysId(sysId);
 			
 			// 单品编码

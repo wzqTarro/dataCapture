@@ -66,9 +66,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private StockDataUtil stockDataUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(CommonDTO common, String sysId, Integer page, Integer limit) throws IOException {
-		logger.info("------>>>>>>前端传递common：{}<<<<<<<-------", FastJsonUtil.objectToString(common));
-		List<Stock> stockList = dataCaptureUtil.getDataByWeb(common, sysId, WebConstant.STOCK, Stock.class);
+	public ResultUtil getStockByWeb(String queryDate, String sysId, Integer page, Integer limit) throws IOException {
+		logger.info("------>>>>>>前端传递queryDate：{}, sysId:{}<<<<<<<-------", queryDate, sysId);
+		List<Stock> stockList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.STOCK, Stock.class);
 		for (int i = 0, size = stockList.size(); i < size; i++) {
 			Stock stock = stockList.get(i);
 			

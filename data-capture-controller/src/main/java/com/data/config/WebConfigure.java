@@ -29,7 +29,7 @@ public class WebConfigure implements WebMvcConfigurer {
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
+		/*registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
 						.excludePathPatterns("/webjars/**",
 											 "/swagger-resources/**",
 											 "/static/**",
@@ -37,6 +37,6 @@ public class WebConfigure implements WebMvcConfigurer {
 											 "/css/**",
 											 "/resource/**",
 											 "/html/**",
-											 "/img/**");
+											 "/img/**");*/
 	}
 }
