@@ -8,7 +8,6 @@ import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,14 +37,14 @@ public class StockController {
 	 * 抓取库存数据
 	 * @param common
 	 * @return
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "getStockByWeb", method = RequestMethod.POST)
 	@ApiOperation(value = "抓取库存数据", httpMethod = "POST")
 	@ApiImplicitParam(name = "sysId", value = "系统ID", required = true)
 	public String getStockByWeb(String queryDate, String sysId, 
 			@RequestParam(value = "page", required = false)Integer page, 
-			@RequestParam(value = "limit", required = false)Integer limit) throws IOException {
+			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
 		ResultUtil result = stockServiceImpl.getStockByWeb(queryDate, sysId, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}

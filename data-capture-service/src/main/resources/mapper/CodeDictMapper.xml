@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CodeDictMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.CodeDict">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="service_code" jdbcType="VARCHAR" property="serviceCode" />
+    <result column="code_no" jdbcType="VARCHAR" property="codeNo" />
+    <result column="code_value" jdbcType="VARCHAR" property="codeValue" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, service_code, code_no, code_value
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_code_dict
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="queryDailyStoreReportList" parameterType="string" resultType="map">
+  	SELECT code_no codeNo, code_value codeValue 
+  	FROM db_code_dict 
+  	WHERE service_code=#{serviceCode}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_code_dict
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.CodeDict">
+    insert into db_code_dict (id, service_code, code_no, 
+      code_value)
+    values (#{id,jdbcType=INTEGER}, #{serviceCode,jdbcType=VARCHAR}, #{codeNo,jdbcType=VARCHAR}, 
+      #{codeValue,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.CodeDict">
+    insert into db_code_dict
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="serviceCode != null">
+        service_code,
+      </if>
+      <if test="codeNo != null">
+        code_no,
+      </if>
+      <if test="codeValue != null">
+        code_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="serviceCode != null">
+        #{serviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNo != null">
+        #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeValue != null">
+        #{codeValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.CodeDict">
+    update db_code_dict
+    <set>
+      <if test="serviceCode != null">
+        service_code = #{serviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNo != null">
+        code_no = #{codeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeValue != null">
+        code_value = #{codeValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.CodeDict">
+    update db_code_dict
+    set service_code = #{serviceCode,jdbcType=VARCHAR},
+      code_no = #{codeNo,jdbcType=VARCHAR},
+      code_value = #{codeValue,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

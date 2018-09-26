@@ -1,6 +1,5 @@
 package com.data.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,17 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.data.bean.SimpleCode;
-import com.data.bean.TemplateProduct;
-import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
-import com.data.constant.enums.SimpleCodeEnum;
 import com.data.constant.enums.TipsEnum;
-import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
 
@@ -123,7 +116,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 */
 	public <T> PageRecord<T> setPageRecord(List<T> list, Integer page, Integer limit) {
-		PageRecord<T> pageRecord = new PageRecord();
+		PageRecord<T> pageRecord = new PageRecord<>();
 		if (null == page || 0 == page) {
 			pageRecord.setPageNum(CommonValue.PAGE);			
 		} else {			

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.data.bean.SimpleCode;
@@ -11,25 +12,27 @@ import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.SimpleCodeEnum;
+import com.data.service.IRedisService;
 import com.data.service.impl.CommonServiceImpl;
 
 @Component
-public class TemplateDataUtil extends CommonServiceImpl{
+public class TemplateDataUtil extends CommonServiceImpl {
+	
+	@Autowired
+	private IRedisService redisService;
+	
 	/**
 	 * 获取标准门店信息
 	 * @param sysName
 	 * @param storeCode
 	 * @return
+	 * @throws Exception 
 	 */
-	public TemplateStore getStandardStoreMessage(String sysId, String storeCode) {
+	public TemplateStore getStandardStoreMessage(String sysId, String storeCode) throws Exception {
 		if (CommonUtil.isBlank(sysId) || CommonUtil.isBlank(storeCode)) {
 			return null;
 		}
-		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysId", sysId);
-		param.put("storeCode", storeCode);
-		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, param);
-		return store;
+		return redisService.queryTemplateStoreBySysIdAndStoreCode(sysId, storeCode);
 	}
 	/**
 	 * 获取标准条码信息

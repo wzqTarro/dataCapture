@@ -66,6 +66,13 @@
   		AND sys_id = #{sysId}
   	</if>
   </select>
+  
+  <!-- 查询门店模板列表 -->
+  <select id="queryStoreTemplate" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_template_store 
+  </select>
+  
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>
   	FROM db_template_store s

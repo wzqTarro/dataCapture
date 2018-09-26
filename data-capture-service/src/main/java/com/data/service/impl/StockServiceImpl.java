@@ -10,16 +10,12 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-
 import org.apache.poi.ss.usermodel.Font;
-
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -47,7 +43,6 @@ import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.StockDataUtil;
-import com.data.utils.StreamUtil;
 import com.data.utils.TemplateDataUtil;
 import com.google.common.collect.Maps;
 
@@ -66,7 +61,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private StockDataUtil stockDataUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(String queryDate, String sysId, Integer page, Integer limit) throws IOException {
+	public ResultUtil getStockByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception {
 		logger.info("------>>>>>>前端传递queryDate：{}, sysId:{}<<<<<<<-------", queryDate, sysId);
 		List<Stock> stockList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.STOCK, Stock.class);
 		for (int i = 0, size = stockList.size(); i < size; i++) {

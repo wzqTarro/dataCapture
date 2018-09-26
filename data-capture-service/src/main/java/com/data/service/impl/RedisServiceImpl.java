@@ -8,6 +8,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.SimpleCode;
+import com.data.bean.TemplateProduct;
+import com.data.bean.TemplateStore;
 import com.data.bean.User;
 import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.QueryId;
@@ -173,5 +176,68 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 			return FastJsonUtil.jsonToObject(json, Map.class);
 		}
 		return querySaleInfo(storeCode);
+	}
+
+	@Override
+	public TemplateStore queryTemplateStoreBySysIdAndStoreCode(String sysId, String storeCode) throws Exception {
+		String key = RedisAPI.getPrefix(RedisAPI.STORE_TEMPLATE, sysId, storeCode);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return FastJsonUtil.jsonToObject(json, TemplateStore.class);
+		}
+		Map<String, Object> params = new HashMap<>(4);
+		params.put("sysId", sysId);
+		params.put("storeCode", storeCode);
+		TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_PARAM, params);
+		if(CommonUtil.isNotBlank(store)) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(store));
+			return store;
+		}
+		return null;
+	}
+
+	@Override
+	public List<TemplateStore> queryTemplateStoreList() {
+		String key = RedisAPI.getPrefix(RedisAPI.STORE_TEMPLATE);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return (List<TemplateStore>) FastJsonUtil.jsonToList(json, TemplateStore.class);
+		}
+		List<TemplateStore> list = queryListByObject(QueryId.QUERY_STORE_TEMPLATE, null);
+		if(CommonUtil.isNotBlank(list)) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(list));
+			return list;
+		}
+		return null;
+	}
+
+	@Override
+	public List<SimpleCode> queryTemplateSimpleCodeList() {
+		String key = RedisAPI.getPrefix(RedisAPI.SIMPLE_CODE_TEMPLATE);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return (List<SimpleCode>) FastJsonUtil.jsonToList(json, SimpleCode.class);
+		}
+		List<SimpleCode> list = queryListByObject(QueryId.QUERY_STORE_TEMPLATE, null);
+		if(CommonUtil.isNotBlank(list)) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(list));
+			return list;
+		}
+		return null;
+	}
+
+	@Override
+	public List<TemplateProduct> queryTemplateProductList() {
+		String key = RedisAPI.getPrefix(RedisAPI.PRODUCT_TEMPLATE);
+		String json = redisUtil.get(key);
+		if(CommonUtil.isNotBlank(json)) {
+			return (List<TemplateProduct>) FastJsonUtil.jsonToList(json, TemplateProduct.class);
+		}
+		List<TemplateProduct> list = queryListByObject(QueryId.QUERY_PRODUCT_TEMPLATE, null);
+		if(CommonUtil.isNotBlank(list)) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(list));
+			return list;
+		}
+		return null;
 	}
 }

@@ -1,6 +1,5 @@
 package com.data.service.impl;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +61,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private IRedisService redisService;
 
 	@Override
-	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws IOException{
+	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception{
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
@@ -274,23 +273,37 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			CountDownLatch latch = new CountDownLatch(3);
 			int pageSize = (int) Math.ceil((double) count / 3);
 			ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-			try {
-//				for(int i = 1; i <= 3; i++) {
-					//分三次
-//					params.put("pageNum", i);
-//					params.put("pageSize", pageSize);
-					
-					//查询导出数据集合
+			for(int i = 1; i <= 3; i++) {
+				params.put("pageNum", i);
+				params.put("pageSize", pageSize);
+				try {
 					executorService.execute(new ExcelThread(params, latch));
-//				}				
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("--->>>销售日报表导出异常<<<---");
-			} finally {
-				if(executorService != null) {
-					executorService.shutdown();
+				} catch(Exception e) {
+					e.printStackTrace();
+					logger.error("--->>>销售日报表导出异常<<<---");
+				} finally {
+					if(executorService != null) {
+						executorService.shutdown();
+					}
 				}
 			}
+//			try {
+////				for(int i = 1; i <= 3; i++) {
+//					//分三次
+////					params.put("pageNum", i);
+////					params.put("pageSize", pageSize);
+//					
+//					//查询导出数据集合
+//					executorService.execute(new ExcelThread(params, latch));
+////				}				
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				logger.error("--->>>销售日报表导出异常<<<---");
+//			} finally {
+//				if(executorService != null) {
+//					executorService.shutdown();
+//				}
+//			}
 		}
 		return ResultUtil.success();
 	}

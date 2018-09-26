@@ -11,7 +11,14 @@ public enum CodeEnum {
 	RESPONSE_00_CODE("00"),
 	
 	/**失败**/
-	RESPONSE_99_CODE("99")
+	RESPONSE_99_CODE("99"),
+	
+	
+	/**字典服务编码**/
+	CODE_DICT_DAILY_STORE_REPORT("DAILY_STORE_REPORT")
+	
+	
+	
 	;
 	
 	String value;

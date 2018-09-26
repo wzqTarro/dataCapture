@@ -36,6 +36,9 @@ public class RedisAPI {
 	/**两小时**/
 	public static final int EXPIRE_2_HOUR = 60 * 60 * 2;
 	
+	/**12小时**/
+	public static final int EXPIRE_12_HOUR = 60 * 60 * 12;
+	
 	/**一天**/
 	public static final int EXPIRE_24_HOUR = 60 * 60 * 24;
 	
@@ -70,6 +73,15 @@ public class RedisAPI {
 	
 	/**暂存门店销售信息**/
 	public static final String TEMP_STORE_INFO = "store:temp:info";
+	
+	/**条码模板**/
+	public static final String SIMPLE_CODE_TEMPLATE = "simpleCode:template";
+	
+	/**门店模板**/
+	public static final String STORE_TEMPLATE = "store:template";
+	
+	/**单品模板**/
+	public static final String PRODUCT_TEMPLATE = "product:template";
 	
 	/**
 	 * 得到存入缓存中的key值

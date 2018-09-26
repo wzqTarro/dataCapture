@@ -85,6 +85,13 @@
     	</if>
     ) t ON(p.id = t.id)
   </select>
+  
+  <!-- 查询单品模板列表 -->
+  <select id="queryProductTemplate" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_template_product 
+  </select>
+  
   <select id="selectCountByParam" parameterType="map" resultType="int">
     select COUNT(1)
     from db_template_product

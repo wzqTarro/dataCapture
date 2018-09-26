@@ -2,6 +2,7 @@ package com.data.constant.enums;
 
 public enum SimpleCodeEnum {
 	
+	/**门店字段**/
 	BBG("步步高", "bbg"),
 	RRL("人人乐", "rrl"),
 	JRD("家润多", "jrd"),
@@ -18,6 +19,9 @@ public enum SimpleCodeEnum {
 	WEM("沃尔玛", "wem"),
 	ZB("中百", "zb"),
 	CB("重百", "cb")
+	
+	
+	
 	;
 
 	String msg;

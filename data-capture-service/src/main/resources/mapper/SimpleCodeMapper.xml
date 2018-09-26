@@ -55,6 +55,12 @@
   	) sc ON(sc.id = s.id)
   	
   </select>
+  
+  <select id="querySimpleCodeTemplate" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_simple_code
+  </select>
+  
   <select id="selectCountByParam" parameterType="map" resultType="int">
   	SELECT COUNT(1)
 	FROM db_simple_code

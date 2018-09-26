@@ -3,6 +3,9 @@ package com.data.service;
 import java.util.List;
 import java.util.Map;
 
+import com.data.bean.SimpleCode;
+import com.data.bean.TemplateProduct;
+import com.data.bean.TemplateStore;
 import com.data.bean.User;
 
 /**
@@ -111,5 +114,32 @@ public interface IRedisService {
 	 * @throws Exception
 	 */
 	Map<String, Object> queryTempSaleInfo(String storeCode) throws Exception;
+	
+	/**
+	 * 按照sysId和storeCode
+	 * @param sysId
+	 * @param storeCode
+	 * @return
+	 * @throws Exception
+	 */
+	TemplateStore queryTemplateStoreBySysIdAndStoreCode(String sysId, String storeCode) throws Exception;
+	
+	/**
+	 * 查询门店模板列表
+	 * @return
+	 */
+	List<TemplateStore> queryTemplateStoreList();
+	
+	/**
+	 * 查询条码模板列表
+	 * @return
+	 */
+	List<SimpleCode> queryTemplateSimpleCodeList();
+	
+	/**
+	 * 查询单品模板列表
+	 * @return
+	 */
+	List<TemplateProduct> queryTemplateProductList();
 
 }
