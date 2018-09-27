@@ -10,12 +10,12 @@ public class WebConstant {
 	//抓取数据网址
 	public static final String WEB = "http://47.92.235.52:18079";
 	//抓取订单数据
-	public static final Integer ORDER = 3;
+	public static final int ORDER = 3;
 	//抓取退货数据
-	public static final Integer RETURN = 4;
+	public static final int RETURN = 4;
 	//抓取销售数据
-	public static final Integer SALE = 1;
+	public static final int SALE = 1;
 	//抓取库存数据
-	public static final Integer STOCK = 2;
+	public static final int STOCK = 2;
 	
 }
