@@ -40,17 +40,22 @@ public class TemplateDataUtil extends CommonServiceImpl {
 	 * @param simpleCode
 	 * @return
 	 */
-	public String getBarCodeMessage(String sysName, String simpleCode) {
-		if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
-			return null;
+	public String getBarCodeMessage(String simpleBarCode, String sysName, String simpleCode) {
+		if (CommonUtil.isBlank(simpleBarCode)) {
+			if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
+				return null;
+			}
+			Map<String, Object> param = new HashMap<>(2);
+			SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
+			String column = simpleCodeEnum.getValue();
+			param.put("columnName", column);
+			param.put("simpleCode", simpleCode);
+			SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
+			return code.getBarCode();
+		} else {
+			return simpleBarCode;
 		}
-		Map<String, Object> param = new HashMap<>(2);
-		SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
-		String column = simpleCodeEnum.getValue();
-		param.put("columnName", column);
-		param.put("simpleCode", simpleCode);
-		SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
-		return code.getBarCode();
+		
 	}
 	/**
 	 * 获取标准商品信息

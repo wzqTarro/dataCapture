@@ -100,9 +100,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			
 			// 单品条码
 			String simpleBarCode = sale.getSimpleBarCode();
-			if (CommonUtil.isBlank(simpleBarCode)) {
-				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
-			}
+			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
 			if (CommonUtil.isBlank(simpleBarCode)) {
 				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;

@@ -1,12 +1,18 @@
 package com.data.bean;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class Reject {
-    private Integer id;
+public class Reject implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8105484584545060883L;
+
+	private Integer id;
 
     private String sysId;
 
@@ -75,8 +81,18 @@ public class Reject {
 
     // 汇总供价差异
     private BigDecimal diffPrice;
+    
+    private String remark;
 
-    public Integer getId() {
+    public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getId() {
         return id;
     }
 

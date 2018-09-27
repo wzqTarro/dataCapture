@@ -63,6 +63,10 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectCountByParam";
 	
+	public static final String QUERY_ORDER_BY_CONDITION = "OrderMapper.selectByCondition";
+	
+	public static final String QUERY_COUNT_ORDER_BY_CONDITION = "OrderMapper.selectCountByCondition";
+	
 	/**销售日报表导出**/
 	public static final String QUERY_SALE_LIST_REPORT = "SaleMapper.querySaleListReport";
 	
