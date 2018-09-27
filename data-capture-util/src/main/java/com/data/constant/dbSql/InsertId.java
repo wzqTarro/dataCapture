@@ -9,9 +9,9 @@ public final class InsertId {
 
 	public static final String INSERT_NEW_USER_MESSAGE = "UserMapper.insertSelective";
 	
-	public static final String INSERT_NEW_ORDER_MESSAGE = "TemplateOrderMapper.insertSelective";
+	public static final String INSERT_ORDER_MESSAGE = "OrderMapper.insertSelective";
 	
-	public static final String INSERT_BATCH_ORDER = "TemplateOrderMapper.insertBatch";
+	public static final String INSERT_BATCH_ORDER = "OrderMapper.insertBatch";
 	
 	public static final String INSERT_NEW_SUPPLY_MESSAGE = "TemplateSupplyMapper.insertSelective";
 	

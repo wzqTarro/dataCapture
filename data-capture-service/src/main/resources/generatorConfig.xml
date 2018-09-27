@@ -2,7 +2,7 @@
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>   
 <!-- 数据库驱动-->   
-    <classPathEntry  location="E:\Maven\repositor\mysql\mysql-connector-java\5.1.26\mysql-connector-java-5.1.26.jar"/>   
+    <classPathEntry  location="D:\Maven\repository\mysql\mysql-connector-java\5.1.46\mysql-connector-java-5.1.46.jar"/>   
     <context id="DB2Tables"  targetRuntime="MyBatis3">   
         <commentGenerator>   
             <property name="suppressDate" value="true"/>   
@@ -10,7 +10,7 @@
             <property name="suppressAllComments" value="true"/>   
         </commentGenerator>   
         <!--数据库链接URL，用户名、密码 -->   
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://120.77.153.124:3306/data_manage" userId="root" password="123456">   
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://47.92.235.52:3306/data_manage" userId="root" password="W4d49vLvmx=">   
         </jdbcConnection>   
         <javaTypeResolver>   
             <property name="forceBigDecimals" value="false"/>   
@@ -37,6 +37,8 @@
         <table tableName="db_simple_code" domainObjectName="SimpleCode" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
         <table tableName="db_store" domainObjectName="Store" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
         <table tableName="db_sale" domainObjectName="Sale" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-		<table tableName="db_stock" domainObjectName="Stock" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+		<table tableName="db_order" domainObjectName="Order" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+		<table tableName="db_reject" domainObjectName="Reject" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+	
 	</context>   
 </generatorConfiguration>

@@ -1,28 +1,20 @@
 package com.data.bean;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-/**
- * 退单类
- * @author Alex
- *
- */
-public class Reject implements Serializable {
-	
-	private static final long serialVersionUID = 1708394571891256261L;
+public class Reject {
+    private Integer id;
 
-	private Integer id;
+    private String sysId;
 
-	private String sysId;
-	
     private String sysName;
 
     private String rejectDepartmentId;
 
-    private String mainArea;
+    private String region;
 
     private String provinceArea;
 
@@ -30,47 +22,59 @@ public class Reject implements Serializable {
 
     private String receiptCode;
 
-    private String productCode;
+    private String simpleCode;
 
-    private String productBarCode;
+    private String simpleBarCode;
 
-    private String productStoreCode;
+    private String stockCode;
 
-    private String productName;
+    private String simpleName;
 
-    private Long taxRate;
+    private BigDecimal taxRate;
 
-    private Long productAmount;
+    private Long simpleAmount;
 
-    private Long rejectPriceWithRate;
+    private BigDecimal rejectPriceWithRate;
 
-    private Long rejectPrice;
+    private BigDecimal rejectPrice;
 
+    // 退货日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date rejectDate;
 
-    private Long discountPrice;
+    private BigDecimal discountPrice;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 促销供价生效日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date discountStartDate;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 促销供价结束日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date discountEndDate;
 
-    private Long diffPriceDiscount;
+    // 促销供价差异
+    private BigDecimal diffPriceDiscount;
 
-    private Long diffPriceDiscountTotal;
+    // 促销供价差异汇总
+    private BigDecimal diffPriceDiscountTotal;
 
+    // 促销供价报警标志
     private String discountAlarmFlag;
 
-    private Long contractPrice;
+    // 合同供价
+    private BigDecimal contractPrice;
 
-    private Long diffPriceContract;
+    // 合同供价差异
+    private BigDecimal diffPriceContract;
 
-    private Long diffPriceContractTotal;
+    // 合同供价差异汇总
+    private BigDecimal diffPriceContractTotal;
 
+    // 合同供价报警标志
     private String contractAlarmFlag;
 
-    private Long diffPrice;
+    // 汇总供价差异
+    private BigDecimal diffPrice;
 
     public Integer getId() {
         return id;
@@ -80,25 +84,23 @@ public class Reject implements Serializable {
         this.id = id;
     }
 
-   
-
     public String getSysId() {
-		return sysId;
-	}
+        return sysId;
+    }
 
-	public void setSysId(String sysId) {
-		this.sysId = sysId;
-	}
+    public void setSysId(String sysId) {
+        this.sysId = sysId == null ? null : sysId.trim();
+    }
 
-	public String getSysName() {
-		return sysName;
-	}
+    public String getSysName() {
+        return sysName;
+    }
 
-	public void setSysName(String sysName) {
-		this.sysName = sysName;
-	}
+    public void setSysName(String sysName) {
+        this.sysName = sysName == null ? null : sysName.trim();
+    }
 
-	public String getRejectDepartmentId() {
+    public String getRejectDepartmentId() {
         return rejectDepartmentId;
     }
 
@@ -106,12 +108,12 @@ public class Reject implements Serializable {
         this.rejectDepartmentId = rejectDepartmentId == null ? null : rejectDepartmentId.trim();
     }
 
-    public String getMainArea() {
-        return mainArea;
+    public String getRegion() {
+        return region;
     }
 
-    public void setMainArea(String mainArea) {
-        this.mainArea = mainArea == null ? null : mainArea.trim();
+    public void setRegion(String region) {
+        this.region = region == null ? null : region.trim();
     }
 
     public String getProvinceArea() {
@@ -138,67 +140,67 @@ public class Reject implements Serializable {
         this.receiptCode = receiptCode == null ? null : receiptCode.trim();
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getSimpleCode() {
+        return simpleCode;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode == null ? null : productCode.trim();
+    public void setSimpleCode(String simpleCode) {
+        this.simpleCode = simpleCode == null ? null : simpleCode.trim();
     }
 
-    public String getProductBarCode() {
-        return productBarCode;
+    public String getSimpleBarCode() {
+        return simpleBarCode;
     }
 
-    public void setProductBarCode(String productBarCode) {
-        this.productBarCode = productBarCode == null ? null : productBarCode.trim();
+    public void setSimpleBarCode(String simpleBarCode) {
+        this.simpleBarCode = simpleBarCode == null ? null : simpleBarCode.trim();
     }
 
-    public String getProductStoreCode() {
-        return productStoreCode;
+    public String getStockCode() {
+        return stockCode;
     }
 
-    public void setProductStoreCode(String productStoreCode) {
-        this.productStoreCode = productStoreCode == null ? null : productStoreCode.trim();
+    public void setStockCode(String stockCode) {
+        this.stockCode = stockCode == null ? null : stockCode.trim();
     }
 
-    public String getProductName() {
-        return productName;
+    public String getSimpleName() {
+        return simpleName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName == null ? null : productName.trim();
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName == null ? null : simpleName.trim();
     }
 
-    public Long getTaxRate() {
+    public BigDecimal getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(Long taxRate) {
+    public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
     }
 
-    public Long getProductAmount() {
-        return productAmount;
+    public Long getSimpleAmount() {
+        return simpleAmount;
     }
 
-    public void setProductAmount(Long productAmount) {
-        this.productAmount = productAmount;
+    public void setSimpleAmount(Long simpleAmount) {
+        this.simpleAmount = simpleAmount;
     }
 
-    public Long getRejectPriceWithRate() {
+    public BigDecimal getRejectPriceWithRate() {
         return rejectPriceWithRate;
     }
 
-    public void setRejectPriceWithRate(Long rejectPriceWithRate) {
+    public void setRejectPriceWithRate(BigDecimal rejectPriceWithRate) {
         this.rejectPriceWithRate = rejectPriceWithRate;
     }
 
-    public Long getRejectPrice() {
+    public BigDecimal getRejectPrice() {
         return rejectPrice;
     }
 
-    public void setRejectPrice(Long rejectPrice) {
+    public void setRejectPrice(BigDecimal rejectPrice) {
         this.rejectPrice = rejectPrice;
     }
 
@@ -210,11 +212,11 @@ public class Reject implements Serializable {
         this.rejectDate = rejectDate;
     }
 
-    public Long getDiscountPrice() {
+    public BigDecimal getDiscountPrice() {
         return discountPrice;
     }
 
-    public void setDiscountPrice(Long discountPrice) {
+    public void setDiscountPrice(BigDecimal discountPrice) {
         this.discountPrice = discountPrice;
     }
 
@@ -234,19 +236,19 @@ public class Reject implements Serializable {
         this.discountEndDate = discountEndDate;
     }
 
-    public Long getDiffPriceDiscount() {
+    public BigDecimal getDiffPriceDiscount() {
         return diffPriceDiscount;
     }
 
-    public void setDiffPriceDiscount(Long diffPriceDiscount) {
+    public void setDiffPriceDiscount(BigDecimal diffPriceDiscount) {
         this.diffPriceDiscount = diffPriceDiscount;
     }
 
-    public Long getDiffPriceDiscountTotal() {
+    public BigDecimal getDiffPriceDiscountTotal() {
         return diffPriceDiscountTotal;
     }
 
-    public void setDiffPriceDiscountTotal(Long diffPriceDiscountTotal) {
+    public void setDiffPriceDiscountTotal(BigDecimal diffPriceDiscountTotal) {
         this.diffPriceDiscountTotal = diffPriceDiscountTotal;
     }
 
@@ -258,27 +260,27 @@ public class Reject implements Serializable {
         this.discountAlarmFlag = discountAlarmFlag == null ? null : discountAlarmFlag.trim();
     }
 
-    public Long getContractPrice() {
+    public BigDecimal getContractPrice() {
         return contractPrice;
     }
 
-    public void setContractPrice(Long contractPrice) {
+    public void setContractPrice(BigDecimal contractPrice) {
         this.contractPrice = contractPrice;
     }
 
-    public Long getDiffPriceContract() {
+    public BigDecimal getDiffPriceContract() {
         return diffPriceContract;
     }
 
-    public void setDiffPriceContract(Long diffPriceContract) {
+    public void setDiffPriceContract(BigDecimal diffPriceContract) {
         this.diffPriceContract = diffPriceContract;
     }
 
-    public Long getDiffPriceContractTotal() {
+    public BigDecimal getDiffPriceContractTotal() {
         return diffPriceContractTotal;
     }
 
-    public void setDiffPriceContractTotal(Long diffPriceContractTotal) {
+    public void setDiffPriceContractTotal(BigDecimal diffPriceContractTotal) {
         this.diffPriceContractTotal = diffPriceContractTotal;
     }
 
@@ -290,11 +292,11 @@ public class Reject implements Serializable {
         this.contractAlarmFlag = contractAlarmFlag == null ? null : contractAlarmFlag.trim();
     }
 
-    public Long getDiffPrice() {
+    public BigDecimal getDiffPrice() {
         return diffPrice;
     }
 
-    public void setDiffPrice(Long diffPrice) {
+    public void setDiffPrice(BigDecimal diffPrice) {
         this.diffPrice = diffPrice;
     }
 }

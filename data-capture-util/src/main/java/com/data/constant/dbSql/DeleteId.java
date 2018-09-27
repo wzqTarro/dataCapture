@@ -9,7 +9,7 @@ public final class DeleteId {
 	
 	public static final String DELETE_USER_BY_ID = "UserMapper.deleteByPrimaryKey";
 	
-	public static final String DELETE_ORDER_BY_ID = "TemplateOrderMapper.deleteByPrimaryKey";
+	public static final String DELETE_ORDER_BY_ID = "OrderMapper.deleteByPrimaryKey";
 	
 	public static final String DELETE_SUPPLY_BY_ID = "TemplateSupplyMapper.deleteByPrimaryKey";
 	

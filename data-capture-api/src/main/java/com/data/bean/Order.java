@@ -1,86 +1,95 @@
 package com.data.bean;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-/**
- * 订单类
- * @author Alex
- *
- */
-public class Order implements Serializable {
+public class Order {
+    private Integer id;
 
-	private static final long serialVersionUID = -7993999981089975803L;
+    private String sysId;
 
-	private Integer id;
-
-	private String sysId;
-	
     private String sysName;
 
-    private String mainArea;
+    private String region;
 
     private String provinceArea;
 
-    private String departmentName;
+    private String storeCode;
+
+    private String storeName;
 
     private String receiptCode;
 
-    private String productCode;
+    private String simpleCode;
 
-    private String productBarCode;
+    private String simpleBarCode;
 
-    private String productStoreCode;
+    private String stockCode;
 
-    private String productName;
+    private String simpleName;
 
-    private Long taxRate;
+    // 税率
+    private BigDecimal taxRate;
 
-    private Integer standard;
+    private String boxStandard;
 
-    private Long productAmount;
+    private Long simpleAmount;
 
-    private Long buyingPriceWithRate;
+    private BigDecimal buyingPriceWithRate;
 
-    private Long buyingPrice;
+    private BigDecimal buyingPrice;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 送货日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date deliverStartDate;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 送货截止日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date deliverEndDate;
 
     private String deliverAddress;
 
-    private Long discountPrice;
+    private BigDecimal discountPrice;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 促销供价开始日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date discountStartDate;
 
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    // 促销供价结束日期
+    @JSONField(format = "yyyy-MM-dd")
     private Date discountEndDate;
 
+    // 订单有效性判断
     private String orderEffectiveJudge;
 
+    // 补差方式
     private String balanceWay;
 
-    private Long diffPriceDiscount;
+    // 促销供价差异
+    private BigDecimal diffPriceDiscount;
 
-    private Long diffPriceDiscountTotal;
+    // 促销供价差异汇总
+    private BigDecimal diffPriceDiscountTotal;
 
+    // 促销供价报警标志
     private String discountAlarmFlag;
 
-    private Long contractPrice;
+    // 合同供价
+    private BigDecimal contractPrice;
 
-    private Long diffPriceContract;
+    // 合同供价差异
+    private BigDecimal diffPriceContract;
 
-    private Long diffPriceContractTotal;
+    // 合同供价差异汇总
+    private BigDecimal diffPriceContractTotal;
 
+    // 合同供价报警标志
     private String contractAlarmFlag;
 
-    private Long diffPrice;
+    // 汇总供价差异
+    private BigDecimal diffPrice;
 
     public Integer getId() {
         return id;
@@ -89,31 +98,29 @@ public class Order implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-    
-    
 
-	public String getSysId() {
-		return sysId;
-	}
-
-	public void setSysId(String sysId) {
-		this.sysId = sysId;
-	}
-
-	public String getSysName() {
-		return sysName;
-	}
-
-	public void setSysName(String sysName) {
-		this.sysName = sysName;
-	}
-
-	public String getMainArea() {
-        return mainArea;
+    public String getSysId() {
+        return sysId;
     }
 
-    public void setMainArea(String mainArea) {
-        this.mainArea = mainArea == null ? null : mainArea.trim();
+    public void setSysId(String sysId) {
+        this.sysId = sysId == null ? null : sysId.trim();
+    }
+
+    public String getSysName() {
+        return sysName;
+    }
+
+    public void setSysName(String sysName) {
+        this.sysName = sysName == null ? null : sysName.trim();
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region == null ? null : region.trim();
     }
 
     public String getProvinceArea() {
@@ -124,12 +131,20 @@ public class Order implements Serializable {
         this.provinceArea = provinceArea == null ? null : provinceArea.trim();
     }
 
-    public String getDepartmentName() {
-        return departmentName;
+    public String getStoreCode() {
+        return storeCode;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName == null ? null : departmentName.trim();
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode == null ? null : storeCode.trim();
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName == null ? null : storeName.trim();
     }
 
     public String getReceiptCode() {
@@ -140,75 +155,75 @@ public class Order implements Serializable {
         this.receiptCode = receiptCode == null ? null : receiptCode.trim();
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getSimpleCode() {
+        return simpleCode;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode == null ? null : productCode.trim();
+    public void setSimpleCode(String simpleCode) {
+        this.simpleCode = simpleCode == null ? null : simpleCode.trim();
     }
 
-    public String getProductBarCode() {
-        return productBarCode;
+    public String getSimpleBarCode() {
+        return simpleBarCode;
     }
 
-    public void setProductBarCode(String productBarCode) {
-        this.productBarCode = productBarCode == null ? null : productBarCode.trim();
+    public void setSimpleBarCode(String simpleBarCode) {
+        this.simpleBarCode = simpleBarCode == null ? null : simpleBarCode.trim();
     }
 
-    public String getProductStoreCode() {
-        return productStoreCode;
+    public String getStockCode() {
+        return stockCode;
     }
 
-    public void setProductStoreCode(String productStoreCode) {
-        this.productStoreCode = productStoreCode == null ? null : productStoreCode.trim();
+    public void setStockCode(String stockCode) {
+        this.stockCode = stockCode == null ? null : stockCode.trim();
     }
 
-    public String getProductName() {
-        return productName;
+    public String getSimpleName() {
+        return simpleName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName == null ? null : productName.trim();
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName == null ? null : simpleName.trim();
     }
 
-    public Long getTaxRate() {
+    public BigDecimal getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(Long taxRate) {
+    public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
     }
 
-    public Integer getStandard() {
-        return standard;
+    public String getBoxStandard() {
+        return boxStandard;
     }
 
-    public void setStandard(Integer standard) {
-        this.standard = standard;
+    public void setBoxStandard(String boxStandard) {
+        this.boxStandard = boxStandard == null ? null : boxStandard.trim();
     }
 
-    public Long getProductAmount() {
-        return productAmount;
+    public Long getSimpleAmount() {
+        return simpleAmount;
     }
 
-    public void setProductAmount(Long productAmount) {
-        this.productAmount = productAmount;
+    public void setSimpleAmount(Long simpleAmount) {
+        this.simpleAmount = simpleAmount;
     }
 
-    public Long getBuyingPriceWithRate() {
+    public BigDecimal getBuyingPriceWithRate() {
         return buyingPriceWithRate;
     }
 
-    public void setBuyingPriceWithRate(Long buyingPriceWithRate) {
+    public void setBuyingPriceWithRate(BigDecimal buyingPriceWithRate) {
         this.buyingPriceWithRate = buyingPriceWithRate;
     }
 
-    public Long getBuyingPrice() {
+    public BigDecimal getBuyingPrice() {
         return buyingPrice;
     }
 
-    public void setBuyingPrice(Long buyingPrice) {
+    public void setBuyingPrice(BigDecimal buyingPrice) {
         this.buyingPrice = buyingPrice;
     }
 
@@ -236,11 +251,11 @@ public class Order implements Serializable {
         this.deliverAddress = deliverAddress == null ? null : deliverAddress.trim();
     }
 
-    public Long getDiscountPrice() {
+    public BigDecimal getDiscountPrice() {
         return discountPrice;
     }
 
-    public void setDiscountPrice(Long discountPrice) {
+    public void setDiscountPrice(BigDecimal discountPrice) {
         this.discountPrice = discountPrice;
     }
 
@@ -276,19 +291,19 @@ public class Order implements Serializable {
         this.balanceWay = balanceWay == null ? null : balanceWay.trim();
     }
 
-    public Long getDiffPriceDiscount() {
+    public BigDecimal getDiffPriceDiscount() {
         return diffPriceDiscount;
     }
 
-    public void setDiffPriceDiscount(Long diffPriceDiscount) {
+    public void setDiffPriceDiscount(BigDecimal diffPriceDiscount) {
         this.diffPriceDiscount = diffPriceDiscount;
     }
 
-    public Long getDiffPriceDiscountTotal() {
+    public BigDecimal getDiffPriceDiscountTotal() {
         return diffPriceDiscountTotal;
     }
 
-    public void setDiffPriceDiscountTotal(Long diffPriceDiscountTotal) {
+    public void setDiffPriceDiscountTotal(BigDecimal diffPriceDiscountTotal) {
         this.diffPriceDiscountTotal = diffPriceDiscountTotal;
     }
 
@@ -300,27 +315,27 @@ public class Order implements Serializable {
         this.discountAlarmFlag = discountAlarmFlag == null ? null : discountAlarmFlag.trim();
     }
 
-    public Long getContractPrice() {
+    public BigDecimal getContractPrice() {
         return contractPrice;
     }
 
-    public void setContractPrice(Long contractPrice) {
+    public void setContractPrice(BigDecimal contractPrice) {
         this.contractPrice = contractPrice;
     }
 
-    public Long getDiffPriceContract() {
+    public BigDecimal getDiffPriceContract() {
         return diffPriceContract;
     }
 
-    public void setDiffPriceContract(Long diffPriceContract) {
+    public void setDiffPriceContract(BigDecimal diffPriceContract) {
         this.diffPriceContract = diffPriceContract;
     }
 
-    public Long getDiffPriceContractTotal() {
+    public BigDecimal getDiffPriceContractTotal() {
         return diffPriceContractTotal;
     }
 
-    public void setDiffPriceContractTotal(Long diffPriceContractTotal) {
+    public void setDiffPriceContractTotal(BigDecimal diffPriceContractTotal) {
         this.diffPriceContractTotal = diffPriceContractTotal;
     }
 
@@ -332,11 +347,11 @@ public class Order implements Serializable {
         this.contractAlarmFlag = contractAlarmFlag == null ? null : contractAlarmFlag.trim();
     }
 
-    public Long getDiffPrice() {
+    public BigDecimal getDiffPrice() {
         return diffPrice;
     }
 
-    public void setDiffPrice(Long diffPrice) {
+    public void setDiffPrice(BigDecimal diffPrice) {
         this.diffPrice = diffPrice;
     }
 }

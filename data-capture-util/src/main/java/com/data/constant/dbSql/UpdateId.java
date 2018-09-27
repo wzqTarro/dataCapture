@@ -9,7 +9,7 @@ public final class UpdateId {
 
 	public static final String UPDATE_USER_MESSAGE = "UserMapper.updateByPrimaryKeySelective";
 	
-	public static final String UPDATE_ORDER_MESSAGE = "TemplateOrderMapper.updateByPrimaryKeySelective";
+	public static final String UPDATE_ORDER_MESSAGE = "OrderMapper.updateByPrimaryKeySelective";
 	
 	public static final String UPDATE_SUPPLY_MESSAGE = "TemplateSupplyMapper.updateByPrimaryKeySelective";
 	

@@ -9,9 +9,9 @@ public final class QueryId {
 	
 	public static final String QUERY_USER_BY_ID = "UserMapper.selectByPrimaryKey";
 	
-	public static final String QUERY_ORDER_BY_ID = "TemplateOrderMapper.selectByPrimaryKey";
-	
 	public static final String QUERY_SUPPLY_BY_ID = "TemplateSupplyMapper.selectByPrimaryKey";
+	
+	public static final String QUERY_ORDER_BY_ID = "OrderMapper.selectByPrimaryKey";
 	
 	public static final String QUERY_PRODUCT_BY_ID = "TemplateProductMapper.selectByPrimaryKey";
 	
@@ -24,12 +24,6 @@ public final class QueryId {
 	public static final String QUERY_STORE_BY_ID = "TemplateStoreMapper.selectByPrimaryKey";
 	
 	public static final String QUERY_STORE_BY_ANY_COLUMN = "TemplateStoreMapper.selectByAnyColumn";
-	
-	public static final String QUERY_ORDER_BY_PARAM = "TemplateOrderMapper.selectByParam";
-	
-	public static final String QUERY_ORDER_BY_CONDITION = "TemplateOrderMapper.selectByCondtion";
-	
-	public static final String QUERY_COUNT_ORDER_BY_CONDITION = "TemplateOrderMapper.selectCountByCondtion";
 	
 	public static final String QUERY_SUPPLY_BY_CONDITION = "TemplateSupplyMapper.selectByCondition";
 	
