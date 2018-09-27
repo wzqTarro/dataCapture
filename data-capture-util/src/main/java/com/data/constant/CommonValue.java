@@ -36,4 +36,7 @@ public class CommonValue {
 	
 	/**excel2007最大支持行数**/
 	public static final int MAX_ROW_COUNT_2007 = 1048576;
+	
+	/**门店销售日报表表头信息**/
+	public static final String[] STORE_DAILY_REPORT = {"系统", "大区", "省区", "门店名称", "门店负责人"}; 
 }

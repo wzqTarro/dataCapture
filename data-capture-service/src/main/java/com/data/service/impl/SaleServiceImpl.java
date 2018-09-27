@@ -1,5 +1,8 @@
 package com.data.service.impl;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,13 +31,16 @@ import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.ISaleService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.JsonUtil;
 import com.data.utils.ResultUtil;
@@ -59,6 +65,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private IRedisService redisService;
+	
+	@Autowired
+	private ICodeDictService codeDictService;
 
 	@Override
 	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception{
@@ -255,7 +264,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 
 	@Override
-	public ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response) {
+	public ResultUtil storeDailyexcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = new HashMap<>(8);
 		params.put("system", system);
 		params.put("region", region);
@@ -271,13 +280,17 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			return ResultUtil.error("下载超过excel2007最大行数");
 		} else {
 			CountDownLatch latch = new CountDownLatch(3);
-			int pageSize = (int) Math.ceil((double) count / 3);
+			//int pageSize = (int) Math.ceil((double) count / 3);
+			String fileName = "销售日报表-" + DateUtil.getCurrentDateStr();
+			response.setContentType("application/vnd.ms-excel");
+			response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 			ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-			for(int i = 1; i <= 3; i++) {
-				params.put("pageNum", i);
-				params.put("pageSize", pageSize);
+//			for(int i = 1; i <= 3; i++) {
+//				params.put("pageNum", i);
+//				params.put("pageSize", pageSize);
 				try {
-					executorService.execute(new ExcelThread(params, latch));
+					OutputStream out = response.getOutputStream();
+					executorService.execute(new ExcelThread(params, latch, out));
 				} catch(Exception e) {
 					e.printStackTrace();
 					logger.error("--->>>销售日报表导出异常<<<---");
@@ -286,24 +299,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 						executorService.shutdown();
 					}
 				}
-			}
-//			try {
-////				for(int i = 1; i <= 3; i++) {
-//					//分三次
-////					params.put("pageNum", i);
-////					params.put("pageSize", pageSize);
-//					
-//					//查询导出数据集合
-//					executorService.execute(new ExcelThread(params, latch));
-////				}				
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				logger.error("--->>>销售日报表导出异常<<<---");
-//			} finally {
-//				if(executorService != null) {
-//					executorService.shutdown();
-//				}
 //			}
+			//latch.await();
 		}
 		return ResultUtil.success();
 	}
@@ -314,25 +311,29 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		
 		private CountDownLatch latch;
 		
-		public ExcelThread(Map<String, Object> params, CountDownLatch latch) {
+		private OutputStream out;
+		
+		public ExcelThread(Map<String, Object> params, CountDownLatch latch, OutputStream out) {
 			this.params = params;
 			this.latch = latch;
+			this.out = out;
 		}
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		public void run() {
-			synchronized (latch) {
+			//synchronized (latch) {
 				
 				List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
 				if(CommonUtil.isBlank(saleList)) {
-					logger.error("--->>>导出销售数据异常<<<---");
+					logger.error("--->>>导出日销售数据异常<<<---");
 					return;
 				}
 				try {
 					buildDailyStoreSale(saleList);
 				} catch (Exception e) {
 					e.printStackTrace();
-					logger.error("--->>>组装销售门店信息异常<<<---");
+					logger.error("--->>>组装日销售门店信息异常<<<---");
 				}
 				
 				List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
@@ -385,11 +386,28 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				try {
 					System.err.println("日报表： " + JsonUtil.toJson(saleDataList));
 				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				//写入单元格
-			}
+				List<String> codeList = codeDictService.queryCodeListByServiceCode(CodeEnum.CODE_DICT_DAILY_STORE_REPORT.getValue());
+				String title = "销售日报表";
+				ExcelUtil excelUtil = new ExcelUtil();
+				try {
+					excelUtil.excel2007(CommonValue.STORE_DAILY_REPORT, saleDataList, title, codeList, out);
+				} catch (IOException e) {
+					logger.info("--->>>门店销售日报表导出异常<<<---");
+					e.printStackTrace();
+				} finally {
+					if(out != null) {
+						try {
+							out.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				
+			//}
 			
 		}
 		
@@ -458,18 +476,5 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		//将一天的门店信息存入缓存
 		redisService.setSaleDailyMessageByStore(dateStr, storeDailySaleList);
 	}
-	
-//	public static void main(String[] args) {
-//		String json = null;
-//		try {
-//			json = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		List<Sale> list = (List<Sale>) FastJsonUtil.jsonToList(json, Sale.class);
-//		list.subList((CommonValue.PAGE - 1)*CommonValue.SIZE, list.size());
-//		System.err.println(FastJsonUtil.objectToString(list));
-//	}
 	
 }

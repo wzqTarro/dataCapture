@@ -64,10 +64,11 @@ public class SaleController {
 	 * 数据导出
 	 * @param request
 	 * @param response
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/excel", method = RequestMethod.GET)
 	@ApiOperation(value = "数据导出", httpMethod = "GET")
-	public void excel(String system, String region, String province, String store, HttpServletResponse response) {
-		saleService.excel(system, region, province, store, response);
+	public void excel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
+		saleService.storeDailyexcel(system, region, province, store, response);
 	}
 }

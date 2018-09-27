@@ -32,5 +32,5 @@ public interface ISaleService {
 	 * 数据导出
 	 * @param response
 	 */
-	ResultUtil excel(String system, String region, String province, String store, HttpServletResponse response);
+	ResultUtil storeDailyexcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception;
 }

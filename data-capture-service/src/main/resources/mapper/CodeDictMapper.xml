@@ -16,8 +16,8 @@
     from db_code_dict
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="queryDailyStoreReportList" parameterType="string" resultType="map">
-  	SELECT code_no codeNo, code_value codeValue 
+  <select id="queryCodeDictListByServiceCode" parameterType="string" resultType="string">
+  	SELECT code_no codeNo
   	FROM db_code_dict 
   	WHERE service_code=#{serviceCode}
   </select>

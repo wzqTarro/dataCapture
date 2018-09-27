@@ -1,12 +1,16 @@
 package com.data.utils;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,7 +128,7 @@ public class ExcelUtil<T> {
 					//动态调用方法得到字段值
 					Object value = method.invoke(t, new Object[] {});
 					if(value == null) {
-						continue;
+						value = "";
 					}
 					
 					String text = "";
@@ -234,7 +238,7 @@ public class ExcelUtil<T> {
 					//动态调用方法得到字段值
 					Object value = method.invoke(t, new Object[] {});
 					if(value == null) {
-						continue;
+						value = "";
 					}
 					
 					String text = "";
@@ -258,6 +262,96 @@ public class ExcelUtil<T> {
 						} else {
 							XSSFRichTextString richText = new XSSFRichTextString(text);
 							cell.setCellValue(richText);
+						}
+					}
+				}
+			}
+			workBook.write(out);
+		}
+	}
+	
+	/**
+	 * excel2007
+	 * @param headers
+	 * @param dataList
+	 * @param codeList
+	 * @param out
+	 * @throws IOException 
+	 */
+	public void excel2007(String[] header, List<Map<String, Object>> dataList, String title, List<String> codeList, OutputStream out) throws IOException {
+		if(null != header && header.length > MAX_COL_COUNT_2007) {
+			logger.info("--->>>导出excel表头部大于最大限定列值<<<---");
+			throw new DataException("509");
+		}
+		if(null != dataList && dataList.size() > MAX_ROW_COUNT_2007) {
+			logger.info("--->>>导出excel内容大于最大限定行值<<<---");
+			throw new DataException("510");
+		}
+		if(CommonUtil.isNotBlank(title)) {
+			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
+			Sheet sheet = workBook.createSheet(title);
+			
+			Row row = null;
+			//构建头部
+			Date nowDate = DateUtil.getSystemDate();
+			List<String> daysList = DateUtil.getMonthDays(nowDate);
+			if(CommonUtil.isNotBlank(header)) {
+				row = sheet.createRow(0);
+				List<String> headerList = new ArrayList<>(10);
+				for(String str : header) {
+					headerList.add(str);
+				}
+				//将动态日期添加至头部
+				headerList.addAll(daysList);
+				header = headerList.toArray(new String[0]);
+				for(int i = 0; i < header.length; i++) {
+					Cell cell = row.createCell(i);
+					XSSFRichTextString text = new XSSFRichTextString(header[i]);
+					cell.setCellValue(text);
+				}				
+			}
+			//构建内容
+			Iterator<Map<String, Object>> it = dataList.iterator();
+			int index = 0;
+			while(it.hasNext()) {
+				index++;
+				row = sheet.createRow(index);
+				Map<String, Object> map = it.next();
+				
+				for(int i = 0; i < header.length; i++) {
+					Object value;
+					codeList.addAll(daysList);
+					for(Map.Entry<String, Object> entry : map.entrySet()) {
+						if(codeList.get(i).equals(entry.getKey())) {
+							value = entry.getValue();
+							if(value == null) {
+								value = "";
+							}
+							
+							String text = "";
+							if(value instanceof Date) {
+								Date date = (Date) value;
+								SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+								text = sdf.format(date);
+							} else if(value instanceof Boolean) {
+								text = String.valueOf((Boolean) value);
+							} else {
+								text = value.toString();
+							}
+							
+							Cell cell = row.createCell(i);
+							if(CommonUtil.isNotBlank(text)) {
+								//如果是非负浮点数则转换
+								Pattern pattern = Pattern.compile("^//d+(//.//d+)?$");
+								Matcher matcher = pattern.matcher(text);
+								if(matcher.matches()) {
+									cell.setCellValue(Double.parseDouble(text));
+								} else {
+									XSSFRichTextString richText = new XSSFRichTextString(text);
+									cell.setCellValue(richText);
+								}
+							}
+							break;
 						}
 					}
 				}
