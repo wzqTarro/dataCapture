@@ -61,9 +61,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private StockDataUtil stockDataUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception {
-		logger.info("------>>>>>>前端传递queryDate：{}, sysId:{}<<<<<<<-------", queryDate, sysId);
-		List<Stock> stockList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.STOCK, Stock.class);
+	public ResultUtil getStockByWeb(String sysId, Integer page, Integer limit) throws Exception {
+		logger.info("------>>>>>>前端传递sysId:{}<<<<<<<-------", sysId);
+		List<Stock> stockList = dataCaptureUtil.getDataByWeb("1900-01-01", sysId, WebConstant.STOCK, Stock.class);
 		for (int i = 0, size = stockList.size(); i < size; i++) {
 			Stock stock = stockList.get(i);
 			
@@ -84,11 +84,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			// 地区
 			String localName = stock.getLocalName();
-			if (CommonUtil.isBlank(simpleBarCode)) {
 				
-				// 标准条码匹配信息
-				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
-			}
+			// 标准条码匹配信息
+			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
 			if (CommonUtil.isBlank(simpleBarCode)) {
 				stock.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;

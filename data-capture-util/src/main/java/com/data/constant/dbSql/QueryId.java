@@ -63,6 +63,10 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_SIMPLE_CODE_BY_PARAM = "SimpleCodeMapper.selectCountByParam";
 	
+	public static final String QUERY_ORDER_BY_CONDITION = "OrderMapper.selectByCondition";
+	
+	public static final String QUERY_COUNT_ORDER_BY_CONDITION = "OrderMapper.selectCountByCondition";
+	
 	/**销售日报表导出**/
 	public static final String QUERY_SALE_LIST_REPORT = "SaleMapper.querySaleListReport";
 	
@@ -75,9 +79,6 @@ public final class QueryId {
 	/**根据门店编号查询销售表信息**/
 	public static final String QUERY_SALE_INFO_BY_STORE_CODE = "SaleMapper.querySaleInfoByStoreCode";
 	
-	/**查询门店日报表字典列表**/
-	public static final String QUERY_DAILY_STORE_REPORT_LIST = "CodeDictMapper.queryDailyStoreReportList";
-	
 	/**查询门店模板集合**/
 	public static final String QUERY_STORE_TEMPLATE = "TemplateStoreMapper.queryStoreTemplate";
 	
@@ -86,5 +87,8 @@ public final class QueryId {
 	
 	/**查询产品模板集合**/
 	public static final String QUERY_PRODUCT_TEMPLATE = "TemplateProductMapper.queryProductTemplate";
+	
+	/**根据服务编号查询对应字典参数**/
+	public static final String QUERY_CODE_DICT_LIST_BY_SERVICE_CODE = "CodeDictMapper.queryCodeDictListByServiceCode";
 	
 }

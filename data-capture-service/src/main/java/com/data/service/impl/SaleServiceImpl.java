@@ -28,6 +28,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IRedisService;
@@ -35,6 +36,7 @@ import com.data.service.ISaleService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.JsonUtil;
 import com.data.utils.ResultUtil;
@@ -91,9 +93,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			
 			// 单品条码
 			String simpleBarCode = sale.getSimpleBarCode();
-			if (CommonUtil.isBlank(simpleBarCode)) {
-				simpleBarCode = templateDataUtil.getBarCodeMessage(sysName, simpleCode);
-			}
+			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
 			if (CommonUtil.isBlank(simpleBarCode)) {
 				sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 				continue;
