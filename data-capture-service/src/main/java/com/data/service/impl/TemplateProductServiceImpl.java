@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.TemplateProduct;
 import com.data.constant.PageRecord;
+import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
@@ -18,6 +19,7 @@ import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateProductService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.RedisUtil;
 import com.data.utils.ResultUtil;
 
 @Service
@@ -99,6 +101,7 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		}
 		logger.info("------>>>>>>>product:{}<<<<<<<--------", FastJsonUtil.objectToString(product));
 		update(UpdateId.UPDATE_PRODUCT_BY_MESSAGE, product);
+		RedisUtil.del(RedisAPI.PRODUCT_TEMPLATE);
 		return ResultUtil.success();
 	}
 
@@ -111,6 +114,7 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		product.setId(null);
 		logger.info("------>>>>>>>product:{}<<<<<<<--------", FastJsonUtil.objectToString(product));
 		insert(InsertId.INSERT_PRODUCT_BY_MESSAGE, product);
+		RedisUtil.del(RedisAPI.PRODUCT_TEMPLATE);
 		return ResultUtil.success();
 	}
 
@@ -122,6 +126,7 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		}
 		logger.info("------>>>>>>>id:{}<<<<<<<--------", id);
 		delete(DeleteId.DELETE_PRODUCT_BY_ID, id);
+		RedisUtil.del(RedisAPI.PRODUCT_TEMPLATE);
 		return ResultUtil.success();
 	}
 

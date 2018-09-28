@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.SimpleCode;
@@ -14,6 +15,7 @@ import com.data.bean.TemplateStore;
 import com.data.bean.User;
 import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.SimpleCodeEnum;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
@@ -180,6 +182,9 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 
 	@Override
 	public TemplateStore queryTemplateStoreBySysIdAndStoreCode(String sysId, String storeCode) throws Exception {
+		if (CommonUtil.isBlank(sysId) || CommonUtil.isBlank(storeCode)) {
+			return null;
+		}
 		String key = RedisAPI.getPrefix(RedisAPI.STORE_TEMPLATE, sysId, storeCode);
 		String json = redisUtil.get(key);
 		if(CommonUtil.isNotBlank(json)) {
@@ -192,6 +197,44 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		if(CommonUtil.isNotBlank(store)) {
 			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(store));
 			return store;
+		}
+		return null;
+	}
+	
+	@Override
+	public TemplateProduct queryTemplateProductBySysIdAndSimpleBarCode(String sysId, String simpleBarCode) {
+		String key = RedisAPI.getPrefix(RedisAPI.PRODUCT_TEMPLATE, sysId, simpleBarCode);
+		String json = redisUtil.get(key);
+		if (CommonUtil.isNotBlank(json)) {
+			return FastJsonUtil.jsonToObject(json, TemplateProduct.class);
+		}
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("sysId", sysId);
+		param.put("simpleBarCode", simpleBarCode);
+		TemplateProduct product = (TemplateProduct) queryObjectByParameter(QueryId.QUERY_PRODUCT_BY_PARAM, param);
+		if (product != null) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, FastJsonUtil.objectToString(product));
+			return product;
+		}
+		return null;
+	}
+	
+	@Override
+	public String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode) {
+		String key = RedisAPI.getPrefix(RedisAPI.SIMPLE_CODE_TEMPLATE, sysName, simpleCode);
+		String simpleBarCode = redisUtil.get(key);
+		if (CommonUtil.isNotBlank(simpleBarCode)) {
+			return simpleBarCode;
+		}
+		Map<String, Object> param = new HashMap<>(2);
+		SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
+		String column = simpleCodeEnum.getValue();
+		param.put("columnName", column);
+		param.put("simpleCode", simpleCode);
+		SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
+		if (null != code) {
+			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, code.getBarCode());
+			return code.getBarCode();
 		}
 		return null;
 	}
@@ -240,4 +283,5 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		}
 		return null;
 	}
+	
 }

@@ -26,7 +26,7 @@
     <result column="stock_num" property="stockNum" jdbcType="INTEGER" />
     <result column="tax_cost_price" property="taxCostPrice" jdbcType="DOUBLE" />
     <result column="stock_price" property="stockPrice" jdbcType="DOUBLE" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="DATE" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
@@ -36,9 +36,18 @@
     series, day_night, material, pieces_num, box_standard, stock_no, stock_num, tax_cost_price, 
     stock_price, create_time, remark, local_name
   </sql>
+  <sql id="Column_List" >
+    s.id, sys_id, s.sys_name, s.store_code, s.store_name, s.region, s.province_area, s.ascription, 
+    s.ascription_sole, s.simple_code, s.simple_bar_code, s.stock_code, s.simple_name, s.brand, s.classify, 
+    s.series, s.day_night, material, s.pieces_num, s.box_standard, s.stock_no, s.stock_num, s.tax_cost_price, 
+    s.stock_price, s.create_time, s.remark, s.local_name
+  </sql>
   <sql id="Query_Condition">
   	<if test="simpleCode != null and simpleCode != ''">
   		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
   	</if>
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
@@ -70,13 +79,17 @@
   	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
-  	SELECT <include refid="Base_Column_List"></include>
-  	FROM db_stock
-  	WHERE 1=1
-  	<include refid="Query_Condition"></include>
-  	<if test="pageNum != null and pageSize != null">
-  		LIMIT #{pageNum}, #{pageSize}
-  	</if>
+  	SELECT <include refid="Column_List"></include>
+  	FROM db_stock s
+  	INNER JOIN(
+  		SELECT ID
+  		FROM db_stock
+	  	WHERE 1=1
+	  	<include refid="Query_Condition"></include>
+	  	<if test="pageNum != null and pageSize != null">
+	  		LIMIT #{pageNum}, #{pageSize}
+	  	</if>
+  	) t ON(s.ID = t.ID)
   </select>
   <select id="selectCountByParam" resultType="int" parameterType="map">
   	SELECT COUNT(1)
@@ -112,7 +125,7 @@
       #{series,jdbcType=VARCHAR}, #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, 
       #{piecesNum,jdbcType=INTEGER}, #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, 
       #{stockNum,jdbcType=INTEGER}, #{taxCostPrice,jdbcType=DOUBLE}, #{stockPrice,jdbcType=DOUBLE}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{localName,jdbcType=CHAR})
+      #{createTime,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, #{localName,jdbcType=CHAR})
   </insert>
   <insert id="insertBatch" parameterType="list">
   	insert into db_stock (id, sys_id, sys_name, 
@@ -296,7 +309,7 @@
         #{stockPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=DATE},
       </if>
       <if test="remark != null" >
         #{remark,jdbcType=VARCHAR},
@@ -379,7 +392,7 @@
         stock_price = #{stockPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=DATE},
       </if>
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
@@ -415,7 +428,7 @@
       stock_num = #{stockNum,jdbcType=INTEGER},
       tax_cost_price = #{taxCostPrice,jdbcType=DOUBLE},
       stock_price = #{stockPrice,jdbcType=DOUBLE},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=DATE},
       remark = #{remark,jdbcType=VARCHAR},
       local_name = #{localName,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}

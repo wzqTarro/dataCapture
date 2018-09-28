@@ -46,7 +46,7 @@
     diff_price_contract, diff_price_contract_total, contract_alarm_flag, diff_price, remark
   </sql>
   <sql id="Column_List" >
-    o.id, sys_id, o.sys_name, o.region, o.province_area, o.store_code, o.store_name, o.receipt_code, 
+    o.id, o.sys_id, o.sys_name, o.region, o.province_area, o.store_code, o.store_name, o.receipt_code, 
     o.simple_code, o.simple_bar_code, o.stock_code, o.simple_name, o.tax_rate, o.box_standard, o.simple_amount, 
     o.buying_price_with_rate, o.buying_price, o.deliver_start_date, o.deliver_end_date, o.deliver_address, 
     o.discount_price, o.discount_start_date, o.discount_end_date, o.order_effective_judge, o.balance_way, 
@@ -72,19 +72,26 @@
   	<if test="receiptCode != null and receiptCode != ''">
   		AND receipt_code = #{receiptCode}
   	</if>
+  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+  		AND deliver_start_date &lt;= #{endDate}
+  		AND deliver_start_date &gt;= #{startDate}
+  	</if>
+  	<if test="queryDate != null and queryDate != ''">
+  		AND deliver_start_date = #{queryDate}
+  	</if>
   </sql>
   <select id="selectByCondition" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Column_List"></include>
-  	FROM db_order
+  	FROM db_order o
   	INNER JOIN (
   		SELECT ID
-  		FROM db_order t
+  		FROM db_order
   		WHERE 1=1
   		<include refid="Query_Condition"></include>
   		<if test="pageNum != null and pageSize != null">
   			LIMIT #{pageNum}, #{pageSize}
   		</if>
-  	) ON(o.ID = t.ID)
+  	)t ON(o.ID = t.ID)
   </select>
   <select id="selectCountByCondition" resultType="int" parameterType="map">
   	SELECT COUNT(1)
@@ -127,6 +134,35 @@
       #{discountAlarmFlag,jdbcType=VARCHAR}, #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, 
       #{diffPriceContractTotal,jdbcType=DECIMAL}, #{contractAlarmFlag,jdbcType=VARCHAR}, 
       #{diffPrice,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_order (id, sys_id, sys_name, 
+      region, province_area, store_code, 
+      store_name, receipt_code, simple_code, 
+      simple_bar_code, stock_code, simple_name, 
+      tax_rate, box_standard, simple_amount, 
+      buying_price_with_rate, buying_price, deliver_start_date, 
+      deliver_end_date, deliver_address, discount_price, 
+      discount_start_date, discount_end_date, order_effective_judge, 
+      balance_way, diff_price_discount, diff_price_discount_total, 
+      discount_alarm_flag, contract_price, diff_price_contract, 
+      diff_price_contract_total, contract_alarm_flag, 
+      diff_price, remark)
+    values 
+    <foreach collection="list" item="order" separator=",">
+    (#{order.id,jdbcType=INTEGER}, #{order.sysId,jdbcType=CHAR}, #{order.sysName,jdbcType=VARCHAR}, 
+      #{order.region,jdbcType=VARCHAR}, #{order.provinceArea,jdbcType=VARCHAR}, #{order.storeCode,jdbcType=VARCHAR}, 
+      #{order.storeName,jdbcType=VARCHAR}, #{order.receiptCode,jdbcType=VARCHAR}, #{order.simpleCode,jdbcType=VARCHAR}, 
+      #{order.simpleBarCode,jdbcType=VARCHAR}, #{order.stockCode,jdbcType=VARCHAR}, #{order.simpleName,jdbcType=VARCHAR}, 
+      #{order.taxRate,jdbcType=DECIMAL}, #{order.boxStandard,jdbcType=VARCHAR}, #{order.simpleAmount,jdbcType=DECIMAL}, 
+      #{order.buyingPriceWithRate,jdbcType=DECIMAL}, #{order.buyingPrice,jdbcType=DECIMAL}, #{order.deliverStartDate,jdbcType=DATE}, 
+      #{order.deliverEndDate,jdbcType=DATE}, #{order.deliverAddress,jdbcType=VARCHAR}, #{order.discountPrice,jdbcType=DECIMAL}, 
+      #{order.discountStartDate,jdbcType=DATE}, #{order.discountEndDate,jdbcType=DATE}, #{order.orderEffectiveJudge,jdbcType=VARCHAR}, 
+      #{order.balanceWay,jdbcType=VARCHAR}, #{order.diffPriceDiscount,jdbcType=DECIMAL}, #{order.diffPriceDiscountTotal,jdbcType=DECIMAL}, 
+      #{order.discountAlarmFlag,jdbcType=VARCHAR}, #{order.contractPrice,jdbcType=DECIMAL}, #{order.diffPriceContract,jdbcType=DECIMAL}, 
+      #{order.diffPriceContractTotal,jdbcType=DECIMAL}, #{order.contractAlarmFlag,jdbcType=VARCHAR}, 
+      #{order.diffPrice,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR})
+      </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Order" >
     insert into db_order

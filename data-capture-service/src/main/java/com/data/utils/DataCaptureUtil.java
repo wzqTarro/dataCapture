@@ -1,6 +1,8 @@
 package com.data.utils;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,15 +53,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			throw new DataException("503");
 		}
 		if (CommonUtil.isNotBlank(queryDate)) {
-			start = queryDate.replace("-", "").trim();
+			start = queryDate.trim();
 			end = start;
 			
 			// 禁止查询当天
-			if (DateUtil.format(new Date(), "yyyyMMdd").equals(start)) {
-				throw new DataException(TipsEnum.NOW_DATE_IS_NULL.getValue());
+			if (DateUtil.format(new Date(), "yyyy-MM-dd").equals(start)) {
+				throw new DataException("523");
 			}
 		} else {
-			throw new DataException(TipsEnum.DATE_IS_NULL.getValue());
+			throw new DataException("524");
 		}
 		
 		Map<String, Object> param = new HashMap<>(1);
@@ -98,7 +100,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> translateData(String json, Class<T> clazz){		
-		if (StringUtils.isBlank(json)) {
+		if (StringUtils.isBlank(json) || "[]".equals(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
 			throw new DataException("505");
 		}
@@ -127,12 +129,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		} else {
 			pageRecord.setPageSize(limit);
 		}
+		pageRecord.setPageTotal(list.size());
 		if (list.size() > pageRecord.getPageSize()) {
 			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
 		} else {
 			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), list.size()));
 		}
-	
 		return pageRecord;
 	}
 	/**

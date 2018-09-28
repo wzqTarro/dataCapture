@@ -45,13 +45,7 @@ public class TemplateDataUtil extends CommonServiceImpl {
 			if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
 				return null;
 			}
-			Map<String, Object> param = new HashMap<>(2);
-			SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
-			String column = simpleCodeEnum.getValue();
-			param.put("columnName", column);
-			param.put("simpleCode", simpleCode);
-			SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
-			return code.getBarCode();
+			return redisService.queryBarCodeBySysNameAndSimpleCode(sysName, simpleCode);
 		} else {
 			return simpleBarCode;
 		}
@@ -64,13 +58,9 @@ public class TemplateDataUtil extends CommonServiceImpl {
 	 * @return
 	 */
 	public TemplateProduct getStandardProductMessage(String sysId, String simpleBarCode) {
-		if (CommonUtil.isBlank(sysId)) {
+		if (CommonUtil.isBlank(sysId) || CommonUtil.isBlank(simpleBarCode)) {
 			return null;
 		}
-		Map<String, Object> param = new HashMap<>(2);
-		param.put("sysId", sysId);
-		param.put("simpleBarCode", simpleBarCode);
-		List<TemplateProduct> product = queryListByObject(QueryId.QUERY_PRODUCT_BY_PARAM, param);
-		return CommonUtil.isBlank(product) ? null :product.get(0);
+		return redisService.queryTemplateProductBySysIdAndSimpleBarCode(sysId, simpleBarCode);
 	}
 }

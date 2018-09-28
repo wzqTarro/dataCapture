@@ -39,12 +39,9 @@ public class StockController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "getStockByWeb", method = RequestMethod.POST)
-	@ApiOperation(value = "抓取库存数据", httpMethod = "POST")
-	@ApiImplicitParam(name = "sysId", value = "系统ID", required = true)
-	public String getStockByWeb(String sysId, 
-			@RequestParam(value = "page", required = false)Integer page, 
-			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+	@RequestMapping(value = "getStockByWeb", method = RequestMethod.GET)
+	@ApiOperation(value = "抓取库存数据", httpMethod = "GET")
+	public String getStockByWeb(String sysId, Integer page, Integer limit) throws Exception {
 		ResultUtil result = stockServiceImpl.getStockByWeb(sysId, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
@@ -55,12 +52,9 @@ public class StockController {
 	 * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "getStockByParam", method = RequestMethod.POST)
-	@ApiOperation(value = "多条件查询库存数据", httpMethod = "POST")
-	public String getStockByParam(@RequestParam(value = "common", required = false)CommonDTO common,
-			@RequestParam(value = "stock", required = false)Stock stock,
-			@RequestParam(value = "page", required = false)Integer page, 
-			@RequestParam(value = "limit", required = false)Integer limit) throws Exception {
+	@RequestMapping(value = "getStockByParam", method = RequestMethod.GET)
+	@ApiOperation(value = "多条件查询库存数据", httpMethod = "GET")
+	public String getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception {
 		ResultUtil result = stockServiceImpl.getStockByParam(common, stock, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}

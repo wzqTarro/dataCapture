@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,8 +15,12 @@ import com.data.service.IOrderService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/order")
+@Api(tags = {"订单数据接口"})
 //@CrossOrigin(origins="*", maxAge=3600)
 public class OrderController {
 	
@@ -32,9 +37,9 @@ public class OrderController {
 	 * @param limit
 	 * @return
 	 */
-	public String getOrderByWeb(String queryDate, String sysId, 
-			@RequestParam(value = "page", required = false)Integer page, 
-			@RequestParam(value = "limit", required = false)Integer limit) {
+	@RequestMapping(value = "/getOrderByWeb", method = RequestMethod.GET)
+	@ApiOperation(value = "抓取订单数据", httpMethod = "GET")
+	public String getOrderByWeb(String queryDate, String sysId, Integer page, Integer limit) {
 		ResultUtil result = orderService.getOrderByWeb(queryDate, sysId, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
@@ -46,6 +51,8 @@ public class OrderController {
 	 * @param limit
 	 * @return
 	 */
+	@RequestMapping(value = "/getOrderByCondition", method = RequestMethod.GET)
+	@ApiOperation(value = "分页多条件查询", httpMethod = "GET")
 	public String getOrderByCondition(Order order, CommonDTO common, Integer page, Integer limit) {
 		ResultUtil result = ResultUtil.error();
 		try {

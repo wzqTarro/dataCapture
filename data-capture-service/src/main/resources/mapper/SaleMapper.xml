@@ -24,7 +24,7 @@
     <result column="stock_no" property="stockNo" jdbcType="VARCHAR" />
     <result column="sell_num" property="sellNum" jdbcType="INTEGER" />
     <result column="sell_price" property="sellPrice" jdbcType="DOUBLE" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="DATE" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="store_manager" property="storeManager" jdbcType="CHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
@@ -35,9 +35,18 @@
     day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time,
     remark, store_manager, local_name
   </sql>
+  <sql id="Column_List" >
+    s.id, sys_id, s.sys_name, s.store_code, s.store_name, s.region, s.province_area, s.ascription, 
+    s.ascription_sole, s.simple_code, s.simple_bar_code, s.stock_code, s.simple_name, s.brand, s.series, 
+    s.day_night, s.material, s.pieces_num, s.box_standard, s.stock_no, s.sell_num, s.sell_price, s.create_time,
+    s.remark, s.store_manager, s.local_name
+  </sql>
   <sql id="Query_Condition">
   	<if test="simpleCode != null and simpleCode != ''">
   		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
   	</if>
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
@@ -115,13 +124,17 @@
   
   <!-- 按条件查询销售信息 -->
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
-  	SELECT <include refid="Base_Column_List"></include>
-  	FROM db_sale
-  	WHERE 1=1
-  	<include refid="Query_Condition"></include>
-  	<if test="pageNum != null and pageSize != null">
-  		LIMIT #{pageNum}, #{pageSize}
-  	</if>
+  	SELECT <include refid="Column_List"></include>
+  	FROM db_sale s
+  	INNER JOIN(
+  		SELECT ID
+	  	FROM db_sale
+	  	WHERE 1=1
+	  	<include refid="Query_Condition"></include>
+	  	<if test="pageNum != null and pageSize != null">
+	  		LIMIT #{pageNum}, #{pageSize}
+	  	</if>
+  	)t ON(s.ID = t.ID)
   </select>
   
   <!-- 按条件查询销售信息数量 -->
@@ -159,7 +172,7 @@
       #{simpleName,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{series,jdbcType=VARCHAR}, 
       #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
       #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
-      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+      #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
       #{storeManager,jdbcType=CHAR},  #{localName,jdbcType=CHAR} )
   </insert>
   
@@ -182,7 +195,7 @@
       #{sale.simpleName,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
       #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
       #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
-      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=TIMESTAMP}, #{sale.remark,jdbcType=VARCHAR},
+      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
       #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
     </foreach>
   </insert>
@@ -337,7 +350,7 @@
         #{sellPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
+        #{createTime,jdbcType=DATE},
       </if>
       <if test="remark != null" >
         #{remark,jdbcType=VARCHAR},
@@ -417,7 +430,7 @@
         sell_price = #{sellPrice,jdbcType=DOUBLE},
       </if>
       <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=DATE},
       </if>
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
@@ -454,7 +467,7 @@
       stock_no = #{stockNo,jdbcType=VARCHAR},
       sell_num = #{sellNum,jdbcType=INTEGER},
       sell_price = #{sellPrice,jdbcType=DOUBLE},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=DATE},
       remark = #{remark,jdbcType=VARCHAR},
       store_manager=#{storeManager,jdbcType=CHAR},
       local_name=#{localName, jdbcType=CHAR}

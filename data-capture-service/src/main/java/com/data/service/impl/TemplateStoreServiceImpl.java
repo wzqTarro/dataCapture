@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
+import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
@@ -22,6 +23,7 @@ import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateStoreService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.RedisUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.StreamUtil;
 
@@ -89,6 +91,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 			templateStore.setPracticeTime(DateUtils.parseDate(practiceDate, "yyyy-MM-dd"));
 		}
 		update(UpdateId.UPDATE_STORE_BY_MESSAGE, templateStore);
+		RedisUtil.del(RedisAPI.STORE_TEMPLATE);
 		return ResultUtil.success();
 	}
 
@@ -105,6 +108,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		}
 		templateStore.setPracticeTime(DateUtils.parseDate(practiceDate, "yyyy-MM-dd"));
 		insert(InsertId.INSERT_STORE_BY_MESSAGE, templateStore);
+		RedisUtil.del(RedisAPI.STORE_TEMPLATE);
 		return ResultUtil.success();
 	}
 
@@ -116,6 +120,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 			return ResultUtil.error(TipsEnum.ID_ERROR.getValue());
 		}
 		delete(DeleteId.DELETE_STORE_BY_ID, id);
+		RedisUtil.del(RedisAPI.STORE_TEMPLATE);
 		return ResultUtil.success();
 	}
 	@Override

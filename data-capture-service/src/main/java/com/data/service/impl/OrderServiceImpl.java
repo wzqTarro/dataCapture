@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +14,17 @@ import org.springframework.stereotype.Service;
 import com.data.bean.Order;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
-import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
+import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IOrderService;
+import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
+import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.TemplateDataUtil;
@@ -37,6 +40,9 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Autowired
 	private TemplateDataUtil templateDataUtil;
 	
+	@Autowired
+	private IRedisService redisService;
+	
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
@@ -49,6 +55,10 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			if (CommonUtil.isNotBlank(common.getEndDate())) {
 				map.put("endDate", common.getEndDate());
 			}
+		} else {
+			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
+			map.put("startDate", now);
+			map.put("endDate", now);
 		}
 		if (null != order) {
 			if (CommonUtil.isNotBlank(order.getSysId())) {
@@ -71,64 +81,123 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			}
 		}
 		PageRecord<Order> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, page, limit);
-		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(page));
+		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(pageRecord));
 		return ResultUtil.success(pageRecord);
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer page, Integer limit){
+	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer page, Integer limit) {		
+		PageRecord<Order> pageRecord = null;
+		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");
+		
+		if (CommonUtil.isBlank(queryDate)) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		
+		Map<String, Object> queryParam = new HashMap<>(2);
+		queryParam.put("queryDate", queryDate);
+		queryParam.put("sysId", sysId);
+		int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
+		
+		logger.info("------>>>>>>count:{}<<<<<<-------", count);
 		List<Order> orderList = null;
-		try {
-			orderList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.ORDER, Order.class);
-		} catch (IOException e) {
-			return ResultUtil.error(TipsEnum.GRAB_DATA_ERROR.getValue());
-		}
-		for (int i = 0, size = orderList.size(); i < size; i++) {
-			Order order = orderList.get(i);
-			
-			// 系统名称
-			String sysName = order.getSysName();
-			
-			// 单品编码
-			String simpleCode = order.getSimpleCode();
-			
-			// 单品条码
-			String simpleBarCode = order.getSimpleBarCode();
-			
-			// 门店编号
-			String storeCode = order.getStoreCode();
-			
-			// 模板门店信息
-			TemplateStore store = null;
+		
+		if (count == 0) {
 			try {
-				store = templateDataUtil.getStandardStoreMessage(sysId, storeCode);
-			} catch (Exception e) {
-				order.setRemark("模板门店信息获取失败");
-				continue;
+				orderList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.ORDER, Order.class);
+			} catch (IOException e) {
+				return ResultUtil.error(TipsEnum.GRAB_DATA_ERROR.getValue());
 			}
-			if (null != store) {
-				order.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
-				continue;
+			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
+			List<TemplateProduct> productList = redisService.queryTemplateProductList();
+			for (int i = 0, size = orderList.size(); i < size; i++) {
+				Order order = orderList.get(i);
+				
+				// 系统名称
+				String sysName = order.getSysName();
+				
+				// 单品编码
+				String simpleCode = order.getSimpleCode();
+				
+				// 单品条码
+				String simpleBarCode = order.getSimpleBarCode();
+				
+				// 门店编号
+				String storeCode = order.getStoreCode();
+				
+				// 条码信息
+				simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+				if (CommonUtil.isBlank(simpleBarCode)) {
+					order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+					continue;
+				}
+				
+				// 单品模板信息
+				TemplateProduct product = null;
+				String tempSysId = null;
+				String tempSimpleBarCode = null;
+				for (int j = 0, len = productList.size(); j < len; j++) {
+					product = productList.get(j);
+					tempSysId = product.getSysId();
+					tempSimpleBarCode = product.getSimpleBarCode();
+					if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
+						break;
+					}
+					product = null;
+				}
+				if (CommonUtil.isBlank(product)) {
+					order.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+					continue;
+				}
+				// 单品门店信息
+				TemplateStore store = null;
+				String tempStoreCode = null;
+				String tempOrderStoreName = null;
+				for (int j = 0, len = storeList.size(); j < len; j++) {
+					store = storeList.get(j);
+					tempSysId = store.getSysId();
+					tempStoreCode = store.getStoreCode();
+					tempOrderStoreName = store.getOrderStoreName() == null ? "" : store.getOrderStoreName();
+					if (sysId.equals(tempSysId) && (storeCode.equals(tempStoreCode) || tempOrderStoreName.contains(storeCode))) {
+						break;
+					}
+					store = null;
+				}
+				if (null == store) {
+					order.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+					continue;
+				}
+				// 大区
+				order.setRegion(store.getRegion());
+					
+				// 省区
+				order.setProvinceArea(store.getProvinceArea());
+					
+				// 门店名称
+				order.setStoreName(store.getStandardStoreName());
+				
+				// 单品条码
+				order.setSimpleBarCode(simpleBarCode);
+				
+				// 单品箱规
+				order.setBoxStandard(product.getBoxStandard());
+				
+				// 单品名称
+				order.setSimpleName(product.getStandardName());
+					
+				// 箱规
+				order.setBoxStandard(product.getBoxStandard());
+					
+				// 库存编号
+				order.setStockCode(product.getStockCode());
 			}
-			
-			// 条码信息
-			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-			if (CommonUtil.isBlank(simpleBarCode)) {
-				order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-				continue;
-			}
-			
-			// 模板商品信息
-			TemplateProduct product = templateDataUtil.getStandardProductMessage(sysId, simpleBarCode);
-			if (CommonUtil.isBlank(product)) {
-				order.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
-				continue;
-			}
-			order.setSimpleBarCode(simpleBarCode);
-			order.setBoxStandard(product.getBoxStandard());
-			order.setProvinceArea(product.getProductId());
+			// 插入数据
+			dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
+		} else {
+			orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, queryParam);
 		}
-		return null;
+		pageRecord = dataCaptureUtil.setPageRecord(orderList, page, limit);
+		return ResultUtil.success(pageRecord);
 	}
 
 }

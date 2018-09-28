@@ -39,6 +39,48 @@
     contract_price, diff_price_contract, diff_price_contract_total, contract_alarm_flag, 
     diff_price
   </sql>
+  <sql id="Column_List" >
+    r.id, sys_id, r.sys_name, r.reject_department_id, r.region, r.province_area, r.reject_department_name, 
+    r.receipt_code, r.simple_code, r.simple_bar_code, r.stock_code, r.simple_name, r.tax_rate, r.simple_amount, 
+    r.reject_price_with_rate, r.reject_price, r.reject_date, r.discount_price, r.discount_start_date, 
+    r.discount_end_date, r.diff_price_discount, r.diff_price_discount_total, r.discount_alarm_flag, 
+    r.contract_price, r.diff_price_contract, r.diff_price_contract_total, r.contract_alarm_flag, 
+    r.diff_price
+  </sql>
+  <sql id="Query_Condition">
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
+  	</if>
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name = #{sysName}
+  	</if>
+  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+  		AND reject_date &lt;= #{endDate}
+  		AND reject_date &gt;= #{startDate}
+  	</if>
+  	<if test="queryDate != null and queryDate != ''">
+  		AND reject_date = #{queryDate}
+  	</if>
+  </sql>
+  <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
+  	SELECT <include refid="Column_List"></include>
+  	FROM db_reject r
+  	INNER JOIN(
+  		SELECT ID
+  		FROM db_reject 
+  		WHERE 1 = 1
+  		<include refid="Query_Condition"></include>
+  		<if test="pageNum != null and pageSize != null">
+  			LIMIT #{pageNum}, #{pageSize}
+  		</if>
+  	)t ON(r.ID = t.ID)
+  </select>
+  <select id="selectCountByParam" resultType="int" parameterType="map">
+  	SELECT COUNT(1)
+  	FROM db_reject r
+  	WHERE 1 = 1
+  	<include refid="Query_Condition"></include>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -70,6 +112,31 @@
       #{diffPriceDiscountTotal,jdbcType=DECIMAL}, #{discountAlarmFlag,jdbcType=VARCHAR}, 
       #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, #{diffPriceContractTotal,jdbcType=DECIMAL}, 
       #{contractAlarmFlag,jdbcType=VARCHAR}, #{diffPrice,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_reject (id, sys_id, sys_name, 
+      reject_department_id, region, province_area, 
+      reject_department_name, receipt_code, simple_code, 
+      simple_bar_code, stock_code, simple_name, 
+      tax_rate, simple_amount, reject_price_with_rate, 
+      reject_price, reject_date, discount_price, 
+      discount_start_date, discount_end_date, diff_price_discount, 
+      diff_price_discount_total, discount_alarm_flag, 
+      contract_price, diff_price_contract, diff_price_contract_total, 
+      contract_alarm_flag, diff_price)
+    values 
+    <foreach collection="list" item="reject" separator=",">
+    (#{reject.id,jdbcType=INTEGER}, #{reject.sysId,jdbcType=CHAR}, #{reject.sysName,jdbcType=VARCHAR}, 
+      #{reject.rejectDepartmentId,jdbcType=VARCHAR}, #{reject.region,jdbcType=VARCHAR}, #{reject.provinceArea,jdbcType=VARCHAR}, 
+      #{reject.rejectDepartmentName,jdbcType=VARCHAR}, #{reject.receiptCode,jdbcType=VARCHAR}, #{reject.simpleCode,jdbcType=VARCHAR}, 
+      #{reject.simpleBarCode,jdbcType=VARCHAR}, #{reject.stockCode,jdbcType=VARCHAR}, #{reject.simpleName,jdbcType=VARCHAR}, 
+      #{reject.taxRate,jdbcType=DECIMAL}, #{reject.simpleAmount,jdbcType=DECIMAL}, #{reject.rejectPriceWithRate,jdbcType=DECIMAL}, 
+      #{reject.rejectPrice,jdbcType=DECIMAL}, #{reject.rejectDate,jdbcType=DATE}, #{reject.discountPrice,jdbcType=DECIMAL}, 
+      #{reject.discountStartDate,jdbcType=DATE}, #{reject.discountEndDate,jdbcType=DATE}, #{reject.diffPriceDiscount,jdbcType=DECIMAL}, 
+      #{reject.diffPriceDiscountTotal,jdbcType=DECIMAL}, #{reject.discountAlarmFlag,jdbcType=VARCHAR}, 
+      #{reject.contractPrice,jdbcType=DECIMAL}, #{reject.diffPriceContract,jdbcType=DECIMAL}, #{reject.diffPriceContractTotal,jdbcType=DECIMAL}, 
+      #{reject.contractAlarmFlag,jdbcType=VARCHAR}, #{reject.diffPrice,jdbcType=DECIMAL})
+     </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Reject" >
     insert into db_reject

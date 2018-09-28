@@ -31,7 +31,12 @@ public final class InsertId {
 	
 	public static final String INSERT_BATCH_STORE = "TemplateStoreMapper.insertBatch";
 	
+	public static final String INSERT_REJECT_BY_MESSAGE = "RejectMapper.insertSelective";
+	
+	public static final String INSERT_BATCH_REJECT = "RejectMapper.insertBatch";
+	
 	public static final String INSERT_STOCK_BY_MESSAGE = "StockMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_STOCK = "StockMapper.insertBatch";
+	
 }

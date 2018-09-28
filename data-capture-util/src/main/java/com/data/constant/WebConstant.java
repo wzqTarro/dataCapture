@@ -12,7 +12,7 @@ public class WebConstant {
 	//抓取订单数据
 	public static final int ORDER = 3;
 	//抓取退货数据
-	public static final int RETURN = 4;
+	public static final int REJECT = 4;
 	//抓取销售数据
 	public static final int SALE = 1;
 	//抓取库存数据

@@ -125,6 +125,22 @@ public interface IRedisService {
 	TemplateStore queryTemplateStoreBySysIdAndStoreCode(String sysId, String storeCode) throws Exception;
 	
 	/**
+	 * 根据sysId和simpleBarCode查询商品模板
+	 * @param sysId
+	 * @param simpleBarCode
+	 * @return
+	 */
+	TemplateProduct queryTemplateProductBySysIdAndSimpleBarCode(String sysId, String simpleBarCode);
+	
+	/**
+	 * 根据sysName和simpleCode查询条码
+	 * @param sysName
+	 * @param simpleCode
+	 * @return
+	 */
+	String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode);
+	
+	/**
 	 * 查询门店模板列表
 	 * @return
 	 */
