@@ -1,12 +1,16 @@
 package com.data.controller;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.buf.UDecoder;
+import org.apache.tomcat.util.buf.UEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -231,14 +235,15 @@ public class StockController {
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {
         try {
-            try {
-                fileName = new String(fileName.getBytes(),"ISO8859-1");
+           /* try {
+                //fileName = new String(fileName.getBytes("UTF-8"),"ISO8859-1");
             } catch (UnsupportedEncodingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            response.setContentType("application/octet-stream;charset=ISO8859-1");
-            response.setHeader("Content-Disposition", "attachment;filename="+ fileName);
+            }*/
+        	response.setCharacterEncoding("utf-8");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+ fileName + ".xlsx");
             response.addHeader("Pargam", "no-cache");
             response.addHeader("Cache-Control", "no-cache");
         } catch (Exception ex) {

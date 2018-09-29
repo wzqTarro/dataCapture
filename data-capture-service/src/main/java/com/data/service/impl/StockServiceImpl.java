@@ -327,14 +327,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			CellStyle cellStyle = null;
 			
 			// 库存天数小于3 ，单元格黄底
-			if (stockDayNum < 3) {
-				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
+			/*if (stockDayNum < 3) {
+				cellStyle = excelUtil.getCellStyle(wb, HSSFColor.YELLOW.index);
 			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底，字体白色
 				// 红底
-				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+				cellStyle = excelUtil.getCellStyle(wb, HSSFColor.RED.index);
 				
 				// 字体样式
-				Font font = excelUtil.getColorFont(wb, HSSFColor.WHITE.index); 
+				Font font = excelUtil.getColorFont(wb, HSSFColor.WHITE); 
 				cellStyle.setFont(font);
 			}
 			
@@ -342,7 +342,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			stockDayNumCell.setCellValue(stockDayNum);
 			if (null != cellStyle) {
 				stockDayNumCell.setCellStyle(cellStyle);
-			}
+			}*/
 		}
 		wb.write(output);
 		return ResultUtil.success();
@@ -457,13 +457,20 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
 		}
 		String[] stockNameArray = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		String[] methodNameArray = new String[stockNameArray.length];
 		StringBuilder builder = new StringBuilder();
 		
+		int methodIndex = 0;
 		// 拼接查询字段
 		for (String s : stockNameArray) {
 			StockEnum e = StockEnum.getEnum(s.trim());
-			builder.append(e.getValue());
+			if (e == null) {
+				return ResultUtil.error(s.trim()+"列名错误");
+			}
+			builder.append(e.getColumn());
 			builder.append(",");
+			methodNameArray[methodIndex] = e.getMethodName(); 
+			methodIndex++;
 		}
 		builder.deleteCharAt(builder.length() - 1);
 		
@@ -474,7 +481,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		excelUtil.excel2003("库存处理表", stockNameArray, stockList, output);
+		excelUtil.exportCustom2007("库存处理表", stockNameArray, methodNameArray, stockList.subList(0, 10), output);
 		return null;
 	}
 	@Override

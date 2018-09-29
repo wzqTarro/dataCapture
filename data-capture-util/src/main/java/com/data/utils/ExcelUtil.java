@@ -3,6 +3,7 @@ package com.data.utils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,17 +16,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.data.exception.DataException;
+
+import ch.qos.logback.classic.db.names.ColumnName;
 
 /**
  * excel操作工具类
@@ -90,7 +97,7 @@ public class ExcelUtil<T> {
 		}
 		if(CommonUtil.isNotBlank(title)) {
 			//将数据放置在磁盘中 减缓压力
-			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
+			SXSSFWorkbook workBook = new SXSSFWorkbook();
 			Sheet sheet = workBook.createSheet(title);
 			
 			Row row = null;
@@ -158,6 +165,7 @@ public class ExcelUtil<T> {
 				}
 			}
 			workBook.write(out);
+			out.close();
 		}
 	}
 	
@@ -202,7 +210,7 @@ public class ExcelUtil<T> {
 			throw new DataException("510");
 		}
 		if(CommonUtil.isNotBlank(title)) {
-			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
+			SXSSFWorkbook workBook = new SXSSFWorkbook();
 			Sheet sheet = workBook.createSheet(title);
 			
 			Row row = null;
@@ -267,6 +275,7 @@ public class ExcelUtil<T> {
 				}
 			}
 			workBook.write(out);
+			out.close();
 		}
 	}
 	
@@ -288,7 +297,7 @@ public class ExcelUtil<T> {
 			throw new DataException("510");
 		}
 		if(CommonUtil.isNotBlank(title)) {
-			SXSSFWorkbook workBook = new SXSSFWorkbook(1000);
+			SXSSFWorkbook workBook = new SXSSFWorkbook();
 			Sheet sheet = workBook.createSheet(title);
 			
 			Row row = null;
@@ -357,6 +366,78 @@ public class ExcelUtil<T> {
 				}
 			}
 			workBook.write(out);
+			out.flush();
+			out.close();
+		}
+	}
+	/**
+	 * 自定义字段导出Excel2007
+	 * @param title
+	 * @param header
+	 * @param columnName
+	 * @param dataList
+	 * @param output
+	 * @throws Exception
+	 */
+	public <T> void exportCustom2007(String title,  String[] header, String[] methodNameArray, Collection<T> dataList, 
+			OutputStream output) throws Exception {
+		if(null != header && header.length > MAX_COL_COUNT_2007) {
+			logger.info("--->>>导出excel表头部大于最大限定列值<<<---");
+			throw new DataException("509");
+		}
+		if(null != dataList && dataList.size() > MAX_ROW_COUNT_2007) {
+			logger.info("--->>>导出excel内容大于最大限定行值<<<---");
+			throw new DataException("510");
+		}
+		if (header.length != methodNameArray.length) {
+			throw new DataException("535");
+		}
+		if (CommonUtil.isNotBlank(title)) {
+			SXSSFWorkbook wb = new SXSSFWorkbook();
+			Sheet sheet = wb.createSheet();
+			int rowIndex = 0;
+			if (CommonUtil.isNotBlank(header)) {
+				Row row = sheet.createRow(rowIndex);
+				createRow(row, header);
+				rowIndex ++;
+			}
+			Iterator<T> it = dataList.iterator();
+			while (it.hasNext()) {
+				Row row = sheet.createRow(rowIndex);
+				T t = (T) it.next();
+				Class clazz = t.getClass();
+				for (int i = 0, size = methodNameArray.length; i < size; i++) {
+					String methodName = methodNameArray[i];
+					Method method = clazz.getMethod(methodName, new Class[] {});
+					Object value = method.invoke(t, new Object[] {});
+					
+					if (value == null) {
+						value = "";
+					}
+					String text = "";
+					if (value instanceof Date) {
+						text = DateUtil.format((Date)value, "yyyy-MM-dd");
+					} else if(value instanceof Boolean) {
+						text = String.valueOf((Boolean) value);
+					} else {
+						text = value.toString();
+					}
+					Cell cell = row.createCell(i);
+					if(CommonUtil.isNotBlank(text)) {
+						//如果是非负浮点数则转换
+						Pattern pattern = Pattern.compile("^//d+(//.//d+)?$");
+						Matcher matcher = pattern.matcher(text);
+						if(matcher.matches()) {
+							cell.setCellValue(Double.parseDouble(text));
+						} else {
+							XSSFRichTextString richText = new XSSFRichTextString(text);
+							cell.setCellValue(richText);
+						}
+					}
+				}		
+				rowIndex ++;		
+			}
+			wb.write(output);
 		}
 	}
 	
@@ -387,11 +468,11 @@ public class ExcelUtil<T> {
 	 * @param color 背景颜色
 	 * @return 
 	 */
-	public CellStyle getCellStyle(SXSSFWorkbook wb, short fill, short color) {
+	public CellStyle getCellStyle(SXSSFWorkbook wb, short color) {
 		CellStyle cellStyle = wb.createCellStyle();
 		
 		// 填充单元格
-		cellStyle.setFillPattern(fill); 
+		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); 
 		
 		// 背景颜色
 		cellStyle.setFillForegroundColor(color); 
@@ -416,13 +497,13 @@ public class ExcelUtil<T> {
 	public CellStyle getBolderTitle(SXSSFWorkbook wb) {
 		// 字体设置
 		Font font = wb.createFont();
-		font.setBoldweight(Font.BOLDWEIGHT_BOLD);// 加粗
+		font.setBold(true);// 加粗
 		font.setFontHeightInPoints((short) 20);
 
 		// 单元格样式
 		CellStyle cellStyle = wb.createCellStyle();
 		cellStyle.setFont(font);
-		cellStyle.setAlignment(CellStyle.ALIGN_CENTER);// 水平居中
+		cellStyle.setAlignment(HorizontalAlignment.CENTER);// 水平居中
 		return cellStyle;
 	}
 }
