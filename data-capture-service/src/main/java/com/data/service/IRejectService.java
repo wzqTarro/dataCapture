@@ -1,5 +1,7 @@
 package com.data.service;
 
+import java.io.OutputStream;
+
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
@@ -13,7 +15,7 @@ public interface IRejectService {
 	 * @param limit
 	 * @return
 	 */
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer page, Integer limit);
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit);
 	/**
 	 * 多条件查询退单数据
 	 * @param common
@@ -23,4 +25,13 @@ public interface IRejectService {
 	 * @return
 	 */
 	public ResultUtil getRejectByParam(CommonDTO common, Reject reject, Integer page, Integer limit) throws Exception ;
+	/**
+	 * 选择字段导出Excel
+	 * @param stockNameStr
+	 * @param common
+	 * @param output
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil exportRejectExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
 }

@@ -35,6 +35,12 @@ public final class QueryId {
 	
 	public static final String QUERY_STOCK_BY_ANY_COLUMN = "StockMapper.selectByAnyColumn";
 	
+	public static final String QUERY_ORDER_BY_ANY_COLUMN = "OrderMapper.selectByAnyColumn";
+	
+	public static final String QUERY_SALE_BY_ANY_COLUMN = "SaleMapper.selectByAnyColumn";
+	
+	public static final String QUERY_REJECT_BY_ANY_COLUMN = "RejectMapper.selectByAnyColumn";
+	
 	public static final String QUERY_STOCK_BY_PARAM = "StockMapper.selectByParam";
 	
 	public static final String QUERY_COUNT_STOCK_BY_PARAM = "StockMapper.selectCountByParam";

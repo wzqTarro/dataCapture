@@ -89,7 +89,13 @@
   		AND create_time=#{saleDate}
   	</if>
   </sql>
-  
+  <!-- 选择字段查询 -->
+  <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
+  	SELECT ${column}
+  	FROM db_sale
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <!-- 查询导出信息 -->
   <select id="querySaleListReport" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include>
