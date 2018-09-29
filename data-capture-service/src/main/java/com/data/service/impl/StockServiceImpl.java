@@ -13,13 +13,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Color;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.ExcelUtil;
+import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.StockDataUtil;
@@ -65,8 +68,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	@Autowired
 	private IRedisService redisService;
 	
+	@Autowired
+	private ExportUtil exportUtil;
+	
 	@Override
-	public ResultUtil getStockByWeb(String sysId, Integer page, Integer limit) throws Exception {
+	public ResultUtil getStockByWeb(String sysId, Integer limit) throws Exception {
 		logger.info("------>>>>>>前端传递sysId:{}<<<<<<<-------", sysId);
 		
 		Date now = new Date();
@@ -456,26 +462,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		if (CommonUtil.isBlank(stockNameStr)) {
 			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
 		}
-		String[] stockNameArray = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
 		StringBuilder builder = new StringBuilder();
-		
-		// 拼接查询字段
-		for (String s : stockNameArray) {
-			StockEnum e = StockEnum.getEnum(s.trim());
-			builder.append(e.getValue());
-			builder.append(",");
-		}
-		builder.deleteCharAt(builder.length() - 1);
-		
-		Map<String, Object> param = new HashMap<>(2);
-		param.put("column", builder.toString());
-		param.put("startDate", common.getStartDate());
-		param.put("endDate", common.getEndDate());
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
-		
-		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		excelUtil.excel2003("库存处理表", stockNameArray, stockList, output);
-		return null;
+		String[] methodNameArray = exportUtil.joinColumn(StockEnum.class, builder, header, common);
+		exportUtil.exportExcel(Stock.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
+				QueryId.QUERY_STOCK_BY_ANY_COLUMN, "库存信息表", methodNameArray, header, output);
+		return ResultUtil.success();
 	}
 	@Override
 	public ResultUtil expertCompanyExcelBySys(String queryDate, OutputStream output) throws IOException {
