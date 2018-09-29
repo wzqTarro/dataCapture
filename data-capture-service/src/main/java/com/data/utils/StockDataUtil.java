@@ -9,16 +9,21 @@ import java.util.stream.Collectors;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.data.bean.Sale;
 import com.data.bean.Stock;
 import com.data.constant.dbSql.QueryId;
 import com.data.service.impl.CommonServiceImpl;
+
 
 /**
  * 库存计算
@@ -28,6 +33,7 @@ import com.data.service.impl.CommonServiceImpl;
 @Component
 public class StockDataUtil extends CommonServiceImpl{
 	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	/**
 	 * 生成蓝色字体样式日期行
 	 * @param wb
@@ -36,20 +42,18 @@ public class StockDataUtil extends CommonServiceImpl{
 	 * @param cellName 
 	 * @param cellValue
 	 */
-	public void createDateRow(SXSSFWorkbook wb, Sheet sheet, int rowIndex, String cellName, Object...cellValue) {
+	public void createDateRow(Workbook wb, Row row, String cellName, Object...cellValue) {
+		Cell firstCell = row.createCell(0);
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		Row firstRow = sheet.createRow(rowIndex);
-		Cell firstCell = firstRow.createCell(0);
-		
 		// 蓝色字体
 		CellStyle firstCellStyle = wb.createCellStyle();
-		firstCellStyle.setFont(excelUtil.getColorFont(wb, HSSFColor.BLUE.index));
+		firstCellStyle.setFont(excelUtil.getColorFont(wb, IndexedColors.LIGHT_BLUE.index));
 		
 		firstCell.setCellValue(cellName);
 		firstCell.setCellStyle(firstCellStyle);
 		
 		for (int i = 0, size = cellValue.length; i < size; i++) {
-			Cell firstCell2 = firstRow.createCell(i+1);
+			Cell firstCell2 = row.createCell(i+1);
 			firstCell2.setCellValue(cellValue[i].toString());
 			firstCell2.setCellStyle(firstCellStyle);
 		}
@@ -87,7 +91,7 @@ public class StockDataUtil extends CommonServiceImpl{
 	 */
 	public void createMissStockMessage(List<Stock> stockList, Sheet sheet, String queryDate, 
 			String firstCellValue, int index) {
-		Map<String, List<Stock>> stockMap = stockList.parallelStream()
+		/*Map<String, List<Stock>> stockMap = stockList.parallelStream()
 				.collect(Collectors.groupingBy(Stock::getStoreCode));
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		index ++;
@@ -127,49 +131,42 @@ public class StockDataUtil extends CommonServiceImpl{
 				String.valueOf(sumZeroStockDay) // 库存天数低于三天的单品总库存数量
 			};
 			excelUtil.createRow(row, cellValue);
-		}
+		}*/
 	}
 
 	/**
 	 * 计算库存天数
-	 * @param queryDay 查询时间
-	 * @param simpleBarCode 单品条码
-	 * @param storeName 门店名称
+	 * @param simpleBarCode 条码
 	 * @param stockPrice 库存金额
+	 * @param saleDayList 前一天销售列表
+	 * @return
 	 */
-	public double calculateStockDay(String queryDay, String simpleBarCode, String storeCode, Double stockPrice) {
-		// 查询前一天
-		LocalDate lastDay = LocalDate.parse(queryDay).minusDays(1L);
-		
-		Map<String, Object> param = new HashMap<>(3);
-		param.put("queryDate", lastDay.toString());
-		if (CommonUtil.isBlank(simpleBarCode)) {
-			param.put("simpleBarCode", simpleBarCode);
-		}	
-		param.put("storeCode", storeCode);
-		
-		// 查询前一天销量
-		List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+	public double calculateStockDay(String simpleBarCode, Double stockPrice, List<Sale> saleDayList) {
 	
 		// 前一天单品的销售总量
-		Integer sumSaleNumByDay = 0;
+		int sumSaleNumByDay = 0;
 					
 		// 如果前一天存在销售记录，否则默认为0
 		if (CommonUtil.isNotBlank(saleDayList)) {
-			sumSaleNumByDay = CommonUtil.toIntOrZero(saleDayList.stream().collect(Collectors.summingInt(s -> s.getSellNum())));
+			Sale sale = null;
+			for (int i = 0, size = saleDayList.size(); i < size; i++) {
+				sale = saleDayList.get(i);
+				if (sale.getSimpleBarCode().equals(simpleBarCode)) {
+					sumSaleNumByDay += (sale.getSellNum()==null) ? 0 : sale.getSellNum();
+				}
+			}
 		}
-					
+		logger.info("------->>>>>>昨天销售数量：{}<<<<<<-------", sumSaleNumByDay);
+		
 		// 库存金额
 		stockPrice = CommonUtil.toDoubleOrZero(stockPrice);
 					
 		// 库存天数
 		double stockDayNum = 0;
-		if (sumSaleNumByDay != 0 && sumSaleNumByDay != null) {
+		if (sumSaleNumByDay != 0) {
 			stockDayNum = CommonUtil.setScale("0.00", stockPrice / sumSaleNumByDay);
-		}
-		
+		}		
 		return stockDayNum;
-		
 	}
 	/**
 	 * 生成库存日报表
@@ -226,7 +223,7 @@ public class StockDataUtil extends CommonServiceImpl{
 			
 			// 行
 			Row row = sheet.createRow(rowIndex);
-			excelUtil.createRow(row, cellValue);
+			excelUtil.createRow(row, cellValue, false);
 			rowIndex++;
 		}
 	}

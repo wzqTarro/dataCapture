@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -398,7 +399,7 @@ public class ExcelUtil<T> {
 			int rowIndex = 0;
 			if (CommonUtil.isNotBlank(header)) {
 				Row row = sheet.createRow(rowIndex);
-				createRow(row, header);
+				createRow(row, header, true);
 				rowIndex ++;
 			}
 			Iterator<T> it = dataList.iterator();
@@ -459,9 +460,15 @@ public class ExcelUtil<T> {
 	 * @param row
 	 * @param header
 	 */
-	public void createRow(Row row, String[] header) {
+	public void createRow(Row row, String[] header, boolean heightFlag) {
 		for (int i = 0, size = header.length; i < size; i++) {
-			row.createCell(i).setCellValue(header[i]);
+			if (heightFlag) {
+				row.setHeightInPoints((short)20);
+				row.createCell(i).setCellValue(header[i]);
+			} else {
+				row.createCell(i).setCellValue(header[i]);
+			}
+			
 		}
 	}
 	/**
@@ -486,7 +493,7 @@ public class ExcelUtil<T> {
 	 * @param color 颜色
 	 * @return
 	 */
-	public Font getColorFont(SXSSFWorkbook wb, short color) {
+	public Font getColorFont(Workbook wb, short color) {
 		Font font = wb.createFont();
 		font.setColor(color);
 		return font;

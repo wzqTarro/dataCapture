@@ -51,6 +51,9 @@
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
   	</if>
+  	<if test="storeCode != null and storeCode != ''">
+  		AND store_code = #{storeCode}
+  	</if>
   	<if test="storeName != null and storeName != ''">
   		AND store_name = #{storeName}
   	</if>
