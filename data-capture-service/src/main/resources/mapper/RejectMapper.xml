@@ -30,6 +30,7 @@
     <result column="diff_price_contract_total" property="diffPriceContractTotal" jdbcType="DECIMAL" />
     <result column="contract_alarm_flag" property="contractAlarmFlag" jdbcType="VARCHAR" />
     <result column="diff_price" property="diffPrice" jdbcType="DECIMAL" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, reject_department_id, region, province_area, reject_department_name, 
@@ -37,7 +38,7 @@
     reject_price_with_rate, reject_price, reject_date, discount_price, discount_start_date, 
     discount_end_date, diff_price_discount, diff_price_discount_total, discount_alarm_flag, 
     contract_price, diff_price_contract, diff_price_contract_total, contract_alarm_flag, 
-    diff_price
+    diff_price, remark
   </sql>
   <sql id="Column_List" >
     r.id, sys_id, r.sys_name, r.reject_department_id, r.region, r.province_area, r.reject_department_name, 
@@ -45,7 +46,7 @@
     r.reject_price_with_rate, r.reject_price, r.reject_date, r.discount_price, r.discount_start_date, 
     r.discount_end_date, r.diff_price_discount, r.diff_price_discount_total, r.discount_alarm_flag, 
     r.contract_price, r.diff_price_contract, r.diff_price_contract_total, r.contract_alarm_flag, 
-    r.diff_price
+    r.diff_price, r.remark
   </sql>
   <sql id="Query_Condition">
   	<if test="sysId != null and sysId != ''">
@@ -62,6 +63,12 @@
   		AND reject_date = #{queryDate}
   	</if>
   </sql>
+  <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
+  	SELECT ${column}
+  	FROM db_reject
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Column_List"></include>
   	FROM db_reject r
@@ -101,7 +108,7 @@
       discount_start_date, discount_end_date, diff_price_discount, 
       diff_price_discount_total, discount_alarm_flag, 
       contract_price, diff_price_contract, diff_price_contract_total, 
-      contract_alarm_flag, diff_price)
+      contract_alarm_flag, diff_price, remark)
     values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{rejectDepartmentId,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, 
       #{rejectDepartmentName,jdbcType=VARCHAR}, #{receiptCode,jdbcType=VARCHAR}, #{simpleCode,jdbcType=VARCHAR}, 
@@ -111,7 +118,7 @@
       #{discountStartDate,jdbcType=DATE}, #{discountEndDate,jdbcType=DATE}, #{diffPriceDiscount,jdbcType=DECIMAL}, 
       #{diffPriceDiscountTotal,jdbcType=DECIMAL}, #{discountAlarmFlag,jdbcType=VARCHAR}, 
       #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, #{diffPriceContractTotal,jdbcType=DECIMAL}, 
-      #{contractAlarmFlag,jdbcType=VARCHAR}, #{diffPrice,jdbcType=DECIMAL})
+      #{contractAlarmFlag,jdbcType=VARCHAR}, #{diffPrice,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertBatch" parameterType="list" >
     insert into db_reject (id, sys_id, sys_name, 
@@ -123,7 +130,7 @@
       discount_start_date, discount_end_date, diff_price_discount, 
       diff_price_discount_total, discount_alarm_flag, 
       contract_price, diff_price_contract, diff_price_contract_total, 
-      contract_alarm_flag, diff_price)
+      contract_alarm_flag, diff_price, remark)
     values 
     <foreach collection="list" item="reject" separator=",">
     (#{reject.id,jdbcType=INTEGER}, #{reject.sysId,jdbcType=CHAR}, #{reject.sysName,jdbcType=VARCHAR}, 
@@ -135,7 +142,7 @@
       #{reject.discountStartDate,jdbcType=DATE}, #{reject.discountEndDate,jdbcType=DATE}, #{reject.diffPriceDiscount,jdbcType=DECIMAL}, 
       #{reject.diffPriceDiscountTotal,jdbcType=DECIMAL}, #{reject.discountAlarmFlag,jdbcType=VARCHAR}, 
       #{reject.contractPrice,jdbcType=DECIMAL}, #{reject.diffPriceContract,jdbcType=DECIMAL}, #{reject.diffPriceContractTotal,jdbcType=DECIMAL}, 
-      #{reject.contractAlarmFlag,jdbcType=VARCHAR}, #{reject.diffPrice,jdbcType=DECIMAL})
+      #{reject.contractAlarmFlag,jdbcType=VARCHAR}, #{reject.diffPrice,jdbcType=DECIMAL}, #{reject.remark,jdbcType=VARCHAR})
      </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Reject" >
@@ -225,6 +232,9 @@
       <if test="diffPrice != null" >
         diff_price,
       </if>
+      <if test="remark != null" >
+        remark,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -310,6 +320,9 @@
       </if>
       <if test="diffPrice != null" >
         #{diffPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -397,6 +410,9 @@
       <if test="diffPrice != null" >
         diff_price = #{diffPrice,jdbcType=DECIMAL},
       </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -428,7 +444,8 @@
       diff_price_contract = #{diffPriceContract,jdbcType=DECIMAL},
       diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
       contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
-      diff_price = #{diffPrice,jdbcType=DECIMAL}
+      diff_price = #{diffPrice,jdbcType=DECIMAL},
+      remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

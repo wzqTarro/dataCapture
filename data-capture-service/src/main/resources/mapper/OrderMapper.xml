@@ -80,6 +80,12 @@
   		AND deliver_start_date = #{queryDate}
   	</if>
   </sql>
+  <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
+  	SELECT ${column}
+  	FROM db_order
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <select id="selectByCondition" resultMap="BaseResultMap" parameterType="map">
   	SELECT <include refid="Column_List"></include>
   	FROM db_order o

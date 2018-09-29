@@ -1,13 +1,6 @@
 package com.data.constant.enums;
 
-
-/**
- * 库存字段枚举类
- * @author Tarro
- *
- */
-public enum StockEnum implements ICommonEnum{
-
+public enum SaleEnum implements ICommonEnum{
 	SYS_ID("系统编号", "sys_id", "getSysId"),
 	
 	SYS_NAME("系统名称", "sys_name", "getSysName"),
@@ -33,9 +26,7 @@ public enum StockEnum implements ICommonEnum{
     ASCRIPTION_SOLE("业绩归属", "ascription_sole", "getAscriptionSole"),
 
     BRAND("品牌", "brand", "getBrand"),
-
-    CLASSIFY("分类", "classify", "getClassify"),
-
+    
     SERIES("系列", "series", "getSeries"),
 
     DAY_NIGHT("日夜", "day_night", "getDayNight"),
@@ -47,22 +38,24 @@ public enum StockEnum implements ICommonEnum{
     BOX_STANDARD("箱规", "box_standard", "getBoxStandard"),
 
     STOCK_NO("货号", "stock_no", "getStockNo"),
-
-    STOCK_NUM("库存数量", "stock_num", "getStockNum"),
-
-    TAX_COST_PRICE("含税成本价", "tax_cost_price", "getTaxCostPrice"),
-
-    STOCK_PRICE("库存价格", "stock_price", "getStockPrice"),
-
+    
+    SELL_NUM("销售数量", "sell_num", "getSellNum"),
+    
+    SELL_PRICE("销售价格", "sell_price", "getSellPrice"),
+    
     CREATE_TIME("日期", "create_time", "getCreateTime"),
+    
+    STORE_MANAGER("门店负责人", "store_manager", "getStoreManager"),
+    
+    REMARK("备注", "remark", "getRemark")
 
-    REMARK("备注", "remark", "getRemark");
-	
-	private String msg;
+    ;
+    
+    private String msg;
 	private String column;
 	private String methodName;
 	
-	private StockEnum(String msg, String column, String methodName) {
+	private SaleEnum(String msg, String column, String methodName) {
 		this.msg = msg;
 		this.column = column;
 		this.methodName = methodName;
@@ -82,14 +75,4 @@ public enum StockEnum implements ICommonEnum{
 	public String getMethodName() {
 		return methodName;
 	}
-
-
-	/*public static StockEnum getEnum(String msg) {
-		for(StockEnum e : StockEnum.values()) {
-			if (e.getMsg().equals(msg)) {
-				return e;
-			}
-		}
-		return null;
-	}*/
 }

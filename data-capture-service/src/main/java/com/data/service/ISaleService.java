@@ -1,5 +1,7 @@
 package com.data.service;
 
+import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletResponse;
 
 import com.data.bean.Sale;
@@ -12,7 +14,7 @@ public interface ISaleService {
 	 * @param para
 	 * @return
 	 */
-	ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception;
+	ResultUtil getSaleByWeb(String queryDate, String sysId, Integer limit) throws Exception;
 	/**
 	 * 多条件查询销售数据
 	 * @param param
@@ -33,4 +35,14 @@ public interface ISaleService {
 	 * @param response
 	 */
 	ResultUtil storeDailyexcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception;
+
+	/**
+	 * 选择字段导出Excel
+	 * @param stockNameStr
+	 * @param common
+	 * @param output
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
 }

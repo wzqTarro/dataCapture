@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONPath;
 import com.data.bean.Sale;
+import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.constant.CommonValue;
@@ -35,6 +36,8 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.SaleEnum;
+import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.ICodeDictService;
@@ -44,6 +47,7 @@ import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.ExcelUtil;
+import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.JsonUtil;
 import com.data.utils.ResultUtil;
@@ -71,9 +75,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private ICodeDictService codeDictService;
+	
+	@Autowired
+	private ExportUtil exportUtil;
 
 	@Override
-	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer page, Integer limit) throws Exception{
+	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer limit) throws Exception{
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 		
@@ -217,7 +224,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, queryParam);
 		}
 				
-		pageRecord = dataCaptureUtil.setPageRecord(saleList, page, limit);
+		pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 
@@ -524,6 +531,24 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		}
 		//将一天的门店信息存入缓存
 		redisService.setSaleDailyMessageByStore(dateStr, storeDailySaleList);
+	}
+
+	@Override
+	public ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
+		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
+		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		if (CommonUtil.isBlank(stockNameStr)) {
+			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
+		}
+		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		StringBuilder builder = new StringBuilder();
+		String[] methodNameArray = exportUtil.joinColumn(SaleEnum.class, builder, header, common);
+		exportUtil.exportExcel(Sale.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
+				QueryId.QUERY_SALE_BY_ANY_COLUMN, "销售信息表", methodNameArray, header, output);
+		return ResultUtil.success();
 	}
 	
 }

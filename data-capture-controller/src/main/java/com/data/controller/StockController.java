@@ -1,12 +1,16 @@
 package com.data.controller;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.buf.UDecoder;
+import org.apache.tomcat.util.buf.UEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,8 +45,8 @@ public class StockController {
 	 */
 	@RequestMapping(value = "getStockByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取库存数据", httpMethod = "GET")
-	public String getStockByWeb(String sysId, Integer page, Integer limit) throws Exception {
-		ResultUtil result = stockServiceImpl.getStockByWeb(sysId, page, limit);
+	public String getStockByWeb(@RequestParam(value = "sysId", required = true)String sysId, Integer limit) throws Exception {
+		ResultUtil result = stockServiceImpl.getStockByWeb(sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
@@ -64,9 +68,9 @@ public class StockController {
 	 * @param storeCode 门店编号
 	 * @return
 	 */
-	@RequestMapping(value = "expertStoreProductExcel", method = RequestMethod.POST)
+	@RequestMapping(value = "exportStoreProductExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导出门店单品表", httpMethod = "POST")
-	public String expertStoreProductExcel(String queryDate, String storeCode, 
+	public String exportStoreProductExcel(String queryDate, String storeCode, 
 			HttpServletResponse response) {
 		String fileName = "缺货表报-门店单品表" + queryDate;
 		
@@ -76,7 +80,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertStoreProductExcel(queryDate, storeCode, output);
+			result = stockServiceImpl.exportStoreProductExcel(queryDate, storeCode, output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -89,9 +93,9 @@ public class StockController {
 	 * @param sysId
 	 * @return
 	 */
-	@RequestMapping(value = "expertSysStoreExcel", method = RequestMethod.POST)
+	@RequestMapping(value = "exportSysStoreExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导出缺货报表-系统门店表", httpMethod = "POST")
-	public String expertSysStoreExcel(String queryDate, String sysId, 
+	public String exportSysStoreExcel(String queryDate, String sysId, 
 			HttpServletResponse response) {
 		String fileName = "缺货表报-系统门店表" + queryDate;
 		
@@ -101,7 +105,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertSysStoreExcel(queryDate, sysId, output);
+			result = stockServiceImpl.exportSysStoreExcel(queryDate, sysId, output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -114,9 +118,9 @@ public class StockController {
 	 * @param storeName
 	 * @return
 	 */
-	@RequestMapping(value = "expertRegionStoreExcel", method = RequestMethod.POST)
+	@RequestMapping(value = "exportRegionStoreExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "POST")
-	public String expertRegionStoreExcel(String queryDate, String region, 
+	public String exportRegionStoreExcel(String queryDate, String region, 
 			HttpServletResponse response) {
 		
 		String fileName = "缺货表报-区域门店表" + queryDate;
@@ -127,7 +131,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertRegionStoreExcel(queryDate, region, output);
+			result = stockServiceImpl.exportRegionStoreExcel(queryDate, region, output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -136,15 +140,17 @@ public class StockController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
-	 * 自定义字段导出库存数据表
+	 * 选择字段导出库存数据表
 	 * @param stockNameStr
 	 * @param common
 	 * @return
 	 */
-	@RequestMapping(value = "expertStockExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "自定义字段导出库存数据表", httpMethod = "POST")
-	public String expertStockExcel(String stockNameStr, CommonDTO common, HttpServletResponse response) {
-		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+	@RequestMapping(value = "exportStockExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "选择字段导出库存数据表", httpMethod = "POST")
+	public String exportStockExcel(@RequestParam(value = "sysId", required = true)String sysId, 
+			@RequestParam(value = "stockNameStr", required = true)String stockNameStr,
+			CommonDTO common, HttpServletResponse response) {
+		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -152,7 +158,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertStockExcel(stockNameStr, common, output);
+			result = stockServiceImpl.exportStockExcel(sysId, stockNameStr, common, output);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -163,10 +169,10 @@ public class StockController {
 	 * @param queryDate 查询时间
 	 * @return
 	 */
-	@RequestMapping(value = "expertCompanyExcelBySys", method = RequestMethod.POST)
+	@RequestMapping(value = "exportCompanyExcelBySys", method = RequestMethod.POST)
 	@ApiOperation(value = "按系统导出公司一级表", httpMethod = "POST")
-	public String expertCompanyExcelBySys(String queryDate, HttpServletResponse response) {
-		String fileName = "库存-按系统公司一级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+	public String exportCompanyExcelBySys(String queryDate, HttpServletResponse response) {
+		String fileName = "库存-按系统公司一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -174,7 +180,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertCompanyExcelBySys(queryDate, output);
+			result = stockServiceImpl.exportCompanyExcelBySys(queryDate, output);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -186,10 +192,10 @@ public class StockController {
 	 * @param sysId 系统编号
 	 * @return
 	 */
-	@RequestMapping(value = "expertRegionExcelBySys", method = RequestMethod.POST)
+	@RequestMapping(value = "exportRegionExcelBySys", method = RequestMethod.POST)
 	@ApiOperation(value = "按系统导出区域表一级表", httpMethod = "POST")
-	public String expertRegionExcelBySys(String queryDate, String sysId, HttpServletResponse response) {
-		String fileName = "库存-按系统区域表一级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+	public String exportRegionExcelBySys(String queryDate, String sysId, HttpServletResponse response) {
+		String fileName = "库存-按系统区域表一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -197,7 +203,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertRegionExcelBySys(queryDate, sysId, output);
+			result = stockServiceImpl.exportRegionExcelBySys(queryDate, sysId, output);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -210,10 +216,10 @@ public class StockController {
 	 * @param region 区域
 	 * @return
 	 */
-	@RequestMapping(value = "expertRegionSecondExcelBySys", method = RequestMethod.POST)
+	@RequestMapping(value = "exportRegionSecondExcelBySys", method = RequestMethod.POST)
 	@ApiOperation(value = "按系统导出区域表二级表", httpMethod = "POST")
-	public String expertRegionSecondExcelBySys(String queryDate, String sysId, String region, HttpServletResponse response) {
-		String fileName = "库存-按系统区域表二级表" + DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+	public String exportRegionSecondExcelBySys(String queryDate, String sysId, String region, HttpServletResponse response) {
+		String fileName = "库存-按系统区域表二级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -221,7 +227,7 @@ public class StockController {
 		ResultUtil result = ResultUtil.error();
 		try {
 			output = response.getOutputStream();
-			result = stockServiceImpl.expertRegionSecondExcelBySys(queryDate, sysId, region, output);
+			result = stockServiceImpl.exportRegionSecondExcelBySys(queryDate, sysId, region, output);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -231,14 +237,9 @@ public class StockController {
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {
         try {
-            try {
-                fileName = new String(fileName.getBytes(),"ISO8859-1");
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            response.setContentType("application/octet-stream;charset=ISO8859-1");
-            response.setHeader("Content-Disposition", "attachment;filename="+ fileName);
+        	response.setCharacterEncoding("utf-8");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+ fileName + ".xlsx");
             response.addHeader("Pargam", "no-cache");
             response.addHeader("Cache-Control", "no-cache");
         } catch (Exception ex) {

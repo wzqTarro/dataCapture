@@ -18,12 +18,14 @@ public class Reject implements Serializable{
 
     private String sysName;
 
+    // 退货机构编号
     private String rejectDepartmentId;
 
     private String region;
 
     private String provinceArea;
 
+    // 退货机构名称
     private String rejectDepartmentName;
 
     private String receiptCode;

@@ -1,5 +1,10 @@
 package com.data.controller;
 
+import java.io.OutputStream;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,7 @@ import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
 import com.data.service.IOrderService;
 import com.data.service.IRejectService;
+import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -40,8 +46,9 @@ public class RejectController {
 	 */
 	@RequestMapping(value = "/getRejectByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取退单数据", httpMethod = "GET")
-	public String getRejectByWeb(String queryDate, String sysId, Integer page, Integer limit) {
-		ResultUtil result = rejectService.getRejectByWeb(queryDate, sysId, page, limit);
+	public String getRejectByWeb(String queryDate, Integer limit, 
+			@RequestParam(value = "sysId", required = true)String sysId) {
+		ResultUtil result = rejectService.getRejectByWeb(queryDate, sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
@@ -63,4 +70,41 @@ public class RejectController {
 		}
 		return FastJsonUtil.objectToString(result);
 	}
+	/**
+	 * 选择字段导出退单数据表
+	 * @param stockNameStr
+	 * @param common
+	 * @return
+	 */
+	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "POST")
+	public String expertRejectExcel(@RequestParam(value = "sysId", required = true)String sysId, 
+			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
+			CommonDTO common, HttpServletResponse response) {
+		String fileName = "退单处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = rejectService.exportRejectExcel(sysId, stockNameStr, common, output);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	//发送响应流方法
+    public void setResponseHeader(HttpServletResponse response, String fileName) {
+        try {
+        	response.setCharacterEncoding("utf-8");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename="+ fileName + ".xlsx");
+            response.addHeader("Pargam", "no-cache");
+            response.addHeader("Cache-Control", "no-cache");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

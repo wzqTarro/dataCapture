@@ -117,13 +117,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @param common
 	 * @return
 	 */
-	public <T> PageRecord<T> setPageRecord(List<T> list, Integer page, Integer limit) {
-		PageRecord<T> pageRecord = new PageRecord<>();
-		if (null == page || 0 == page) {
-			pageRecord.setPageNum(CommonValue.PAGE);			
-		} else {			
-			pageRecord.setPageNum(page);
-		}
+	public <T> PageRecord<T> setPageRecord(List<T> list, Integer limit) {
+		PageRecord<T> pageRecord = new PageRecord<>();			
+		pageRecord.setPageNum(1);
 		if (null == limit ||  0 == limit ) {
 			pageRecord.setPageSize(CommonValue.SIZE);
 		} else {

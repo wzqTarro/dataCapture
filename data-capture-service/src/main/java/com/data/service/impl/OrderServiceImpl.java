@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IOrderService;
@@ -25,6 +27,7 @@ import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.TemplateDataUtil;
@@ -42,6 +45,9 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	
 	@Autowired
 	private IRedisService redisService;
+	
+	@Autowired
+	private ExportUtil exportUtil;
 	
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
@@ -86,7 +92,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer page, Integer limit) {		
+	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) {		
 		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");
 		
@@ -196,8 +202,29 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		} else {
 			orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, queryParam);
 		}
-		pageRecord = dataCaptureUtil.setPageRecord(orderList, page, limit);
+		pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 		return ResultUtil.success(pageRecord);
+	}
+
+	@Override
+	public ResultUtil exportOrderExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
+		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
+		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		if (CommonUtil.isBlank(stockNameStr)) {
+			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
+		}
+		if (CommonUtil.isBlank(sysId)) {
+			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
+		}
+		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		StringBuilder builder = new StringBuilder();
+		String[] methodNameArray = exportUtil.joinColumn(OrderEnum.class, builder, header, common);
+		exportUtil.exportExcel(Order.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
+				QueryId.QUERY_ORDER_BY_ANY_COLUMN, "订单信息表", methodNameArray, header, output);
+		return ResultUtil.success();
 	}
 
 }

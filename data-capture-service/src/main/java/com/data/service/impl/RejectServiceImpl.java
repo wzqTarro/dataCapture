@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +14,14 @@ import org.springframework.stereotype.Service;
 
 import com.data.bean.Order;
 import com.data.bean.Reject;
+import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IRedisService;
@@ -26,6 +29,7 @@ import com.data.service.IRejectService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.data.utils.TemplateDataUtil;
@@ -43,9 +47,12 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	
 	@Autowired
 	private TemplateDataUtil templateDataUtil;
+	
+	@Autowired
+	private ExportUtil exportUtil;
 
 	@Override
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer page, Integer limit) {
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
 		
@@ -152,7 +159,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		} else {
 			rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, queryParam);
 		}
-		pageRecord = dataCaptureUtil.setPageRecord(rejectList, page, limit);
+		pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 
@@ -187,5 +194,24 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		PageRecord<Reject> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, QueryId.QUERY_REJECT_BY_PARAM, map, page, limit);
 		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(pageRecord));
 		return ResultUtil.success(pageRecord);
+	}
+
+	@Override
+	public ResultUtil exportRejectExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output)
+			throws Exception {
+		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
+		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
+		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
+			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+		}
+		if (CommonUtil.isBlank(stockNameStr)) {
+			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
+		}
+		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
+		StringBuilder builder = new StringBuilder();
+		String[] methodNameArray = exportUtil.joinColumn(RejectEnum.class, builder, header, common);
+		exportUtil.exportExcel(Reject.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
+				QueryId.QUERY_REJECT_BY_ANY_COLUMN, "退单信息表", methodNameArray, header, output);
+		return ResultUtil.success();
 	}
 }

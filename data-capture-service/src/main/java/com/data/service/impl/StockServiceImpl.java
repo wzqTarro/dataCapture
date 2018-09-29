@@ -206,7 +206,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
 		}
 		
-		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, page, limit);
+		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 
@@ -264,7 +264,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil expertStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException {
+	public ResultUtil exportStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -333,14 +333,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			CellStyle cellStyle = null;
 			
 			// 库存天数小于3 ，单元格黄底
-			if (stockDayNum < 3) {
-				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.YELLOW.index);
+			if (stockDayNum < 3 && stockDayNum > 0) {
+				cellStyle = excelUtil.getCellStyle(wb, IndexedColors.YELLOW.index);
 			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底，字体白色
 				// 红底
-				cellStyle = excelUtil.getCellStyle(wb, CellStyle.SOLID_FOREGROUND, HSSFColor.RED.index);
+				cellStyle = excelUtil.getCellStyle(wb, IndexedColors.RED.index);
 				
 				// 字体样式
-				Font font = excelUtil.getColorFont(wb, HSSFColor.WHITE.index); 
+				Font font = excelUtil.getColorFont(wb, IndexedColors.WHITE.index); 
 				cellStyle.setFont(font);
 			}
 			
@@ -351,6 +351,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 		}
 		wb.write(output);
+		output.flush();
+		output.close();
 		return ResultUtil.success();
 	}
 	
@@ -371,7 +373,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil expertSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException {
+	public ResultUtil exportSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -412,7 +414,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 
 	@Override
-	public ResultUtil expertRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException {
+	public ResultUtil exportRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.QUERY_DATE_IS_NULL.getValue());
 		}
@@ -453,7 +455,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	@Override
-	public ResultUtil expertStockExcel(String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+	public ResultUtil exportStockExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
 		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
@@ -470,7 +472,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	@Override
-	public ResultUtil expertCompanyExcelBySys(String queryDate, OutputStream output) throws IOException {
+	public ResultUtil exportCompanyExcelBySys(String queryDate, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
@@ -515,7 +517,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	@Override
-	public ResultUtil expertRegionExcelBySys(String queryDate, String sysId, OutputStream output) throws IOException {
+	public ResultUtil exportRegionExcelBySys(String queryDate, String sysId, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
@@ -561,7 +563,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	@Override
-	public ResultUtil expertRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException {
+	public ResultUtil exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
