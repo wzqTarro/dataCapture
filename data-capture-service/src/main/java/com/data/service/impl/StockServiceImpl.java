@@ -13,10 +13,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Color;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -328,14 +333,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			CellStyle cellStyle = null;
 			
 			// 库存天数小于3 ，单元格黄底
-			/*if (stockDayNum < 3) {
-				cellStyle = excelUtil.getCellStyle(wb, HSSFColor.YELLOW.index);
+			if (stockDayNum < 3 && stockDayNum > 0) {
+				cellStyle = excelUtil.getCellStyle(wb, IndexedColors.YELLOW.index);
 			} else if (stockDayNum == 0) { // 库存天数等于0，单元格红底，字体白色
 				// 红底
-				cellStyle = excelUtil.getCellStyle(wb, HSSFColor.RED.index);
+				cellStyle = excelUtil.getCellStyle(wb, IndexedColors.RED.index);
 				
 				// 字体样式
-				Font font = excelUtil.getColorFont(wb, HSSFColor.WHITE); 
+				Font font = excelUtil.getColorFont(wb, IndexedColors.WHITE.index); 
 				cellStyle.setFont(font);
 			}
 			
@@ -343,9 +348,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			stockDayNumCell.setCellValue(stockDayNum);
 			if (null != cellStyle) {
 				stockDayNumCell.setCellStyle(cellStyle);
-			}*/
+			}
 		}
 		wb.write(output);
+		output.flush();
+		output.close();
 		return ResultUtil.success();
 	}
 	

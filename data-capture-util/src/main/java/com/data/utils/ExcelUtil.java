@@ -438,6 +438,8 @@ public class ExcelUtil<T> {
 				rowIndex ++;		
 			}
 			wb.write(output);
+			output.flush();
+			output.close();
 		}
 	}
 	
