@@ -2,6 +2,8 @@ package com.data.bean;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 供应模板品实体类
  * @author Alex
@@ -25,6 +27,7 @@ public class TemplateSupply implements Serializable {
 
     private String companyCode;
 
+    @JSONField(serialize=false)
     private String controllerName;
 
     private Boolean isVal;

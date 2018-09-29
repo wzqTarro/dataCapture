@@ -15,6 +15,7 @@ public class User implements Serializable {
 
     private String username;
 
+    @JSONField(serialize=false)
     private String password;
 
     private String gender;
