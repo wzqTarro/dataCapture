@@ -70,7 +70,7 @@ public class StockDataUtil extends CommonServiceImpl{
 	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellWidth) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		
-		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, cellWidth));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, cellWidth - 1));
 
 		// 粗体、居中
 		CellStyle cellStyle = excelUtil.getBolderTitle(wb);
@@ -80,93 +80,6 @@ public class StockDataUtil extends CommonServiceImpl{
 		Cell titleCell = titleRow.createCell(0);
 		titleCell.setCellValue(title);
 		titleCell.setCellStyle(cellStyle);
-	}
-	/**
-	 * 生成缺货门店数据
-	 * @param sheet 工作簿
-	 * @param queryDate 查询日期
-	 * @param firstCellValue 第一列值
-	 * @param stockMap 数据
-	 * @param index 起始行号
-	 */
-	public void createMissStockMessage(List<Stock> stockList, Sheet sheet, String queryDate, 
-			String firstCellValue, int index) {
-		/*Map<String, List<Stock>> stockMap = stockList.parallelStream()
-				.collect(Collectors.groupingBy(Stock::getStoreCode));
-		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		index ++;
-		for (List<Stock> currentStock : stockMap.values()) {
-			Row row = sheet.createRow(index);
-			index++;
-			Stock stock = currentStock.get(0);
-			String storeName = stock.getStoreName();
-			String simpleNum = String.valueOf(currentStock.size());
-			
-			// 库存天数低于三天的单品数量
-			int sumThreeStockDay = 0;
-			
-			// 库存天数等于0的单品数量
-			int sumZeroStockDay = 0;
-			
-			// 库存天数低于三天的单品总库存数量
-			int sumSimpleStock = 0;
-			for (int i = 0, size = currentStock.size(); i < size; i++) {
-				Stock temp = currentStock.get(i);
-				
-				// 库存天数
-				double stockDay = calculateStockDay(queryDate, temp.getSimpleBarCode(), temp.getStoreName(), temp.getStockPrice());
-				if (stockDay < 3 && stockDay >0) {
-					sumThreeStockDay ++;
-				} else if (stockDay == 0) {
-					sumZeroStockDay ++;
-				}
-				
-			}
-			String[] cellValue = new String []{
-				firstCellValue, // 系统名
-				stock.getStoreName(), //门店名称
-				"", // 单品数量
-				String.valueOf(sumThreeStockDay), //库存天数低于三天的单品数量
-				"", // 单品数量
-				String.valueOf(sumZeroStockDay) // 库存天数低于三天的单品总库存数量
-			};
-			excelUtil.createRow(row, cellValue);
-		}*/
-	}
-
-	/**
-	 * 计算库存天数
-	 * @param simpleBarCode 条码
-	 * @param stockPrice 库存金额
-	 * @param saleDayList 前一天销售列表
-	 * @return
-	 */
-	public double calculateStockDay(String simpleBarCode, Double stockPrice, List<Sale> saleDayList) {
-	
-		// 前一天单品的销售总量
-		int sumSaleNumByDay = 0;
-					
-		// 如果前一天存在销售记录，否则默认为0
-		if (CommonUtil.isNotBlank(saleDayList)) {
-			Sale sale = null;
-			for (int i = 0, size = saleDayList.size(); i < size; i++) {
-				sale = saleDayList.get(i);
-				if (sale.getSimpleBarCode().equals(simpleBarCode)) {
-					sumSaleNumByDay += (sale.getSellNum()==null) ? 0 : sale.getSellNum();
-				}
-			}
-		}
-		logger.info("------->>>>>>昨天销售数量：{}<<<<<<-------", sumSaleNumByDay);
-		
-		// 库存金额
-		stockPrice = CommonUtil.toDoubleOrZero(stockPrice);
-					
-		// 库存天数
-		double stockDayNum = 0;
-		if (sumSaleNumByDay != 0) {
-			stockDayNum = CommonUtil.setScale("0.00", stockPrice / sumSaleNumByDay);
-		}		
-		return stockDayNum;
 	}
 	/**
 	 * 生成库存日报表

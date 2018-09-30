@@ -38,6 +38,7 @@ import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.model.StoreCodeModel;
 import com.data.service.IRedisService;
 import com.data.service.IStockService;
 import com.data.utils.CommonUtil;
@@ -276,7 +277,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(4);
 		param.put("queryDate", queryDate);
 		param.put("storeCode", storeCode);
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		param.put("column", " simple_bar_code, stock_price, store_name, simple_code, stock_num ");
+		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		SXSSFWorkbook wb = excelUtil.createWorkBook();
@@ -293,7 +295,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 前一天
 		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
 		param.put("queryDate", lastDay.toString());
-		List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+		param.put("column", " simple_bar_code, sell_num ");
+		List<Sale> saleDayList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 		
 		// 上周一
 		LocalDate lastMonday = LocalDate.parse(queryDate).minusWeeks(1L).with(DayOfWeek.MONDAY);
@@ -306,7 +309,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		param.put("startDate", lastMonday.toString());
 		param.put("endDate", lastSunday.toString());
 		param.put("storeCode", storeCode);
-		List<Sale> saleWeekList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
+		param.put("column", " simple_bar_code, sell_num ");
+		List<Sale> saleWeekList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 		
 		int rowIndex = 3;
 		// 填写数据
@@ -341,11 +345,31 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			// 库存金额
 			double stockPrice = CommonUtil.toDoubleOrZero(stock.getStockPrice());
-			logger.info("-------->>>>>单品条码:{},上周销量:{},库存金额：{}<<<<<<---------", stock.getSimpleBarCode(), sumSaleNumByWeek, stockPrice);
-			
-			// 库存天数
-			double stockDayNum = stockDataUtil.calculateStockDay(stock.getSimpleBarCode(), stockPrice, saleDayList);		
+					
+			// 前一天单品的销售总量
+			int sumSaleNumByDay = 0;
 						
+			// 如果前一天存在销售记录，否则默认为0
+			if (CommonUtil.isNotBlank(saleDayList)) {
+				Sale sale = null;
+				for (int j = 0, saleSize = saleDayList.size(); j < saleSize; j++) {
+					sale = saleDayList.get(j);
+					if (sale.getSimpleBarCode().equals(stock.getSimpleBarCode())) {
+						sumSaleNumByDay += (sale.getSellNum()==null) ? 0 : sale.getSellNum();
+					}
+				}
+			}
+			
+			// 库存金额
+			stockPrice = CommonUtil.toDoubleOrZero(stockPrice);
+						
+			// 库存天数
+			double stockDayNum = 0;
+			if (sumSaleNumByDay != 0) {
+				stockDayNum = CommonUtil.setScale("0.00", stockPrice / sumSaleNumByDay);
+			}	
+			
+			
 			CellStyle cellStyle = null;
 			
 			// 库存天数小于3 ，单元格黄底
@@ -373,22 +397,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		return ResultUtil.success();
 	}
 	
-	public static void main(String[] args) {
-		List<Stock> stockList = new ArrayList<>();
-		Stock s1 = new Stock();
-		s1.setStockNum(2);
-		s1.setBrand("火腿");
-		stockList.add(s1);
-		Stock s2 = new Stock();
-		s2.setStockNum(null);
-		s2.setBrand("火腿");
-		stockList.add(s2);
-		Map<String, IntSummaryStatistics> map = stockList.parallelStream()
-				.filter(s -> s.getStockNum() != null)
-				.collect(Collectors.groupingBy(Stock::getBrand, Collectors.summarizingInt(Stock::getStockNum)));
-		System.err.println(map.get("火腿").getSum());
-	}
-
 	@Override
 	public ResultUtil exportSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
@@ -398,110 +406,23 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
 		}
 		
+		logger.info("---->>>>>>>>{}<<<<<<<-----", new Date().toString());
 		// 按系统名称和时间查询库存
-		Map<String, Object> param = new HashMap<>(4);
+		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		param.put("sysId", sysId);
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
-		
-		// 前一天销售数据
-		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
-		param.put("queryDate", queryDate);
-		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, param);
-		
-		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		SXSSFWorkbook wb = excelUtil.createWorkBook();
-		Sheet sheet = wb.createSheet("系统门店表");
-		
+		List<StoreCodeModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_CODE_MODEL_BY_PARAM, param);
+		logger.info("---->>>>>{}<<<<<------", new Date().toString());
+		String sysName = storeCodeModelList.get(0).getStockList().get(0).getSysName();
 		// 标题
-		String title = stockList.get(0).getSysName() + "系统直营KA门店缺货日报表";
-		
-		Row dateRow = sheet.createRow(0);
-		
-		// 生成日期
-		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+		String title = sysName + "系统直营KA门店缺货日报表";
 			
 		// 表头
-		String[] headers = new String[]{"系统", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
-		Row headerRow = sheet.createRow(3);
-				
-		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
-		
-		// 设置表头
-		excelUtil.createRow(headerRow, headers, true);
-		
-		if (CommonUtil.isBlank(stockList)) {
-			wb.write(output);
-			output.flush();
-			output.close();
-		}
-
-		String sysName = stockList.get(0).getSysName();
-		// 生成表下部分数据
-		Map<String, List<Stock>> stockMap = stockList.parallelStream()
-				.collect(Collectors.groupingBy(Stock::getStoreCode));
-		
-		int rowIndex = 4;
-		for (Map.Entry<String, List<Stock>> map : stockMap.entrySet()) {
-			Row row = sheet.createRow(rowIndex);
-			rowIndex++;
-			
-			List<Stock> currentStockList = map.getValue();
-			Stock stock = currentStockList.get(0);
-			String storeName = stock.getStoreName();
-			String simpleNum = String.valueOf(currentStockList.size());
-			
-			// 库存天数低于三天的单品数量
-			int sumThreeStockDay = 0;
-			
-			// 库存天数等于0的单品数量
-			int sumZeroStockDay = 0;
-			
-			// 库存天数低于三天的单品总库存数量
-			int sumSimpleStock = 0;
-			
-			// 门店编号
-			String storeCode = map.getKey();
-			
-			
-			List<Sale> tempSaleList = new ArrayList();
-			for (int i = 0, size = currentStockList.size(); i < size; i++) {
-				Stock temp = currentStockList.get(i);
-				
-				Sale tempSale = null;
-				for (int j = 0, saleSize = saleList.size(); j < saleSize; j++) {
-					tempSale = saleList.get(j);
-					if (tempSale.getStockCode().equals(storeCode) && tempSale.getSysId().equals(sysId) && 
-							tempSale.getSimpleBarCode().equals(temp.getSimpleBarCode())) {
-						tempSaleList.add(tempSale);
-					}
-				}
-				// 库存天数
-				double stockDay = stockDataUtil.calculateStockDay(temp.getSimpleBarCode(), temp.getStockPrice(), tempSaleList);
-				if (stockDay < 3 && stockDay >0) {
-					sumThreeStockDay ++;
-				} else if (stockDay == 0) {
-					sumZeroStockDay ++;
-				}
-				
-			}
-			String[] cellValue = new String []{
-				sysName, // 系统名
-				stock.getStoreName(), //门店名称
-				"", // 单品数量
-				String.valueOf(sumThreeStockDay), //库存天数低于三天的单品数量
-				"", // 单品数量
-				String.valueOf(sumZeroStockDay) // 库存天数低于三天的单品总库存数量
-			};
-			excelUtil.createRow(row, cellValue, false);
-		}
-		wb.write(output);
-		output.flush();
-		output.close();
+		String[] headers = new String[]{"系统", "门店编号", "门店", "单品数量", "库存低于3天的单品", "库存等于0的单品数量"};
+		exportXStoreExcel(queryDate, "系统门店表", title, sysName, headers, storeCodeModelList, output);
 		return ResultUtil.success();
 	}
-
+	
 	@Override
 	public ResultUtil exportRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
@@ -515,34 +436,124 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		param.put("region", region);
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
-		
-		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		SXSSFWorkbook wb = excelUtil.createWorkBook();
-		Sheet sheet = wb.createSheet("区域门店表");
+		List<StoreCodeModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_CODE_MODEL_BY_PARAM, param);
 		
 		// 标题
 		String title = region + "大区直营KA门店缺货日报表";
+			
+		// 表头
+		String[] headers = new String[]{"大区", "门店编号", "门店", "单品数量", "库存低于3天的单品", "库存等于0的单品数量"};
+		exportXStoreExcel(queryDate, "区域门店表", title, region, headers, storeCodeModelList, output);
+		return ResultUtil.success();
+	}
+	/**
+	 * 导出区域/系统缺货日报表
+	 * @param queryDate
+	 * @param sheetName
+	 * @param title
+	 * @param name
+	 * @param header
+	 * @param storeCodeModelList
+	 * @param output
+	 * @throws IOException
+	 */
+	public void exportXStoreExcel(String queryDate, String sheetName, String title, String name, String[] header, 
+			List<StoreCodeModel> storeCodeModelList, OutputStream output) throws IOException {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet(sheetName);
 		
 		Row dateRow = sheet.createRow(0);
+		
 		// 生成日期
 		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
 			
-		// 表头
-		String[] headers = new String[]{"大区", "门店", "单品数量", "库存低于3天的单品", "单品数量", "库存等于0的单品数量"};
 		Row headerRow = sheet.createRow(3);
-		
-		
-		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+				
+		// 生成粗体居中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, header.length);
 		
 		// 设置表头
-		excelUtil.createRow(headerRow, headers, true);
-
+		excelUtil.createRow(headerRow, header, true);
+		
+		if (CommonUtil.isBlank(storeCodeModelList)) {
+			wb.write(output);
+			output.flush();
+			output.close();
+		}
+		
+		// 前一天销售数据
+		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("queryDate", lastDay.toString());
+		param.put("column", " sell_num, simple_bar_code, store_code ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+			
 		// 生成表下部分数据
-		stockDataUtil.createMissStockMessage(stockList, sheet, queryDate, region, 4);
+		StoreCodeModel storeCodeModel = null;
+		String storeName = null;
+		String storeCode = null;
+		int rowIndex = 4;
+		int i, j, k;
+		int size, saleSize, stockSize;
+		List<Stock> stockList = null;
+		Row row = null;
+		Stock stock = null;
+		Sale tempSale = null;
+		for (i = 0, size = storeCodeModelList.size(); i < size; i++) {
+			row = sheet.createRow(rowIndex);
+			storeCodeModel = storeCodeModelList.get(i);
+			storeName = storeCodeModel.getStoreName();
+			storeCode = storeCodeModel.getStoreCode();
+			stockList = storeCodeModel.getStockList();
+			
+			// 库存天数低于三天的单品数量
+			int sumThreeStockDay = 0;
+						
+			// 库存天数等于0的单品数量
+			int sumZeroStockDay = 0;
+
+			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+				stock = stockList.get(j);
+				double stockPrice = stock.getStockPrice() == null ? 0 : stock.getStockPrice();
+				
+				// 单品销售总数
+				int saleNumSum = 0;
+
+				// 遍历销售，找出门店编号和单品条码匹配的记录
+				for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+					tempSale = saleList.get(k);
+					if (tempSale.getStoreCode().equals(storeCode) && 
+							tempSale.getSimpleBarCode().equals(stock.getSimpleBarCode())) {
+						saleNumSum += tempSale.getSellNum() == null ? 0 : tempSale.getSellNum();
+					}
+				}
+				// 库存天数
+				double stockDayNum = 0;
+				if (saleNumSum != 0) {
+					stockDayNum = CommonUtil.setScale("0.00", stockPrice / saleNumSum);
+				}
+				if (stockDayNum < 3 && stockDayNum >0) {
+					sumThreeStockDay ++;
+				} else if (stockDayNum <= 0) {
+					sumZeroStockDay ++;
+				}			
+			}
+			String[] cellValue = new String []{
+					name, 
+					storeCode, // 门店编号
+					storeName, //门店名称
+					String.valueOf(stockList.size()), // 单品数量
+					String.valueOf(sumThreeStockDay), //库存天数低于三天的单品数量
+					String.valueOf(sumZeroStockDay) // 库存天数低于三天的单品总库存数量
+				};
+			excelUtil.createRow(row, cellValue, false);
+			rowIndex++;
+			
+		}
 		wb.write(output);
-		return ResultUtil.success();
+		output.flush();
+		output.close();
 	}
 	@Override
 	public ResultUtil exportStockExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
@@ -657,6 +668,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		wb.write(output);
 		return ResultUtil.success();
 	}
+	
 	@Override
 	public ResultUtil exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {

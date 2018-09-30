@@ -30,6 +30,12 @@
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
+  <resultMap id="storeCodeMap" type="com.data.model.StoreCodeModel">
+  	<result column="store_code" property="storeCode" jdbcType="VARCHAR"/>
+  	<result column="store_name" property="storeName" jdbcType="VARCHAR" />
+  	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, classify, 
@@ -79,6 +85,12 @@
   	SELECT ${column}
   	FROM db_stock
   	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <select id="selectStoreCodeModelByParam" resultMap="storeCodeMap" parameterType="map">
+  	SELECT sys_name, store_code, store_name, stock_price, simple_bar_code
+  	FROM db_stock
+  	WHERE 1=1 
   	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">
