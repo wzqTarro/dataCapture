@@ -22,7 +22,7 @@ public class ExportUtil extends CommonServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public <T extends ICommonEnum> String[] joinColumn(Class<T> clazz, StringBuilder builder, String[] header, CommonDTO common) throws Exception {
+	public <T extends ICommonEnum> String[] joinColumn(Class<T> clazz, StringBuilder builder, String[] header) throws Exception {
 		String[] methodNameArray = new String[header.length];
 		int methodIndex = 0;
 		// 拼接查询字段
@@ -47,8 +47,10 @@ public class ExportUtil extends CommonServiceImpl{
 			String title, String[] methodNameArray, String[] header, OutputStream output) throws Exception {
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("column", column);
-		param.put("startDate", startDate);
-		param.put("endDate", endDate);
+		if (CommonUtil.isNotBlank(startDate) && CommonUtil.isNotBlank(endDate)) {
+			param.put("startDate", startDate);
+			param.put("endDate", endDate);
+		}
 		param.put("sysId", sysId);
 		List<T> dataList = queryListByObject(queryMapper, param);
 		

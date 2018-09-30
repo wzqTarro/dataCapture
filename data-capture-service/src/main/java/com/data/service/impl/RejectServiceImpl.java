@@ -209,7 +209,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		}
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
 		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(RejectEnum.class, builder, header, common);
+		String[] methodNameArray = exportUtil.joinColumn(RejectEnum.class, builder, header);
 		exportUtil.exportExcel(Reject.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
 				QueryId.QUERY_REJECT_BY_ANY_COLUMN, "退单信息表", methodNameArray, header, output);
 		return ResultUtil.success();

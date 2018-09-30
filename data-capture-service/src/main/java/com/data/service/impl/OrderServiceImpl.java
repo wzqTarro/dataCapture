@@ -221,7 +221,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		}
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
 		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(OrderEnum.class, builder, header, common);
+		String[] methodNameArray = exportUtil.joinColumn(OrderEnum.class, builder, header);
 		exportUtil.exportExcel(Order.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
 				QueryId.QUERY_ORDER_BY_ANY_COLUMN, "订单信息表", methodNameArray, header, output);
 		return ResultUtil.success();

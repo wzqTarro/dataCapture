@@ -76,8 +76,8 @@ public class SaleController {
 	 * @param common
 	 * @return
 	 */
-	@RequestMapping(value = "/exportSaleExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "选择字段导出销售数据表", httpMethod = "POST")
+	@RequestMapping(value = "/exportSaleExcel", method = RequestMethod.GET)
+	@ApiOperation(value = "选择字段导出销售数据表", httpMethod = "GET")
 	public String expertSaleExcel(@RequestParam(value = "sysId", required = true)String sysId, 
 			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
 			CommonDTO common, HttpServletResponse response) {

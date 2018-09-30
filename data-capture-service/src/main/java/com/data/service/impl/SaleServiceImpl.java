@@ -545,7 +545,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		}
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
 		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(SaleEnum.class, builder, header, common);
+		String[] methodNameArray = exportUtil.joinColumn(SaleEnum.class, builder, header);
 		exportUtil.exportExcel(Sale.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
 				QueryId.QUERY_SALE_BY_ANY_COLUMN, "销售信息表", methodNameArray, header, output);
 		return ResultUtil.success();

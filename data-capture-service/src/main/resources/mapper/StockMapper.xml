@@ -39,7 +39,7 @@
   </resultMap>
   <!-- 按大区分组 -->
   <resultMap id="regionStockMap" type="com.data.model.RegionStockModel">
-  	<id column="region" property="storeCode" jdbcType="VARCHAR"/>
+  	<id column="region" property="region" jdbcType="VARCHAR"/>
   	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
   	</collection>
   </resultMap>
@@ -103,7 +103,7 @@
   </select>
   <!-- 按大区分组 -->
   <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
-  	SELECT store_code, store_name, stock_price, stock_num, region
+  	SELECT store_code, store_name, stock_price, stock_num, region, brand
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
@@ -136,6 +136,10 @@
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from db_stock
     where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBySysId" parameterType="java.lang.String" >
+    delete from db_stock
+    where sys_id = #{sysId,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.data.bean.Stock" >
     insert into db_stock (id, sys_id, sys_name, 

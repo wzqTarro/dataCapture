@@ -21,58 +21,64 @@ public interface IStockService {
 	 * @param stock
 	 * @return
 	 */
-	ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception ;
+	ResultUtil getStockByParam(Stock stock, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 缺货日报表-导出门店单品表
 	 * @param queryDate 查询时间
 	 * @param storeName 门店名称
 	 * @return
 	 */
-	ResultUtil exportStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException;
+	void exportStoreProductExcel(String storeCode, OutputStream output) throws IOException;
 	/**
 	 * 缺货日报表-导出系统门店表
 	 * @param queryDate
 	 * @param sysName
 	 * @return
 	 */
-	ResultUtil exportSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException;
+	void exportSysStoreExcel(String sysId, OutputStream output) throws IOException;
 	/**
 	 * 缺货日报表-导出区域门店表
 	 * @param queryDate
 	 * @param region
 	 * @return
 	 */
-	ResultUtil exportRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException;
+	void exportRegionStoreExcel(String region, OutputStream output) throws IOException;
 	/**
 	 * 缺货日报表-导出公司一级表
 	 * @param queryDate
 	 * @param region
 	 * @return
 	 */
-	ResultUtil exportMissFirstComExcel(String queryDate, OutputStream output) throws IOException;
+	void exportMissFirstComExcel(OutputStream output) throws IOException;
 	/**
 	 * 自定义字段导出库存数据表
 	 * @param stock
 	 * @param common
 	 * @return
 	 */
-	ResultUtil exportStockExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	void exportStockExcel(String sysId, String stockNameStr, OutputStream output) throws Exception;
+	/**
+	 * 按区域导出公司一级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportCompanyExcelByRegion(OutputStream output) throws IOException;
 	/**
 	 * 按系统导出公司一级表
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportCompanyExcelBySys(String queryDate, OutputStream output) throws IOException;
+	void exportCompanyExcelBySys(OutputStream output) throws IOException;
 	/**
 	 * 按系统导出区域表一级表
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionExcelBySys(String queryDate, String sysId, OutputStream output) throws IOException;
+	ResultUtil exportRegionExcelBySys(String sysId, OutputStream output) throws IOException;
 	/**
 	 * 按系统导出区域表二级表
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException;
+	ResultUtil exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
 }

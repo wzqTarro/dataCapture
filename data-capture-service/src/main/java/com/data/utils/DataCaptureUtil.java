@@ -53,12 +53,14 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			throw new DataException("503");
 		}
 		if (CommonUtil.isNotBlank(queryDate)) {
-			start = queryDate.trim();
-			end = start;
-			
-			// 禁止查询当天
-			if (DateUtil.format(new Date(), "yyyy-MM-dd").equals(start)) {
-				throw new DataException("523");
+			if (!"1900-01-01".equals(queryDate)) {
+				start = queryDate.trim();
+				end = start;
+				
+				// 禁止查询当天
+				if (DateUtil.format(new Date(), "yyyy-MM-dd").equals(start)) {
+					throw new DataException("523");
+				}		
 			}
 		} else {
 			throw new DataException("524");
@@ -143,11 +145,20 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	public <T> void insertData(List<T> dataList, String mapper) {
 		// 插入到数据库
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 		try {
-			executorService.execute(new Runnable() {	
+			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
-					insert(mapper, dataList);
+					int rowNum = 2000;
+					double size = Math.ceil(dataList.size() / rowNum);
+					for (int i = 0; i < size; i++) {
+						if (i == (size-1)) {
+							insert(mapper, dataList.subList(i * rowNum, dataList.size()));
+							break;
+						}
+						insert(mapper, dataList.subList(i * rowNum, i * rowNum + rowNum));
+					}
 				}
 			});
 		} finally {

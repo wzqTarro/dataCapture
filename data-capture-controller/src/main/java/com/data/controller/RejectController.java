@@ -76,8 +76,8 @@ public class RejectController {
 	 * @param common
 	 * @return
 	 */
-	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "POST")
+	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.GET)
+	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "GET")
 	public String expertRejectExcel(@RequestParam(value = "sysId", required = true)String sysId, 
 			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
 			CommonDTO common, HttpServletResponse response) {
