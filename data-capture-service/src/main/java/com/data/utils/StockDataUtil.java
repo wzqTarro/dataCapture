@@ -67,10 +67,10 @@ public class StockDataUtil extends CommonServiceImpl{
 	 * @param rowIndex 行号
 	 * @param cellWidth 合并列数
 	 */
-	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellWidth) {
+	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellStart, int cellEnd) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		
-		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, cellWidth - 1));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, cellStart, cellEnd));
 
 		// 粗体、居中
 		CellStyle cellStyle = excelUtil.getBolderTitle(wb);

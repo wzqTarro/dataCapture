@@ -2,14 +2,18 @@ package com.data.service.impl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +42,8 @@ import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
-import com.data.model.StoreCodeModel;
+import com.data.model.RegionStockModel;
+import com.data.model.StoreStockModel;
 import com.data.service.IRedisService;
 import com.data.service.IStockService;
 import com.data.utils.CommonUtil;
@@ -411,7 +416,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		param.put("sysId", sysId);
-		List<StoreCodeModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_CODE_MODEL_BY_PARAM, param);
+		List<StoreStockModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_STOCK_MODEL_BY_PARAM, param);
 		logger.info("---->>>>>{}<<<<<------", new Date().toString());
 		String sysName = storeCodeModelList.get(0).getStockList().get(0).getSysName();
 		// 标题
@@ -436,7 +441,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
 		param.put("region", region);
-		List<StoreCodeModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_CODE_MODEL_BY_PARAM, param);
+		List<StoreStockModel> storeCodeModelList = queryListByObject(QueryId.QUERY_STORE_STOCK_MODEL_BY_PARAM, param);
 		
 		// 标题
 		String title = region + "大区直营KA门店缺货日报表";
@@ -458,7 +463,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	 * @throws IOException
 	 */
 	public void exportXStoreExcel(String queryDate, String sheetName, String title, String name, String[] header, 
-			List<StoreCodeModel> storeCodeModelList, OutputStream output) throws IOException {
+			List<StoreStockModel> storeCodeModelList, OutputStream output) throws IOException {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		SXSSFWorkbook wb = excelUtil.createWorkBook();
 		Sheet sheet = wb.createSheet(sheetName);
@@ -471,7 +476,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Row headerRow = sheet.createRow(3);
 				
 		// 生成粗体居中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, header.length);
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, header.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, header, true);
@@ -490,7 +495,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 			
 		// 生成表下部分数据
-		StoreCodeModel storeCodeModel = null;
+		StoreStockModel storeCodeModel = null;
 		String storeName = null;
 		String storeCode = null;
 		int rowIndex = 4;
@@ -556,6 +561,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		output.close();
 	}
 	@Override
+	public ResultUtil exportMissFirstComExcel(String queryDate, OutputStream output) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
 	public ResultUtil exportStockExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
@@ -580,7 +590,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 按时间查询库存
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("queryDate", queryDate);
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, param);
+		List<RegionStockModel> regionStockList = queryListByObject(QueryId.QUERY_REGION_STOCK_MODEL_BY_PARAM, param);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		SXSSFWorkbook wb = excelUtil.createWorkBook();
@@ -592,32 +602,102 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Row dateRow = sheet.createRow(0);
 		// 生成日期
 		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
-		
-		List<String> brandList = stockList.parallelStream()
-				.map(Stock::getBrand)
-				.collect(Collectors.toList());
-		
-		Row brandRow = sheet.createRow(2);
-		// 生成品牌
-		stockDataUtil.createDateRow(wb, brandRow, "品牌:", "全部", brandList.toArray());
 			
 		// 表头
-		String[] headers = new String[]{"系统", "门店数量",	"库存金额", "店均库存", "昨日销售", "库存天数"};
+		String[] headers = new String[]{"大区", "门店数量",	"库存金额", "店均库存", "昨日销售", "库存天数"};
 		Row headerRow = sheet.createRow(3);
 		
 		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers, true);
 		
-		// 按系统名称分组
-		Map<String, List<Stock>> stockMap = stockList.parallelStream()
-				.collect(Collectors.groupingBy(Stock::getSysId));
-	
-		stockDataUtil.createStockDayData(sheet, stockMap, "sysName", 4);
+		if (CommonUtil.isBlank(regionStockList)) {
+			wb.write(output);
+			output.flush();
+			output.close();
+		}
+		
+		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+		param.put("queryDate", lastDay.toString());
+		param.put("column", " region, store_code, sell_num ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		int i, j, k;
+		int size, stockSize, saleSize;
+		RegionStockModel regionStock = null;
+		List<Stock> stockList = null;
+		Stock stock = null;
+		Sale sale = null;
+		Row row = null;
+		
+		// 门店编号
+		String storeCode = null;
+		
+		// 大区
+		String region = null;
+		
+		// 库存金额
+		double stockPriceSum = 0;
+		
+		// 库存总数
+		double stockNumSum = 0;
+		
+		// 昨日销量
+		int sellNumSum = 0;
+		
+		// 库存天数
+		double stockDay = 0;
+		
+		int rowIndex = 4;
+		
+		// 品牌集合
+		Set<String> brandSet = new HashSet<>();
+		for (i = 0, size = regionStockList.size(); i < size; i++) {
+			row = sheet.createRow(rowIndex);
+			regionStock = regionStockList.get(i);
+			stockList = regionStock.getStockList();
+			region = regionStock.getRegion() == null ? "" : regionStock.getRegion();
+			stockPriceSum = 0;
+			stockNumSum = 0;
+			sellNumSum = 0;
+			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+				stock = stockList.get(j);
+				storeCode = stock.getStoreCode();
+				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
+				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
+				brandSet.add(stock.getBrand());
+				for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+					sale = saleList.get(k);
+					if (region.equals(sale.getRegion()) && storeCode.equals(sale.getStoreCode())) {
+						sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
+					}
+				}
+			} 
+			if (sellNumSum == 0) {
+				stockDay = 0;
+			} else {
+				stockDay = stockPriceSum / sellNumSum;
+			}
+			String[] rowValue = new String[] {
+					regionStock.getRegion(), // 大区
+					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(stockPriceSum), // 库存金额
+					String.valueOf(stockNumSum/stockList.size()), // 店均库存
+					String.valueOf(sellNumSum), // 昨日销量
+					String.valueOf(stockDay) // 库存天数
+			};
+			excelUtil.createRow(row, rowValue, false);
+			rowIndex ++;
+		}
+		// Row brandRow = sheet.createRow(2);
+		// 生成品牌
+		// stockDataUtil.createDateRow(wb, brandRow, "品牌:", "全部", (String[]) brandSet.toArray());
 		
 		wb.write(output);
+		output.flush();
+		output.close();
 		return ResultUtil.success();
 	}
 	@Override
@@ -654,7 +734,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Row headerRow = sheet.createRow(3);
 		
 		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers, true);
@@ -668,7 +748,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		wb.write(output);
 		return ResultUtil.success();
 	}
-	
 	@Override
 	public ResultUtil exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(queryDate)) {
@@ -703,7 +782,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Row headerRow = sheet.createRow(3);
 		
 		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, headers.length);
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
 		
 		// 设置表头
 		excelUtil.createRow(headerRow, headers, true);
@@ -717,5 +796,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		 */
 		
 		return ResultUtil.success();
+	}
+
+	public static void main(String[] args) {
+		String[] s = new String[] {"sdsd", "1", "2"};
+		System.err.println(Arrays.toString(s));
 	}
 }

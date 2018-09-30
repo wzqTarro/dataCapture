@@ -63,7 +63,7 @@ public class StockController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
-	 * 导出门店单品表
+	 * 缺货日报表-导出门店单品表
 	 * @param queryDate
 	 * @param storeCode 门店编号
 	 * @return
@@ -88,7 +88,7 @@ public class StockController {
 	}
 	
 	/**
-	 * 导出系统门店表
+	 * 缺货日报表-导出系统门店表
 	 * @param queryDate
 	 * @param sysId
 	 * @return
@@ -113,7 +113,7 @@ public class StockController {
 	}
 	
 	/**
-	 * 导出区域门店表
+	 * 缺货日报表-导出区域门店表
 	 * @param queryDate
 	 * @param storeName
 	 * @return
@@ -132,6 +132,33 @@ public class StockController {
 		try {
 			output = response.getOutputStream();
 			result = stockServiceImpl.exportRegionStoreExcel(queryDate, region, output);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 缺货日报表-导出公司一级表
+	 * @param queryDate
+	 * @param storeName
+	 * @return
+	 */
+	@RequestMapping(value = "exportMissFirstComExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "POST")
+	public String exportMissFirstComExcel(String queryDate, HttpServletResponse response) {
+		
+		String fileName = "缺货表报-区域门店表" + queryDate;
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output;
+		ResultUtil result = ResultUtil.error();
+		try {
+			output = response.getOutputStream();
+			result = stockServiceImpl.exportMissFirstComExcel(queryDate, output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

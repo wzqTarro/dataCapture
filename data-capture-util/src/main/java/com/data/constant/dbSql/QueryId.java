@@ -102,6 +102,9 @@ public final class QueryId {
 	public static final String QUERY_CODE_DICT_LIST_BY_SERVICE_CODE = "CodeDictMapper.queryCodeDictListByServiceCode";
 	
 	/**按门店分组查询库存**/
-	public static final String QUERY_STORE_CODE_MODEL_BY_PARAM = "StockMapper.selectStoreCodeModelByParam";
+	public static final String QUERY_STORE_STOCK_MODEL_BY_PARAM = "StockMapper.selectStoreStockModelByParam";
+	
+	/**按大区分组查询库存**/
+	public static final String QUERY_REGION_STOCK_MODEL_BY_PARAM = "StockMapper.selectRegionStockModelByParam";
 	
 }

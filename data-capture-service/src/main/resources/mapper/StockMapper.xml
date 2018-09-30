@@ -30,9 +30,16 @@
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
-  <resultMap id="storeCodeMap" type="com.data.model.StoreCodeModel">
+  <!-- 按门店分组 -->
+  <resultMap id="storeStockMap" type="com.data.model.StoreStockModel">
   	<result column="store_code" property="storeCode" jdbcType="VARCHAR"/>
   	<result column="store_name" property="storeName" jdbcType="VARCHAR" />
+  	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
+  <!-- 按大区分组 -->
+  <resultMap id="regionStockMap" type="com.data.model.RegionStockModel">
+  	<id column="region" property="storeCode" jdbcType="VARCHAR"/>
   	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
   	</collection>
   </resultMap>
@@ -87,10 +94,18 @@
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
-  <select id="selectStoreCodeModelByParam" resultMap="storeCodeMap" parameterType="map">
+  <!-- 按门店分组 -->
+  <select id="selectStoreStockModelByParam" resultMap="storeStockMap" parameterType="map">
   	SELECT sys_name, store_code, store_name, stock_price, simple_bar_code
   	FROM db_stock
-  	WHERE 1=1 
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <!-- 按大区分组 -->
+  <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
+  	SELECT store_code, store_name, stock_price, stock_num, region
+  	FROM db_stock
+  	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByParam" resultMap="BaseResultMap" parameterType="map">

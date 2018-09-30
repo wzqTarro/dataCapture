@@ -23,26 +23,33 @@ public interface IStockService {
 	 */
 	ResultUtil getStockByParam(CommonDTO common, Stock stock, Integer page, Integer limit) throws Exception ;
 	/**
-	 * 导出门店单品表
+	 * 缺货日报表-导出门店单品表
 	 * @param queryDate 查询时间
 	 * @param storeName 门店名称
 	 * @return
 	 */
 	ResultUtil exportStoreProductExcel(String queryDate, String storeCode, OutputStream output) throws IOException;
 	/**
-	 * 导出系统门店表
+	 * 缺货日报表-导出系统门店表
 	 * @param queryDate
 	 * @param sysName
 	 * @return
 	 */
 	ResultUtil exportSysStoreExcel(String queryDate, String sysId, OutputStream output) throws IOException;
 	/**
-	 * 导出区域门店表
+	 * 缺货日报表-导出区域门店表
 	 * @param queryDate
 	 * @param region
 	 * @return
 	 */
 	ResultUtil exportRegionStoreExcel(String queryDate, String region, OutputStream output) throws IOException;
+	/**
+	 * 缺货日报表-导出公司一级表
+	 * @param queryDate
+	 * @param region
+	 * @return
+	 */
+	ResultUtil exportMissFirstComExcel(String queryDate, OutputStream output) throws IOException;
 	/**
 	 * 自定义字段导出库存数据表
 	 * @param stock

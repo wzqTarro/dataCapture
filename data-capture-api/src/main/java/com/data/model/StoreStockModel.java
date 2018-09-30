@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.data.bean.Stock;
-
-public class StoreCodeModel implements Serializable{
+/**
+ * 库存按门店分组
+ * @author HCH
+ *
+ */
+public class StoreStockModel implements Serializable{
 
 	/**
 	 * 
