@@ -219,6 +219,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				sale.setStockCode(product.getStockCode());
 			}			
 			// 数据插入数据库
+			logger.info("------>>>>>开始插入销售数据<<<<<-------");
 			dataCaptureUtil.insertData(saleList, InsertId.INSERT_BATCH_SALE);
 		} else {
 			saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, queryParam);
@@ -243,6 +244,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			map.put("startDate", now);
 			map.put("endDate", now);
 		}
+		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		logger.info("--------->>>>>>>>sale:" + FastJsonUtil.objectToString(sale) + "<<<<<<<<----------");
 		if (null != sale) {
 			

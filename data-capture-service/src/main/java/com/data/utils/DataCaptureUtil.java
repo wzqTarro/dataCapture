@@ -150,7 +150,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
-					int rowNum = 2000;
+					int rowNum = 1000;
 					double size = Math.ceil(dataList.size() / rowNum);
 					for (int i = 0; i < size; i++) {
 						if (i == (size-1)) {

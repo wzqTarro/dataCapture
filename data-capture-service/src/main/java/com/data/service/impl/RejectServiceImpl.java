@@ -155,6 +155,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				reject.setRejectDepartmentName(store.getStandardStoreName());
 			}
 			// 插入数据
+			logger.info("------>>>>>开始插入退单数据<<<<<-------");
 			dataCaptureUtil.insertData(rejectList, InsertId.INSERT_BATCH_REJECT);
 		} else {
 			rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, queryParam);
@@ -168,13 +169,12 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
 		logger.info("---->>>reject:{}<<<------", FastJsonUtil.objectToString(reject));
 		Map<String, Object> map = new HashMap<>(8);
-		if (null != common) {
-			if (CommonUtil.isNotBlank(common.getStartDate())) {
-				map.put("startDate", common.getStartDate());	
-			}
-			if (CommonUtil.isNotBlank(common.getEndDate())) {
-				map.put("endDate", common.getEndDate());
-			}
+		if (null == common) {
+			common =  new CommonDTO();
+		}
+		if (CommonUtil.isNotBlank(common.getStartDate()) && CommonUtil.isNotBlank(common.getEndDate())) {
+			map.put("startDate", common.getStartDate());	
+			map.put("endDate", common.getEndDate());
 		} else {
 			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
 			map.put("startDate", now);

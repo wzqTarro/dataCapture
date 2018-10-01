@@ -70,7 +70,7 @@ public class StockDataUtil extends CommonServiceImpl{
 	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellStart, int cellEnd) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		
-		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, cellStart, cellEnd));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, cellStart, cellEnd - 1));
 
 		// 粗体、居中
 		CellStyle cellStyle = excelUtil.getBolderTitle(wb);

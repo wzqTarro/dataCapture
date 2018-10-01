@@ -43,6 +43,13 @@
   	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
   	</collection>
   </resultMap>
+  <!-- 按系统分组 -->
+  <resultMap id="sysStockMap" type="com.data.model.SysStockModel">
+  	<id column="sys_id" property="sysId" jdbcType="VARCHAR"/>
+  	<id column="sys_name" property="sysName" jdbcType="VARCHAR"/>
+  	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, classify, 
@@ -103,6 +110,13 @@
   </select>
   <!-- 按大区分组 -->
   <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
+  	SELECT store_code, store_name, stock_price, stock_num, region, brand
+  	FROM db_stock
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <!-- 按系统分组 -->
+  <select id="selectSysStockModelByParam" resultMap="sysStockMap" parameterType="map">
   	SELECT store_code, store_name, stock_price, stock_num, region, brand
   	FROM db_stock
   	WHERE 1=1

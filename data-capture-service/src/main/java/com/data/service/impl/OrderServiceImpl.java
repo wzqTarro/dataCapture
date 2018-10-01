@@ -54,18 +54,19 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
 		logger.info("---->>>order:{}<<<------", FastJsonUtil.objectToString(order));
 		Map<String, Object> map = new HashMap<>(8);
-		if (null != common) {
-			if (CommonUtil.isNotBlank(common.getStartDate())) {
-				map.put("startDate", common.getStartDate());	
-			}
-			if (CommonUtil.isNotBlank(common.getEndDate())) {
-				map.put("endDate", common.getEndDate());
-			}
+		if (null == common) {
+			common =  new CommonDTO();
+		}
+		if (CommonUtil.isNotBlank(common.getStartDate()) && CommonUtil.isNotBlank(common.getEndDate())) {
+			map.put("startDate", common.getStartDate());	
+			map.put("endDate", common.getEndDate());
 		} else {
 			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
 			map.put("startDate", now);
 			map.put("endDate", now);
 		}
+		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
+		
 		if (null != order) {
 			if (CommonUtil.isNotBlank(order.getSysId())) {
 				map.put("sysId", order.getSysId());
@@ -198,6 +199,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				order.setStockCode(product.getStockCode());
 			}
 			// 插入数据
+			logger.info("----->>>>>>开始插入订单数据<<<<<<------");
 			dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
 		} else {
 			orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, queryParam);

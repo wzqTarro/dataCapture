@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IntSummaryStatistics;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -211,10 +212,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 		}
 		
-		logger.info("---->>>开始删除数据<<<------");
+		logger.info("---->>>开始删除库存数据<<<------");
 		delete(DeleteId.DELETE_STOCK_BY_SYS_ID, sysId);
 		
-		logger.info("---->>>开始插入数据<<<-----");
+		logger.info("---->>>开始插入库存数据<<<-----");
 		dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
 		
 		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
@@ -738,7 +739,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 品牌集合
-		Set<String> brandSet = new HashSet<>();
+		Set<String> brandSet = new LinkedHashSet<>();
+		brandSet.add("全部");
 		String[][] rowValue = new String[regionStockList.size()][6];
 		for (i = 0, size = regionStockList.size(); i < size; i++) {
 
@@ -773,19 +775,16 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			rowValue[i] = new String[] { regionStock.getRegion(), // 大区
 					String.valueOf(stockList.size()), // 门店数量
 					String.valueOf(stockPriceSum), // 库存金额
-					String.valueOf(stockNumSum / stockList.size()), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
-					String.valueOf(stockDay) // 库存天数
+					String.valueOf(CommonUtil.setScale("0.00", stockDay)) // 库存天数
 			};
 
 		}
-		Row brandRow = sheet.createRow(2);
-
 		
-		/**
-		 * TODO 生成品牌
-		 */
-		stockDataUtil.createDateRow(wb, brandRow, "品牌:", "全部", brandSet.toArray());
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
 
 		Row row = null;
 
