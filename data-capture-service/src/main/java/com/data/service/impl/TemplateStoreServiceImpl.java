@@ -20,6 +20,7 @@ import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.TipsEnum;
+import com.data.model.RegionMenu;
 import com.data.service.ITemplateStoreService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
@@ -130,11 +131,18 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		}
 		Map<String, Object> param = new HashMap<>(1);
 		param.put("sysId", sysId);
-		List<TemplateStore> storeList = queryListByObject(QueryId.QUERY_STORE_BY_ANY_COLUMN, param);
-		Map<String, List<TemplateStore>> regionMap = storeList.parallelStream()
-				.filter(StreamUtil.distinctByKey(TemplateStore::getProvinceArea))
-				.collect(Collectors.groupingBy(TemplateStore::getRegion));
-		
-		return ResultUtil.success(regionMap);
+		List<RegionMenu> storeList = queryListByObject(QueryId.QUERY_REGION_MENU, param);
+		return ResultUtil.success(storeList);
+	}
+
+	@Override
+	public ResultUtil getStoreMenu(String sysId) {
+		if (CommonUtil.isBlank(sysId)) {
+			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
+		}
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("sysId", sysId);
+		List<Map<String, Object>> storeList = queryListByObject(QueryId.QUERY_STORE_MENU, param);
+		return ResultUtil.success(storeList);
 	}
 }

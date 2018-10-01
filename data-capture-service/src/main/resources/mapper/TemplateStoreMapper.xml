@@ -23,6 +23,12 @@
     <result column="ascription_sole" jdbcType="CHAR" property="ascriptionSole" />
     <result column="sys_id" jdbcType="CHAR" property="sysId" />
   </resultMap>
+  <resultMap type="com.data.model.RegionMenu" id="regionMenuMap">
+  	<result column="region" property="region" jdbcType="VARCHAR"/>
+  	<collection property="provinceAreaList" ofType="java.lang.String">
+  		<result column="province_area" property="provinceArea" jdbcType="VARCHAR"/>
+  	</collection>
+  </resultMap>
   <sql id="Base_Column_List">
     id, store_code, order_store_name, return_store_name, sale_store_name, standard_store_name, 
     store_market, store_city, sys_name, store_manager, logistics_model, practice_time, distribution_code, 
@@ -56,7 +62,8 @@
   		AND sys_id = #{sysId} 
   	</if>
   </sql>
-  <select id="selectByAnyColumn" parameterType="map" resultMap="BaseResultMap">
+  <!-- 获取大区菜单 -->
+  <select id="selectRegionMenu" parameterType="map" resultMap="regionMenuMap">
   	SELECT region, province_area
   	FROM db_template_store
   	WHERE 1=1 
@@ -66,7 +73,11 @@
   		AND sys_id = #{sysId}
   	</if>
   </select>
-  
+  <!-- 获取门店菜单 -->
+  <select id="selectStoreMenu" resultType="map">
+  	SELECT store_code as storeCode, standard_store_name as storeName
+  	FROM db_template_store
+  </select>
   <!-- 查询门店模板列表 -->
   <select id="queryStoreTemplate" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> 

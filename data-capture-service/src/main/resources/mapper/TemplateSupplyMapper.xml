@@ -32,6 +32,10 @@
   		AND region = #{region}
   	</if>
   </sql>
+  <select id="selectAnyColumn" resultType="map">
+  	SELECT ${column}
+  	FROM db_template_supply
+  </select>
   <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>
   	FROM db_template_supply s

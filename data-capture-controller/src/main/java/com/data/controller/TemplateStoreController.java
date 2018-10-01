@@ -85,14 +85,26 @@ public class TemplateStoreController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
-	 * 获取系统大区及其对应省区菜单
+	 * 获取系统下大区及其对应省区菜单
 	 * @param sysId
 	 * @return
 	 */
 	@RequestMapping(value = "getRegionMenu", method = RequestMethod.GET)
-	@ApiOperation(value = "获取系统大区及其对应省区菜单", httpMethod =  "GET")
+	@ApiOperation(value = "获取系统下大区及其对应省区菜单", httpMethod =  "GET")
 	public String getRegionMenu(String sysId) {
 		ResultUtil result = storeService.getRegionMenu(sysId);
 		return FastJsonUtil.objectToString(result);
 	}
+	/**
+	 * 获取系统下门店菜单
+	 * @param sysId
+	 * @return
+	 */
+	@RequestMapping(value = "getStoreMenu", method = RequestMethod.GET)
+	@ApiOperation(value = "获取系统下门店菜单", httpMethod =  "GET")
+	public String getStoreMenu(String sysId) {
+		ResultUtil result = storeService.getStoreMenu(sysId);
+		return FastJsonUtil.objectToString(result);
+	}
+	
 }

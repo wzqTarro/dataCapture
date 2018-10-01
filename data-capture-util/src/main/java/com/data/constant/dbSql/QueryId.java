@@ -23,7 +23,11 @@ public final class QueryId {
 	
 	public static final String QUERY_STORE_BY_ID = "TemplateStoreMapper.selectByPrimaryKey";
 	
-	public static final String QUERY_STORE_BY_ANY_COLUMN = "TemplateStoreMapper.selectByAnyColumn";
+	/**获取大区菜单**/
+	public static final String QUERY_REGION_MENU = "TemplateStoreMapper.selectRegionMenu";
+	
+	/**获取门店菜单**/
+	public static final String QUERY_STORE_MENU = "TemplateStoreMapper.selectStoreMenu";
 	
 	public static final String QUERY_SUPPLY_BY_CONDITION = "TemplateSupplyMapper.selectByCondition";
 	
@@ -106,5 +110,8 @@ public final class QueryId {
 	
 	/**按大区分组查询库存**/
 	public static final String QUERY_REGION_STOCK_MODEL_BY_PARAM = "StockMapper.selectRegionStockModelByParam";
+	
+	/**查询供应链部分字段**/
+	public static final String QUERY_SUPPLY_ANY_COLUMN = "TemplateSupplyMapper.selectAnyColumn";
 	
 }

@@ -30,4 +30,9 @@ public interface ITemplateSupplyService {
 	 * @return
 	 */
 	ResultUtil querySupplyByConditiion(TemplateSupply templateSupply, Integer page, Integer limit) throws Exception ;
+	/**
+	 * 获取供应链菜单
+	 * @return
+	 */
+	ResultUtil getSupplyMenu();
 }

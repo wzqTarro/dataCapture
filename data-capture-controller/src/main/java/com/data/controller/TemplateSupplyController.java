@@ -65,4 +65,13 @@ public class TemplateSupplyController {
 	public String deleteSupply(Integer id){
 		return FastJsonUtil.objectToString(supplyService.deleteSupply(id));
 	}
+	/**
+	 * 获取供应链菜单
+	 * @return
+	 */
+	@RequestMapping(value = "/getSupplyMenu", method = RequestMethod.GET)
+	@ApiOperation(value = "获取供应链菜单", httpMethod = "GET")
+	public String getSupplyMenu() {
+		return FastJsonUtil.objectToString(supplyService.getSupplyMenu());
+	}
 }

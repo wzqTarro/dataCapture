@@ -1,5 +1,7 @@
 package com.data.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,5 +118,13 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 				QueryId.QUERY_SUPPLY_BY_CONDITION, map, page, limit);
 		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
 		return ResultUtil.success(pageRecord);
+	}
+
+	@Override
+	public ResultUtil getSupplyMenu() {
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("column", " sys_id as sysId, sys_name as sysName, region ");
+		List<Map<String, Object>> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_ANY_COLUMN, param);
+		return ResultUtil.success(supplyList);
 	}
 }

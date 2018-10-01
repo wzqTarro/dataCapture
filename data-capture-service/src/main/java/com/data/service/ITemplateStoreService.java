@@ -33,9 +33,15 @@ public interface ITemplateStoreService {
 	 */
 	ResultUtil deleteTemplateStoreById(int id);
 	/**
-	 * 获取系统大区及其对应省区菜单
+	 * 获取系统下大区及其对应省区菜单
 	 * @param sysId
 	 * @return
 	 */
 	ResultUtil getRegionMenu(String sysId);
+	/**
+	 * 获取系统下门店菜单
+	 * @param sysId
+	 * @return
+	 */
+	ResultUtil getStoreMenu(String sysId);
 }
