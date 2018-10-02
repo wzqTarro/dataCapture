@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.Reject;
 import com.data.bean.Sale;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -31,6 +32,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -315,6 +317,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	}
 	
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ResultUtil storeDailyexcel(String system, String region, String province, String stored, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = new HashMap<>(8);
@@ -331,136 +334,95 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		if(count >= CommonValue.MAX_ROW_COUNT_2007) {
 			return ResultUtil.error("下载超过excel2007最大行数");
 		} else {
-			CountDownLatch latch = new CountDownLatch(3);
-			//int pageSize = (int) Math.ceil((double) count / 3);
+			//CountDownLatch latch = new CountDownLatch(3);
 			String fileName = "销售日报表-" + DateUtil.getCurrentDateStr();
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 			ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//			for(int i = 1; i <= 3; i++) {
-//				params.put("pageNum", i);
-//				params.put("pageSize", pageSize);
+			try {
+				OutputStream out = response.getOutputStream();
+				/**
+				 * TODO 当前不开线程
+				 */
+				// executorService.execute(new ExcelThread(params, latch, out));
+				List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
+				if (CommonUtil.isBlank(saleList)) {
+					logger.error("--->>>查询该天数据为空<<<---");
+				}
 				try {
-					OutputStream out = response.getOutputStream();
-					/**
-					 * TODO
-					 * 当前不开线程
-					 */
-					//executorService.execute(new ExcelThread(params, latch, out));
-					
-
-					//synchronized (latch) {
-						
-						List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
-						if(CommonUtil.isBlank(saleList)) {
-							logger.error("--->>>查询该天数据为空<<<---");
-						}
-						try {
-							buildDailyStoreSale(saleList);
-						} catch (Exception e) {
-							e.printStackTrace();
-							logger.error("--->>>组装日销售门店信息异常<<<---");
-						}
-						
-						List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
-						String dateStr = DateUtil.getCurrentDateStr();
-						//String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(1));
-						
-						List<Map<String, Object>> saleDataList = new ArrayList<>(10);
-						//日门店销售额集合
-						List<Map<String, Object>> storeDailyList = new ArrayList<>(10);
-						//取得系统当前时间在日期集合中的索引
-						int index = daysList.indexOf(dateStr);
-						for(int i = 0; i < index + 1; i++) {
-							//将之前天数的数据都进行组装
-							//到缓存查是否数据， 然后放置在saleDatePriceMap中
-							storeDailyList = redisService.querySaleDateMessageByStore(daysList.get(i));
-							//如果日查詢為空 則每一個門店銷售額直接為空
-							if(CommonUtil.isBlank(storeDailyList)) {
-								Map<String, Object> saleInfo = new HashMap<>(10);
-								List<String> storeCodeList = queryListByObject(QueryId.QUERY_STORE_CODE_LIST, null);
-								if(CommonUtil.isNotBlank(storeCodeList)) {
-									for(String storeCode : storeCodeList) {
-										try {
-											saleInfo = redisService.queryTempSaleInfo(storeCode);
-											saleInfo.put(daysList.get(i), 0.0);
-											redisService.setTempSaleInfo(storeCode, saleInfo);
-										} catch (Exception e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-									}
-								}
-							}
-							for(Map<String, Object> store : storeDailyList) {
-								String storeCode = (String) store.get("storeCode");
-								//根据storeCode从缓存里面取得门店信息
-								Map<String, Object> saleInfo;
-								try {
-									//saleInfo = redisService.querySaleInfo(storeCode);
-									saleInfo = redisService.queryTempSaleInfo(storeCode);
-									//在门店信息里面添加日销售额
-									saleInfo.put(daysList.get(i), store.get("salePrice"));
-									//先暂存到缓存中
-									redisService.setTempSaleInfo(storeCode, saleInfo);
-									//将信息放入在saleDataList集合里面
-									//saleDataList.add(saleInfo);
-								} catch (Exception e) {
-									logger.error("--->>>查询门店信息异常<<<---");
-									e.printStackTrace();
-								}
-							}
-						}
-						List<Map<String, Object>> storeList = new ArrayList<>(10);
-						try {
-							storeList = redisService.querySaleList();
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-						for(int i = 0; i < storeList.size(); i++) {
-							Map<String, Object> sale = storeList.get(i);
-							String storeCode = (String) sale.get("storeCode");
-							try {
-								saleDataList.add(redisService.queryTempSaleInfo(storeCode));
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						try {
-							System.err.println("日报表： " + JsonUtil.toJson(saleDataList));
-						} catch (JsonProcessingException e) {
-							e.printStackTrace();
-						}
-						//写入单元格
-						List<String> codeList = codeDictService.queryCodeListByServiceCode(CodeEnum.CODE_DICT_DAILY_STORE_REPORT.getValue());
-						String title = "销售日报表";
-						ExcelUtil excelUtil = new ExcelUtil();
-						try {
-							excelUtil.excel2007(CommonValue.STORE_DAILY_REPORT, saleDataList, title, codeList, out);
-						} catch (IOException e) {
-							logger.info("--->>>门店销售日报表导出异常<<<---");
-							e.printStackTrace();
-						} finally {
-							if(out != null) {
-								try {
-									out.close();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					
-					
-				} catch(Exception e) {
+					buildDailyStoreSale(saleList);
+				} catch (Exception e) {
 					e.printStackTrace();
-					logger.error("--->>>销售日报表导出异常<<<---");
+					logger.error("--->>>组装日销售门店信息异常<<<---");
+				}
+
+				List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
+				String dateStr = DateUtil.getCurrentDateStr();
+				List<Map<String, Object>> saleInfoList = redisService.querySaleList();
+				List<Map<String, Object>> saleDataList = new ArrayList<>(10);
+				// 日门店销售额集合
+				List<Map<String, Object>> storeDailyList = new ArrayList<>(10);
+				// 取得系统当前时间在日期集合中的索引
+				int index = daysList.indexOf(dateStr);
+				for (int i = 0; i < index + 1; i++) {
+					// 将之前天数的数据都进行组装
+					// 到缓存查是否数据， 然后放置在saleDatePriceMap中
+					storeDailyList = redisService.querySaleDateMessageByStore(daysList.get(i));
+					// 如果日查詢為空 則每一個門店銷售額直接為空
+					boolean flag = CommonUtil.isBlank(storeDailyList);
+					Map<String, Object> map = new HashMap<>(10);
+					for (int k = 0; k < storeDailyList.size(); k++) {
+						map.put((String) storeDailyList.get(k).get("storeCode"), storeDailyList.get(k));
+					}
+					for (int j = 0; j < saleInfoList.size(); j++) {
+						String storeCode = (String) saleInfoList.get(j).get("storeCode");
+						Map<String, Object> storeDailyMap = (Map<String, Object>) map.get(storeCode);
+						if (map.get(storeCode) != null) {
+							Map<String, Object> sale = saleInfoList.get(j);
+							if (flag) {
+								sale.put(daysList.get(i), 0.0);
+							} else {
+								sale.put(daysList.get(i), storeDailyMap.get("salePrice"));
+							}
+							saleInfoList.set(j, sale);
+						}
+					}
+						
+				}
+				saleDataList.addAll(saleInfoList);
+				try {
+					logger.info("--->>>日报表:  {}<<<---" + JsonUtil.toJson(saleDataList));
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				// 写入单元格
+				List<String> codeList = codeDictService
+						.queryCodeListByServiceCode(CodeEnum.CODE_DICT_DAILY_STORE_REPORT.getValue());
+				String title = "销售日报表";
+				ExcelUtil excelUtil = new ExcelUtil();
+				try {
+					excelUtil.excel2007(CommonValue.STORE_DAILY_REPORT, saleDataList, title, codeList, out);
+				} catch (IOException e) {
+					logger.info("--->>>门店销售日报表导出异常<<<---");
+					e.printStackTrace();
 				} finally {
-					if(executorService != null) {
-						executorService.shutdown();
+					if (out != null) {
+						try {
+							out.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
-//			}
-			//latch.await();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("--->>>销售日报表导出异常<<<---");
+			} finally {
+				if (executorService != null) {
+					executorService.shutdown();
+				}
+			}
 		}
 		return ResultUtil.success();
 	}
@@ -604,21 +566,42 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	}
 
 	@Override
-	public ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+	public void exportSaleExcel(String stockNameStr, CommonDTO common, Sale sale, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
-		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
-		}
-		if (CommonUtil.isBlank(stockNameStr)) {
-			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
-		}
+		logger.info("----->>>>sale：{}<<<<------", FastJsonUtil.objectToString(sale));
+		exportUtil.exportConditionJudge(common, sale, stockNameStr);
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(SaleEnum.class, builder, header);
-		exportUtil.exportExcel(Sale.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
-				QueryId.QUERY_SALE_BY_ANY_COLUMN, "销售信息表", methodNameArray, header, output);
-		return ResultUtil.success();
+		Map<String, Object> map = exportUtil.joinColumn(SaleEnum.class, header);
+		
+		// 调用方法名
+		String[] methodNameArray = (String[]) map.get("methodNameArray");
+		
+		// 导出字段
+		String column = (String) map.get("column");
+		
+		// 自选导出excel表查询字段
+		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column,
+				sale.getSysId());
+		
+		// 门店编号
+		if (CommonUtil.isNotBlank(sale.getStoreCode())) {
+			param.put("storeCode", sale.getStoreCode());
+		}
+
+		// 品牌
+		if (CommonUtil.isNotBlank(sale.getBrand())) {
+			param.put("brand", sale.getBrand());
+		}
+		
+		// 单品条码
+		if (CommonUtil.isNotBlank(sale.getSimpleBarCode())) {
+			param.put("simpleBarCode", sale.getSimpleBarCode());
+		}
+		List<Sale> dataList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+
+		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
+		excelUtil.exportCustom2007("销售信息", header, methodNameArray, dataList, output);
 	}
 
 	@Override
