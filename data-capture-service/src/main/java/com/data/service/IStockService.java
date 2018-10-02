@@ -55,7 +55,7 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	void exportStockExcel(String sysId, String stockNameStr, OutputStream output) throws Exception;
+	void exportStockExcel(Stock stock, String stockNameStr, OutputStream output) throws Exception;
 	/**
 	 * 按区域导出公司一级表
 	 * @param queryDate

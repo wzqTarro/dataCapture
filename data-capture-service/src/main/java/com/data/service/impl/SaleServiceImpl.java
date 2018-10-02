@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.Reject;
 import com.data.bean.Sale;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -31,6 +32,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -604,21 +606,42 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	}
 
 	@Override
-	public ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+	public void exportSaleExcel(String stockNameStr, CommonDTO common, Sale sale, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
-		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
-		}
-		if (CommonUtil.isBlank(stockNameStr)) {
-			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
-		}
+		logger.info("----->>>>sale：{}<<<<------", FastJsonUtil.objectToString(sale));
+		exportUtil.exportConditionJudge(common, sale, stockNameStr);
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(SaleEnum.class, builder, header);
-		exportUtil.exportExcel(Sale.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
-				QueryId.QUERY_SALE_BY_ANY_COLUMN, "销售信息表", methodNameArray, header, output);
-		return ResultUtil.success();
+		Map<String, Object> map = exportUtil.joinColumn(SaleEnum.class, header);
+		
+		// 调用方法名
+		String[] methodNameArray = (String[]) map.get("methodNameArray");
+		
+		// 导出字段
+		String column = (String) map.get("column");
+		
+		// 自选导出excel表查询字段
+		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column,
+				sale.getSysId());
+		
+		// 门店编号
+		if (CommonUtil.isNotBlank(sale.getStoreCode())) {
+			param.put("storeCode", sale.getStoreCode());
+		}
+
+		// 品牌
+		if (CommonUtil.isNotBlank(sale.getBrand())) {
+			param.put("brand", sale.getBrand());
+		}
+		
+		// 单品条码
+		if (CommonUtil.isNotBlank(sale.getSimpleBarCode())) {
+			param.put("simpleBarCode", sale.getSimpleBarCode());
+		}
+		List<Sale> dataList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+
+		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
+		excelUtil.exportCustom2007("销售信息", header, methodNameArray, dataList, output);
 	}
 
 	@Override

@@ -152,8 +152,7 @@ public class StockController {
 	 */
 	@RequestMapping(value = "exportStockExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "选择字段导出库存数据表", httpMethod = "GET")
-	public void exportStockExcel(@RequestParam(value = "sysId", required = true)String sysId, 
-			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) {
+	public void exportStockExcel(Stock stock, @RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) {
 		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
@@ -161,7 +160,7 @@ public class StockController {
 		OutputStream output;
 		try {
 			output = response.getOutputStream();
-			stockServiceImpl.exportStockExcel(sysId, stockNameStr, output);
+			stockServiceImpl.exportStockExcel(stock, stockNameStr, output);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

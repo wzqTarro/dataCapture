@@ -49,5 +49,15 @@ public class TemplateProductController {
 	public String deleteProduct(int id) {
 		return FastJsonUtil.objectToString(templateProductService.deleteTemplateProduct(id));
 	}
+	/**
+	 * 获取品牌菜单
+	 * @param sysId
+	 * @return
+	 */
+	@RequestMapping(value = "getBrandMenu", method = RequestMethod.GET)
+	@ApiOperation(value = "获取品牌菜单", httpMethod = "GET")
+	public String getBrandMenu(String sysId) {
+		return FastJsonUtil.objectToString(templateProductService.getBrandMenu(sysId));
+	}
 	
 }

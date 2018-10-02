@@ -1,18 +1,44 @@
 package com.data.utils;
 
-import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
 
 import com.data.constant.enums.ICommonEnum;
-import com.data.service.impl.CommonServiceImpl;
+import com.data.constant.enums.TipsEnum;
+import com.data.dto.CommonDTO;
+import com.data.exception.DataException;
 
 @Component
-public class ExportUtil extends CommonServiceImpl{
-
+public class ExportUtil {
+	/**
+	 * 自选导出Excel表条件判断
+	 * @param common
+	 * @param t
+	 * @param stockNameStr
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 */
+	public <T> void exportConditionJudge(CommonDTO common, T t, String stockNameStr) throws Exception {
+		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
+			throw new DataException("534");
+		}
+		if (CommonUtil.isBlank(stockNameStr)) {
+			throw new DataException("540");
+		}
+		if (t == null) {
+			throw new DataException("538");
+		}
+		Class clazz = t.getClass();
+		Method method = clazz.getMethod("getSysId", new Class[]{});
+		Object sysId = method.invoke(t, new Object[]{});
+		if (CommonUtil.isBlank(sysId)) {
+			throw new DataException("538");
+		}
+	}
 	/**
 	 * 拼接查询字段
 	 * @param stockNameStr
@@ -21,7 +47,9 @@ public class ExportUtil extends CommonServiceImpl{
 	 * @return
 	 * @throws Exception
 	 */
-	public <T extends ICommonEnum> String[] joinColumn(Class<T> clazz, StringBuilder builder, String[] header) throws Exception {
+	public <T extends ICommonEnum> Map<String, Object> joinColumn(Class<T> clazz, String[] header) throws Exception {
+		StringBuilder builder = new StringBuilder();
+		builder.append(" ");
 		String[] methodNameArray = new String[header.length];
 		int methodIndex = 0;
 		// 拼接查询字段
@@ -35,25 +63,25 @@ public class ExportUtil extends CommonServiceImpl{
 			methodNameArray[methodIndex] = e.getMethodName(); 
 			methodIndex++;
 		}
-		builder.deleteCharAt(builder.length() - 1);		
-		return methodNameArray;
+		builder.deleteCharAt(builder.length() - 1);
+		builder.append(" ");
+		Map<String, Object> map = new HashMap<>(2);
+		map.put("methodNameArray", methodNameArray);
+		map.put("column", builder.toString());
+		return map;
 	}
 	/**
-	 * 导出excel
+	 * 自选字段查询参数
 	 * @throws Exception 
 	 */
-	public <T> void exportExcel(Class<T> clazz, String startDate, String endDate, String sysId, String column, String queryMapper,
-			String title, String[] methodNameArray, String[] header, OutputStream output) throws Exception {
-		Map<String, Object> param = new HashMap<>(2);
+	public Map<String, Object> joinParam(String startDate, String endDate, String column, String sysId) throws Exception {
+		Map<String, Object> param = new HashMap<>(4);
 		param.put("column", column);
 		if (CommonUtil.isNotBlank(startDate) && CommonUtil.isNotBlank(endDate)) {
 			param.put("startDate", startDate);
 			param.put("endDate", endDate);
 		}
 		param.put("sysId", sysId);
-		List<T> dataList = queryListByObject(queryMapper, param);
-		
-		ExcelUtil<T> excelUtil = new ExcelUtil<>();
-		excelUtil.exportCustom2007(title, header, methodNameArray, dataList, output);
+		return param;
 	}
 }

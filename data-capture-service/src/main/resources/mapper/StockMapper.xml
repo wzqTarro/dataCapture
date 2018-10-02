@@ -87,6 +87,9 @@
   	<if test="simpleName != null and simpleName != ''">
   		AND simple_name = #{simpleName}
   	</if>
+  	<if test="brand != null and brand != ''">
+  		AND brand = #{brand}
+  	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}
   		AND create_time &gt;= #{startDate}

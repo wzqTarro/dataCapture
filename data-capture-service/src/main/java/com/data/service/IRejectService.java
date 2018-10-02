@@ -33,5 +33,5 @@ public interface IRejectService {
 	 * @return
 	 * @throws Exception
 	 */
-	ResultUtil exportRejectExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	void exportRejectExcel(String stockNameStr, CommonDTO common, Reject reject, OutputStream output) throws Exception;
 }

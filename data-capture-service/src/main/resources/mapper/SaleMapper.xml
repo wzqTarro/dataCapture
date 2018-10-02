@@ -45,6 +45,9 @@
   	<if test="simpleCode != null and simpleCode != ''">
   		AND simple_code = #{simpleCode}
   	</if>
+  	<if test="simpleBarCode != null and simpleBarCode != ''">
+  		AND simple_bar_code = #{simpleBarCode}
+  	</if>
   	<if test="sysId != null and sysId != ''">
   		AND sys_id = #{sysId}
   	</if>
@@ -65,6 +68,9 @@
   	</if>
   	<if test="simpleName != null and simpleName != ''">
   		AND simple_name = #{simpleName}
+  	</if>
+  	<if test="brand != null and brand != ''">
+  		AND brand = #{brand}
   	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}

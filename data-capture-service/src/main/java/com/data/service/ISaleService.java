@@ -44,7 +44,7 @@ public interface ISaleService {
 	 * @return
 	 * @throws Exception
 	 */
-	ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	void exportSaleExcel(String stockNameStr, CommonDTO common, Sale sale, OutputStream output) throws Exception;
 	
 	/**
 	 * 手动计算补全当天之前的门店销售数据

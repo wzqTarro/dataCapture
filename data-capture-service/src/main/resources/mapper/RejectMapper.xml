@@ -55,6 +55,12 @@
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
   	</if>
+  	<if test="rejectDepartmentId != null and rejectDepartmentId != ''">
+  		AND reject_department_id = #{rejectDepartmentId}
+  	</if>
+  	<if test="receiptCode != null and receiptCode != ''">
+  		AND receipt_code = #{receiptCode}
+  	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND reject_date &lt;= #{endDate}
   		AND reject_date &gt;= #{startDate}

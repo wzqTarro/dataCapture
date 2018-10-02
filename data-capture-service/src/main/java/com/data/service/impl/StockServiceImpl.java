@@ -36,6 +36,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
@@ -554,16 +555,50 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// TODO Auto-generated method stub
 	}
 	@Override
-	public void exportStockExcel(String sysId, String stockNameStr, OutputStream output) throws Exception {
+	public void exportStockExcel(Stock stock, String stockNameStr, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
+		logger.info("----->>>>stock：{}<<<<------", FastJsonUtil.objectToString(stock));
 		if (CommonUtil.isBlank(stockNameStr)) {
 			throw new DataException("540");
 		}
+		if (stock == null) {
+			throw new DataException("538");
+		}
+		if (CommonUtil.isBlank(stock.getSysId())) {
+			throw new DataException("538");
+		}
+		
+		
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(StockEnum.class, builder, header);
-		exportUtil.exportExcel(Stock.class, null, null, sysId, builder.toString(), 
-				QueryId.QUERY_STOCK_BY_ANY_COLUMN, "库存信息表", methodNameArray, header, output);
+		Map<String, Object> map = exportUtil.joinColumn(SaleEnum.class, header);
+		
+		// 调用方法名
+		String[] methodNameArray = (String[]) map.get("methodNameArray");
+		
+		// 导出字段
+		String column = (String) map.get("column");
+		
+		// 自选导出excel表查询字段
+		Map<String, Object> param = exportUtil.joinParam(null, null, column, stock.getSysId());
+		
+		// 门店编号
+		if (CommonUtil.isNotBlank(stock.getStoreCode())) {
+			param.put("storeCode", stock.getStoreCode());
+		}
+
+		// 品牌
+		if (CommonUtil.isNotBlank(stock.getBrand())) {
+			param.put("brand", stock.getBrand());
+		}
+		
+		// 单品条码
+		if (CommonUtil.isNotBlank(stock.getSimpleBarCode())) {
+			param.put("simpleBarCode", stock.getSimpleBarCode());
+		}
+		List<Stock> dataList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
+
+		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
+		excelUtil.exportCustom2007("库存信息", header, methodNameArray, dataList, output);
 	}
 	@Override
 	public void exportCompanyExcelBySys(OutputStream output) throws IOException {

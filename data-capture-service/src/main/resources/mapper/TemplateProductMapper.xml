@@ -71,6 +71,12 @@
   		AND sys_name = #{sysName}
   	</if>
   </sql>
+  <!-- 获取品牌菜单 -->
+  <select id="selectBrandMenu" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT DISTINCT brand
+  	FROM db_template_product 
+	WHERE sys_id = #{sysId}
+  </select>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
     SELECT 
     <include refid="Column_List" />

@@ -29,4 +29,10 @@ public interface ITemplateProductService {
 	 * @return
 	 */
 	ResultUtil deleteTemplateProduct(int id);
+	/**
+	 * 获取品牌菜单
+	 * @param sysId
+	 * @return
+	 */
+	ResultUtil getBrandMenu(String sysId);
 }

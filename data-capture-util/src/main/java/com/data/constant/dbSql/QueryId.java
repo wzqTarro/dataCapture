@@ -61,6 +61,9 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_PRODUCT_BY_PARAM = "TemplateProductMapper.selectCountByParam";
 	
+	/**获取品牌菜单**/
+	public static final String QUERY_PRODUCT_BRAND = "TemplateProductMapper.selectBrandMenu";
+	
 	public static final String QUERY_COUNT_USER_BY_USER_ID = "UserMapper.queryCountUserByUserId";
 	
 	public static final String QUERY_USER_BY_WORK_NO = "UserMapper.queryUserByWorkNo";

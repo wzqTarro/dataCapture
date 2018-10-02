@@ -401,7 +401,7 @@ public class ExcelUtil<T> {
 		}
 		if (CommonUtil.isNotBlank(title)) {
 			SXSSFWorkbook wb = new SXSSFWorkbook();
-			Sheet sheet = wb.createSheet();
+			Sheet sheet = wb.createSheet(title);
 			int rowIndex = 0;
 			if (CommonUtil.isNotBlank(header)) {
 				Row row = sheet.createRow(rowIndex);
