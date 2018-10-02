@@ -122,7 +122,7 @@
   </select>
   <!-- 按大区分组 -->
   <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
-  	SELECT store_code, store_name, stock_price, stock_num, region, brand
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>

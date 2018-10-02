@@ -91,11 +91,11 @@ public interface IStockService {
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionExcelBySys(String sysId, OutputStream output) throws IOException;
+	void exportRegionExcelBySys(String sysId, OutputStream output) throws IOException;
 	/**
 	 * 按系统导出区域表二级表
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
+	void exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
 }

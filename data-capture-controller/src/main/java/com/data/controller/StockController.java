@@ -55,6 +55,25 @@ public class StockController {
 		ResultUtil result = stockServiceImpl.getStockByParam(stock, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
+	
+	/**
+	 * 选择字段导出库存数据表
+	 * @param stockNameStr
+	 * @param common
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "exportStockExcel", method = RequestMethod.GET)
+	@ApiOperation(value = "选择字段导出库存数据表", httpMethod = "GET")
+	public void exportStockExcel(Stock stock, @RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) throws Exception {
+		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportStockExcel(stock, stockNameStr, output);
+	}
+	
 	/**
 	 * 缺货日报表-导出门店单品表
 	 * @param 
@@ -128,23 +147,7 @@ public class StockController {
 		OutputStream output = response.getOutputStream();
 		stockServiceImpl.exportMissFirstComExcel(output);
 	}
-	/**
-	 * 选择字段导出库存数据表
-	 * @param stockNameStr
-	 * @param common
-	 * @return
-	 * @throws Exception 
-	 */
-	@RequestMapping(value = "exportStockExcel", method = RequestMethod.GET)
-	@ApiOperation(value = "选择字段导出库存数据表", httpMethod = "GET")
-	public void exportStockExcel(Stock stock, @RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) throws Exception {
-		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
-		
-		// 设置响应头
-		setResponseHeader(response, fileName);
-		OutputStream output = response.getOutputStream();
-		stockServiceImpl.exportStockExcel(stock, stockNameStr, output);
-	}
+	
 	/**
 	 * 按区域导出公司一级表
 	 * @param  查询时间
@@ -230,23 +233,17 @@ public class StockController {
 	 * @param  查询时间
 	 * @param sysId 系统编号
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "exportRegionExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出区域表一级表", httpMethod = "GET")
-	public String exportRegionExcelBySys(String sysId, HttpServletResponse response) {
+	public void exportRegionExcelBySys(String sysId, HttpServletResponse response) throws Exception {
 		String fileName = "库存-按系统区域表一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		ResultUtil result = ResultUtil.error();
-		try {
-			output = response.getOutputStream();
-			result = stockServiceImpl.exportRegionExcelBySys(sysId, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return FastJsonUtil.objectToString(result);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportRegionExcelBySys(sysId, output);
 	}
 	/**
 	 * 按系统导出区域表二级表
@@ -254,23 +251,17 @@ public class StockController {
 	 * @param sysId 系统编号
 	 * @param region 区域
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportRegionSecondExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出区域表二级表", httpMethod = "GET")
-	public String exportRegionSecondExcelBySys(String sysId, String region, HttpServletResponse response) {
+	public void exportRegionSecondExcelBySys(String sysId, String region, HttpServletResponse response) throws IOException {
 		String fileName = "库存-按系统区域表二级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		ResultUtil result = ResultUtil.error();
-		try {
-			output = response.getOutputStream();
-			result = stockServiceImpl.exportRegionSecondExcelBySys(sysId, region, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return FastJsonUtil.objectToString(result);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportRegionSecondExcelBySys(sysId, region, output);
 	}
  
 	//发送响应流方法
