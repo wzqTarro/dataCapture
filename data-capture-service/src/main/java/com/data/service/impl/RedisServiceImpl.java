@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.SimpleCode;
@@ -131,7 +130,6 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		}
 		List<Map<String, Object>> saleList = queryListByObject(QueryId.QUERY_SALE_MESSAGE_LIST, null);
 		if(CommonUtil.isNotBlank(saleList)) {
-			//System.err.println(JsonUtil.toJson(saleList));
 			redisUtil.set(key, JsonUtil.toJson(saleList));
 			return saleList;
 		}
@@ -145,14 +143,6 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		String json = redisUtil.get(key);
 		Map<String, Object> saleMap = new HashMap<>(8);
 		if(CommonUtil.isNotBlank(json)) {
-//			List<Map<String, Object>> saleList = (List<Map<String, Object>>) FastJsonUtil.jsonToList(json, Map.class);
-//			for(Map<String, Object> map : saleList) {
-//				String code = (String) map.get("storeCode");
-//				if(code.equals(storeCode)) {
-//					saleMap = map;
-//					break;
-//				}
-//			}
 			return FastJsonUtil.jsonToObject(json, Map.class);
 		}
 		saleMap = (Map<String, Object>) queryObjectByParameter(QueryId.QUERY_SALE_INFO_BY_STORE_CODE, storeCode);

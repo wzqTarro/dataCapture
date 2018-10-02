@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,8 +74,8 @@ public class OrderController {
 	 * @param common
 	 * @return
 	 */
-	@RequestMapping(value = "/exportOrderExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "选择字段导出订单数据表", httpMethod = "POST")
+	@RequestMapping(value = "/exportOrderExcel", method = RequestMethod.GET)
+	@ApiOperation(value = "选择字段导出订单数据表", httpMethod = "GET")
 	public String expertOrderExcel(@RequestParam(value = "sysId", required = true)String sysId, 
 			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
 			CommonDTO common, HttpServletResponse response) {

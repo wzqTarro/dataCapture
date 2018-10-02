@@ -110,6 +110,13 @@
   	</if>
   </select>
   
+  <!-- 按组查询门店日销售额 -->
+  <select id="queryStoreSaleListByGroup" parameterType="string" resultType="map">
+  	SELECT store_code storeCode, SUM(sell_price) salePrice 
+  	FROM db_sale 
+  	WHERE create_time=#{saleDate} GROUP BY storeCode
+  </select>
+  
   <!-- 查询门店信息列表 -->
   <select id="querySaleMessageList" resultType="map">
   	SELECT sys_id sysId, sys_name sysName, region, province_area provinceArea, store_code storeCode, store_name storeName, store_manager storeManager 
@@ -152,6 +159,11 @@
   	FROM db_sale
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
+  </select>
+  
+  <!-- 查詢門店編碼集合 -->
+  <select id="queryStoreCodeList" resultType="string">
+  	SELECT store_code storeCode FROM db_sale GROUP BY store_code
   </select>
   
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >

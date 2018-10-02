@@ -3,7 +3,6 @@ package com.data.utils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -27,13 +25,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.data.exception.DataException;
-
-import ch.qos.logback.classic.db.names.ColumnName;
 
 /**
  * excel操作工具类
@@ -362,11 +357,22 @@ public class ExcelUtil<T> {
 								}
 							}
 							break;
+						} else {
+							//处理未能匹配上的日期销售额
+							/**
+							 * TODO
+							 * 需查库 然后放缓存中
+							 * 解决方案：可以考虑让程序定时任务在半夜先跑一遍计算 将值放置在缓存或者入库
+							 * 当前方案：先写一个手动触发器  用于在导出之前处理计算
+							 */
+							
 						}
+						
 					}
 				}
 			}
 			workBook.write(out);
+			workBook.close();
 			out.flush();
 			out.close();
 		}

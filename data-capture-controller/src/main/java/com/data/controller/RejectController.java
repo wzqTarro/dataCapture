@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.data.bean.Order;
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
-import com.data.service.IOrderService;
 import com.data.service.IRejectService;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
@@ -76,8 +75,8 @@ public class RejectController {
 	 * @param common
 	 * @return
 	 */
-	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "POST")
+	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.GET)
+	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "GET")
 	public String expertRejectExcel(@RequestParam(value = "sysId", required = true)String sysId, 
 			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
 			CommonDTO common, HttpServletResponse response) {
