@@ -65,9 +65,9 @@ public class SaleController {
 	 * @param response
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/excel", method = RequestMethod.GET)
+	@RequestMapping(value = "/storeDailyexcel", method = RequestMethod.GET)
 	@ApiOperation(value = "数据导出", httpMethod = "GET")
-	public void excel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
+	public void storeDailyexcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
 		saleService.storeDailyexcel(system, region, province, store, response);
 	}
 	/**
@@ -106,5 +106,16 @@ public class SaleController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    /**
+     * 手动补全当前日期之前的门店销售额
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/calculateStoreDailySale", method = RequestMethod.GET)
+    public String calculateStoreDailySale() throws Exception {
+    	ResultUtil result = saleService.calculateStoreDailySale();
+    	return FastJsonUtil.objectToString(result);
     }
 }

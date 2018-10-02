@@ -45,4 +45,10 @@ public interface ISaleService {
 	 * @throws Exception
 	 */
 	ResultUtil exportSaleExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	
+	/**
+	 * 手动计算补全当天之前的门店销售数据
+	 * @return
+	 */
+	ResultUtil calculateStoreDailySale() throws Exception;
 }

@@ -45,6 +45,11 @@
 	    <version>0.9.1</version>
 	</dependency>
 	<!-- jwt -->
+	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <optional>true</optional>
+    </dependency>
 	
   </dependencies>
   <build>

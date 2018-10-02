@@ -113,5 +113,11 @@ public final class QueryId {
 	
 	/**查询供应链部分字段**/
 	public static final String QUERY_SUPPLY_ANY_COLUMN = "TemplateSupplyMapper.selectAnyColumn";
+
+	/**查詢門店編碼集合**/
+	public static final String QUERY_STORE_CODE_LIST = "SaleMapper.queryStoreCodeList";
 	
+	/**按组查询门店日销售额**/
+	public static final String QUERY_DAILY_STORE_SALE_LIST_BY_GROUP = "SaleMapper.queryStoreSaleListByGroup";
+
 }
