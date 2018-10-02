@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.data.bean.Reject;
 import com.data.bean.Sale;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -32,7 +31,6 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
-import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
