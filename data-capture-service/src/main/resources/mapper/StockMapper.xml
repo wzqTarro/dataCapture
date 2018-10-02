@@ -50,6 +50,12 @@
   	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
   	</collection>
   </resultMap>
+  <!-- 按省区分组 -->
+  <resultMap id="provinceAreaStockMap" type="com.data.model.ProvinceAreaStockModel">
+  	<id column="province_area" property="provinceArea" jdbcType="VARCHAR"/>
+  	<collection property="stockList" ofType="com.data.bean.Stock" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, classify, 
@@ -65,6 +71,9 @@
   <sql id="Query_Condition">
   	<if test="simpleCode != null and simpleCode != ''">
   		AND simple_code = #{simpleCode}
+  	</if>
+  	<if test="simpleBarCode != null and simpleBarCode != ''">
+  		AND simple_bar_code = #{simpleBarCode}
   	</if>
   	<if test="sysId != null and sysId != ''">
   		AND sys_id = #{sysId}
@@ -87,6 +96,9 @@
   	<if test="simpleName != null and simpleName != ''">
   		AND simple_name = #{simpleName}
   	</if>
+  	<if test="brand != null and brand != ''">
+  		AND brand = #{brand}
+  	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}
   		AND create_time &gt;= #{startDate}
@@ -103,21 +115,28 @@
   </select>
   <!-- 按门店分组 -->
   <select id="selectStoreStockModelByParam" resultMap="storeStockMap" parameterType="map">
-  	SELECT sys_name, store_code, store_name, stock_price, simple_bar_code
+  	SELECT sys_name, store_code, store_name, stock_price, simple_bar_code, brand, stock_num
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <!-- 按大区分组 -->
   <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
-  	SELECT store_code, store_name, stock_price, stock_num, region, brand
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <!-- 按系统分组 -->
   <select id="selectSysStockModelByParam" resultMap="sysStockMap" parameterType="map">
-  	SELECT store_code, store_name, stock_price, stock_num, region, brand
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id
+  	FROM db_stock
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <!-- 按省区分组 -->
+  <select id="selectProvinceAreaStockModelByParam" resultMap="provinceAreaStockMap" parameterType="map">
+  	SELECT stock_price, stock_num, region, brand, province_area
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>

@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -128,6 +129,15 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		delete(DeleteId.DELETE_PRODUCT_BY_ID, id);
 		RedisUtil.del(RedisAPI.PRODUCT_TEMPLATE);
 		return ResultUtil.success();
+	}
+
+	@Override
+	public ResultUtil getBrandMenu(String sysId) {
+		if (CommonUtil.isBlank(sysId)) {
+			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
+		}
+		List<String> brandList = queryListByObject(QueryId.QUERY_PRODUCT_BRAND, sysId);
+		return ResultUtil.success(brandList);
 	}
 
 	

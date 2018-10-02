@@ -27,6 +27,7 @@ import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
@@ -209,24 +210,36 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil exportOrderExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception {
+	public void exportOrderExcel(String stockNameStr, CommonDTO common, Order order, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
-		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
-		}
-		if (CommonUtil.isBlank(stockNameStr)) {
-			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
-		}
-		if (CommonUtil.isBlank(sysId)) {
-			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
-		}
+		logger.info("----->>>>order：{}<<<<------", FastJsonUtil.objectToString(order));
+		exportUtil.exportConditionJudge(common, order, stockNameStr);
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(OrderEnum.class, builder, header);
-		exportUtil.exportExcel(Order.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
-				QueryId.QUERY_ORDER_BY_ANY_COLUMN, "订单信息表", methodNameArray, header, output);
-		return ResultUtil.success();
+		Map<String, Object> map = exportUtil.joinColumn(OrderEnum.class, header);
+		
+		// 调用方法名
+		String[] methodNameArray = (String[]) map.get("methodNameArray");
+		
+		// 导出字段
+		String column = (String) map.get("column");
+		
+		// 自选导出excel表查询字段
+		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column, order.getSysId());
+		
+		// 门店编号
+		if (CommonUtil.isNotBlank(order.getStoreCode())) {
+			param.put("storeCode", order.getStoreCode());
+		}
+		
+		// 单据号码
+		if (CommonUtil.isNotBlank(order.getReceiptCode())) {
+			param.put("receiptCode", order.getReceiptCode());
+		}
+		List<Order> dataList = queryListByObject(QueryId.QUERY_ORDER_BY_ANY_COLUMN, param);
+		
+		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
+		excelUtil.exportCustom2007("订单信息", header, methodNameArray, dataList, output);
 	}
 
 }

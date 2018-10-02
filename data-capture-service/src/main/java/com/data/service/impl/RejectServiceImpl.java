@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.Order;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -19,6 +20,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -27,6 +29,7 @@ import com.data.service.IRejectService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
@@ -195,21 +198,37 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	}
 
 	@Override
-	public ResultUtil exportRejectExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output)
+	public void exportRejectExcel(String stockNameStr, CommonDTO common, Reject reject, OutputStream output)
 			throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
 		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
-		if (null == common || CommonUtil.isBlank(common.getStartDate()) || CommonUtil.isBlank(common.getEndDate())) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
-		}
-		if (CommonUtil.isBlank(stockNameStr)) {
-			return ResultUtil.error(TipsEnum.COLUMN_IS_NULL.getValue());
-		}
+		logger.info("----->>>>reject：{}<<<<------", FastJsonUtil.objectToString(reject));
+		exportUtil.exportConditionJudge(common, reject, stockNameStr);
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		StringBuilder builder = new StringBuilder();
-		String[] methodNameArray = exportUtil.joinColumn(RejectEnum.class, builder, header);
-		exportUtil.exportExcel(Reject.class, common.getStartDate(), common.getEndDate(), sysId, builder.toString(), 
-				QueryId.QUERY_REJECT_BY_ANY_COLUMN, "退单信息表", methodNameArray, header, output);
-		return ResultUtil.success();
+		Map<String, Object> map = exportUtil.joinColumn(RejectEnum.class, header);
+		
+		// 调用方法名
+		String[] methodNameArray = (String[]) map.get("methodNameArray");
+		
+		// 导出字段
+		String column = (String) map.get("column");
+		
+		// 自选导出excel表查询字段
+		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column,
+				reject.getSysId());
+
+		// 门店编号
+		if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
+			param.put("rejectDepartmentId", reject.getRejectDepartmentId());
+		}
+
+		// 单据号码
+		if (CommonUtil.isNotBlank(reject.getReceiptCode())) {
+			param.put("receiptCode", reject.getReceiptCode());
+		}
+		List<Reject> dataList = queryListByObject(QueryId.QUERY_REJECT_BY_ANY_COLUMN, param);
+
+		ExcelUtil<Reject> excelUtil = new ExcelUtil<>();
+		excelUtil.exportCustom2007("退单信息", header, methodNameArray, dataList, output);
 	}
 }

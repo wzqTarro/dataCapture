@@ -61,6 +61,9 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_PRODUCT_BY_PARAM = "TemplateProductMapper.selectCountByParam";
 	
+	/**获取品牌菜单**/
+	public static final String QUERY_PRODUCT_BRAND = "TemplateProductMapper.selectBrandMenu";
+	
 	public static final String QUERY_COUNT_USER_BY_USER_ID = "UserMapper.queryCountUserByUserId";
 	
 	public static final String QUERY_USER_BY_WORK_NO = "UserMapper.queryUserByWorkNo";
@@ -110,6 +113,12 @@ public final class QueryId {
 	
 	/**按大区分组查询库存**/
 	public static final String QUERY_REGION_STOCK_MODEL_BY_PARAM = "StockMapper.selectRegionStockModelByParam";
+	
+	/**按系统分组查询库存**/
+	public static final String QUERY_SYS_STOCK_MODEL_BY_PARAM = "StockMapper.selectSysStockModelByParam";
+	
+	/**按省区分组查询库存**/
+	public static final String QUERY_PROVINCE_MODEL_BY_PARAM = "StockMapper.selectProvinceAreaStockModelByParam";
 	
 	/**查询供应链部分字段**/
 	public static final String QUERY_SUPPLY_ANY_COLUMN = "TemplateSupplyMapper.selectAnyColumn";

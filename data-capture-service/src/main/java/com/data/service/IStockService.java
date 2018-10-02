@@ -55,13 +55,31 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	void exportStockExcel(String sysId, String stockNameStr, OutputStream output) throws Exception;
+	void exportStockExcel(Stock stock, String stockNameStr, OutputStream output) throws Exception;
 	/**
 	 * 按区域导出公司一级表
 	 * @param queryDate
 	 * @return
 	 */
 	void exportCompanyExcelByRegion(OutputStream output) throws IOException;
+	/**
+	 * 按区域导出区域表一级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportRegionExcelByRegion(String region, OutputStream output) throws IOException;
+	/**
+	 * 按区域导出区域表二级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportProvinceAreaExcelByRegion(String region, OutputStream output) throws IOException;
+	/**
+	 * 按区域导出区域表三级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportStoreExcelByRegion(String provinceArea, OutputStream output) throws IOException;
 	/**
 	 * 按系统导出公司一级表
 	 * @param queryDate
@@ -73,11 +91,11 @@ public interface IStockService {
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionExcelBySys(String sysId, OutputStream output) throws IOException;
+	void exportRegionExcelBySys(String sysId, OutputStream output) throws IOException;
 	/**
 	 * 按系统导出区域表二级表
 	 * @param queryDate
 	 * @return
 	 */
-	ResultUtil exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
+	void exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
 }

@@ -31,5 +31,5 @@ public interface IOrderService {
 	 * @return
 	 * @throws Exception
 	 */
-	ResultUtil exportOrderExcel(String sysId, String stockNameStr, CommonDTO common, OutputStream output) throws Exception;
+	void exportOrderExcel(String stockNameStr, CommonDTO common, Order order, OutputStream output) throws Exception;
 }
