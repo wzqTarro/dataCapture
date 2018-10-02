@@ -114,6 +114,12 @@ public final class QueryId {
 	/**按大区分组查询库存**/
 	public static final String QUERY_REGION_STOCK_MODEL_BY_PARAM = "StockMapper.selectRegionStockModelByParam";
 	
+	/**按系统分组查询库存**/
+	public static final String QUERY_SYS_STOCK_MODEL_BY_PARAM = "StockMapper.selectSysStockModelByParam";
+	
+	/**按省区分组查询库存**/
+	public static final String QUERY_PROVINCE_MODEL_BY_PARAM = "StockMapper.selectProvinceAreaStockModelByParam";
+	
 	/**查询供应链部分字段**/
 	public static final String QUERY_SUPPLY_ANY_COLUMN = "TemplateSupplyMapper.selectAnyColumn";
 

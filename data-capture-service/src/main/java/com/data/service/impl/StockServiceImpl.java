@@ -40,8 +40,10 @@ import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
+import com.data.model.ProvinceAreaStockModel;
 import com.data.model.RegionStockModel;
 import com.data.model.StoreStockModel;
+import com.data.model.SysStockModel;
 import com.data.service.IRedisService;
 import com.data.service.IStockService;
 import com.data.utils.CommonUtil;
@@ -697,45 +699,32 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		return ResultUtil.success();
 	}
-	/**
-	 * TODO
-	 */
 	@Override
 	public void exportCompanyExcelByRegion(OutputStream output) throws IOException {
-		// 按时间查询库存
-		Map<String, Object> param = new HashMap<>(2);
+		// 今天
+		LocalDate nowDay = LocalDate.now();
+		String queryDate = nowDay.toString();
+
+		// 判断是否存在今日库存
+		judgeNowStock(queryDate);
+
+		Map<String, Object> param = new HashMap<>(3);
+		param.put("queryDate", queryDate);
+		
 		List<RegionStockModel> regionStockList = queryListByObject(QueryId.QUERY_REGION_STOCK_MODEL_BY_PARAM, param);
 
-		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		SXSSFWorkbook wb = excelUtil.createWorkBook();
-		Sheet sheet = wb.createSheet("公司一级表");
+		// 工作簿名称
+		String sheetName = "公司一级表";
 
 		// 标题
 		String title = "全公司直营KA分系统库存日报表";
 
-		Row dateRow = sheet.createRow(0);
-
-		// 生成日期
-		String queryDate = LocalDate.now().toString();
-		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
-
 		// 表头
-		String[] headers = new String[] { "大区", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数" };
-		Row headerRow = sheet.createRow(3);
+		String[] headers = new String[] {"大区", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数"};
 
-		// 生成粗体剧中标题
-		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
-
-		// 设置表头
-		excelUtil.createRow(headerRow, headers, true);
-
-		if (CommonUtil.isBlank(regionStockList)) {
-			wb.write(output);
-			output.flush();
-			output.close();
-		}
-
-		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+		SXSSFWorkbook wb = createRegionTop(sheetName, title, headers, queryDate, regionStockList, output);
+		
+		LocalDate lastDay = nowDay.minusDays(1L);
 		param.put("queryDate", lastDay.toString());
 		param.put("column", " region, store_code, sell_num ");
 		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
@@ -746,9 +735,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		List<Stock> stockList = null;
 		Stock stock = null;
 		Sale sale = null;
-
-		// 门店编号
-		String storeCode = null;
 
 		// 大区
 		String region = null;
@@ -779,19 +765,17 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
-				storeCode = stock.getStoreCode();
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
 				}
-
-				for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
-					sale = saleList.get(k);
-					if (region.equals(sale.getRegion()) && storeCode.equals(sale.getStoreCode())) {
-						sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
-					}
+			}
+			for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+				sale = saleList.get(k);
+				if (region.equals(sale.getRegion())) {
+					sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
 				}
 			}
 			if (sellNumSum == 0) {
@@ -801,14 +785,443 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 			rowValue[i] = new String[] { regionStock.getRegion(), // 大区
 					String.valueOf(stockList.size()), // 门店数量
-					String.valueOf(stockPriceSum), // 库存金额
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
-					String.valueOf(CommonUtil.setScale("0.00", stockDay)) // 库存天数
+					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
 
 		}
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		Sheet sheet = wb.getSheet(sheetName);
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+
+		Row row = null;
+
+		int rowIndex = 4;
+		for (i = 0, size = rowValue.length; i < size; i++) {
+			row = sheet.createRow(rowIndex);
+			String[] value = rowValue[i];
+			excelUtil.createRow(row, value, false);
+			rowIndex++;
+		}
+
+		wb.write(output);
+		output.flush();
+		output.close();
+	}
+	@Override
+	public void exportRegionExcelByRegion(String region, OutputStream output) throws IOException {
+		// 今天
+		LocalDate nowDay = LocalDate.now();
+		String queryDate = nowDay.toString();
+
+		// 判断是否存在今日库存
+		judgeNowStock(queryDate);
+
+		Map<String, Object> param = new HashMap<>(3);
+		param.put("queryDate", queryDate);
+		List<SysStockModel> sysStockList = queryListByObject(QueryId.QUERY_SYS_STOCK_MODEL_BY_PARAM, param);
 		
+		// 工作簿名称
+		String sheetName = "区域表一级表";
+
+		// 标题
+		String title = region + "直营KA分大区库存日报表";
+
+		// 表头
+		String[] headers = new String[] {"大区", "系统", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数"};
+
+		SXSSFWorkbook wb = createRegionTop(sheetName, title, headers, queryDate, sysStockList, output);
+
+		LocalDate lastDay = nowDay.minusDays(1L);
+		param.put("queryDate", lastDay.toString());
+		param.put("region", region);
+		param.put("column", " region, store_code, sell_num, sys_name ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+
+		int i, j, k;
+		int size, stockSize, saleSize;
+		SysStockModel sysStock = null;
+		List<Stock> stockList = null;
+		Stock stock = null;
+		Sale sale = null;
+		
+		// 系统名称
+		String sysName;
+
+		// 库存金额
+		double stockPriceSum = 0;
+
+		// 库存总数
+		double stockNumSum = 0;
+
+		// 昨日销量
+		int sellNumSum = 0;
+
+		// 库存天数
+		double stockDay = 0;
+
+		// 品牌集合
+		Set<String> brandSet = new LinkedHashSet<>();
+		brandSet.add("全部");
+		String[][] rowValue = new String[sysStockList.size()][6];
+		for (i = 0, size = sysStockList.size(); i < size; i++) {
+			sysStock = sysStockList.get(i);
+			stockList = sysStock.getStockList();
+			
+			// 系统名称
+			sysName = sysStock.getSysName();
+			
+			// 库存总金额
+			stockPriceSum = 0;
+			
+			// 库存总数量
+			stockNumSum = 0;
+			
+			// 销售总数量
+			sellNumSum = 0;
+			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+				stock = stockList.get(j);
+				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
+				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
+
+				if (stock.getBrand() != null) {
+					brandSet.add(stock.getBrand());
+				}
+			}
+			for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+				sale = saleList.get(k);
+				if (sysName.equals(sale.getSysName())) {
+					sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
+				}
+			}
+			if (sellNumSum == 0) {
+				stockDay = 0;
+			} else {
+				stockDay = stockPriceSum / sellNumSum;
+			}
+			rowValue[i] = new String[] { 
+					region, // 大区
+					sysName, // 系统名称
+					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
+					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(sellNumSum), // 昨日销量
+					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
+			};
+
+		}
+
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		Sheet sheet = wb.getSheet(sheetName);
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+
+		Row row = null;
+
+		int rowIndex = 4;
+		for (i = 0, size = rowValue.length; i < size; i++) {
+			row = sheet.createRow(rowIndex);
+			String[] value = rowValue[i];
+			excelUtil.createRow(row, value, false);
+			rowIndex++;
+		}
+
+		wb.write(output);
+		output.flush();
+		output.close();
+
+	}
+	/**
+	 * 查询今日库存是否存在
+	 * @param queryDate
+	 */
+	public void judgeNowStock(String queryDate) {
+		// 当天的库存数据
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("queryDate", queryDate);
+		int count = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, param);
+		if (count == 0) {
+			throw new DataException("541");
+		}
+	}
+	/**
+	 * 按区域日报表上半部分
+	 * @return
+	 * @throws IOException 
+	 */
+	public <T> SXSSFWorkbook createRegionTop(String sheetName, String title, String[] headers, String queryDate, 
+			List<T> dataList, OutputStream output) throws IOException {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		SXSSFWorkbook wb = excelUtil.createWorkBook();
+		Sheet sheet = wb.createSheet(sheetName);
+
+		Row dateRow = sheet.createRow(0);
+
+		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+
+		Row headerRow = sheet.createRow(3);
+
+		// 生成粗体剧中标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
+
+		// 设置表头
+		excelUtil.createRow(headerRow, headers, true);
+		
+		if (CommonUtil.isBlank(dataList)) {
+			wb.write(output);
+			output.flush();
+			output.close();
+		}
+		
+		return wb;
+	}
+	@Override
+	public void exportProvinceAreaExcelByRegion(String region, OutputStream output) throws IOException {
+		// 今天
+		LocalDate nowDay = LocalDate.now();
+		String queryDate = nowDay.toString();
+		
+		// 判断是否存在今日库存
+		judgeNowStock(queryDate);	
+		
+		Map<String, Object> param = new HashMap<>(3);
+		param.put("queryDate", queryDate);
+		List<ProvinceAreaStockModel> provinceAreaStockList = queryListByObject(QueryId.QUERY_PROVINCE_MODEL_BY_PARAM, param);
+
+		// 工作簿名称
+		String sheetName = "区域表二级表";
+		
+		// 标题
+		String title = region + "直营KA分大区门店库存日报表";
+
+		// 表头
+		String[] headers = new String[] { "大区", "省区", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数" };
+		
+		SXSSFWorkbook wb = createRegionTop(sheetName, title, headers, queryDate, provinceAreaStockList, output);
+
+		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+		param.put("queryDate", lastDay.toString());
+		param.put("region", region);
+		param.put("column", " sell_num, province_area ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+
+		int i, j, k;
+		int size, stockSize, saleSize;
+		ProvinceAreaStockModel provinceAreaStock = null;
+		List<Stock> stockList = null;
+		Stock stock = null;
+		Sale sale = null;
+
+		// 省区
+		String provinceArea = null;
+
+		// 门店编号
+		String storeCode = null;
+
+		// 库存金额
+		double stockPriceSum = 0;
+
+		// 库存总数
+		double stockNumSum = 0;
+
+		// 昨日销量
+		int sellNumSum = 0;
+
+		// 库存天数
+		double stockDay = 0;
+
+		// 品牌集合
+		Set<String> brandSet = new LinkedHashSet<>();
+		brandSet.add("全部");
+		String[][] rowValue = new String[provinceAreaStockList.size()][6];
+		for (i = 0, size = provinceAreaStockList.size(); i < size; i++) {
+			provinceAreaStock = provinceAreaStockList.get(i);
+			stockList = provinceAreaStock.getStockList();
+
+			// 省区
+			provinceArea = provinceAreaStock.getProvinceArea() == null ? "" : provinceAreaStock.getProvinceArea();
+
+			// 库存总金额
+			stockPriceSum = 0;
+
+			// 库存总数量
+			stockNumSum = 0;
+
+			// 销售总数量
+			sellNumSum = 0;
+			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+				stock = stockList.get(j);
+
+				// 门店编号
+				storeCode = stock.getStoreCode();
+				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
+				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
+
+				if (stock.getBrand() != null) {
+					brandSet.add(stock.getBrand());
+				}
+			}
+			for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+				sale = saleList.get(k);
+				if (provinceArea.equals(sale.getProvinceArea())) {
+					sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
+				}
+			}
+			if (sellNumSum == 0) {
+				stockDay = 0;
+			} else {
+				stockDay = stockPriceSum / sellNumSum;
+			}
+			rowValue[i] = new String[] { region, // 大区
+					provinceArea, // 省区
+					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
+					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(sellNumSum), // 昨日销量
+					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
+			};
+
+		}
+
+		Sheet sheet = wb.getSheet(sheetName);
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+
+		Row row = null;
+
+		int rowIndex = 4;
+		for (i = 0, size = rowValue.length; i < size; i++) {
+			row = sheet.createRow(rowIndex);
+			String[] value = rowValue[i];
+			excelUtil.createRow(row, value, false);
+			rowIndex++;
+		}
+
+		wb.write(output);
+		output.flush();
+		output.close();
+		
+	}
+
+	@Override
+	public void exportStoreExcelByRegion(String provinceArea, OutputStream output) throws IOException {
+		// 今天
+		LocalDate nowDay = LocalDate.now();
+		String queryDate = nowDay.toString();
+
+		// 判断是否存在今日库存
+		judgeNowStock(queryDate);
+
+		
+		List<StoreStockModel> storeStockList = queryListByObject(QueryId.QUERY_STORE_STOCK_MODEL_BY_PARAM, null);
+
+		// 工作簿名称
+		String sheetName = "区域表三级表";
+
+		// 标题
+		String title = provinceArea + "直营KA分大区门店库存日报表";
+
+		// 表头
+		String[] headers = new String[] { "省区", "门店", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数" };
+
+		SXSSFWorkbook wb = createRegionTop(sheetName, title, headers, queryDate, storeStockList, output);
+
+		LocalDate lastDay = LocalDate.parse(queryDate).minusDays(1L);
+		Map<String, Object> param = new HashMap<>(3);
+		param.put("queryDate", lastDay.toString());
+		param.put("provinceArea", provinceArea);
+		param.put("column", " sell_num, store_code ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+
+		int i, j, k;
+		int size, stockSize, saleSize;
+		StoreStockModel storeStock = null;
+		List<Stock> stockList = null;
+		Stock stock = null;
+		Sale sale = null;
+
+		// 门店名称
+		String storeName = null;
+
+		// 门店编号
+		String storeCode = null;
+
+		// 库存金额
+		double stockPriceSum = 0;
+
+		// 库存总数
+		double stockNumSum = 0;
+
+		// 昨日销量
+		int sellNumSum = 0;
+
+		// 库存天数
+		double stockDay = 0;
+
+		// 品牌集合
+		Set<String> brandSet = new LinkedHashSet<>();
+		brandSet.add("全部");
+		String[][] rowValue = new String[storeStockList.size()][6];
+		for (i = 0, size = storeStockList.size(); i < size; i++) {
+			storeStock = storeStockList.get(i);
+			stockList = storeStock.getStockList();
+
+			// 门店名称
+			storeName = storeStock.getStoreName() == null ? "" : storeStock.getStoreName();
+			
+			// 门店编号
+			storeCode = storeStock.getStoreCode() == null ? "" : storeStock.getStoreCode();
+			
+			// 库存总金额
+			stockPriceSum = 0;
+
+			// 库存总数量
+			stockNumSum = 0;
+
+			// 销售总数量
+			sellNumSum = 0;
+			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+				stock = stockList.get(j);
+				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
+				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
+
+				if (stock.getBrand() != null) {
+					brandSet.add(stock.getBrand());
+				}
+			}
+			for (k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+				sale = saleList.get(k);
+				if (storeCode.equals(sale.getStoreCode())) {
+					sellNumSum += sale.getSellNum() == null ? 0 : sale.getSellNum();
+				}
+			}
+			if (sellNumSum == 0) {
+				stockDay = 0;
+			} else {
+				stockDay = stockPriceSum / sellNumSum;
+			}
+			rowValue[i] = new String[] { provinceArea, // 省区
+					storeName, // 省区
+					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
+					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(sellNumSum), // 昨日销量
+					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
+			};
+
+		}
+
+		Sheet sheet = wb.getSheet(sheetName);
+
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		// 生成品牌
 		Row brandRow = sheet.createRow(1);
 		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());

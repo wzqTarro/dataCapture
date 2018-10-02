@@ -60,21 +60,17 @@ public class StockController {
 	 * @param 
 	 * @param storeCode 门店编号
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportStoreProductExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "导出门店单品表", httpMethod = "GET")
-	public void exportStoreProductExcel(String storeCode, HttpServletResponse response) {
+	public void exportStoreProductExcel(String storeCode, HttpServletResponse response) throws IOException {
 		String fileName = "缺货表报-门店单品表";
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportStoreProductExcel(storeCode, output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportStoreProductExcel(storeCode, output);
 	}
 	
 	/**
@@ -82,21 +78,17 @@ public class StockController {
 	 * @param 
 	 * @param sysId
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportSysStoreExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "导出缺货报表-系统门店表", httpMethod = "GET")
-	public void exportSysStoreExcel(String sysId, HttpServletResponse response) {
+	public void exportSysStoreExcel(String sysId, HttpServletResponse response) throws IOException {
 		String fileName = "缺货表报-系统门店表";
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportSysStoreExcel(sysId, output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportSysStoreExcel(sysId, output);
 	}
 	
 	/**
@@ -104,22 +96,18 @@ public class StockController {
 	 * @param 
 	 * @param storeName
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportRegionStoreExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "GET")
-	public void exportRegionStoreExcel(String region, HttpServletResponse response) {
+	public void exportRegionStoreExcel(String region, HttpServletResponse response) throws IOException {
 		
 		String fileName = "缺货表报-区域门店表";
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportRegionStoreExcel(region, output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportRegionStoreExcel(region, output);
 	}
 	
 	/**
@@ -127,83 +115,115 @@ public class StockController {
 	 * @param 
 	 * @param storeName
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportMissFirstComExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "GET")
-	public void exportMissFirstComExcel(HttpServletResponse response) {
+	public void exportMissFirstComExcel(HttpServletResponse response) throws IOException {
 		
 		String fileName = "缺货表报-区域门店表" ;
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportMissFirstComExcel(output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportMissFirstComExcel(output);
 	}
 	/**
 	 * 选择字段导出库存数据表
 	 * @param stockNameStr
 	 * @param common
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "exportStockExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "选择字段导出库存数据表", httpMethod = "GET")
-	public void exportStockExcel(Stock stock, @RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) {
+	public void exportStockExcel(Stock stock, @RequestParam(value = "stockNameStr", required = true)String stockNameStr, HttpServletResponse response) throws Exception {
 		String fileName = "库存处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportStockExcel(stock, stockNameStr, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportStockExcel(stock, stockNameStr, output);
 	}
 	/**
 	 * 按区域导出公司一级表
 	 * @param  查询时间
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportCompanyExcelByRegion", method = RequestMethod.GET)
 	@ApiOperation(value = "按区域导出公司一级表", httpMethod = "GET")
-	public void exportCompanyExcelByRegion(HttpServletResponse response) {
+	public void exportCompanyExcelByRegion(HttpServletResponse response) throws IOException {
 		String fileName = "库存-按区域公司一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportCompanyExcelByRegion(output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportCompanyExcelByRegion(output);
+	}
+	/**
+	 * 按区域导出区域一级表
+	 * @param  查询时间
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "exportRegionExcelByRegion", method = RequestMethod.GET)
+	@ApiOperation(value = "按区域导出区域表一级表", httpMethod = "GET")
+	public void exportCompanyExcelByRegion(String region, HttpServletResponse response) throws IOException {
+		String fileName = "库存-按区域导出区域表一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportRegionExcelByRegion(region, output);
+	}
+	/**
+	 * 按区域导出区域二级表
+	 * @param  查询时间
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "exportProvinceAreaExcelByRegion", method = RequestMethod.GET)
+	@ApiOperation(value = "按区域导出区域表二级表", httpMethod = "GET")
+	public void exportProvinceAreaExcelByRegion(String region, HttpServletResponse response) throws IOException {
+		String fileName = "库存-按区域导出区域表二级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportProvinceAreaExcelByRegion(region, output);
+	}
+	/**
+	 * 按区域导出区域三级表
+	 * @param  查询时间
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "exportStoreExcelByProvinceArea", method = RequestMethod.GET)
+	@ApiOperation(value = "按区域导出区域表二级表", httpMethod = "GET")
+	public void exportStoreExcelByProvinceArea(String provinceArea, HttpServletResponse response) throws IOException {
+		String fileName = "库存-按区域导出区域表三级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		
+		// 设置响应头
+		setResponseHeader(response, fileName);
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportStoreExcelByRegion(provinceArea, output);
 	}
 	/**
 	 * 按系统导出公司一级表
 	 * @param  查询时间
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportCompanyExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出公司一级表", httpMethod = "GET")
-	public void exportCompanyExcelBySys(HttpServletResponse response) {
+	public void exportCompanyExcelBySys(HttpServletResponse response) throws IOException {
 		String fileName = "库存-按系统公司一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			stockServiceImpl.exportCompanyExcelBySys(output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		stockServiceImpl.exportCompanyExcelBySys(output);
 	}
 	/**
 	 * 按系统导出区域表一级表

@@ -63,6 +63,9 @@
   	<if test="region != null and region != ''">
   		AND region = #{region}
   	</if>
+  	<if test="provinceArea != null and provinceArea != ''">
+  		AND province_area = #{provinceArea}
+  	</if>
   	<if test="series != null and series != ''">
   		AND series = #{series}
   	</if>

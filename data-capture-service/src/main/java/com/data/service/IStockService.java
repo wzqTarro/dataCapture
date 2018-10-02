@@ -63,6 +63,24 @@ public interface IStockService {
 	 */
 	void exportCompanyExcelByRegion(OutputStream output) throws IOException;
 	/**
+	 * 按区域导出区域表一级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportRegionExcelByRegion(String region, OutputStream output) throws IOException;
+	/**
+	 * 按区域导出区域表二级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportProvinceAreaExcelByRegion(String region, OutputStream output) throws IOException;
+	/**
+	 * 按区域导出区域表三级表
+	 * @param queryDate
+	 * @return
+	 */
+	void exportStoreExcelByRegion(String provinceArea, OutputStream output) throws IOException;
+	/**
 	 * 按系统导出公司一级表
 	 * @param queryDate
 	 * @return
