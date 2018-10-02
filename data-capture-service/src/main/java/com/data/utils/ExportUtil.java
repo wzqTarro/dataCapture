@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.data.constant.enums.ICommonEnum;
-import com.data.dto.CommonDTO;
 import com.data.service.impl.CommonServiceImpl;
 
 @Component

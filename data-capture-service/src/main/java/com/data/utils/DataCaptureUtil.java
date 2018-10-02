@@ -1,8 +1,6 @@
 package com.data.utils;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +20,6 @@ import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.QueryId;
-import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
 

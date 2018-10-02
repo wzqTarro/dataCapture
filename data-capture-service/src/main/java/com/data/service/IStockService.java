@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.data.bean.Stock;
-import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
 
 public interface IStockService {
