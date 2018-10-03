@@ -44,7 +44,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/swagger-ui.html",
 				"/error",
 				"/user/login",
-				"/sale/excel"
+				"/sale/excel",
+				"/sale/calculateStoreDailySale"
 				
 		};
 	}

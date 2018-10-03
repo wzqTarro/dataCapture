@@ -385,7 +385,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 							saleInfoList.set(j, sale);
 						}
 					}
-						
 				}
 				saleDataList.addAll(saleInfoList);
 				try {
@@ -602,6 +601,11 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		excelUtil.exportCustom2007("销售信息", header, methodNameArray, dataList, output);
 	}
 
+	/**
+	 * TODO 
+	 * 需注意的问题  服务器一崩溃   缓存数据全没 需手动来做处理  此处想一下怎么来做
+	 * 应该当前此种手动方式可以 
+	 */
 	@Override
 	public ResultUtil calculateStoreDailySale() throws Exception {
 		List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
