@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +29,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "销售数据接口")
 //@CrossOrigin(origins="*", maxAge=3600)
 public class SaleController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SaleController.class);
 
 	@Autowired
 	private ISaleService saleService;
@@ -112,7 +116,13 @@ public class SaleController {
      */
     @RequestMapping(value = "/calculateStoreDailySale", method = RequestMethod.GET)
     public String calculateStoreDailySale() throws Exception {
-    	ResultUtil result = saleService.calculateStoreDailySale();
-    	return FastJsonUtil.objectToString(result);
+    	ResultUtil result;
+		try {
+			result = saleService.calculateStoreDailySale();			
+		} catch (Exception e) {
+			logger.error("--->>>日销售定时任务异常<<<---");
+			result = ResultUtil.error("--->>>日销售定时任务异常<<<---");
+		}
+		return FastJsonUtil.objectToString(result);
     }
 }
