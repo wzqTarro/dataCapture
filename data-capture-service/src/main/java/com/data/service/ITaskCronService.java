@@ -13,6 +13,7 @@ public interface ITaskCronService {
 	/**
 	 * 组装定时任务表达式
 	 * 指定前端传值未选中的为空值的返回'*' 年份未选返回'?'
+	 * 指定有值为任意值'*'
 	 * @param cron
 	 * @return
 	 */

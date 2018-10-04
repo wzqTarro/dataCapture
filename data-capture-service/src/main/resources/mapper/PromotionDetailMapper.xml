@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PromotionDetailMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.PromotionDetail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sys_id" jdbcType="VARCHAR" property="sysId" />
+    <result column="sys_name" jdbcType="VARCHAR" property="sysName" />
+    <result column="store_name" jdbcType="VARCHAR" property="storeName" />
+    <result column="supply_price_start_date" jdbcType="DATE" property="supplyPriceStartDate" />
+    <result column="supply_price_end_date" jdbcType="DATE" property="supplyPriceEndDate" />
+    <result column="sell_price_start_date" jdbcType="DATE" property="sellPriceStartDate" />
+    <result column="sell_price_end_date" jdbcType="DATE" property="sellPriceEndDate" />
+    <result column="supply_name" jdbcType="VARCHAR" property="supplyName" />
+    <result column="supply_type" jdbcType="VARCHAR" property="supplyType" />
+    <result column="control_type" jdbcType="VARCHAR" property="controlType" />
+    <result column="compensation_type" jdbcType="VARCHAR" property="compensationType" />
+    <result column="compensation_cost" jdbcType="VARCHAR" property="compensationCost" />
+    <result column="product_code" jdbcType="VARCHAR" property="productCode" />
+    <result column="origin_price" jdbcType="DECIMAL" property="originPrice" />
+    <result column="normal_supply_price" jdbcType="DECIMAL" property="normalSupplyPrice" />
+    <result column="supply_price" jdbcType="DECIMAL" property="supplyPrice" />
+    <result column="supply_order_type" jdbcType="VARCHAR" property="supplyOrderType" />
+    <result column="normal_sell_price" jdbcType="DECIMAL" property="normalSellPrice" />
+    <result column="supply_sell_price" jdbcType="DECIMAL" property="supplySellPrice" />
+    <result column="profit" jdbcType="DOUBLE" property="profit" />
+    <result column="discount" jdbcType="DOUBLE" property="discount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sys_id, sys_name, store_name, supply_price_start_date, supply_price_end_date, 
+    sell_price_start_date, sell_price_end_date, supply_name, supply_type, control_type, 
+    compensation_type, compensation_cost, product_code, origin_price, normal_supply_price, 
+    supply_price, supply_order_type, normal_sell_price, supply_sell_price, profit, discount
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_promotion_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_promotion_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="model.PromotionDetail">
+    insert into db_promotion_detail (id, sys_id, sys_name, 
+      store_name, supply_price_start_date, supply_price_end_date, 
+      sell_price_start_date, sell_price_end_date, supply_name, 
+      supply_type, control_type, compensation_type, 
+      compensation_cost, product_code, origin_price, 
+      normal_supply_price, supply_price, supply_order_type, 
+      normal_sell_price, supply_sell_price, profit, 
+      discount)
+    values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=VARCHAR}, #{sysName,jdbcType=VARCHAR}, 
+      #{storeName,jdbcType=VARCHAR}, #{supplyPriceStartDate,jdbcType=DATE}, #{supplyPriceEndDate,jdbcType=DATE}, 
+      #{sellPriceStartDate,jdbcType=DATE}, #{sellPriceEndDate,jdbcType=DATE}, #{supplyName,jdbcType=VARCHAR}, 
+      #{supplyType,jdbcType=VARCHAR}, #{controlType,jdbcType=VARCHAR}, #{compensationType,jdbcType=VARCHAR}, 
+      #{compensationCost,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, #{originPrice,jdbcType=DECIMAL}, 
+      #{normalSupplyPrice,jdbcType=DECIMAL}, #{supplyPrice,jdbcType=DECIMAL}, #{supplyOrderType,jdbcType=VARCHAR}, 
+      #{normalSellPrice,jdbcType=DECIMAL}, #{supplySellPrice,jdbcType=DECIMAL}, #{profit,jdbcType=DOUBLE}, 
+      #{discount,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.PromotionDetail">
+    insert into db_promotion_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="sysId != null">
+        sys_id,
+      </if>
+      <if test="sysName != null">
+        sys_name,
+      </if>
+      <if test="storeName != null">
+        store_name,
+      </if>
+      <if test="supplyPriceStartDate != null">
+        supply_price_start_date,
+      </if>
+      <if test="supplyPriceEndDate != null">
+        supply_price_end_date,
+      </if>
+      <if test="sellPriceStartDate != null">
+        sell_price_start_date,
+      </if>
+      <if test="sellPriceEndDate != null">
+        sell_price_end_date,
+      </if>
+      <if test="supplyName != null">
+        supply_name,
+      </if>
+      <if test="supplyType != null">
+        supply_type,
+      </if>
+      <if test="controlType != null">
+        control_type,
+      </if>
+      <if test="compensationType != null">
+        compensation_type,
+      </if>
+      <if test="compensationCost != null">
+        compensation_cost,
+      </if>
+      <if test="productCode != null">
+        product_code,
+      </if>
+      <if test="originPrice != null">
+        origin_price,
+      </if>
+      <if test="normalSupplyPrice != null">
+        normal_supply_price,
+      </if>
+      <if test="supplyPrice != null">
+        supply_price,
+      </if>
+      <if test="supplyOrderType != null">
+        supply_order_type,
+      </if>
+      <if test="normalSellPrice != null">
+        normal_sell_price,
+      </if>
+      <if test="supplySellPrice != null">
+        supply_sell_price,
+      </if>
+      <if test="profit != null">
+        profit,
+      </if>
+      <if test="discount != null">
+        discount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sysId != null">
+        #{sysId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null">
+        #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeName != null">
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="supplyPriceStartDate != null">
+        #{supplyPriceStartDate,jdbcType=DATE},
+      </if>
+      <if test="supplyPriceEndDate != null">
+        #{supplyPriceEndDate,jdbcType=DATE},
+      </if>
+      <if test="sellPriceStartDate != null">
+        #{sellPriceStartDate,jdbcType=DATE},
+      </if>
+      <if test="sellPriceEndDate != null">
+        #{sellPriceEndDate,jdbcType=DATE},
+      </if>
+      <if test="supplyName != null">
+        #{supplyName,jdbcType=VARCHAR},
+      </if>
+      <if test="supplyType != null">
+        #{supplyType,jdbcType=VARCHAR},
+      </if>
+      <if test="controlType != null">
+        #{controlType,jdbcType=VARCHAR},
+      </if>
+      <if test="compensationType != null">
+        #{compensationType,jdbcType=VARCHAR},
+      </if>
+      <if test="compensationCost != null">
+        #{compensationCost,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="originPrice != null">
+        #{originPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="normalSupplyPrice != null">
+        #{normalSupplyPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplyPrice != null">
+        #{supplyPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplyOrderType != null">
+        #{supplyOrderType,jdbcType=VARCHAR},
+      </if>
+      <if test="normalSellPrice != null">
+        #{normalSellPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplySellPrice != null">
+        #{supplySellPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="profit != null">
+        #{profit,jdbcType=DOUBLE},
+      </if>
+      <if test="discount != null">
+        #{discount,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.PromotionDetail">
+    update db_promotion_detail
+    <set>
+      <if test="sysId != null">
+        sys_id = #{sysId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysName != null">
+        sys_name = #{sysName,jdbcType=VARCHAR},
+      </if>
+      <if test="storeName != null">
+        store_name = #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="supplyPriceStartDate != null">
+        supply_price_start_date = #{supplyPriceStartDate,jdbcType=DATE},
+      </if>
+      <if test="supplyPriceEndDate != null">
+        supply_price_end_date = #{supplyPriceEndDate,jdbcType=DATE},
+      </if>
+      <if test="sellPriceStartDate != null">
+        sell_price_start_date = #{sellPriceStartDate,jdbcType=DATE},
+      </if>
+      <if test="sellPriceEndDate != null">
+        sell_price_end_date = #{sellPriceEndDate,jdbcType=DATE},
+      </if>
+      <if test="supplyName != null">
+        supply_name = #{supplyName,jdbcType=VARCHAR},
+      </if>
+      <if test="supplyType != null">
+        supply_type = #{supplyType,jdbcType=VARCHAR},
+      </if>
+      <if test="controlType != null">
+        control_type = #{controlType,jdbcType=VARCHAR},
+      </if>
+      <if test="compensationType != null">
+        compensation_type = #{compensationType,jdbcType=VARCHAR},
+      </if>
+      <if test="compensationCost != null">
+        compensation_cost = #{compensationCost,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="originPrice != null">
+        origin_price = #{originPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="normalSupplyPrice != null">
+        normal_supply_price = #{normalSupplyPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplyPrice != null">
+        supply_price = #{supplyPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplyOrderType != null">
+        supply_order_type = #{supplyOrderType,jdbcType=VARCHAR},
+      </if>
+      <if test="normalSellPrice != null">
+        normal_sell_price = #{normalSellPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="supplySellPrice != null">
+        supply_sell_price = #{supplySellPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="profit != null">
+        profit = #{profit,jdbcType=DOUBLE},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.PromotionDetail">
+    update db_promotion_detail
+    set sys_id = #{sysId,jdbcType=VARCHAR},
+      sys_name = #{sysName,jdbcType=VARCHAR},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      supply_price_start_date = #{supplyPriceStartDate,jdbcType=DATE},
+      supply_price_end_date = #{supplyPriceEndDate,jdbcType=DATE},
+      sell_price_start_date = #{sellPriceStartDate,jdbcType=DATE},
+      sell_price_end_date = #{sellPriceEndDate,jdbcType=DATE},
+      supply_name = #{supplyName,jdbcType=VARCHAR},
+      supply_type = #{supplyType,jdbcType=VARCHAR},
+      control_type = #{controlType,jdbcType=VARCHAR},
+      compensation_type = #{compensationType,jdbcType=VARCHAR},
+      compensation_cost = #{compensationCost,jdbcType=VARCHAR},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      origin_price = #{originPrice,jdbcType=DECIMAL},
+      normal_supply_price = #{normalSupplyPrice,jdbcType=DECIMAL},
+      supply_price = #{supplyPrice,jdbcType=DECIMAL},
+      supply_order_type = #{supplyOrderType,jdbcType=VARCHAR},
+      normal_sell_price = #{normalSellPrice,jdbcType=DECIMAL},
+      supply_sell_price = #{supplySellPrice,jdbcType=DECIMAL},
+      profit = #{profit,jdbcType=DOUBLE},
+      discount = #{discount,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

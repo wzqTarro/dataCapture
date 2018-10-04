@@ -54,12 +54,13 @@
 //		String[] minutes = cron.getMinutes();
 //		if(minutes.length == 1) {
 //			if()
-//		}
-//		for(int i = 0; i < minutes.length; i++) {
-//			if(TASK_CRON_PATTERN_ANY.equals(minutes[i])) {
-//				builder.append("");
-//			} else {
-//				builder.append();
+//		} else {
+//			for(int i = 0; i < minutes.length; i++) {
+//				if(TASK_CRON_PATTERN_ANY.equals(minutes[i])) {
+//					builder.append("");
+//				} else {
+//					builder.append();
+//				}
 //			}
 //		}
 //		return null;
