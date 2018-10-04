@@ -33,8 +33,18 @@ public class TemplateSupply implements Serializable {
     private Boolean isVal;
     
     private String sysId;
+    
+    private String parentId;
 
-    public String getSysId() {
+    public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
+	public String getSysId() {
 		return sysId;
 	}
 
