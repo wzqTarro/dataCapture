@@ -2,6 +2,7 @@ package com.data.service.impl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.data.bean.Order;
+import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
@@ -75,8 +78,32 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			}
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
+			Reject  reject = null;
+			
+			// 查询促销明细
+			Map<String, Object> param = new HashMap<>(2);
+			param.put("sysId", sysId);
+			param.put("queryDate", queryDate);
+			long start = new Date().getTime();
+			logger.info("----->>>>>>>查询促销:{}<<<<<<-------", start);
+			List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
+			logger.info("----->>>>>>>查询结束:{}<<<<<<--------", new Date().getTime()-start);
+			
+			PromotionDetail promotionDetail = null;
+			
+			// 入库方式
+			String supplyOrderType = null;
+			
+			// 含税进价
+			BigDecimal rejectPrice = null;
+			
+			// 促销供价
+			BigDecimal supplyPrice = null;
+			
+			// 含税合同供价
+			BigDecimal contractPrice = null;
 			for (int i = 0, size = rejectList.size(); i < size; i++) {
-				Reject reject = rejectList.get(i);
+				reject = rejectList.get(i);
 				
 				// 系统名称
 				String sysName = reject.getSysName();
@@ -124,11 +151,85 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				// 库存编号
 				reject.setStockCode(product.getStockCode());
 				
+				// 含税合同供价
+				contractPrice = product.getIncludeTaxPrice();
+				reject.setContractPrice(contractPrice);
+				
+				// 退货价格
+				rejectPrice = reject.getRejectPrice();
+				
+				int j = 0;
+				int len = 0;
+				for (j = 0, len = promotionList.size(); j < len; j++) {
+					promotionDetail = promotionList.get(j);
+					if (simpleBarCode.equals(promotionDetail.getProductCode())) {
+						// 促销供价开始、结束时间
+						reject.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
+						reject.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
+						
+						// 供价方式
+						supplyOrderType = promotionDetail.getSupplyOrderType();
+						
+						if ("特供价入库".equals(supplyOrderType)) {				
+							
+							// 促销供价
+							supplyPrice = promotionDetail.getSupplyPrice();
+							reject.setDiscountPrice(supplyPrice);
+							
+							// 促销供价差异
+							reject.setDiffPriceDiscount(rejectPrice.subtract(supplyPrice));
+							
+							// 促销供价差异汇总
+							reject.setDiffPriceDiscountTotal(reject.getDiffPriceDiscount().multiply(new BigDecimal(reject.getSimpleAmount())));
+							
+							// 供价示警
+							if (rejectPrice.compareTo(supplyPrice) > 0) {
+								reject.setDiscountAlarmFlag("退货价格高于促销供价，请检查促销是否已经生效");
+							}
+							
+						} else if ("原价入库".equals(supplyOrderType)) {
+							
+							// 合同供价差异
+							reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
+							
+							// 合同供价差异汇总
+							reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
+							
+							if (rejectPrice.compareTo(contractPrice) > 0) {
+								reject.setDiscountAlarmFlag("退货价格高于合同供价，处于促销日期");
+							}
+						}
+						break;
+						
+					}
+				}
+				
+				// 不处于促销范围之内
+				if (j == len) {
+					
+					// 含税合同供价
+					contractPrice = product.getIncludeTaxPrice();
+					reject.setContractPrice(contractPrice);
+					
+					// 合同供价差异
+					reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
+					
+					// 合同供价差异汇总
+					reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
+					
+					if (rejectPrice.compareTo(contractPrice) > 0) {
+						reject.setContractAlarmFlag("没有促销信息，退单价高于合同价");
+					}
+				}
+				
+				// 汇总差异
+				reject.setDiffPrice(reject.getDiffPriceContractTotal().add(reject.getDiffPriceDiscountTotal()==null?new BigDecimal(0):reject.getDiffPriceDiscountTotal()));
+				
 				// 单品门店信息
 				TemplateStore store = null;
 				String tempStoreCode = null;
 				String tempOrderStoreName = null;
-				for (int j = 0, len = storeList.size(); j < len; j++) {
+				for (j = 0, len = storeList.size(); j < len; j++) {
 					store = storeList.get(j);
 					tempSysId = store.getSysId();
 					tempStoreCode = store.getStoreCode();

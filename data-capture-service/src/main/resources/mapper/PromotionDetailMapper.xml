@@ -31,6 +31,40 @@
     compensation_type, compensation_cost, product_code, origin_price, normal_supply_price, 
     supply_price, supply_order_type, normal_sell_price, supply_sell_price, profit, discount
   </sql>
+  <sql id="Column_List">
+    p.id, p.sys_id, p.sys_name, p.store_name, p.supply_price_start_date, p.supply_price_end_date, 
+    p.sell_price_start_date, p.sell_price_end_date, p.supply_name, p.supply_type, p.control_type, 
+    p.compensation_type, p.compensation_cost, p.product_code, p.origin_price, p.normal_supply_price, 
+    p.supply_price, p.supply_order_type, p.normal_sell_price, p.supply_sell_price, p.profit, p.discount
+  </sql>
+  <sql id="Query_Condition">
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
+  	</if>
+  	<if test="queryDate != null and queryDate != ''">
+  		 AND supply_price_start_date &lt;= #{queryDate}
+  		 AND supply_price_end_date &gt;= #{queryDate}
+  	</if>
+  </sql>
+  <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Column_List" />
+  	FROM db_promotion_detail p
+  	INNER JOIN(
+  		SELECT ID
+  		FROM db_promotion_detail
+  		WHERE 1=1
+  		<include refid="Query_Condition"></include>
+  		<if test="pageNum != null and pageSize != null">
+  			LIMIT #{pageNum}, #{pageSize}
+  		</if>
+  	) d ON(d.ID = p.ID) 	
+  </select>
+  <select id="selectCountByParam" parameterType="map" resultType="int">
+  	SELECT COUNT(1)
+  	FROM db_promotion_detail 
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
@@ -41,7 +75,7 @@
     delete from db_promotion_detail
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="model.PromotionDetail">
+  <insert id="insert" parameterType="com.data.bean.PromotionDetail">
     insert into db_promotion_detail (id, sys_id, sys_name, 
       store_name, supply_price_start_date, supply_price_end_date, 
       sell_price_start_date, sell_price_end_date, supply_name, 

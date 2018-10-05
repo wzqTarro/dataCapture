@@ -2,6 +2,7 @@ package com.data.service.impl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.Order;
+import com.data.bean.PromotionDetail;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
@@ -94,7 +96,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) {		
+	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException {		
 		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");
 		
@@ -111,15 +113,35 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		List<Order> orderList = null;
 		
 		if (count == 0) {
-			try {
-				orderList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.ORDER, Order.class);
-			} catch (IOException e) {
-				return ResultUtil.error(TipsEnum.GRAB_DATA_ERROR.getValue());
-			}
+			orderList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.ORDER, Order.class);
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
+			Order order = null;
+			
+			// 查询促销明细
+			Map<String, Object> param = new HashMap<>(2);
+			param.put("sysId", sysId);
+			param.put("queryDate", queryDate);
+			long start = new Date().getTime();
+			logger.info("----->>>>>>>查询促销:{}<<<<<<-------", start);
+			List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
+			logger.info("----->>>>>>>查询结束:{}<<<<<<--------", new Date().getTime()-start);
+			
+			PromotionDetail promotionDetail = null;
+			
+			// 入库方式
+			String supplyOrderType = null;
+			
+			// 含税进价
+			BigDecimal buyPriceWithTax = null;
+			
+			// 促销供价
+			BigDecimal supplyPrice = null;
+			
+			// 含税合同供价
+			BigDecimal contractPrice = null;
 			for (int i = 0, size = orderList.size(); i < size; i++) {
-				Order order = orderList.get(i);
+				order = orderList.get(i);
 				
 				// 系统名称
 				String sysName = order.getSysName();
@@ -198,6 +220,85 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					
 				// 库存编号
 				order.setStockCode(product.getStockCode());
+				
+				// 含税合同供价
+				contractPrice = product.getIncludeTaxPrice();
+				order.setContractPrice(contractPrice);
+				
+				// 含税进价
+				buyPriceWithTax = order.getBuyingPriceWithRate();
+				
+				int j = 0;
+				int promotionSize = 0;
+				for (j = 0, promotionSize = promotionList.size(); j < promotionSize; j++) {
+					promotionDetail = promotionList.get(j);
+					if (simpleBarCode.equals(promotionDetail.getProductCode())) {
+						order.setOrderEffectiveJudge("是促销期内订单");
+						// 促销供价开始、结束时间
+						order.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
+						order.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
+						
+						// 补差方式
+						order.setBalanceWay(promotionDetail.getCompensationType());
+						
+						// 供价方式
+						supplyOrderType = promotionDetail.getSupplyOrderType();
+						
+						if ("特供价入库".equals(supplyOrderType)) {				
+							
+							// 促销供价
+							supplyPrice = promotionDetail.getSupplyPrice();
+							order.setDiscountPrice(supplyPrice);
+							
+							// 促销供价差异
+							order.setDiffPriceDiscount(buyPriceWithTax.subtract(supplyPrice));
+							
+							// 促销供价差异汇总
+							order.setDiffPriceDiscountTotal(order.getDiffPriceDiscount().multiply(new BigDecimal(order.getSimpleAmount())));
+							
+							// 供价示警
+							if (buyPriceWithTax.compareTo(supplyPrice) < 0) {
+								order.setDiscountAlarmFlag("订单低于促销供价");
+							}
+							
+						} else if ("原价入库".equals(supplyOrderType)) {
+							
+							// 合同供价差异
+							order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
+							
+							// 合同供价差异汇总
+							order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
+							
+							if (buyPriceWithTax.compareTo(contractPrice) < 0) {
+								order.setContractAlarmFlag("订单低于合同供价");
+							}
+						}
+						break;
+						
+					}
+				}
+				
+				// 不处于促销范围之内
+				if (j == promotionSize) {
+					order.setOrderEffectiveJudge("非促销期内订单");
+					// 含税合同供价
+					contractPrice = product.getIncludeTaxPrice();
+					order.setContractPrice(contractPrice);
+					
+					// 合同供价差异
+					order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
+					
+					// 合同供价差异汇总
+					order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
+					
+					if (buyPriceWithTax.compareTo(contractPrice) < 0) {
+						order.setContractAlarmFlag("订单低于合同供价");
+					}
+				}
+				
+				// 汇总差异
+				order.setDiffPrice(order.getDiffPriceContractTotal().add(order.getDiffPriceDiscountTotal()==null?new BigDecimal(0):order.getDiffPriceDiscountTotal()));
+				
 			}
 			// 插入数据
 			logger.info("----->>>>>>开始插入订单数据<<<<<<------");
@@ -208,7 +309,11 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 		return ResultUtil.success(pageRecord);
 	}
-
+	public static void main(String[] args) {
+		double num = 1000;
+		System.err.println(Math.ceil(1200/num));
+		System.err.println(Math.ceil(12/1000.0));
+	}
 	@Override
 	public void exportOrderExcel(String stockNameStr, CommonDTO common, Order order, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);

@@ -84,6 +84,10 @@ public final class QueryId {
 	
 	public static final String QUERY_COUNT_REJECT_BY_PARAM = "RejectMapper.selectCountByParam";
 	
+	public static final String QUERY_PROMOTION_DETAIL_BY_PARAM = "PromotionDetailMapper.selectByParam";
+	
+	public static final String QUERY_COUNT_PROMOTION_DETAIL_BY_PARAM = "PromotionDetailMapper.selectCountByParam";
+	
 	/**销售日报表导出**/
 	public static final String QUERY_SALE_LIST_REPORT = "SaleMapper.querySaleListReport";
 	

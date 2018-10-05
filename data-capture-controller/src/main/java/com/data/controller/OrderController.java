@@ -1,5 +1,6 @@
 package com.data.controller;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
@@ -41,11 +42,12 @@ public class OrderController {
 	 * @param page
 	 * @param limit
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "/getOrderByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取订单数据", httpMethod = "GET")
 	public String getOrderByWeb(String queryDate, Integer limit,
-			@RequestParam(value = "sysId", required = true)String sysId) {
+			@RequestParam(value = "sysId", required = true)String sysId) throws IOException {
 		ResultUtil result = orderService.getOrderByWeb(queryDate, sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}

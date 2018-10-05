@@ -19,9 +19,9 @@
     <result column="pieces_num" jdbcType="INTEGER" property="piecesNum" />
     <result column="box_standard" jdbcType="VARCHAR" property="boxStandard" />
     <result column="stock_no" jdbcType="VARCHAR" property="stockNo" />
-    <result column="sell_price" jdbcType="DOUBLE" property="sellPrice" />
-    <result column="exclude_tax_price" jdbcType="DOUBLE" property="excludeTaxPrice" />
-    <result column="include_tax_price" jdbcType="DOUBLE" property="includeTaxPrice" />
+    <result column="sell_price" jdbcType="DECIMAL" property="sellPrice" />
+    <result column="exclude_tax_price" jdbcType="DECIMAL" property="excludeTaxPrice" />
+    <result column="include_tax_price" jdbcType="DECIMAL" property="includeTaxPrice" />
   </resultMap>
   <sql id="Base_Column_List">
     id, product_id, sys_name, simple_code, simple_bar_code, stock_code, simple_name, 
@@ -127,7 +127,7 @@
       #{simpleName,jdbcType=VARCHAR}, #{standardName,jdbcType=VARCHAR}, #{brand,jdbcType=CHAR}, 
       #{classify,jdbcType=CHAR}, #{series,jdbcType=CHAR}, #{func,jdbcType=CHAR}, #{material,jdbcType=CHAR}, 
       #{piecesNum,jdbcType=INTEGER}, #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, 
-      #{sellPrice,jdbcType=DOUBLE}, #{excludeTaxPrice,jdbcType=DOUBLE}, #{includeTaxPrice,jdbcType=DOUBLE},
+      #{sellPrice,jdbcType=DECIMAL}, #{excludeTaxPrice,jdbcType=DECIMAL}, #{includeTaxPrice,jdbcType=DECIMAL},
       #{sysId,jdbcType=CHAR}
       )
   </insert>
@@ -248,13 +248,13 @@
         #{stockNo,jdbcType=VARCHAR},
       </if>
       <if test="sellPrice != null">
-        #{sellPrice,jdbcType=DOUBLE},
+        #{sellPrice,jdbcType=DECIMAL},
       </if>
       <if test="excludeTaxPrice != null">
-        #{excludeTaxPrice,jdbcType=DOUBLE},
+        #{excludeTaxPrice,jdbcType=DECIMAL},
       </if>
       <if test="includeTaxPrice != null">
-        #{includeTaxPrice,jdbcType=DOUBLE},
+        #{includeTaxPrice,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
@@ -310,13 +310,13 @@
         stock_no = #{stockNo,jdbcType=VARCHAR},
       </if>
       <if test="sellPrice != null">
-        sell_price = #{sellPrice,jdbcType=DOUBLE},
+        sell_price = #{sellPrice,jdbcType=DECIMAL},
       </if>
       <if test="excludeTaxPrice != null">
-        exclude_tax_price = #{excludeTaxPrice,jdbcType=DOUBLE},
+        exclude_tax_price = #{excludeTaxPrice,jdbcType=DECIMAL},
       </if>
       <if test="includeTaxPrice != null">
-        include_tax_price = #{includeTaxPrice,jdbcType=DOUBLE},
+        include_tax_price = #{includeTaxPrice,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -339,9 +339,9 @@
       pieces_num = #{piecesNum,jdbcType=INTEGER},
       box_standard = #{boxStandard,jdbcType=VARCHAR},
       stock_no = #{stockNo,jdbcType=VARCHAR},
-      sell_price = #{sellPrice,jdbcType=DOUBLE},
-      exclude_tax_price = #{excludeTaxPrice,jdbcType=DOUBLE},
-      include_tax_price = #{includeTaxPrice,jdbcType=DOUBLE}
+      sell_price = #{sellPrice,jdbcType=DECIMAL},
+      exclude_tax_price = #{excludeTaxPrice,jdbcType=DECIMAL},
+      include_tax_price = #{includeTaxPrice,jdbcType=DECIMAL}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

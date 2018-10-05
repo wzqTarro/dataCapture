@@ -1,5 +1,6 @@
 package com.data.service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import com.data.bean.Order;
@@ -14,7 +15,7 @@ public interface IOrderService {
 	 * @param limit
 	 * @return
 	 */
-	ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit);
+	ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException ;
 	/**
 	 * 分页查询
 	 * @param queryDate

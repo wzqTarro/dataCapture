@@ -1,6 +1,7 @@
 package com.data.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 商品模板实体类
@@ -46,11 +47,11 @@ public class TemplateProduct implements Serializable {
 
     private String stockNo;
 
-    private Double sellPrice;
+    private BigDecimal sellPrice;
 
-    private Double excludeTaxPrice;
+    private BigDecimal excludeTaxPrice;
 
-    private Double includeTaxPrice;
+    private BigDecimal includeTaxPrice;
 
     public String getSysId() {
 		return sysId;
@@ -190,27 +191,27 @@ public class TemplateProduct implements Serializable {
         this.stockNo = stockNo == null ? null : stockNo.trim();
     }
 
-    public Double getSellPrice() {
+    public BigDecimal getSellPrice() {
         return sellPrice;
     }
 
-    public void setSellPrice(Double sellPrice) {
+    public void setSellPrice(BigDecimal sellPrice) {
         this.sellPrice = sellPrice;
     }
 
-    public Double getExcludeTaxPrice() {
+    public BigDecimal getExcludeTaxPrice() {
         return excludeTaxPrice;
     }
 
-    public void setExcludeTaxPrice(Double excludeTaxPrice) {
+    public void setExcludeTaxPrice(BigDecimal excludeTaxPrice) {
         this.excludeTaxPrice = excludeTaxPrice;
     }
 
-    public Double getIncludeTaxPrice() {
+    public BigDecimal getIncludeTaxPrice() {
         return includeTaxPrice;
     }
 
-    public void setIncludeTaxPrice(Double includeTaxPrice) {
+    public void setIncludeTaxPrice(BigDecimal includeTaxPrice) {
         this.includeTaxPrice = includeTaxPrice;
     }
 }

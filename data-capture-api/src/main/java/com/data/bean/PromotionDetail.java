@@ -1,6 +1,7 @@
 package com.data.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -40,17 +41,17 @@ public class PromotionDetail implements Serializable {
 
     private String productCode;
 
-    private Long originPrice;
+    private BigDecimal originPrice;
 
-    private Long normalSupplyPrice;
+    private BigDecimal normalSupplyPrice;
 
-    private Long supplyPrice;
+    private BigDecimal supplyPrice;
 
     private String supplyOrderType;
 
-    private Long normalSellPrice;
+    private BigDecimal normalSellPrice;
 
-    private Long supplySellPrice;
+    private BigDecimal supplySellPrice;
 
     private Double profit;
 
@@ -168,27 +169,27 @@ public class PromotionDetail implements Serializable {
         this.productCode = productCode == null ? null : productCode.trim();
     }
 
-    public Long getOriginPrice() {
+    public BigDecimal getOriginPrice() {
         return originPrice;
     }
 
-    public void setOriginPrice(Long originPrice) {
+    public void setOriginPrice(BigDecimal originPrice) {
         this.originPrice = originPrice;
     }
 
-    public Long getNormalSupplyPrice() {
+    public BigDecimal getNormalSupplyPrice() {
         return normalSupplyPrice;
     }
 
-    public void setNormalSupplyPrice(Long normalSupplyPrice) {
+    public void setNormalSupplyPrice(BigDecimal normalSupplyPrice) {
         this.normalSupplyPrice = normalSupplyPrice;
     }
 
-    public Long getSupplyPrice() {
+    public BigDecimal getSupplyPrice() {
         return supplyPrice;
     }
 
-    public void setSupplyPrice(Long supplyPrice) {
+    public void setSupplyPrice(BigDecimal supplyPrice) {
         this.supplyPrice = supplyPrice;
     }
 
@@ -200,19 +201,19 @@ public class PromotionDetail implements Serializable {
         this.supplyOrderType = supplyOrderType == null ? null : supplyOrderType.trim();
     }
 
-    public Long getNormalSellPrice() {
+    public BigDecimal getNormalSellPrice() {
         return normalSellPrice;
     }
 
-    public void setNormalSellPrice(Long normalSellPrice) {
+    public void setNormalSellPrice(BigDecimal normalSellPrice) {
         this.normalSellPrice = normalSellPrice;
     }
 
-    public Long getSupplySellPrice() {
+    public BigDecimal getSupplySellPrice() {
         return supplySellPrice;
     }
 
-    public void setSupplySellPrice(Long supplySellPrice) {
+    public void setSupplySellPrice(BigDecimal supplySellPrice) {
         this.supplySellPrice = supplySellPrice;
     }
 

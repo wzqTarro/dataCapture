@@ -84,10 +84,10 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		
 		// 测试数据
 		// String json = FileUtils.readFileToString(new File("D:\\sale.txt"));
-		logger.info(json);
+		logger.info("抓取数据：" + json.substring(0, 100));
 		// json转List
 		List<T> list = translateData(json, clazz);
-		
+		logger.info("抓取数据数量:" + list.size());
  		return list;
 	}
 	/**
@@ -147,14 +147,16 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
-					int rowNum = 1000;
+					double rowNum = 1000;
 					double size = Math.ceil(dataList.size() / rowNum);
+					logger.info("--->>>>size:{}<<<<----", size);
 					for (int i = 0; i < size; i++) {
+						logger.info("--->>>>i:{}<<<<----", i);
 						if (i == (size-1)) {
-							insert(mapper, dataList.subList(i * rowNum, dataList.size()));
+							insert(mapper, dataList.subList(i * (int)rowNum, dataList.size()));
 							break;
 						}
-						insert(mapper, dataList.subList(i * rowNum, i * rowNum + rowNum));
+						insert(mapper, dataList.subList(i * (int)rowNum, i * (int)rowNum + (int)rowNum));
 					}
 				}
 			});
