@@ -115,28 +115,28 @@
   </select>
   <!-- 按门店分组 -->
   <select id="selectStoreStockModelByParam" resultMap="storeStockMap" parameterType="map">
-  	SELECT sys_name, store_code, store_name, stock_price, simple_bar_code, brand, stock_num
+  	SELECT sys_id, sys_name, store_code, store_name, stock_price, simple_bar_code, brand, stock_nums
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <!-- 按大区分组 -->
   <select id="selectRegionStockModelByParam" resultMap="regionStockMap" parameterType="map">
-  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id, store_code
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <!-- 按系统分组 -->
   <select id="selectSysStockModelByParam" resultMap="sysStockMap" parameterType="map">
-  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id, store_code
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
   <!-- 按省区分组 -->
   <select id="selectProvinceAreaStockModelByParam" resultMap="provinceAreaStockMap" parameterType="map">
-  	SELECT stock_price, stock_num, region, brand, province_area
+  	SELECT stock_price, stock_num, region, brand, province_area, store_code, sys_id
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>

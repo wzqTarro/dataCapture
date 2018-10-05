@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +24,9 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -462,13 +468,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		// 生成日期
 		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
-			
-		Row headerRow = sheet.createRow(3);
 				
 		// 生成粗体居中标题
 		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, header.length);
 		
 		// 设置表头
+		Row headerRow = sheet.createRow(3);
 		excelUtil.createRow(headerRow, header, true);
 		
 		if (CommonUtil.isBlank(storeCodeModelList)) {
@@ -551,8 +556,138 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		output.close();
 	}
 	@Override
-	public void exportMissFirstComExcel(OutputStream output) throws IOException {
-		// TODO Auto-generated method stub
+	public void exportMissFirstComExcel(OutputStream output) throws Exception {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		XSSFWorkbook wb = new XSSFWorkbook();
+		Sheet sheet = wb.createSheet("公司一级表");
+		Row dateRow = sheet.createRow(0);
+		
+		// 生成日期
+		String queryDate = LocalDate.now().toString();
+		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+		
+		// 标题
+		int rowIndex = 2;
+		Row titleRow = sheet.createRow(rowIndex);
+		
+		// 系统缺货日报表表头
+		String[] sysHeader = new String[]{"系统", "门店数量", "库存低于3天的门店", "单品数量", "库存低于1天的单品数量"}; 
+		
+		// 生成粗体居中标题
+		CellStyle cellStyle = excelUtil.getBolderTitle(wb);
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, sysHeader.length - 1));
+		Cell titleCell = titleRow.createCell(0);
+		titleCell.setCellValue("系统直营KA分大区门店缺货日报表");
+		titleCell.setCellStyle(cellStyle);
+		
+		// 大区缺货日报表表头
+		String[] regionHeader = new String[]{"大区", "门店数量", "库存低于3天的门店", "单品数量", "库存低于1天的单品数量"}; 
+				
+		// 生成粗体居中标题
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, sysHeader.length, sysHeader.length + regionHeader.length - 1));
+		titleCell = titleRow.createCell(sysHeader.length);
+		titleCell.setCellValue("大区直营KA分大区门店缺货日报表");
+		titleCell.setCellStyle(cellStyle);	
+		
+		// 表头
+		Row headerRow = sheet.createRow(3);
+		for (int i = 0, size = sysHeader.length; i < size; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(sysHeader[i]);
+		}
+		for (int i = 0, size = regionHeader.length; i < size; i++) {
+			Cell cell = headerRow.createCell(i + sysHeader.length);
+			cell.setCellValue(regionHeader[i]);
+		}
+		
+		// 前一天的销售
+		String lastDay = LocalDate.now().minusDays(1L).toString();
+		Map<String, Object> param = new HashMap<>(1);
+		param.put("queryDate", lastDay);
+		param.put("column", " sys_id, region, sell_num ");
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		CountDownLatch latch = new CountDownLatch(2);
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		executorService.execute(new createSysMiss(sheet, saleList, latch));
+		executorService.execute(new createRegionMiss(sheet, saleList, latch));
+		latch.await();
+		wb.write(output);
+		output.flush();
+		output.close();
+		
+	}
+	public class createSysMiss implements Runnable {
+
+		private Sheet sheet;
+		private List<Sale> saleList;
+		private CountDownLatch latch;
+		
+		public createSysMiss(Sheet sheet, List<Sale> saleList, CountDownLatch latch) {
+			this.sheet = sheet;
+			this.saleList = saleList;
+			this.latch = latch;
+		}
+		
+		@Override
+		public void run() {
+			// 按系统分组
+			List<SysStockModel> sysStockList = queryListByObject(QueryId.QUERY_SYS_STOCK_MODEL_BY_PARAM, null);
+			SysStockModel sysStock = null;
+			List<Stock> stockList = null;
+			
+			Stock stock = null;
+			Sale sale = null;
+			double sellNumSum = 0;
+			
+			// 门店
+			Set<String> storeSet = new LinkedHashSet<>();
+			for (int i = 0, size = sysStockList.size(); i < size; i++) {
+				sysStock = sysStockList.get(i);
+				stockList = sysStock.getStockList();
+				
+				for (int j = 0, saleSize = saleList.size(); j < saleSize; j++) {
+					sale = saleList.get(j);
+					if (sysStock.getSysId().equals(sale.getSysId())) {
+						sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
+						storeSet.add(sysStock.getSysId() + "-" + sale.getStoreCode());
+					}
+				}
+				
+				for (int j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+					stock = stockList.get(j);
+					storeSet.add(stock.getStockCode());
+				}
+				
+				
+				Object[] rowValue = new Object[]{
+						sysStock.getSysName(), // 系统名
+						storeSet.size(), // 门店数量
+				};
+			}
+			latch.countDown();
+		}
+		
+	}
+	public class createRegionMiss implements Runnable {
+
+		private Sheet sheet;
+		private List<Sale> saleList;
+		private CountDownLatch latch;
+		
+		public createRegionMiss(Sheet sheet, List<Sale> saleList, CountDownLatch latch) {
+			this.sheet = sheet;
+			this.saleList = saleList;
+			this.latch = latch;
+		}
+		
+		@Override
+		public void run() {
+			// 按大区分组
+			List<RegionStockModel> regionStockList = queryListByObject(QueryId.QUERY_REGION_STOCK_MODEL_BY_PARAM, null);
+			latch.countDown();
+		}
+		
 	}
 	@Override
 	public void exportStockExcel(Stock stock, String stockNameStr, OutputStream output) throws Exception {
@@ -697,6 +832,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -712,6 +850,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -731,7 +870,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				stockDay = stockPriceSum / sellNumSum;
 			}
 			rowValue[i] = new String[] { sysName, // 系统名称
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -814,6 +953,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -829,6 +971,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -850,7 +993,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			rowValue[i] = new String[] { 
 					sysName, //系统名
 					region, // 大区
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -939,6 +1082,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合 
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -955,6 +1101,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getSysId() + "-" + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -975,9 +1122,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 			rowValue[i] = new String[] { sysName, // 系统名
 					region, // 大区
-					storeCode, // 门店编号
+					Arrays.toString(storeSet.toArray()), // 门店编号
 					storeName, // 门店名称
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -1059,6 +1206,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
+		
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[regionStockList.size()][6];
 		for (i = 0, size = regionStockList.size(); i < size; i++) {
@@ -1071,6 +1221,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getSysId() + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -1090,7 +1241,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				stockDay = stockPriceSum / sellNumSum;
 			}
 			rowValue[i] = new String[] { regionStock.getRegion(), // 大区
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -1169,6 +1320,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -1190,6 +1344,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -1211,7 +1366,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			rowValue[i] = new String[] { 
 					region, // 大区
 					sysName, // 系统名称
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -1295,6 +1450,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -1316,7 +1474,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
-
+				storeSet.add(stock.getSysId() + stock.getStoreCode());
 				// 门店编号
 				storeCode = stock.getStoreCode();
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
@@ -1339,7 +1497,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 			rowValue[i] = new String[] { region, // 大区
 					provinceArea, // 省区
-					String.valueOf(stockList.size()), // 门店数量
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
@@ -1391,7 +1549,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		String title = provinceArea + "直营KA分大区门店库存日报表";
 
 		// 表头
-		String[] headers = new String[] { "省区", "门店", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数" };
+		String[] headers = new String[] { "省区", "门店编号", "门店", "门店数量", "库存金额", "店均库存", "昨日销售", "库存天数" };
 
 		SXSSFWorkbook wb = createRegionTop(sheetName, title, headers, queryDate, storeStockList, output);
 
@@ -1426,6 +1584,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存天数
 		double stockDay = 0;
 
+		// 门店集合
+		Set<String> storeSet = new LinkedHashSet<>();
+		
 		// 品牌集合
 		Set<String> brandSet = new LinkedHashSet<>();
 		brandSet.add("全部");
@@ -1450,6 +1611,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
+				storeSet.add(stock.getSysId() + "-" + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
 				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
@@ -1470,7 +1632,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 			rowValue[i] = new String[] { provinceArea, // 省区
 					storeName, // 省区
-					String.valueOf(stockList.size()), // 门店数量
+					Arrays.toString(storeSet.toArray()), // 门店编号
+					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
 					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量

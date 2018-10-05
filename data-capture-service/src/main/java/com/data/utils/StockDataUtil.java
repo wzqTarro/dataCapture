@@ -65,7 +65,7 @@ public class StockDataUtil extends CommonServiceImpl{
 	 * @param rowIndex 行号
 	 * @param cellWidth 合并列数
 	 */
-	public void createBolderTitle(SXSSFWorkbook wb, Sheet sheet, String title, int rowIndex, int cellStart, int cellEnd) {
+	public void createBolderTitle(Workbook wb, Sheet sheet, String title, int rowIndex, int cellStart, int cellEnd) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		
 		sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, cellStart, cellEnd - 1));
@@ -75,7 +75,7 @@ public class StockDataUtil extends CommonServiceImpl{
 		
 		// 标题
 		Row titleRow = sheet.createRow(rowIndex);
-		Cell titleCell = titleRow.createCell(0);
+		Cell titleCell = titleRow.createCell(cellStart);
 		titleCell.setCellValue(title);
 		titleCell.setCellStyle(cellStyle);
 	}

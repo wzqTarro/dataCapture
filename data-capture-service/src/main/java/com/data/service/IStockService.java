@@ -48,7 +48,7 @@ public interface IStockService {
 	 * @param region
 	 * @return
 	 */
-	void exportMissFirstComExcel(OutputStream output) throws IOException;
+	void exportMissFirstComExcel(OutputStream output) throws Exception;
 	/**
 	 * 自定义字段导出库存数据表
 	 * @param stock

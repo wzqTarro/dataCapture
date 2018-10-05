@@ -509,7 +509,7 @@ public class ExcelUtil<T> {
 	 * @param wb
 	 * @return
 	 */
-	public CellStyle getBolderTitle(SXSSFWorkbook wb) {
+	public CellStyle getBolderTitle(Workbook wb) {
 		// 字体设置
 		Font font = wb.createFont();
 		font.setBold(true);// 加粗

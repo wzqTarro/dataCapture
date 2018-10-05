@@ -134,13 +134,13 @@ public class StockController {
 	 * @param 
 	 * @param storeName
 	 * @return
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "exportMissFirstComExcel", method = RequestMethod.GET)
-	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "GET")
-	public void exportMissFirstComExcel(HttpServletResponse response) throws IOException {
+	@ApiOperation(value = "导出缺货报表-公司一级表", httpMethod = "GET")
+	public void exportMissFirstComExcel(HttpServletResponse response) throws Exception {
 		
-		String fileName = "缺货表报-区域门店表" ;
+		String fileName = "缺货表报-公司一级表" ;
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
