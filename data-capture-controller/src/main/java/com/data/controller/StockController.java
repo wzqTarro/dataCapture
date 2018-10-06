@@ -82,7 +82,7 @@ public class StockController {
 	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportStoreProductExcel", method = RequestMethod.GET)
-	@ApiOperation(value = "导出门店单品表", httpMethod = "GET")
+	@ApiOperation(value = "缺货日报表-导出门店单品表", httpMethod = "GET")
 	public void exportStoreProductExcel(String storeCode, HttpServletResponse response) throws IOException {
 		String fileName = "缺货表报-门店单品表";
 		
@@ -203,7 +203,7 @@ public class StockController {
 	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportStoreExcelByProvinceArea", method = RequestMethod.GET)
-	@ApiOperation(value = "按区域导出区域表二级表", httpMethod = "GET")
+	@ApiOperation(value = "按区域导出区域表三级表", httpMethod = "GET")
 	public void exportStoreExcelByProvinceArea(String provinceArea, HttpServletResponse response) throws IOException {
 		String fileName = "库存-按区域导出区域表三级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		

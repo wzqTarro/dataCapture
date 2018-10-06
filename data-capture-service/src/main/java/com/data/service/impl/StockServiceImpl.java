@@ -220,11 +220,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		return ResultUtil.success(pageRecord);
 	}
-	public static void main(String[] args) throws IOException {
-		String file = FileUtils.readFileToString(new File("E:\\baiya\\sale\\sale.txt"));
-		List<Stock> list = (List<Stock>) FastJsonUtil.jsonToList(file, Stock.class);
-		System.err.println(list.size());
-	}
 	@Override
 	public ResultUtil getStockByParam(Stock stock, Integer page, Integer limit) throws Exception {
 
@@ -428,7 +423,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		String[] headers = new String[]{"系统", "门店编号", "门店", "单品数量", "库存低于3天的单品", "库存等于0的单品数量"};
 		exportXStoreExcel(LocalDate.now().toString(), "系统门店表", title, sysName, headers, storeCodeModelList, output);
 	}
-	
+	public static void main(String[] args) {
+		String key = "sysId-simpleBarCode";
+		System.err.println(key.substring(0, key.indexOf("-")));
+		System.err.println(key.substring(key.lastIndexOf("-")+1));
+	}
 	@Override
 	public void exportRegionStoreExcel(String region, OutputStream output) throws IOException {
 		if (CommonUtil.isBlank(region)) {
@@ -604,13 +603,16 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		String lastDay = LocalDate.now().minusDays(1L).toString();
 		Map<String, Object> param = new HashMap<>(1);
 		param.put("queryDate", lastDay);
-		param.put("column", " sys_id, region, sell_num ");
+		param.put("column", " sys_id, region, sell_num, store_code, simple_bar_code ");
 		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		if (CommonUtil.isBlank(saleList)) {
+			throw new DataException("542");
+		}
 		
 		CountDownLatch latch = new CountDownLatch(2);
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		executorService.execute(new createSysMiss(sheet, saleList, latch));
-		executorService.execute(new createRegionMiss(sheet, saleList, latch));
+		executorService.execute(new createSysMiss(sheet, saleList, excelUtil, latch));
+		executorService.execute(new createRegionMiss(sheet, saleList, excelUtil, latch));
 		latch.await();
 		wb.write(output);
 		output.flush();
@@ -622,10 +624,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		private Sheet sheet;
 		private List<Sale> saleList;
 		private CountDownLatch latch;
+		private ExcelUtil<Stock> excelUtil;
 		
-		public createSysMiss(Sheet sheet, List<Sale> saleList, CountDownLatch latch) {
+		public createSysMiss(Sheet sheet, List<Sale> saleList, ExcelUtil<Stock> excelUtil, CountDownLatch latch) {
 			this.sheet = sheet;
 			this.saleList = saleList;
+			this.excelUtil = excelUtil;
 			this.latch = latch;
 		}
 		
@@ -640,30 +644,102 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			Sale sale = null;
 			double sellNumSum = 0;
 			
-			// 门店
-			Set<String> storeSet = new LinkedHashSet<>();
+			// 每一个门店的库存金额
+			Map<String, Double> storeMap = new HashMap<>();
+			
+			// 每一个单品的库存金额
+			Map<String, Double> productMap = new HashMap<>();
+			
 			for (int i = 0, size = sysStockList.size(); i < size; i++) {
+				Row row = sheet.getRow(i + 4);
+				if (row == null) {
+					row = sheet.createRow(i + 4);
+				}
 				sysStock = sysStockList.get(i);
 				stockList = sysStock.getStockList();
-				
-				for (int j = 0, saleSize = saleList.size(); j < saleSize; j++) {
-					sale = saleList.get(j);
-					if (sysStock.getSysId().equals(sale.getSysId())) {
-						sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
-						storeSet.add(sysStock.getSysId() + "-" + sale.getStoreCode());
+			
+				storeMap.clear();
+				productMap.clear();
+				for (int j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+					stock = stockList.get(j);
+					String storeCode = stock.getStoreCode();
+					Double storePrice = storeMap.get(storeCode);
+					
+					// 计算每一个门店的库存总金额
+					if (null == storePrice) {
+						storeMap.put(storeCode, stock.getStockPrice());
+					} else {
+						storeMap.put(storeCode, storePrice + stock.getStockPrice());
+					}
+					
+					String simpleBarCode = stock.getSimpleBarCode();
+					storePrice = productMap.get(simpleBarCode);
+					
+					// 计算每一个单品的库存总金额
+					if (null == storePrice) {
+						productMap.put(simpleBarCode, stock.getStockPrice());
+					} else {
+						productMap.put(simpleBarCode, storePrice + stock.getStockPrice());
 					}
 				}
 				
-				for (int j = 0, stockSize = stockList.size(); j < stockSize; j++) {
-					stock = stockList.get(j);
-					storeSet.add(stock.getStockCode());
+				int storeStockDayNum = 0;
+				
+				for (Map.Entry<String, Double> map : storeMap.entrySet()) {
+					String storeCode = map.getKey();
+					double stockPrice = map.getValue();
+					sellNumSum = 0;
+					for (int k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+						sale = saleList.get(k);
+						if (sysStock.getSysId().equals(sale.getSysId()) && storeCode.equals(sale.getStoreCode())) {
+							sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
+						}
+					}
+					
+					// 库存天数
+					double stockDay = 0;
+					if (sellNumSum != 0) {
+						stockDay = stockPrice/sellNumSum;
+					}
+					
+					if (stockDay < 3) {
+						storeStockDayNum ++;
+					}
+				}
+				
+				int productStockDayNum = 0;
+				for (Map.Entry<String, Double> map : productMap.entrySet()) {
+					String simpleBarCode = map.getKey();
+					double stockPrice = map.getValue();
+					sellNumSum = 0;
+					for (int k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+						sale = saleList.get(k);
+						if (sysStock.getSysId().equals(sale.getSysId()) && simpleBarCode.equals(sale.getSimpleBarCode())) {
+							sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
+						}
+					}
+					
+					// 库存天数
+					double stockDay = 0;
+					if (sellNumSum != 0) {
+						stockDay = stockPrice/sellNumSum;
+					}
+					
+					if (stockDay < 1) {
+						productStockDayNum ++;
+					}
 				}
 				
 				
-				Object[] rowValue = new Object[]{
+				String[] rowValue = new String[]{
 						sysStock.getSysName(), // 系统名
-						storeSet.size(), // 门店数量
+						String.valueOf(storeMap.size()), // 门店数量
+						String.valueOf(storeStockDayNum), // 库存天数小于3的门店数量
+						String.valueOf(productMap.size()), // 单品数量
+						String.valueOf(productStockDayNum) // 库存天数小于1的单品数量
 				};
+				
+				excelUtil.createRow(row, rowValue, false);
 			}
 			latch.countDown();
 		}
@@ -673,11 +749,13 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 
 		private Sheet sheet;
 		private List<Sale> saleList;
+		private ExcelUtil<Stock> excelUtil;
 		private CountDownLatch latch;
 		
-		public createRegionMiss(Sheet sheet, List<Sale> saleList, CountDownLatch latch) {
+		public createRegionMiss(Sheet sheet, List<Sale> saleList, ExcelUtil<Stock> excelUtil, CountDownLatch latch) {
 			this.sheet = sheet;
 			this.saleList = saleList;
+			this.excelUtil = excelUtil;
 			this.latch = latch;
 		}
 		
@@ -685,6 +763,121 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		public void run() {
 			// 按大区分组
 			List<RegionStockModel> regionStockList = queryListByObject(QueryId.QUERY_REGION_STOCK_MODEL_BY_PARAM, null);
+			
+			RegionStockModel regionStock = null;
+			List<Stock> stockList = null;
+			
+			// 每一个门店的库存金额
+			Map<String, Double> storeMap = new HashMap<>();
+						
+			// 每一个单品的库存金额
+			Map<String, Double> productMap = new HashMap<>();
+			
+			Stock stock = null;
+			
+			Sale sale = null;
+			
+			double sellNumSum = 0;
+			for (int i = 0, size = regionStockList.size(); i < size; i++) {
+				regionStock = regionStockList.get(i);
+				stockList = regionStock.getStockList();
+				
+				Row row = sheet.getRow(i + 4);
+				if (row == null) {
+					row = sheet.createRow(i + 4);
+				}
+				String region = regionStockList.get(i).getRegion() == null ? "" : regionStockList.get(i).getRegion();
+				
+				storeMap.clear();
+				productMap.clear();
+				for (int j = 0, stockSize = stockList.size(); j < stockSize; j++) {
+					stock = stockList.get(j);
+					String storeCode = stock.getStoreCode();
+					String sysId = stock.getSysId();
+					
+					String storeKey = sysId + "-" + storeCode;
+					Double storePrice = storeMap.get(storeKey);
+					
+					// 计算每一个门店的库存总金额
+					if (null == storePrice) {
+						storeMap.put(storeKey, stock.getStockPrice());
+					} else {
+						storeMap.put(storeKey, storePrice + stock.getStockPrice());
+					}
+					
+					String simpleBarCode = stock.getSimpleBarCode();
+					String simpleBarCodeKey = sysId + "-" + simpleBarCode;
+					storePrice = productMap.get(simpleBarCodeKey);
+					
+					// 计算每一个单品的库存总金额
+					if (null == storePrice) {
+						productMap.put(simpleBarCodeKey, stock.getStockPrice());
+					} else {
+						productMap.put(simpleBarCodeKey, storePrice + stock.getStockPrice());
+					}
+				}
+				
+				int storeStockDayNum = 0;
+				for (Map.Entry<String, Double> map : storeMap.entrySet()) {
+					String key = map.getKey();
+					String storeCode = key.substring(key.lastIndexOf("-") + 1);
+					String sysId = key.substring(0, key.indexOf("-"));
+					double stockPrice = map.getValue();
+					sellNumSum = 0;
+					for (int k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+						sale = saleList.get(k);
+						if (sysId.equals(sale.getSysId()) && storeCode.equals(sale.getStoreCode()) && region.equals(sale.getRegion())) {
+							sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
+						}
+					}
+					
+					// 库存天数
+					double stockDay = 0;
+					if (sellNumSum != 0) {
+						stockDay = stockPrice/sellNumSum;
+					}
+					
+					if (stockDay < 3) {
+						storeStockDayNum ++;
+					}
+				}
+				
+				int productStockDayNum = 0;
+				for (Map.Entry<String, Double> map : productMap.entrySet()) {
+					String key = map.getKey();
+					String simpleBarCode = key.substring(key.lastIndexOf("-") + 1);
+					String sysId = key.substring(0, key.indexOf("-"));
+					double stockPrice = map.getValue();
+					sellNumSum = 0;
+					for (int k = 0, saleSize = saleList.size(); k < saleSize; k++) {
+						sale = saleList.get(k);
+						if (sysId.equals(sale.getSysId()) && simpleBarCode.equals(sale.getSimpleBarCode()) && region.equals(sale.getRegion())) {
+							sellNumSum += (sale.getSellNum() == null) ? 0 : sale.getSellNum();
+						}
+					}
+					
+					// 库存天数
+					double stockDay = 0;
+					if (sellNumSum != 0) {
+						stockDay = stockPrice/sellNumSum;
+					}
+					
+					if (stockDay < 1) {
+						productStockDayNum ++;
+					}
+				}
+				String[] rowValue = new String[]{
+						region, // 省区
+						String.valueOf(storeMap.size()), // 门店数量
+						String.valueOf(storeStockDayNum), // 库存天数小于3的门店数量
+						String.valueOf(productMap.size()), // 单品数量
+						String.valueOf(productStockDayNum) // 库存天数小于1的单品数量
+				};
+				for (int j = 0, len = rowValue.length; j < len; j++) {
+					Cell cell = row.createCell(j+5);
+					cell.setCellValue(rowValue[j]);
+				}
+			}
 			latch.countDown();
 		}
 		

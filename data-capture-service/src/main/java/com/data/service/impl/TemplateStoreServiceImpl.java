@@ -124,9 +124,6 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 	}
 	@Override
 	public ResultUtil getRegionMenu(String sysId) {
-		if (CommonUtil.isBlank(sysId)) {
-			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
-		}
 		Map<String, Object> param = new HashMap<>(1);
 		param.put("sysId", sysId);
 		List<RegionMenu> storeList = queryListByObject(QueryId.QUERY_REGION_MENU, param);
@@ -135,9 +132,6 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 
 	@Override
 	public ResultUtil getStoreMenu(String sysId) {
-		if (CommonUtil.isBlank(sysId)) {
-			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
-		}
 		Map<String, Object> param = new HashMap<>(1);
 		param.put("sysId", sysId);
 		List<Map<String, Object>> storeList = queryListByObject(QueryId.QUERY_STORE_MENU, param);
