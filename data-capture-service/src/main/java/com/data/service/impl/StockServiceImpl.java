@@ -823,9 +823,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -846,13 +843,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			sysName = sysStock.getSysName() == null ? "" : sysStock.getSysName();
 			sysId = sysStock.getSysId() == null ? "" : sysStock.getSysId();
 			stockPriceSum = 0;
-			stockNumSum = 0;
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -872,7 +867,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			rowValue[i] = new String[] { sysName, // 系统名称
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -944,9 +939,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -967,13 +959,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			region = regionStock.getRegion() == null ? "" : regionStock.getRegion();
 
 			stockPriceSum = 0;
-			stockNumSum = 0;
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -995,7 +985,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					region, // 大区
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -1073,9 +1063,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -1097,13 +1084,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			storeCode = storeStock.getStoreCode() == null ? "" : storeStock.getStoreCode();
 			
 			stockPriceSum = 0;
-			stockNumSum = 0;
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getSysId() + "-" + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -1126,7 +1111,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					storeName, // 门店名称
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -1195,9 +1180,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -1217,13 +1199,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			stockList = regionStock.getStockList();
 			region = regionStock.getRegion() == null ? "" : regionStock.getRegion();
 			stockPriceSum = 0;
-			stockNumSum = 0;
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getSysId() + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -1243,7 +1223,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			rowValue[i] = new String[] { regionStock.getRegion(), // 大区
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -1311,9 +1291,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -1337,16 +1314,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 库存总金额
 			stockPriceSum = 0;
 			
-			// 库存总数量
-			stockNumSum = 0;
-			
 			// 销售总数量
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -1368,7 +1341,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					sysName, // 系统名称
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -1435,14 +1408,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 省区
 		String provinceArea = null;
 
-		// 门店编号
-		String storeCode = null;
-
 		// 库存金额
 		double stockPriceSum = 0;
-
-		// 库存总数
-		double stockNumSum = 0;
 
 		// 昨日销量
 		int sellNumSum = 0;
@@ -1467,18 +1434,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 库存总金额
 			stockPriceSum = 0;
 
-			// 库存总数量
-			stockNumSum = 0;
-
 			// 销售总数量
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
-				storeSet.add(stock.getSysId() + stock.getStoreCode());
-				// 门店编号
-				storeCode = stock.getStoreCode();
+				storeSet.add(stock.getSysId() + "-" + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -1499,7 +1460,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					provinceArea, // 省区
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
@@ -1575,9 +1536,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 库存金额
 		double stockPriceSum = 0;
 
-		// 库存总数
-		double stockNumSum = 0;
-
 		// 昨日销量
 		int sellNumSum = 0;
 
@@ -1604,16 +1562,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			// 库存总金额
 			stockPriceSum = 0;
 
-			// 库存总数量
-			stockNumSum = 0;
-
 			// 销售总数量
 			sellNumSum = 0;
 			for (j = 0, stockSize = stockList.size(); j < stockSize; j++) {
 				stock = stockList.get(j);
 				storeSet.add(stock.getSysId() + "-" + stock.getStoreCode());
 				stockPriceSum += stock.getStockPrice() == null ? 0 : stock.getStockPrice();
-				stockNumSum += stock.getStockNum() == null ? 0 : stock.getStockNum();
 
 				if (stock.getBrand() != null) {
 					brandSet.add(stock.getBrand());
@@ -1635,7 +1589,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					Arrays.toString(storeSet.toArray()), // 门店编号
 					String.valueOf(storeSet.size()), // 门店数量
 					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum)), // 库存金额
-					String.valueOf(CommonUtil.setScale("0.00", stockNumSum / stockList.size())), // 店均库存
+					String.valueOf(CommonUtil.setScale("0.00", stockPriceSum / storeSet.size())), // 店均库存
 					String.valueOf(sellNumSum), // 昨日销量
 					String.valueOf(CommonUtil.setScale("0.00", stockDay) + "天") // 库存天数
 			};
