@@ -352,6 +352,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Override
 	public ResultUtil queryOrderAlarmList(Order order, Integer page, Integer limit) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(order);
+		logger.info("--->>>订单报警列表查询参数: {}<<<---", FastJsonUtil.objectToString(params));
 		PageRecord<Order> orderPageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_ALARM_LIST,
 							QueryId.QUERY_ORDER_ALARM_LIST, params, page, limit);
 		return ResultUtil.success(orderPageRecord);
