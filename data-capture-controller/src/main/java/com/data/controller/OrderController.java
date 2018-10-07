@@ -106,4 +106,24 @@ public class OrderController {
         }
     }
     
+    /**
+     * 查询订单警报列表
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/queryOrderAlarmList", method = RequestMethod.GET)
+    public String queryOrderAlarmList(Order order, Integer page, Integer limit) throws Exception {
+    	ResultUtil result = orderService.queryOrderAlarmList(order, page, limit);
+    	return FastJsonUtil.objectToString(result);
+    }
+    
+    /**
+     * 警报报表输出
+     * @param order
+     * @param response
+     */
+    @RequestMapping(value = "/orderAlarmListExcel", method = RequestMethod.GET)
+    public void orderAlarmListExcel(Order order, HttpServletResponse response) {
+    	
+    }
 }

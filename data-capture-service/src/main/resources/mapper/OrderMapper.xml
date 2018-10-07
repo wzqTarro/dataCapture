@@ -80,6 +80,7 @@
   		AND deliver_start_date = #{queryDate}
   	</if>
   </sql>
+  
   <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
   	SELECT ${column}
   	FROM db_order
@@ -111,6 +112,57 @@
     from db_order
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <sql id="Query_Order_Alarm">
+  	WHERE 1=1 
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id=#{sysId}
+  	</if>
+  	<if test="sysName != null and sysName != ''">
+  		AND sys_name LIKE CONCAT(CONCAT('%', #{sysName}), '%')
+	</if>
+	<if test="region != null and region != ''">
+		AND region LIKE CONCAT(CONCAT('%', #{region}), '%') 
+	</if>
+	<if test="provinceArea != null and provinceArea != ''">
+		AND province_area LIKE CONCAT(CONCAT('%', #{provinceArea}), '%') 
+	</if>
+	<if test="storeCode != null and storeCode != ''">
+		AND store_code=#{storeCode} 
+	</if>
+	<if test="storeName != null and storeName != ''">
+		AND store_name LIKE CONCAT(CONCAT('%', #{storeName}), '%') 
+	</if>
+	<if test="simpleCode != null and simpleCode != ''">
+		AND simple_code=#{simpleCode} 
+	</if>
+	<if test="simpleBarCode != null and simpleBarCode != ''">
+		AND simple_bar_code=#{simpleBarCode} 
+	</if>
+	<if test="receiptCode != null and receiptCode != ''">
+		AND receipt_code=#{receiptCode} 
+	</if>
+	<if test="simpleName != null and simpleName != ''">
+		AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') 
+	</if>
+  </sql>
+  <!-- 查询订单警报集合 -->
+  <select id="queryOrderAlarmList" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List" />
+  	FROM db_order 
+  	<include refid="Query_Order_Alarm" />
+  	<if test="pageNum != null and pageNum != '' and pageSize != null and pageSize != ''">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>
+  </select>
+  
+  <!-- 查询订单警报总数 -->
+  <select id="queryCountOrderAlarmList" parameterType="map" resultType="int">
+  	SELECT COUNT(1) 
+  	FROM db_order 
+  	<include refid="Query_Order_Alarm" />
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from db_order
     where id = #{id,jdbcType=INTEGER}

@@ -132,5 +132,11 @@ public final class QueryId {
 	
 	/**按组查询门店日销售额**/
 	public static final String QUERY_DAILY_STORE_SALE_LIST_BY_GROUP = "SaleMapper.queryStoreSaleListByGroup";
+	
+	/**条件查询订单警报集合**/
+	public static final String QUERY_ORDER_ALARM_LIST = "OrderMapper.queryOrderAlarmList";
+	
+	/**查询订单警报总和**/
+	public static final String QUERY_COUNT_ORDER_ALARM_LIST = "OrderMapper.queryCountOrderAlarmList";
 
 }

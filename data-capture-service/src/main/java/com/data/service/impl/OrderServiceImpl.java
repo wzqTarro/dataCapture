@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -345,6 +347,65 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		
 		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
 		excelUtil.exportCustom2007("订单信息", header, methodNameArray, dataList, output);
+	}
+
+	@Override
+	public ResultUtil queryOrderAlarmList(Order order, Integer page, Integer limit) throws Exception {
+		Map<String, Object> params = buildQueryParamsMap(order);
+		PageRecord<Order> orderPageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_ALARM_LIST,
+							QueryId.QUERY_ORDER_ALARM_LIST, params, page, limit);
+		return ResultUtil.success(orderPageRecord);
+	}
+	
+	private Map<String, Object> buildQueryParamsMap(Order order) {
+		Map<String, Object> params = new HashMap<>(10);
+		String sysId = order.getSysId();
+		if(CommonUtil.isNotBlank(sysId)) {
+			params.put("sysId", sysId);
+		}
+		String sysName = order.getSysName();
+		if(CommonUtil.isNotBlank(sysName)) {
+			params.put("sysName", sysName);			
+		}
+		String region = order.getRegion();
+		if(CommonUtil.isNotBlank(region)) {
+			params.put("region", region);
+		}
+		String provinceArea = order.getProvinceArea();
+		if(CommonUtil.isNotBlank(provinceArea)) {
+			params.put("provinceArea", provinceArea);
+		}
+		String storeCode = order.getStoreCode();
+		if(CommonUtil.isNotBlank(storeCode)) {
+			params.put("storeCode", storeCode);
+		}
+		String storeName = order.getStoreName();
+		if(CommonUtil.isNotBlank(storeName)) {
+			params.put("storeName", storeName);
+		}
+		String simpleCode = order.getSimpleCode();
+		if(CommonUtil.isNotBlank(simpleCode)) {
+			params.put("simpleCode", simpleCode);
+		}
+		String simpleBarCode = order.getSimpleBarCode();
+		if(CommonUtil.isNotBlank(simpleBarCode)) {
+			params.put("simpleBarCode", simpleBarCode);
+		}
+		String receiptCode = order.getReceiptCode();
+		if(CommonUtil.isNotBlank(receiptCode)) {
+			params.put("receiptCode", receiptCode);
+		}
+		String simpleName = order.getSimpleName();
+		if(CommonUtil.isNotBlank(simpleName)) {
+			params.put("simpleName", simpleName);
+		}
+		return params;
+	}
+
+	@Override
+	public void orderAlarmListExcel(Order order, HttpServletResponse response) {
+		// TODO 订单报表输出
+		
 	}
 
 }
