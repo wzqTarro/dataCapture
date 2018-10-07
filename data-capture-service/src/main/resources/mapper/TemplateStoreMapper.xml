@@ -77,6 +77,9 @@
   <select id="selectStoreMenu" resultType="map">
   	SELECT store_code as storeCode, standard_store_name as storeName
   	FROM db_template_store
+  	<if test="sysId != null and sysId != ''">
+  		AND sys_id = #{sysId}
+  	</if>
   </select>
   <!-- 查询门店模板列表 -->
   <select id="queryStoreTemplate" resultMap="BaseResultMap">

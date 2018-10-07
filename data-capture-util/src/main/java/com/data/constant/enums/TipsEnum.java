@@ -34,10 +34,14 @@ public enum TipsEnum {
 	STORE_MESSAGE_IS_NULL("门店信息模板数据缺失"),
 	PRAC_DATE_IS_NULL("开业时间不能为空"),
 	
-	// 库存信息
+	// 库存数据
 	QUERY_DATE_IS_NULL("查询时间不能为空"),
 	STORE_NAME_IS_NULL("门店名称不能为空"),
 	STORE_CODE_IS_NULL("门店编号不能为空"),
+	NOW_STOCK_IS_NULL("当天库存为空，请查看是否抓取过数据"),
+	
+	// 销售数据
+	LAST_DAY_SALE_IS_NULL("前一天的销售数据为空，请确保销售数据已经抓取")
 	;
 	
 	String value;

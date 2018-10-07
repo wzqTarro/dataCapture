@@ -27,7 +27,7 @@ public interface IStockService {
 	 * @param storeName 门店名称
 	 * @return
 	 */
-	void exportStoreProductExcel(String storeCode, OutputStream output) throws IOException;
+	void exportStoreProductExcel(String storeName, OutputStream output) throws IOException;
 	/**
 	 * 缺货日报表-导出系统门店表
 	 * @param queryDate

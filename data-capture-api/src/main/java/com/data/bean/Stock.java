@@ -59,7 +59,6 @@ public class Stock implements Serializable{
 
     private Double stockPrice;
 
-    @JSONField(serialize=false)
     private Date createTime;
 
     private String remark;

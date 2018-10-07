@@ -36,6 +36,10 @@
   <select id="selectAnyColumn" resultType="map">
   	SELECT ${column}
   	FROM db_template_supply
+  	WHERE 1=1 
+  	<if test="isVal != null">
+  		AND is_val = #{isVal}
+  	</if>
   </select>
   <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Column_List"></include>

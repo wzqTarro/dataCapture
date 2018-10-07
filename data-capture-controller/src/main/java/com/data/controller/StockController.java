@@ -83,13 +83,13 @@ public class StockController {
 	 */
 	@RequestMapping(value = "exportStoreProductExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "缺货日报表-导出门店单品表", httpMethod = "GET")
-	public void exportStoreProductExcel(String storeCode, HttpServletResponse response) throws IOException {
+	public void exportStoreProductExcel(String storeName, HttpServletResponse response) throws IOException {
 		String fileName = "缺货表报-门店单品表";
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
 		OutputStream output = response.getOutputStream();
-		stockServiceImpl.exportStoreProductExcel(storeCode, output);
+		stockServiceImpl.exportStoreProductExcel(storeName, output);
 	}
 	
 	/**

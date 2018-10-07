@@ -106,6 +106,9 @@
   	<if test="queryDate != null and queryDate != ''">
   		AND create_time = #{queryDate}
   	</if>
+  	<if test="provinceArea != null and provinceArea != ''">
+  		AND province_area = #{provinceArea}
+  	</if>
   </sql>
   <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
   	SELECT ${column}
@@ -129,7 +132,7 @@
   </select>
   <!-- 按系统分组 -->
   <select id="selectSysStockModelByParam" resultMap="sysStockMap" parameterType="map">
-  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id, store_code, simple_bar_code
+  	SELECT stock_price, stock_num, region, brand, sys_name, sys_id, store_code, store_name, simple_bar_code
   	FROM db_stock
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
