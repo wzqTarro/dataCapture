@@ -2,6 +2,8 @@ package com.data.service;
 
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
@@ -34,4 +36,20 @@ public interface IRejectService {
 	 * @throws Exception
 	 */
 	void exportRejectExcel(String stockNameStr, CommonDTO common, Reject reject, OutputStream output) throws Exception;
+	
+	/**
+	 * 查询退单报警集合列表
+	 * @param reject
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	ResultUtil queryRejectAlarmList(Reject reject, Integer page, Integer limit) throws Exception;
+	
+	/**
+	 * 退单报表导出
+	 * @param reject
+	 * @param response
+	 */
+	void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception;
 }

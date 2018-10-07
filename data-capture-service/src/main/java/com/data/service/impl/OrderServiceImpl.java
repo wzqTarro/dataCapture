@@ -3,6 +3,7 @@ package com.data.service.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +20,16 @@ import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.service.ICodeDictService;
 import com.data.service.IOrderService;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
@@ -53,6 +57,9 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	
 	@Autowired
 	private ExportUtil exportUtil;
+	
+	@Autowired
+	private ICodeDictService codeDictService;
 	
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
@@ -403,10 +410,23 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return params;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void orderAlarmListExcel(Order order, HttpServletResponse response) {
-		// TODO 订单报表输出
-		
+	public void orderAlarmListExcel(Order order, HttpServletResponse response) throws Exception {
+		Map<String, Object> params = buildQueryParamsMap(order);
+		List<Map<String, Object>> orderReportList = queryListByObject(QueryId.QUERY_ORDER_ALARM_LIST_FOR_REPORT, params);
+		for(Map<String, Object> map : orderReportList) {
+			String discountAlarmFlag = (String) map.get("discountAlarmFlag");
+			map.put("alarmFlag", CommonUtil.isNotBlank(discountAlarmFlag) ? discountAlarmFlag : (String) map.get("contractAlarmFlag"));
+		}
+		List<String> codeList = codeDictService
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_ORDER_ALARM_REPORT.getValue());
+		String title = "订单警报报表";
+		ExcelUtil excelUtil = new ExcelUtil();
+		String fileName = "订单警报报表-" + DateUtil.getCurrentDateStr();
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
+		excelUtil.exportTemplateByMap(CommonValue.ORDER_ALARM_REPORT_HEADER, orderReportList, title, codeList, response.getOutputStream());
 	}
 
 }

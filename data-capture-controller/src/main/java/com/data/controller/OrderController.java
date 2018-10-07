@@ -121,9 +121,10 @@ public class OrderController {
      * 警报报表输出
      * @param order
      * @param response
+     * @throws Exception 
      */
     @RequestMapping(value = "/orderAlarmListExcel", method = RequestMethod.GET)
-    public void orderAlarmListExcel(Order order, HttpServletResponse response) {
-    	
+    public void orderAlarmListExcel(Order order, HttpServletResponse response) throws Exception {
+    	orderService.orderAlarmListExcel(order, response);
     }
 }

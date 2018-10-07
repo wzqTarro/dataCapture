@@ -38,5 +38,11 @@ public class CommonValue {
 	public static final int MAX_ROW_COUNT_2007 = 1048576;
 	
 	/**门店销售日报表表头信息**/
-	public static final String[] STORE_DAILY_REPORT = {"系统", "大区", "省区", "门店名称", "门店负责人"}; 
+	public static final String[] STORE_DAILY_REPORT = {"系统", "大区", "省区", "门店名称", "门店负责人"};
+	
+	/**订单警报集合头部**/
+	public static final String[] ORDER_ALARM_REPORT_HEADER = {"系统编号", "系统名称", "大区", "省区", "门店编号", "门店名称", "单品编号", "单品条码", "单据编号", "单品名称", "存货编码", "含税进价", "含税金额", "促销供价", "合同供价", "警报"};
+	
+	/**退单集合头部**/
+	public static final String[] REJECT_ALARM_REPORT_HEADER = {"系统编号", "系统名称", "大区", "省区", "退单机构编号", "退单机构名称", "单品编号", "单品条码", "单据编号", "单品名称", "存货编码", "含税退价", "含税金额", "促销供价", "合同供价", "警报"};
 }

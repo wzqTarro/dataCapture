@@ -138,5 +138,17 @@ public final class QueryId {
 	
 	/**查询订单警报总和**/
 	public static final String QUERY_COUNT_ORDER_ALARM_LIST = "OrderMapper.queryCountOrderAlarmList";
+	
+	/**条件查询退单警报集合**/
+	public static final String QUERY_REJECT_ALARM_LIST = "RejectMapper.queryRejectAlarmList";
+	
+	/**查询退单警报总和**/
+	public static final String QUERY_COUNT_REJECT_ALARM_LIST = "RejectMapper.queryCountRejectAlarmList";
+	
+	/**查询订单警报列表集合**/
+	public static final String QUERY_ORDER_ALARM_LIST_FOR_REPORT = "OrderMapper.queryOrderAlarmListForReport";
+	
+	/**查询退单警报列表集合**/
+	public static final String QUERY_REJECT_ALARM_LIST_FOR_REPORT = "RejectMapper.queryRejectAlarmListForReport";
 
 }

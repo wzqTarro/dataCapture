@@ -48,5 +48,5 @@ public interface IOrderService {
 	 * @param order
 	 * @param response
 	 */
-	void orderAlarmListExcel(Order order, HttpServletResponse response);
+	void orderAlarmListExcel(Order order, HttpServletResponse response) throws Exception;
 }

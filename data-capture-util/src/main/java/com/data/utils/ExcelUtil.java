@@ -357,17 +357,91 @@ public class ExcelUtil<T> {
 								}
 							}
 							break;
-						} else {
-							//处理未能匹配上的日期销售额
-							/**
-							 * TODO
-							 * 需查库 然后放缓存中
-							 * 解决方案：可以考虑让程序定时任务在半夜先跑一遍计算 将值放置在缓存或者入库
-							 * 当前方案：先写一个手动触发器  用于在导出之前处理计算
-							 */
+						} 
+					}
+				}
+			}
+			workBook.write(out);
+			workBook.close();
+			out.flush();
+			out.close();
+		}
+	}
+	
+	/**
+	 * 按条件导出模板
+	 * @param header
+	 * @param dataList
+	 * @param title
+	 * @param codeList
+	 * @param out
+	 * @throws Exception 
+	 */
+	public void exportTemplateByMap(String[] header, List<Map<String, Object>> dataList, String title, List<String> codeList, OutputStream out) throws Exception {
+		if(null != header && header.length > MAX_COL_COUNT_2007) {
+			logger.info("--->>>导出excel表头部大于最大限定列值<<<---");
+			throw new DataException("509");
+		}
+		if(null != dataList && dataList.size() > MAX_ROW_COUNT_2007) {
+			logger.info("--->>>导出excel内容大于最大限定行值<<<---");
+			throw new DataException("510");
+		}
+		if(CommonUtil.isNotBlank(title)) {
+			SXSSFWorkbook workBook = new SXSSFWorkbook();
+			Sheet sheet = workBook.createSheet(title);
+			
+			Row row = null;
+			//构建头部
+			if(CommonUtil.isNotBlank(header)) {
+				row = sheet.createRow(0);
+				for(int i = 0; i < header.length; i++) {
+					Cell cell = row.createCell(i);
+					XSSFRichTextString text = new XSSFRichTextString(header[i]);
+					cell.setCellValue(text);
+				}				
+			}
+			//构建内容
+			Iterator<Map<String, Object>> it = dataList.iterator();
+			int index = 0;
+			while(it.hasNext()) {
+				index++;
+				row = sheet.createRow(index);
+				Map<String, Object> map = it.next();
+				
+				for(int i = 0; i < header.length; i++) {
+					Object value;
+					for(Map.Entry<String, Object> entry : map.entrySet()) {
+						if(codeList.get(i).equals(entry.getKey())) {
+							value = entry.getValue();
+							if(value == null) {
+								value = "";
+							}
 							
-						}
-						
+							String text = "";
+							if(value instanceof Date) {
+								Date date = (Date) value;
+								SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+								text = sdf.format(date);
+							} else if(value instanceof Boolean) {
+								text = String.valueOf((Boolean) value);
+							} else {
+								text = value.toString();
+							}
+							
+							Cell cell = row.createCell(i);
+							if(CommonUtil.isNotBlank(text)) {
+								//如果是非负浮点数则转换
+								Pattern pattern = Pattern.compile("^//d+(//.//d+)?$");
+								Matcher matcher = pattern.matcher(text);
+								if(matcher.matches()) {
+									cell.setCellValue(Double.parseDouble(text));
+								} else {
+									XSSFRichTextString richText = new XSSFRichTextString(text);
+									cell.setCellValue(richText);
+								}
+							}
+							break;
+						} 
 					}
 				}
 			}

@@ -3,28 +3,33 @@ package com.data.service.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.IRejectService;
 import com.data.utils.CommonUtil;
@@ -52,6 +57,9 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	
 	@Autowired
 	private ExportUtil exportUtil;
+	
+	@Autowired
+	private ICodeDictService codeDictService;
 
 	@Override
 	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) {
@@ -329,5 +337,78 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 
 		ExcelUtil<Reject> excelUtil = new ExcelUtil<>();
 		excelUtil.exportCustom2007("退单信息", header, methodNameArray, dataList, output);
+	}
+
+	@Override
+	public ResultUtil queryRejectAlarmList(Reject reject, Integer page, Integer limit) throws Exception {
+		Map<String, Object> params = buildQueryParamsMap(reject);
+		logger.info("--->>>订单报警列表查询参数: {}<<<---", FastJsonUtil.objectToString(params));
+		PageRecord<Reject> rejectPageRecord = queryPageByObject(QueryId.QUERY_COUNT_REJECT_ALARM_LIST,
+							QueryId.QUERY_REJECT_ALARM_LIST, params, page, limit);
+		return ResultUtil.success(rejectPageRecord);
+	}
+	
+	private Map<String, Object> buildQueryParamsMap(Reject reject) {
+		Map<String, Object> params = new HashMap<>(10);
+		String sysId = reject.getSysId();
+		if(CommonUtil.isNotBlank(sysId)) {
+			params.put("sysId", sysId);
+		}
+		String sysName = reject.getSysName();
+		if(CommonUtil.isNotBlank(sysName)) {
+			params.put("sysName", sysName);			
+		}
+		String region = reject.getRegion();
+		if(CommonUtil.isNotBlank(region)) {
+			params.put("region", region);
+		}
+		String provinceArea = reject.getProvinceArea();
+		if(CommonUtil.isNotBlank(provinceArea)) {
+			params.put("provinceArea", provinceArea);
+		}
+		String rejectDepartmentId = reject.getRejectDepartmentId();
+		if(CommonUtil.isNotBlank(rejectDepartmentId)) {
+			params.put("rejectDepartmentId", rejectDepartmentId);
+		}
+		String rejectDepartmentName = reject.getRejectDepartmentName();
+		if(CommonUtil.isNotBlank(rejectDepartmentName)) {
+			params.put("rejectDepartmentName", rejectDepartmentName);
+		}
+		String simpleCode = reject.getSimpleCode();
+		if(CommonUtil.isNotBlank(simpleCode)) {
+			params.put("simpleCode", simpleCode);
+		}
+		String simpleBarCode = reject.getSimpleBarCode();
+		if(CommonUtil.isNotBlank(simpleBarCode)) {
+			params.put("simpleBarCode", simpleBarCode);
+		}
+		String receiptCode = reject.getReceiptCode();
+		if(CommonUtil.isNotBlank(receiptCode)) {
+			params.put("receiptCode", receiptCode);
+		}
+		String simpleName = reject.getSimpleName();
+		if(CommonUtil.isNotBlank(simpleName)) {
+			params.put("simpleName", simpleName);
+		}
+		return params;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception {
+		Map<String, Object> params = buildQueryParamsMap(reject);
+		List<Map<String, Object>> rejectReportList = queryListByObject(QueryId.QUERY_REJECT_ALARM_LIST_FOR_REPORT, params);
+		for(Map<String, Object> map : rejectReportList) {
+			String discountAlarmFlag = (String) map.get("discountAlarmFlag");
+			map.put("alarmFlag", CommonUtil.isNotBlank(discountAlarmFlag) ? discountAlarmFlag : (String) map.get("contractAlarmFlag"));
+		}
+		List<String> codeList = codeDictService
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REJECT_ALARM_REPORT.getValue());
+		String title = "退单警报报表";
+		ExcelUtil excelUtil = new ExcelUtil();
+		String fileName = "退单警报报表-" + DateUtil.getCurrentDateStr();
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
+		excelUtil.exportTemplateByMap(CommonValue.REJECT_ALARM_REPORT_HEADER, rejectReportList, title, codeList, response.getOutputStream());
 	}
 }

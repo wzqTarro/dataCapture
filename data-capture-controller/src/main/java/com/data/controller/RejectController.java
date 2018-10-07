@@ -102,4 +102,28 @@ public class RejectController {
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * 退单报警集合列表
+     * @param reject
+     * @param page
+     * @param limit
+     * @return
+     */
+    @RequestMapping(value = "/queryRejectAlarmList", method = RequestMethod.GET)
+    public String queryRejectAlarmList(Reject reject, Integer page, Integer limit) throws Exception {
+    	ResultUtil result = rejectService.queryRejectAlarmList(reject, page, limit);
+    	return FastJsonUtil.objectToString(result);
+    }
+    
+    /**
+     * 警报报表输出
+     * @param order
+     * @param response
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/rejectAlarmListExcel", method = RequestMethod.GET)
+    public void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception {
+    	rejectService.rejectAlarmListExcel(reject, response);
+    }
 }

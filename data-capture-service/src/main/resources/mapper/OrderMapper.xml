@@ -151,7 +151,7 @@
   	SELECT <include refid="Base_Column_List" />
   	FROM db_order 
   	<include refid="Query_Order_Alarm" />
-  	<if test="pageNum != null and pageNum != '' and pageSize != null and pageSize != ''">
+  	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize}
   	</if>
   </select>
@@ -161,6 +161,23 @@
   	SELECT COUNT(1) 
   	FROM db_order 
   	<include refid="Query_Order_Alarm" />
+  </select>
+  
+  <!-- 查询订单警报导出集合 -->
+  <select id="queryOrderAlarmListForReport" parameterType="map" resultType="map">
+  	SELECT o1.sys_id sysId, o1.sys_name sysName, o1.region, o1.province_area provinceArea, 
+  	o1.store_code storeCode, o1.storeName storeName, o1.receipt_code, receiptCode, o1.simple_code simpleCode,
+  	o1.simple_bar_code simpleBarCode, o1.stock_code stockCode, o1.simple_name simpleName, o1.buying_price_with_rate buyingPriceWithRate,
+  	o1.buying_price buyingPrice, o1.discount_price discountPrice o1.contract_price contractPrice,   
+  	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag 
+  	FROM db_order o1 WHERE o1.discount_alarm_flag != ''
+  	UNION
+  	SELECT o2.sys_id sysId, o2.sys_name sysName, o2.region, o2.province_area provinceArea, 
+  	o2.store_code storeCode, o2.storeName storeName, o2.receipt_code, receiptCode, o2.simple_code simpleCode,
+  	o2.simple_bar_code simpleBarCode, o2.stock_code stockCode, o2.simple_name simpleName, o2.buying_price_with_rate buyingPriceWithRate, 
+  	o2.buying_price buyingPrice, o2.discount_price discountPrice o2.contract_price contractPrice,   
+  	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag 
+  	FROM db_order o2 WHERE o2.contract_alarm_flag != ''
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

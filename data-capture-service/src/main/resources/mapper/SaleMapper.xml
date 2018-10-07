@@ -114,7 +114,7 @@
   	FROM db_sale 
   	WHERE 1=1
   	<include refid="Sale_List_Report"></include>
-  	<if test="pageNum != null and pageSize != null and pageNum != '' and pageSize != ''">
+  	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize}
   	</if>
   </select>
