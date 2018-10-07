@@ -69,9 +69,9 @@ public class SaleController {
 	 * @param response
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/storeDailyexcel", method = RequestMethod.GET)
+	@RequestMapping(value = "/storeDailyExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "数据导出", httpMethod = "GET")
-	public void storeDailyexcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
+	public void storeDailyExcel(String system, String region, String province, String store, HttpServletResponse response) throws Exception {
 		saleService.storeDailyexcel(system, region, province, store, response);
 	}
 	/**
@@ -124,5 +124,20 @@ public class SaleController {
 			result = ResultUtil.error("--->>>日销售定时任务异常<<<---");
 		}
 		return FastJsonUtil.objectToString(result);
+    }
+    
+    /**
+     * 查询日报表数据
+     * @param system
+     * @param region
+     * @param province
+     * @param store
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/queryStoreDailySaleReport", method = RequestMethod.GET)
+    public String queryStoreDailySaleReport(String system, String region, String province, String store, Integer page, Integer limit) throws Exception {
+    	ResultUtil result = saleService.queryStoreDailySaleReport(system, region, province, store, page, limit);
+    	return FastJsonUtil.objectToString(result);
     }
 }

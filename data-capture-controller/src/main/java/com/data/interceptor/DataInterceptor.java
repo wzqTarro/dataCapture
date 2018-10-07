@@ -108,6 +108,10 @@ public class DataInterceptor implements HandlerInterceptor {
 			if(CommonUtil.isBlank(token)) {
 				throw new DataException("520");
 			}
+			/**
+			 * TODO
+			 * 用户续命问题
+			 */
 			return token.equals(accessToken);
 		} catch (Exception e) {
 			logger.info("--->>>令牌已失效，请重新登录<<<---");

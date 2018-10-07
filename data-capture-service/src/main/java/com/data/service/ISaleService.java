@@ -51,4 +51,14 @@ public interface ISaleService {
 	 * @return
 	 */
 	ResultUtil calculateStoreDailySale() throws Exception;
+	
+	/**
+	 * 按条件查询门店日报表销售数据
+	 * @param system
+	 * @param region
+	 * @param province
+	 * @param store
+	 * @return
+	 */
+	ResultUtil queryStoreDailySaleReport(String system, String region, String province, String store, Integer page, Integer limit) throws Exception;
 }
