@@ -89,12 +89,20 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	public ResultUtil getStockByWeb(String sysId, Integer limit) throws Exception {
 		logger.info("------>>>>>>前端传递sysId:{}<<<<<<<-------", sysId);
 		
+		PageRecord<Stock> pageRecord = null;
+		
 		Map<String, Object> queryParam = new HashMap<>(2);
 		queryParam.put("sysId", sysId);
 
 		// 抓取数据
 		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 		List<Stock> stockList = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK, Stock.class);
+		
+		if (stockList.size() == 0) {
+			pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
+			return ResultUtil.success(pageRecord);
+		}
+		
 		logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
 
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
@@ -220,7 +228,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		logger.info("---->>>开始插入库存数据<<<-----");
 		dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
 		
-		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
+		pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 	@Override

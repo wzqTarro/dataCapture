@@ -96,6 +96,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			// 抓取数据
 			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 			saleList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE, Sale.class);
+			
+			if (saleList.size() == 0) {
+				pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
+				return ResultUtil.success(pageRecord);
+			}
+			
 			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 			
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();

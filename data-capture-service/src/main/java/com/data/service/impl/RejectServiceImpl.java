@@ -85,6 +85,12 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if (count == 0) {
 			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 			rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
+			
+			if (rejectList.size() == 0) {
+				pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
+				return ResultUtil.success(pageRecord);
+			}
+			
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
 			Reject  reject = null;

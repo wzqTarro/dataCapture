@@ -135,6 +135,12 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (count == 0) {
 			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 			orderList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER, Order.class);
+			
+			if (orderList.size() == 0) {
+				pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
+				return ResultUtil.success(pageRecord);
+			}
+			
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
 			Order order = null;

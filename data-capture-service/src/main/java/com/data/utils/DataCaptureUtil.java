@@ -43,7 +43,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public <T> List<T> getDataByWeb(String queryDate, TemplateSupply supply, int dataType, Class<T> clazz) throws IOException{		
+	public <T> List<T> getDataByWeb(String queryDate, TemplateSupply supply, String dataType, Class<T> clazz) throws IOException{		
 		String start = null;
 		String end = null;
 		
@@ -66,19 +66,23 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
 		sb.append(supply.getControllerName());
+		sb.append(dataType);
 		sb.append("/?");
 		sb.append("day1=");
 		sb.append(start);
 		sb.append("&day2=");
 		sb.append(end);
-		sb.append("&value=");
-		sb.append(dataType);
+		sb.append("&user=");
+		sb.append(supply.getLoginUserName());
+		sb.append("&pwd=");
+		sb.append(supply.getLoginPassword());
+		sb.append("&venderCode=");
+		sb.append(supply.getCompanyCode());
 		logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
 		String json = restTemplate.getForObject(sb.toString(), String.class);
 		
 		// 测试数据
 		// String json = FileUtils.readFileToString(new File("D:\\sale.txt"));
-		logger.info("抓取数据：" + json.substring(0, 100));
 		// json转List
 		List<T> list = translateData(json, clazz);
 		logger.info("抓取数据数量:" + list.size());
@@ -93,15 +97,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> translateData(String json, Class<T> clazz){		
-		if (StringUtils.isBlank(json) || "[]".equals(json)) {
+		/*if (StringUtils.isBlank(json) || "[]".equals(json)) {
 			logger.info("------>>>>>抓取数据为空<<<<<--------");
 			throw new DataException("505");
-		}
+		}*/
 		List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);		
-		if (CommonUtil.isBlank(list)) {
+		/*if (CommonUtil.isBlank(list)) {
 			logger.info("----->>>>>>抓取数据转换List为空<<<<<<------");
 			throw new DataException("506");
-		}
+		}*/
 		return list;
 	}
 	/**
