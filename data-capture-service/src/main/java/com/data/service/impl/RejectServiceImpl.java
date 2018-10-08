@@ -293,9 +293,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			map.put("startDate", common.getStartDate());	
 			map.put("endDate", common.getEndDate());
 		} else {
-			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
-			map.put("startDate", now);
-			map.put("endDate", now);
+			throw new DataException("534");
 		}
 		if (null != reject) {
 			if (CommonUtil.isNotBlank(reject.getSysId())) {
@@ -306,6 +304,9 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			}
 			if (CommonUtil.isNotBlank(reject.getReceiptCode())) {
 				map.put("receiptCode", reject.getReceiptCode());
+			}
+			if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
+				map.put("rejectDepartmentId", reject.getRejectDepartmentId());
 			}
 		}
 		PageRecord<Reject> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, QueryId.QUERY_REJECT_BY_PARAM, map, page, limit);

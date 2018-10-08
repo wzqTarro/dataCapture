@@ -82,17 +82,12 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			map.put("startDate", common.getStartDate());	
 			map.put("endDate", common.getEndDate());
 		} else {
-			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
-			map.put("startDate", now);
-			map.put("endDate", now);
+			throw new DataException("534");
 		}
 		
 		if (null != order) {
 			if (CommonUtil.isNotBlank(order.getSysId())) {
 				map.put("sysId", order.getSysId());
-			}
-			if(CommonUtil.isNotBlank(order.getSysName())) {
-				map.put("sysName", order.getSysName());
 			}
 			if (CommonUtil.isNotBlank(order.getSimpleBarCode())) {
 				map.put("simpleBarCode", order.getSimpleBarCode());

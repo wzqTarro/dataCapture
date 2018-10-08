@@ -59,16 +59,12 @@ public class OrderController {
 	 * @param page
 	 * @param limit
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/getOrderByCondition", method = RequestMethod.GET)
 	@ApiOperation(value = "分页多条件查询", httpMethod = "GET")
-	public String getOrderByCondition(Order order, CommonDTO common, Integer page, Integer limit) {
-		ResultUtil result = ResultUtil.error();
-		try {
-			result = orderService.getOrderByCondition(common, order, page, limit);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public String getOrderByCondition(Order order, CommonDTO common, Integer page, Integer limit) throws Exception {
+		ResultUtil result = orderService.getOrderByCondition(common, order, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**

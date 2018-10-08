@@ -239,17 +239,15 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			map.put("startDate", common.getStartDate());
 			map.put("endDate", common.getEndDate());
 		} else {
-			String now = DateUtil.format(new Date(), "yyyy-MM-dd");
-			map.put("startDate", now);
-			map.put("endDate", now);
+			throw new DataException("534");
 		}
 		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		logger.info("--------->>>>>>>>sale:" + FastJsonUtil.objectToString(sale) + "<<<<<<<<----------");
 		if (null != sale) {
 			
-			// 门店名称
-			if (StringUtils.isNoneBlank(sale.getStoreName())) {
-				map.put("storeName", sale.getStoreName());
+			// 门店编号
+			if (StringUtils.isNoneBlank(sale.getStoreCode())) {
+				map.put("storeCode", sale.getStoreCode());
 			}
 			 
 			// 区域
@@ -257,14 +255,19 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				map.put("region", sale.getRegion());
 			}
 			
-			// 系列
-			if (StringUtils.isNoneBlank(sale.getSeries())) {
-				map.put("series", sale.getSeries());
+			// 省区
+			if (StringUtils.isNoneBlank(sale.getProvinceArea())) {
+				map.put("provinceArea", sale.getProvinceArea());
 			}
 			
-			// 单品名称
-			if (StringUtils.isNoneBlank(sale.getSimpleName())) {
-				map.put("simpleName", sale.getSimpleName());
+			// 品牌
+			if (StringUtils.isNoneBlank(sale.getBrand())) {
+				map.put("brand", sale.getBrand());
+			}
+			
+			// 单品条码
+			if (StringUtils.isNoneBlank(sale.getSimpleBarCode())) {
+				map.put("simpleBarCode", sale.getSimpleBarCode());
 			}
 			
 			// 系统ID
@@ -272,10 +275,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				map.put("sysId", sale.getSysId());
 			}
 			
-			// 系统名称
-			if (StringUtils.isNoneBlank(sale.getSysName())) {
-				map.put("sysName", sale.getSysName());
-			}
 		}
 		PageRecord<Sale> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, 
 				QueryId.QUERY_SALE_BY_PARAM, map, page, limit);

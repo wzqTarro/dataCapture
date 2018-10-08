@@ -99,6 +99,9 @@
   	<if test="brand != null and brand != ''">
   		AND brand = #{brand}
   	</if>
+  	<if test="provinceArea != null and provinceArea != ''">
+  		AND province_area = #{provinceArea}
+  	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
   		AND create_time &lt;= #{endDate}
   		AND create_time &gt;= #{startDate}

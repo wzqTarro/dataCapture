@@ -238,9 +238,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		logger.info("--------->>>>>>>>stock:" + FastJsonUtil.objectToString(stock) + "<<<<<<<<----------");
 		if (null != stock) {
 			
-			// 门店名称
-			if (StringUtils.isNoneBlank(stock.getStoreName())) {
-				map.put("storeName", stock.getStoreName());
+			// 门店编号
+			if (StringUtils.isNoneBlank(stock.getStockCode())) {
+				map.put("storeCode", stock.getStoreCode());
 			}
 			 
 			// 区域
@@ -248,25 +248,21 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				map.put("region", stock.getRegion());
 			}
 			
-			// 系列
-			if (StringUtils.isNoneBlank(stock.getSeries())) {
-				map.put("series", stock.getSeries());
-			}
-			
-			// 单品名称
-			if (StringUtils.isNoneBlank(stock.getSimpleName())) {
-				map.put("simpleName", stock.getSimpleName());
+			// 品牌
+			if (StringUtils.isNoneBlank(stock.getBrand())) {
+				map.put("brand", stock.getBrand());
 			}
 			
 			// 系统ID
 			if (StringUtils.isNoneBlank(stock.getSysId())) {
 				map.put("sysId", stock.getSysId());
 			}
-						
-			// 系统名称
-			if (StringUtils.isNoneBlank(stock.getSysName())) {
-				map.put("sysName", stock.getSysName());
+			
+			// 省区
+			if (StringUtils.isNoneBlank(stock.getProvinceArea())) {
+				map.put("provinceArea", stock.getProvinceArea());
 			}
+
 		}
 		PageRecord<Stock> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, QueryId.QUERY_STOCK_BY_PARAM, map, page, limit);
 		return ResultUtil.success(pageRecord);

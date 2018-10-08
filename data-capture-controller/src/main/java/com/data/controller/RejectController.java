@@ -59,16 +59,12 @@ public class RejectController {
 	 * @param page
 	 * @param limit
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/getRejectByCondition", method = RequestMethod.GET)
 	@ApiOperation(value = "分页多条件查询退单", httpMethod = "GET")
-	public String getRejectByCondition(Reject reject, CommonDTO common, Integer page, Integer limit) {
-		ResultUtil result = ResultUtil.error();
-		try {
-			result = rejectService.getRejectByParam(common, reject, page, limit);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public String getRejectByCondition(Reject reject, CommonDTO common, Integer page, Integer limit) throws Exception {
+		ResultUtil result = rejectService.getRejectByParam(common, reject, page, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
