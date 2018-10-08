@@ -10,6 +10,9 @@ public enum CodeEnum {
 	/**成功**/
 	RESPONSE_00_CODE("00"),
 	
+	/**认证失败**/
+	RESPONSE_01_CODE("01"),
+	
 	/**失败**/
 	RESPONSE_99_CODE("99"),
 	
