@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.data.constant.CommonValue;
+import com.data.exception.AuthException;
 import com.data.exception.DataException;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
@@ -70,7 +71,7 @@ public class DataInterceptor implements HandlerInterceptor {
 		logger.info("--->>>前台回传的token: {} <<<---", accessToken);
 		
 		if(CommonUtil.isBlank(accessToken)) {
-			throw new DataException("518");
+			throw new AuthException("518");
 		}
 		
 		String elle = accessToken.substring(0, 5).toLowerCase();
@@ -83,7 +84,7 @@ public class DataInterceptor implements HandlerInterceptor {
 				claims = JwtUtil.parseJwt(accessToken, secret);
 			} catch (Exception e) {
 				logger.info("--->>>token解析失败<<<---");
-				throw new DataException("521");
+				throw new AuthException("521");
 			}
 			if(isAuthenticate(accessToken, claims)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
@@ -93,7 +94,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			} else {
 				//认证失败
 				logger.info("--->>>token校验失败<<<---");
-				throw new DataException("521");
+				throw new AuthException("521");
 			}
 		}
 	}
@@ -106,7 +107,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			token = token.substring(5);
 			logger.info("--->>>后台保存的token: {} <<<---", token);
 			if(CommonUtil.isBlank(token)) {
-				throw new DataException("520");
+				throw new AuthException("520");
 			}
 			/**
 			 * TODO

@@ -43,18 +43,27 @@ public class DataBaseException {
         String cause = "Caused by:";
         if ((j = exceptionString.lastIndexOf(cause)) != -1)
             errCause += "；" + exceptionString.substring(j, exceptionString.indexOf(separator, j + 10));
-		logger.info("---->>>>{}<<<<-----", errCause);
+		logger.error("---->>>>{}<<<<-----", errCause);
 		
 		ResultUtil result = new ResultUtil();
+		String errorCode, errorMessage;
 		if(e instanceof DataException) {
-			String errorCode = e.getMessage();
-			String errorMessage = PropertiesUtil.getMessage(errorCode);
-			logger.info("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
+			errorCode = e.getMessage();
+			errorMessage = PropertiesUtil.getMessage(errorCode);
+			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
 			if(CommonUtil.isNotBlank(errorMessage)) {
 				result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
 				result.setMsg(errorMessage);
 			}
 			
+		} else if(e instanceof AuthException) {
+			errorCode = e.getMessage();
+			errorMessage = PropertiesUtil.getMessage(errorCode);
+			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
+			if(CommonUtil.isNotBlank(errorMessage)) {
+				result.setCode(CodeEnum.RESPONSE_01_CODE.getValue());
+				result.setMsg(errorMessage);
+			}
 		} else {
 			result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
 			result.setMsg(e.getMessage());

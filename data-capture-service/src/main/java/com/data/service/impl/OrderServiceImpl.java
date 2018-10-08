@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
@@ -29,6 +31,7 @@ import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.exception.DataException;
 import com.data.service.ICodeDictService;
 import com.data.service.IOrderService;
 import com.data.service.IRedisService;
@@ -64,7 +67,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
-		logger.info("---->>>order:{}<<<------", FastJsonUtil.objectToString(order));
+		logger.info("---->>>订单多条件查询前台返回order:{}<<<------", FastJsonUtil.objectToString(order));
 		Map<String, Object> map = new HashMap<>(8);
 		if (null == common) {
 			common =  new CommonDTO();
@@ -77,11 +80,13 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			map.put("startDate", now);
 			map.put("endDate", now);
 		}
-		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		
 		if (null != order) {
 			if (CommonUtil.isNotBlank(order.getSysId())) {
 				map.put("sysId", order.getSysId());
+			}
+			if(CommonUtil.isNotBlank(order.getSysName())) {
+				map.put("sysName", order.getSysName());
 			}
 			if (CommonUtil.isNotBlank(order.getSimpleBarCode())) {
 				map.put("simpleBarCode", order.getSimpleBarCode());
@@ -99,6 +104,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				map.put("receiptCode", order.getReceiptCode());
 			}
 		}
+		logger.info("--------->>>>>>订单多条件查询参数map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		PageRecord<Order> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, page, limit);
 		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(pageRecord));
 		return ResultUtil.success(pageRecord);
@@ -112,17 +118,20 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		
+		if (CommonUtil.isBlank(sysId)) {
+			throw new DataException("503");
+		}
 		Map<String, Object> queryParam = new HashMap<>(2);
 		queryParam.put("queryDate", queryDate);
 		queryParam.put("sysId", sysId);
 		int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
 		
-		logger.info("------>>>>>>count:{}<<<<<<-------", count);
+		logger.info("------>>>>>>抓取订单数据数量count:{}<<<<<<-------", count);
 		List<Order> orderList = null;
 		
 		if (count == 0) {
-			orderList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.ORDER, Order.class);
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			orderList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER, Order.class);
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
 			Order order = null;
@@ -151,9 +160,9 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			BigDecimal contractPrice = null;
 			for (int i = 0, size = orderList.size(); i < size; i++) {
 				order = orderList.get(i);
-				
+				order.setSysId(sysId);
 				// 系统名称
-				String sysName = order.getSysName();
+				String sysName = supply.getSysName();
 				
 				// 单品编码
 				String simpleCode = order.getSimpleCode();
@@ -170,6 +179,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 					continue;
 				}
+				
+				order.setSysName(supply.getRegion() + sysName);
 				
 				// 单品模板信息
 				TemplateProduct product = null;
