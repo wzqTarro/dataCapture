@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,12 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Autowired
 	private ICodeDictService codeDictService;
 	
+	public static void main(String[] args) {
+		List<String> list = new ArrayList<>();
+		list.add("123");
+		list.add("132");
+		System.err.println(FastJsonUtil.objectToString(list.subList(0, 100)));
+	}
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
@@ -324,11 +331,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		}
 		pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 		return ResultUtil.success(pageRecord);
-	}
-	public static void main(String[] args) {
-		double num = 1000;
-		System.err.println(Math.ceil(1200/num));
-		System.err.println(Math.ceil(12/1000.0));
 	}
 	@Override
 	public void exportOrderExcel(String stockNameStr, CommonDTO common, Order order, OutputStream output) throws Exception {

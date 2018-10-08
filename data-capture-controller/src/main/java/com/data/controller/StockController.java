@@ -2,6 +2,7 @@ package com.data.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -82,9 +83,9 @@ public class StockController {
 	 * @throws IOException 
 	 */
 	@RequestMapping(value = "exportStoreProductExcel", method = RequestMethod.GET)
-	@ApiOperation(value = "缺货日报表-导出门店单品表", httpMethod = "GET")
+	@ApiOperation(value = "导出缺货报表-导出门店单品表", httpMethod = "GET")
 	public void exportStoreProductExcel(String storeName, HttpServletResponse response) throws IOException {
-		String fileName = "缺货表报-门店单品表";
+		String fileName = "缺货报表-门店单品表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -102,7 +103,7 @@ public class StockController {
 	@RequestMapping(value = "exportSysStoreExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "导出缺货报表-系统门店表", httpMethod = "GET")
 	public void exportSysStoreExcel(String sysId, HttpServletResponse response) throws IOException {
-		String fileName = "缺货表报-系统门店表";
+		String fileName = "缺货报表-系统门店表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -121,7 +122,7 @@ public class StockController {
 	@ApiOperation(value = "导出缺货报表-区域门店表", httpMethod = "GET")
 	public void exportRegionStoreExcel(String region, HttpServletResponse response) throws IOException {
 		
-		String fileName = "缺货表报-区域门店表";
+		String fileName = "缺货报表-区域门店表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -140,7 +141,7 @@ public class StockController {
 	@ApiOperation(value = "导出缺货报表-公司一级表", httpMethod = "GET")
 	public void exportMissFirstComExcel(HttpServletResponse response) throws Exception {
 		
-		String fileName = "缺货表报-公司一级表" ;
+		String fileName = "缺货报表-公司一级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -157,7 +158,7 @@ public class StockController {
 	@RequestMapping(value = "exportCompanyExcelByRegion", method = RequestMethod.GET)
 	@ApiOperation(value = "按区域导出公司一级表", httpMethod = "GET")
 	public void exportCompanyExcelByRegion(HttpServletResponse response) throws IOException {
-		String fileName = "库存-按区域公司一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按区域-公司一级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -173,7 +174,7 @@ public class StockController {
 	@RequestMapping(value = "exportRegionExcelByRegion", method = RequestMethod.GET)
 	@ApiOperation(value = "按区域导出区域表一级表", httpMethod = "GET")
 	public void exportCompanyExcelByRegion(String region, HttpServletResponse response) throws IOException {
-		String fileName = "库存-按区域导出区域表一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按区域-区域表一级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -189,7 +190,7 @@ public class StockController {
 	@RequestMapping(value = "exportProvinceAreaExcelByRegion", method = RequestMethod.GET)
 	@ApiOperation(value = "按区域导出区域表二级表", httpMethod = "GET")
 	public void exportProvinceAreaExcelByRegion(String region, HttpServletResponse response) throws IOException {
-		String fileName = "库存-按区域导出区域表二级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按区域-区域表二级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -205,7 +206,7 @@ public class StockController {
 	@RequestMapping(value = "exportStoreExcelByProvinceArea", method = RequestMethod.GET)
 	@ApiOperation(value = "按区域导出区域表三级表", httpMethod = "GET")
 	public void exportStoreExcelByProvinceArea(String provinceArea, HttpServletResponse response) throws IOException {
-		String fileName = "库存-按区域导出区域表三级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按区域-区域表三级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -221,7 +222,7 @@ public class StockController {
 	@RequestMapping(value = "exportCompanyExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出公司一级表", httpMethod = "GET")
 	public void exportCompanyExcelBySys(HttpServletResponse response) throws IOException {
-		String fileName = "库存-按系统公司一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按系统-公司一级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -238,7 +239,7 @@ public class StockController {
 	@RequestMapping(value = "exportRegionExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出区域表一级表", httpMethod = "GET")
 	public void exportRegionExcelBySys(String sysId, HttpServletResponse response) throws Exception {
-		String fileName = "库存-按系统区域表一级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按系统-区域表一级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -256,7 +257,7 @@ public class StockController {
 	@RequestMapping(value = "exportRegionSecondExcelBySys", method = RequestMethod.GET)
 	@ApiOperation(value = "按系统导出区域表二级表", httpMethod = "GET")
 	public void exportRegionSecondExcelBySys(String sysId, String region, HttpServletResponse response) throws IOException {
-		String fileName = "库存-按系统区域表二级表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
+		String fileName = "库存-按系统-区域表二级表" + DateUtil.getCurrentDateStr();
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
@@ -269,7 +270,7 @@ public class StockController {
         try {
         	response.setCharacterEncoding("utf-8");
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
-            response.setHeader("Content-Disposition", "attachment;filename="+ fileName + ".xlsx");
+            response.setHeader("Content-Disposition", "attachment;filename="+ URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
             response.addHeader("Pargam", "no-cache");
             response.addHeader("Cache-Control", "no-cache");
         } catch (Exception ex) {

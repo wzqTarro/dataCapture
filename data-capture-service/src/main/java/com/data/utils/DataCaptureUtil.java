@@ -134,16 +134,23 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 */
 	public <T> void insertData(List<T> dataList, String mapper) {
-		// 插入到数据库
+		double rowNum = 1000;
+		double size = Math.ceil(dataList.size() / rowNum);
+		
+		if (size == 1) {
+			insert(mapper, dataList.subList(0, dataList.size()));
+		} else {
+			insert(mapper, dataList.subList(0, (int)rowNum));
+		}
+		
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		try {
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
-					double rowNum = 1000;
-					double size = Math.ceil(dataList.size() / rowNum);
-					for (int i = 0; i < size; i++) {
+					
+					for (int i = 1; i < size; i++) {
 						if (i == (size-1)) {
 							insert(mapper, dataList.subList(i * (int)rowNum, dataList.size()));
 							break;

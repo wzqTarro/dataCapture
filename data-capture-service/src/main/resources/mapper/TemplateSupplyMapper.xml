@@ -47,7 +47,7 @@
   	INNER JOIN (
   		SELECT id
   		FROM db_template_supply 
-  		WHERE 1=1
+  		WHERE 1=1 AND is_val = 1
   		<include refid="Query_Condition"></include>
   		<if test="pageNum != null and pageSize != null" >
   			LIMIT #{pageNum}, #{pageSize}
@@ -58,7 +58,7 @@
   <select id="selectCountByCondition" parameterType="map" resultType="int">
   	SELECT COUNT(1)
   	FROM db_template_supply
-  	WHERE 1=1
+  	WHERE 1=1 AND is_val = 1
   	<include refid="Query_Condition"></include>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

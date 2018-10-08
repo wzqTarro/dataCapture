@@ -2,6 +2,7 @@ package com.data.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -97,7 +98,7 @@ public class RejectController {
         try {
         	response.setCharacterEncoding("utf-8");
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
-            response.setHeader("Content-Disposition", "attachment;filename="+ fileName + ".xlsx");
+            response.setHeader("Content-Disposition", "attachment;filename="+ URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
             response.addHeader("Pargam", "no-cache");
             response.addHeader("Cache-Control", "no-cache");
         } catch (Exception ex) {

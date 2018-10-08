@@ -348,10 +348,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Map<String, Object> param = new HashMap<>(4);
 		String now = LocalDate.now().toString();
 		param.put("queryDate", now);
-		param.put("storeName", storeName);
 		checkNowStock(param, output);
 		
-		param.clear();
 		param.put("storeName", storeName);
 		param.put("column", " simple_bar_code, simple_name, stock_price, simple_code, stock_num ");
 		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
@@ -554,12 +552,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		// 按系统名称和时间查询库存
 		Map<String, Object> param = new HashMap<>(3);
-		param.put("region", region);
 		param.put("queryDate", queryDate);
 		
 		// 检查当天是否有符合条件的库存
 		checkNowStock(param, output);
 		
+		param.put("region", region);
 		List<StoreStockModel> storeStockModelList = queryListByObject(QueryId.QUERY_STORE_STOCK_MODEL_BY_PARAM, param);
 		
 		// 标题
@@ -697,7 +695,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 生成日期
 		String queryDate = LocalDate.now().toString();
 		param.put("queryDate", queryDate);
-		checkNowStock(null, output);
+		checkNowStock(param, output);
 		
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		XSSFWorkbook wb = new XSSFWorkbook();
@@ -751,8 +749,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		CountDownLatch latch = new CountDownLatch(2);
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		executorService.execute(new createSysMiss(sheet, saleList, excelUtil, latch));
-		executorService.execute(new createRegionMiss(sheet, saleList, excelUtil, latch));
+		try {
+			executorService.execute(new createSysMiss(sheet, saleList, excelUtil, latch));
+			executorService.execute(new createRegionMiss(sheet, saleList, excelUtil, latch));
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
+		}
 		latch.await();
 		wb.write(output);
 		output.flush();
@@ -1229,11 +1233,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 
 		Map<String, Object> param = new HashMap<>(3);
 		param.put("queryDate", queryDate);
+		param.put("sysId", sysId);
 		
 		// 检查当天是否有符合条件的库存
 		checkNowStock(param, output);
-
-		param.put("sysId", sysId);
+		
 		List<RegionStockModel> regionStockList = queryListByObject(QueryId.QUERY_REGION_STOCK_MODEL_BY_PARAM, param);
 
 		// 工作簿名称
@@ -1352,13 +1356,13 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		String queryDate = nowDay.toString();
 
 		Map<String, Object> param = new HashMap<>(4);
-		param.put("sysId", sysId);
-		param.put("region", region);
+		param.put("sysId", sysId);	
 		param.put("queryDate", queryDate);
 		
 		// 检查当天是否有符合条件的库存
 		checkNowStock(param, output);
 
+		param.put("region", region);
 		List<StoreStockModel> storeStockList = queryListByObject(QueryId.QUERY_STORE_STOCK_MODEL_BY_PARAM, param);
 
 		// 工作簿名称
