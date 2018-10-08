@@ -73,7 +73,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
 		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
-		logger.info("---->>>order:{}<<<------", FastJsonUtil.objectToString(order));
+		logger.info("---->>>订单多条件查询前台返回order:{}<<<------", FastJsonUtil.objectToString(order));
 		Map<String, Object> map = new HashMap<>(8);
 		if (null == common) {
 			common =  new CommonDTO();
@@ -86,11 +86,13 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			map.put("startDate", now);
 			map.put("endDate", now);
 		}
-		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		
 		if (null != order) {
 			if (CommonUtil.isNotBlank(order.getSysId())) {
 				map.put("sysId", order.getSysId());
+			}
+			if(CommonUtil.isNotBlank(order.getSysName())) {
+				map.put("sysName", order.getSysName());
 			}
 			if (CommonUtil.isNotBlank(order.getSimpleBarCode())) {
 				map.put("simpleBarCode", order.getSimpleBarCode());
@@ -108,6 +110,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				map.put("receiptCode", order.getReceiptCode());
 			}
 		}
+		logger.info("--------->>>>>>订单多条件查询参数map:{}<<<<<---------", FastJsonUtil.objectToString(map));
 		PageRecord<Order> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, QueryId.QUERY_ORDER_BY_CONDITION, map, page, limit);
 		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(pageRecord));
 		return ResultUtil.success(pageRecord);
@@ -129,7 +132,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		queryParam.put("sysId", sysId);
 		int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
 		
-		logger.info("------>>>>>>count:{}<<<<<<-------", count);
+		logger.info("------>>>>>>抓取订单数据数量count:{}<<<<<<-------", count);
 		List<Order> orderList = null;
 		
 		if (count == 0) {
