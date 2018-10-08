@@ -39,6 +39,7 @@ import com.data.bean.Sale;
 import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
 import com.data.constant.dbSql.DeleteId;
@@ -90,9 +91,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		Map<String, Object> queryParam = new HashMap<>(2);
 		queryParam.put("sysId", sysId);
-		int count = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, queryParam);
-		List<Stock> stockList = null;
-		stockList = dataCaptureUtil.getDataByWeb("1900-01-01", sysId, WebConstant.STOCK, Stock.class);
+
+		// 抓取数据
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+		List<Stock> stockList = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK, Stock.class);
 		logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
 
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
@@ -101,21 +103,19 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		Date now = DateUtil.getSystemDate();
 		for (int i = 0, size = stockList.size(); i < size; i++) {
 			Stock stock = stockList.get(i);
+			stock.setSysId(sysId);
 			stock.setCreateTime(now);
 			// 单品编号
 			String simpleCode = stock.getSimpleCode();
 
 			// 系统名称
-			String sysName = stock.getSysName();
+			String sysName = supply.getSysName();
 
 			// 门店编号
 			String storeCode = stock.getStoreCode();
 
 			// 商品条码
 			String simpleBarCode = stock.getSimpleBarCode();
-
-			// 地区
-			String localName = stock.getLocalName();
 
 			// 标准条码匹配信息
 			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
@@ -125,7 +125,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			}
 			stock.setSimpleBarCode(simpleBarCode);
 
-			sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
+			sysName = supply.getRegion() + sysName;
 			stock.setSysName(sysName);
 
 			// 标准单品信息

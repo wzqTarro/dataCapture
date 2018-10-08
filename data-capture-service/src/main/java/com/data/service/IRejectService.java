@@ -1,5 +1,6 @@
 package com.data.service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ public interface IRejectService {
 	 * @param limit
 	 * @return
 	 */
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit);
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException;
 	/**
 	 * 多条件查询退单数据
 	 * @param common

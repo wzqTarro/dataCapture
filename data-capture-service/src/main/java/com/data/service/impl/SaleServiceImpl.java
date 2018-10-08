@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.data.bean.Sale;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
@@ -33,6 +34,7 @@ import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.exception.DataException;
 import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.ISaleService;
@@ -80,7 +82,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		
+		if (CommonUtil.isBlank(sysId)) {
+			throw new DataException("503");
+		}
 		Map<String, Object> queryParam = new HashMap<>(2);
 		queryParam.put("queryDate", queryDate);
 		queryParam.put("sysId", sysId);
@@ -90,7 +94,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Sale> saleList = null;
 		if (count == 0) {
 			// 抓取数据
-			saleList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.SALE, Sale.class);
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			saleList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE, Sale.class);
 			logger.info("------>>>>>>结束抓取销售数据<<<<<<---------");
 			
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
@@ -106,11 +111,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				// 门店编码
 				String storeCode = sale.getStoreCode();
 				
-				// 地区
-				String localName = sale.getLocalName();
-				
 				// 系统
-				String sysName = sale.getSysName();			
+				String sysName = supply.getSysName();			
 				
 				// 单品条码
 				String simpleBarCode = sale.getSimpleBarCode();
@@ -119,10 +121,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 					continue;
 				}
-				
-				sysName = CommonUtil.isBlank(localName) ? sysName : (localName + sysName);
-				
-				sale.setSysName(sysName);
+
+				sale.setSysName(supply.getRegion() + sysName);
 				
 				sale.setSimpleBarCode(simpleBarCode);
 				

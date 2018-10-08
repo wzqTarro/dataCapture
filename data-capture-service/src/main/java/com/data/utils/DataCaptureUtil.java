@@ -43,12 +43,10 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public <T> List<T> getDataByWeb(String queryDate, String sysId, int dataType, Class<T> clazz) throws IOException{		
+	public <T> List<T> getDataByWeb(String queryDate, TemplateSupply supply, int dataType, Class<T> clazz) throws IOException{		
 		String start = null;
 		String end = null;
-		if (CommonUtil.isBlank(sysId)) {
-			throw new DataException("503");
-		}
+		
 		if (CommonUtil.isNotBlank(queryDate)) {
 			if (!"1900-01-01".equals(queryDate)) {
 				start = queryDate.trim();
@@ -61,11 +59,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			}
 		} else {
 			throw new DataException("524");
-		}
-		
-		Map<String, Object> param = new HashMap<>(1);
-		param.put("sysId", sysId);
-		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, param);
+		}		
 		if (false == supply.getIsVal()) {
 			throw new DataException("504");
 		}
@@ -149,9 +143,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				public void run() {
 					double rowNum = 1000;
 					double size = Math.ceil(dataList.size() / rowNum);
-					logger.info("--->>>>size:{}<<<<----", size);
 					for (int i = 0; i < size; i++) {
-						logger.info("--->>>>i:{}<<<<----", i);
 						if (i == (size-1)) {
 							insert(mapper, dataList.subList(i * (int)rowNum, dataList.size()));
 							break;

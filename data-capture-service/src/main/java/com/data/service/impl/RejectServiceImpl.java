@@ -20,6 +20,7 @@ import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
+import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
@@ -29,6 +30,7 @@ import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
+import com.data.exception.DataException;
 import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.IRejectService;
@@ -62,14 +64,16 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	private ICodeDictService codeDictService;
 
 	@Override
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) {
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
 		
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		
+		if (CommonUtil.isBlank(sysId)) {
+			throw new DataException("503");
+		}
 		Map<String, Object> queryParam = new HashMap<>(2);
 		queryParam.put("queryDate", queryDate);
 		queryParam.put("sysId", sysId);
@@ -79,11 +83,8 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		List<Reject> rejectList = null;
 		
 		if (count == 0) {
-			try {
-				rejectList = dataCaptureUtil.getDataByWeb(queryDate, sysId, WebConstant.REJECT, Reject.class);
-			} catch (IOException e) {
-				return ResultUtil.error(TipsEnum.GRAB_DATA_ERROR.getValue());
-			}
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();
 			Reject  reject = null;
@@ -112,9 +113,9 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			BigDecimal contractPrice = null;
 			for (int i = 0, size = rejectList.size(); i < size; i++) {
 				reject = rejectList.get(i);
-				
+				reject.setSysId(sysId);
 				// 系统名称
-				String sysName = reject.getSysName();
+				String sysName = supply.getSysName();
 				
 				// 单品编码
 				String simpleCode = reject.getSimpleCode();
@@ -131,6 +132,8 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					reject.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
 					continue;
 				}
+
+				reject.setSysName(supply.getRegion() + sysName);
 				
 				// 单品模板信息
 				TemplateProduct product = null;

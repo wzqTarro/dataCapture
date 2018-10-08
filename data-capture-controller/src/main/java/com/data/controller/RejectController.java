@@ -1,5 +1,6 @@
 package com.data.controller;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
@@ -41,11 +42,12 @@ public class RejectController {
 	 * @param page
 	 * @param limit
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "/getRejectByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取退单数据", httpMethod = "GET")
 	public String getRejectByWeb(String queryDate, Integer limit, 
-			@RequestParam(value = "sysId", required = true)String sysId) {
+			@RequestParam(value = "sysId", required = true)String sysId) throws IOException {
 		ResultUtil result = rejectService.getRejectByWeb(queryDate, sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}
