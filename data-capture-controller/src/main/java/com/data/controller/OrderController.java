@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.Order;
 import com.data.dto.CommonDTO;
+import com.data.model.OrderModel;
 import com.data.service.IOrderService;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
@@ -28,7 +30,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/order")
 @Api(tags = {"订单数据接口"})
-//@CrossOrigin(origins="*", maxAge=3600)
+@CrossOrigin(origins="*", maxAge=3600)
 public class OrderController {
 	
 	private static Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -109,7 +111,7 @@ public class OrderController {
      * @throws Exception 
      */
     @RequestMapping(value = "/queryOrderAlarmList", method = RequestMethod.GET)
-    public String queryOrderAlarmList(Order order, Integer page, Integer limit) throws Exception {
+    public String queryOrderAlarmList(OrderModel order, Integer page, Integer limit) throws Exception {
     	ResultUtil result = orderService.queryOrderAlarmList(order, page, limit);
     	return FastJsonUtil.objectToString(result);
     }
@@ -121,7 +123,7 @@ public class OrderController {
      * @throws Exception 
      */
     @RequestMapping(value = "/orderAlarmListExcel", method = RequestMethod.GET)
-    public void orderAlarmListExcel(Order order, HttpServletResponse response) throws Exception {
+    public void orderAlarmListExcel(OrderModel order, HttpServletResponse response) throws Exception {
     	orderService.orderAlarmListExcel(order, response);
     }
 }
