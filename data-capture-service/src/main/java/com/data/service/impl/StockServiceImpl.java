@@ -87,140 +87,165 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	
 	@Override
 	public ResultUtil getStockByWeb(String sysId, Integer limit) throws Exception {
+		logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
 		logger.info("------>>>>>>前端传递sysId:{}<<<<<<<-------", sysId);
 		
-		Map<String, Object> queryParam = new HashMap<>(2);
-		queryParam.put("sysId", sysId);
-
-		// 抓取数据
-		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-		List<Stock> stockList = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK, Stock.class);
-		logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
-
-		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
-		List<TemplateProduct> productList = redisService.queryTemplateProductList();
+		PageRecord<Stock> pageRecord = null;
 		
-		Date now = DateUtil.getSystemDate();
-		for (int i = 0, size = stockList.size(); i < size; i++) {
-			Stock stock = stockList.get(i);
-			stock.setSysId(sysId);
-			stock.setCreateTime(now);
-			// 单品编号
-			String simpleCode = stock.getSimpleCode();
-
-			// 系统名称
-			String sysName = supply.getSysName();
-
-			// 门店编号
-			String storeCode = stock.getStoreCode();
-
-			// 商品条码
-			String simpleBarCode = stock.getSimpleBarCode();
-
-			// 标准条码匹配信息
-			simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-			if (CommonUtil.isBlank(simpleBarCode)) {
-				stock.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-				continue;
-			}
-			stock.setSimpleBarCode(simpleBarCode);
-
-			sysName = supply.getRegion() + sysName;
-			stock.setSysName(sysName);
-
-			// 标准单品信息
-			TemplateProduct product = null;
-
-			String tempSysId = null;
-			String tempSimpleBarCode = null;
-			for (int j = 0, len = productList.size(); j < len; j++) {
-				product = productList.get(j);
-				tempSysId = product.getSysId();
-				tempSimpleBarCode = product.getSimpleBarCode();
-				if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
-					break;
+		// 同步
+		synchronized(sysId) {
+			logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
+			Map<String, Object> queryParam = new HashMap<>(2);
+			queryParam.put("sysId", sysId);
+			
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			List<Stock> stockList = null;
+			
+			boolean flag = true;
+			
+			while (flag) {
+				try {
+					// 抓取数据
+					stockList = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK, Stock.class);
+					if (stockList != null) {
+						flag = false;
+						logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
+					}
+				} catch (Exception e) {
+					flag = true;
 				}
-				product = null;
 			}
-
-			TemplateStore store = null;
-			String tempStoreCode = null;
-			for (int j = 0, len = storeList.size(); j < len; j++) {
-				store = storeList.get(j);
-				tempSysId = store.getSysId();
-				tempStoreCode = store.getStoreCode();
-				if (sysId.equals(tempSysId) && storeCode.equals(tempStoreCode)) {
-					break;
+			
+			if (stockList.size() == 0) {
+				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
+				return ResultUtil.success(pageRecord);
+			}
+	
+			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
+			List<TemplateProduct> productList = redisService.queryTemplateProductList();
+			
+			Date now = DateUtil.getSystemDate();
+			for (int i = 0, size = stockList.size(); i < size; i++) {
+				Stock stock = stockList.get(i);
+				stock.setSysId(sysId);
+				stock.setCreateTime(now);
+				// 单品编号
+				String simpleCode = stock.getSimpleCode();
+	
+				// 系统名称
+				String sysName = supply.getSysName();
+	
+				// 门店编号
+				String storeCode = stock.getStoreCode();
+	
+				// 商品条码
+				String simpleBarCode = stock.getSimpleBarCode();
+	
+				// 标准条码匹配信息
+				simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+				if (CommonUtil.isBlank(simpleBarCode)) {
+					stock.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+					continue;
 				}
-				store = null;
+				stock.setSimpleBarCode(simpleBarCode);
+	
+				sysName = supply.getRegion() + sysName;
+				stock.setSysName(sysName);
+	
+				// 标准单品信息
+				TemplateProduct product = null;
+	
+				String tempSysId = null;
+				String tempSimpleBarCode = null;
+				for (int j = 0, len = productList.size(); j < len; j++) {
+					product = productList.get(j);
+					tempSysId = product.getSysId();
+					tempSimpleBarCode = product.getSimpleBarCode();
+					if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
+						break;
+					}
+					product = null;
+				}
+	
+				TemplateStore store = null;
+				String tempStoreCode = null;
+				for (int j = 0, len = storeList.size(); j < len; j++) {
+					store = storeList.get(j);
+					tempSysId = store.getSysId();
+					tempStoreCode = store.getStoreCode();
+					if (sysId.equals(tempSysId) && storeCode.equals(tempStoreCode)) {
+						break;
+					}
+					store = null;
+				}
+	
+				// 门店信息为空
+				if (CommonUtil.isBlank(store)) {
+					stock.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+				} else {
+					// 大区
+					stock.setRegion(store.getRegion());
+	
+					// 省区
+					stock.setProvinceArea(store.getProvinceArea());
+	
+					// 门店名称
+					stock.setStoreName(store.getStandardStoreName());
+	
+					// 归属
+					stock.setAscription(store.getAscription());
+	
+					// 业绩归属
+					stock.setAscriptionSole(store.getAscriptionSole());
+				}
+	
+				// 单品信息为空
+				if (CommonUtil.isBlank(product)) {
+					stock.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+					continue;
+				} else {
+					// 单品名称
+					stock.setSimpleName(product.getStandardName());
+	
+					// 品牌
+					stock.setBrand(product.getBrand());
+	
+					// 系列
+					stock.setSeries(product.getSeries());
+	
+					// 材质
+					stock.setMaterial(product.getMaterial());
+	
+					// 片数
+					stock.setPiecesNum(product.getPiecesNum());
+	
+					// 日夜
+					stock.setDayNight(product.getFunc());
+	
+					// 货号
+					stock.setStockNo(product.getStockNo());
+	
+					// 箱规
+					stock.setBoxStandard(product.getBoxStandard());
+	
+					// 库存编号
+					stock.setStockCode(product.getStockCode());
+	
+					// 类别
+					stock.setClassify(product.getClassify());
+	
+					stock.setTaxCostPrice(stock.getStockPrice() / stock.getStockNum());
+				}
 			}
-
-			// 门店信息为空
-			if (CommonUtil.isBlank(store)) {
-				stock.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
-			} else {
-				// 大区
-				stock.setRegion(store.getRegion());
-
-				// 省区
-				stock.setProvinceArea(store.getProvinceArea());
-
-				// 门店名称
-				stock.setStoreName(store.getStandardStoreName());
-
-				// 归属
-				stock.setAscription(store.getAscription());
-
-				// 业绩归属
-				stock.setAscriptionSole(store.getAscriptionSole());
-			}
-
-			// 单品信息为空
-			if (CommonUtil.isBlank(product)) {
-				stock.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
-				continue;
-			} else {
-				// 单品名称
-				stock.setSimpleName(product.getStandardName());
-
-				// 品牌
-				stock.setBrand(product.getBrand());
-
-				// 系列
-				stock.setSeries(product.getSeries());
-
-				// 材质
-				stock.setMaterial(product.getMaterial());
-
-				// 片数
-				stock.setPiecesNum(product.getPiecesNum());
-
-				// 日夜
-				stock.setDayNight(product.getFunc());
-
-				// 货号
-				stock.setStockNo(product.getStockNo());
-
-				// 箱规
-				stock.setBoxStandard(product.getBoxStandard());
-
-				// 库存编号
-				stock.setStockCode(product.getStockCode());
-
-				// 类别
-				stock.setClassify(product.getClassify());
-
-				stock.setTaxCostPrice(stock.getStockPrice() / stock.getStockNum());
-			}
+			
+			logger.info("---->>>开始删除库存数据<<<------");
+			delete(DeleteId.DELETE_STOCK_BY_SYS_ID, sysId);
+			
+			logger.info("---->>>开始插入库存数据<<<-----");
+			dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
+			
+			pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		}
-		
-		logger.info("---->>>开始删除库存数据<<<------");
-		delete(DeleteId.DELETE_STOCK_BY_SYS_ID, sysId);
-		
-		logger.info("---->>>开始插入库存数据<<<-----");
-		dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
-		
-		PageRecord<Stock> pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 	@Override
@@ -230,9 +255,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		logger.info("--------->>>>>>>>stock:" + FastJsonUtil.objectToString(stock) + "<<<<<<<<----------");
 		if (null != stock) {
 			
-			// 门店名称
-			if (StringUtils.isNoneBlank(stock.getStoreName())) {
-				map.put("storeName", stock.getStoreName());
+			// 门店编号
+			if (StringUtils.isNoneBlank(stock.getStockCode())) {
+				map.put("storeCode", stock.getStoreCode());
 			}
 			 
 			// 区域
@@ -240,25 +265,21 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				map.put("region", stock.getRegion());
 			}
 			
-			// 系列
-			if (StringUtils.isNoneBlank(stock.getSeries())) {
-				map.put("series", stock.getSeries());
-			}
-			
-			// 单品名称
-			if (StringUtils.isNoneBlank(stock.getSimpleName())) {
-				map.put("simpleName", stock.getSimpleName());
+			// 品牌
+			if (StringUtils.isNoneBlank(stock.getBrand())) {
+				map.put("brand", stock.getBrand());
 			}
 			
 			// 系统ID
 			if (StringUtils.isNoneBlank(stock.getSysId())) {
 				map.put("sysId", stock.getSysId());
 			}
-						
-			// 系统名称
-			if (StringUtils.isNoneBlank(stock.getSysName())) {
-				map.put("sysName", stock.getSysName());
+			
+			// 省区
+			if (StringUtils.isNoneBlank(stock.getProvinceArea())) {
+				map.put("provinceArea", stock.getProvinceArea());
 			}
+
 		}
 		PageRecord<Stock> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, QueryId.QUERY_STOCK_BY_PARAM, map, page, limit);
 		return ResultUtil.success(pageRecord);
@@ -1053,6 +1074,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 自选导出excel表查询字段
 		Map<String, Object> param = exportUtil.joinParam(null, null, column, stock.getSysId());
 		
+		// 系统编号
+		if (CommonUtil.isNotBlank(stock.getSysId())) {
+			param.put("sysId", stock.getSysId());
+		}
+		
 		// 门店编号
 		if (CommonUtil.isNotBlank(stock.getStoreCode())) {
 			param.put("storeCode", stock.getStoreCode());
@@ -1066,6 +1092,16 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 单品条码
 		if (CommonUtil.isNotBlank(stock.getSimpleBarCode())) {
 			param.put("simpleBarCode", stock.getSimpleBarCode());
+		}
+		
+		// 大区
+		if (CommonUtil.isNotBlank(stock.getRegion())) {
+			param.put("region", stock.getRegion());
+		}
+				
+		// 省区
+		if (CommonUtil.isNotBlank(stock.getProvinceArea())) {
+			param.put("provinceArea", stock.getProvinceArea());
 		}
 		List<Stock> dataList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 
