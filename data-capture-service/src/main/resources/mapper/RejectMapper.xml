@@ -55,6 +55,9 @@
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
   	</if>
+  	<if test="simpleBarCode != null and simpleBarCode != ''">
+  		AND simple_bar_code = #{simpleBarCode}
+  	</if>
   	<if test="rejectDepartmentId != null and rejectDepartmentId != ''">
   		AND reject_department_id = #{rejectDepartmentId}
   	</if>

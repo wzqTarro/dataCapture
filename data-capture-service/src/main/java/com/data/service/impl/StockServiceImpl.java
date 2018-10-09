@@ -46,6 +46,7 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.SaleEnum;
+import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
 import com.data.model.ProvinceAreaStockModel;
@@ -1063,7 +1064,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		
 		
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
-		Map<String, Object> map = exportUtil.joinColumn(SaleEnum.class, header);
+		Map<String, Object> map = exportUtil.joinColumn(StockEnum.class, header);
 		
 		// 调用方法名
 		String[] methodNameArray = (String[]) map.get("methodNameArray");
@@ -1105,7 +1106,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		}
 		List<Stock> dataList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 
-		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		excelUtil.exportCustom2007("库存信息", header, methodNameArray, dataList, output);
 	}
 

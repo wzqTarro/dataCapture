@@ -31,6 +31,7 @@ import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
+import com.data.model.RejectModel;
 import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.IRejectService;
@@ -331,7 +332,6 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			}
 		}
 		PageRecord<Reject> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, QueryId.QUERY_REJECT_BY_PARAM, map, page, limit);
-		logger.info("--->>>订单查询结果分页: {}<<<---", FastJsonUtil.objectToString(pageRecord));
 		return ResultUtil.success(pageRecord);
 	}
 
@@ -429,7 +429,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception {
+	public void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(reject);
 		List<Map<String, Object>> rejectReportList = queryListByObject(QueryId.QUERY_REJECT_ALARM_LIST_FOR_REPORT, params);
 		for(Map<String, Object> map : rejectReportList) {
