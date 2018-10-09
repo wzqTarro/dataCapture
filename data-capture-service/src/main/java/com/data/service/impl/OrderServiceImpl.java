@@ -375,22 +375,22 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column, order.getSysId());
 		
 		if (CommonUtil.isNotBlank(order.getSysId())) {
-			map.put("sysId", order.getSysId());
+			param.put("sysId", order.getSysId());
 		}
 		if (CommonUtil.isNotBlank(order.getSimpleBarCode())) {
-			map.put("simpleBarCode", order.getSimpleBarCode());
+			param.put("simpleBarCode", order.getSimpleBarCode());
 		}
 		if (CommonUtil.isNotBlank(order.getStoreCode())) {
-			map.put("storeCode", order.getStockCode());
+			param.put("storeCode", order.getStockCode());
 		}
 		if (CommonUtil.isNotBlank(order.getRegion())) {
-			map.put("region", order.getRegion());
+			param.put("region", order.getRegion());
 		}
 		if (CommonUtil.isNotBlank(order.getProvinceArea())) {
-			map.put("provinceArea", order.getProvinceArea());
+			param.put("provinceArea", order.getProvinceArea());
 		}
 		if (CommonUtil.isNotBlank(order.getReceiptCode())) {
-			map.put("receiptCode", order.getReceiptCode());
+			param.put("receiptCode", order.getReceiptCode());
 		}
 		List<Order> dataList = queryListByObject(QueryId.QUERY_ORDER_BY_ANY_COLUMN, param);
 		

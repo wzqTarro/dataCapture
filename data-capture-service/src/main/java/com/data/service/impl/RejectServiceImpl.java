@@ -356,16 +356,16 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				reject.getSysId());
 
 		if (CommonUtil.isNotBlank(reject.getSysId())) {
-			map.put("sysId", reject.getSysId());
+			param.put("sysId", reject.getSysId());
 		}
 		if (CommonUtil.isNotBlank(reject.getSimpleBarCode())) {
-			map.put("simpleBarCode", reject.getSimpleBarCode());
+			param.put("simpleBarCode", reject.getSimpleBarCode());
 		}
 		if (CommonUtil.isNotBlank(reject.getReceiptCode())) {
-			map.put("receiptCode", reject.getReceiptCode());
+			param.put("receiptCode", reject.getReceiptCode());
 		}
 		if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
-			map.put("rejectDepartmentId", reject.getRejectDepartmentId());
+			param.put("rejectDepartmentId", reject.getRejectDepartmentId());
 		}
 		List<Reject> dataList = queryListByObject(QueryId.QUERY_REJECT_BY_ANY_COLUMN, param);
 

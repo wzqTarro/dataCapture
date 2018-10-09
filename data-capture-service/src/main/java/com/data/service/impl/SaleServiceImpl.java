@@ -473,34 +473,34 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 		// 门店编号
 		if (StringUtils.isNoneBlank(sale.getStoreCode())) {
-			map.put("storeCode", sale.getStoreCode());
+			param.put("storeCode", sale.getStoreCode());
 		}
 
 		// 区域
 		if (StringUtils.isNoneBlank(sale.getRegion())) {
-			map.put("region", sale.getRegion());
+			param.put("region", sale.getRegion());
 		}
 
 		// 省区
 		if (StringUtils.isNoneBlank(sale.getProvinceArea())) {
-			map.put("provinceArea", sale.getProvinceArea());
+			param.put("provinceArea", sale.getProvinceArea());
 		}
 
 		// 品牌
 		if (StringUtils.isNoneBlank(sale.getBrand())) {
-			map.put("brand", sale.getBrand());
+			param.put("brand", sale.getBrand());
 		}
 
 		// 单品条码
 		if (StringUtils.isNoneBlank(sale.getSimpleBarCode())) {
-			map.put("simpleBarCode", sale.getSimpleBarCode());
+			param.put("simpleBarCode", sale.getSimpleBarCode());
 		}
 
 		// 系统ID
 		if (StringUtils.isNoneBlank(sale.getSysId())) {
-			map.put("sysId", sale.getSysId());
+			param.put("sysId", sale.getSysId());
 		}
-
+		logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
 		List<Sale> dataList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 
 		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
