@@ -94,7 +94,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				map.put("simpleBarCode", order.getSimpleBarCode());
 			}
 			if (CommonUtil.isNotBlank(order.getStoreCode())) {
-				map.put("storeCode", order.getStockCode());
+				map.put("storeCode", order.getStoreCode());
 			}
 			if (CommonUtil.isNotBlank(order.getRegion())) {
 				map.put("region", order.getRegion());

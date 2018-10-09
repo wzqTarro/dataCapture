@@ -305,7 +305,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 
 	@Override
 	public ResultUtil getRejectByParam(CommonDTO common, Reject reject, Integer page, Integer limit) throws Exception {
-		logger.info("--->>>订单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
+		logger.info("--->>>退单查询参数common: {}<<<---", FastJsonUtil.objectToString(common));
 		logger.info("---->>>reject:{}<<<------", FastJsonUtil.objectToString(reject));
 		Map<String, Object> map = new HashMap<>(8);
 		if (null == common) {
