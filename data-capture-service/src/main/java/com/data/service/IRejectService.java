@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
+import com.data.model.RejectModel;
 import com.data.utils.ResultUtil;
 
 public interface IRejectService {
@@ -45,12 +46,12 @@ public interface IRejectService {
 	 * @param limit
 	 * @return
 	 */
-	ResultUtil queryRejectAlarmList(Reject reject, Integer page, Integer limit) throws Exception;
+	ResultUtil queryRejectAlarmList(RejectModel reject, Integer page, Integer limit) throws Exception;
 	
 	/**
 	 * 退单报表导出
 	 * @param reject
 	 * @param response
 	 */
-	void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception;
+	void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception;
 }

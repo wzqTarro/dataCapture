@@ -3,12 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.alibaba.fastjson.annotation.JSONField;
+public class Stock implements Serializable {
 
-public class Stock implements Serializable{
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -5318128956742486961L;
 
 	private Integer id;

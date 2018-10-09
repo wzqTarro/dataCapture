@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
+import com.data.model.RejectModel;
 import com.data.service.IRejectService;
 import com.data.utils.DateUtil;
 import com.data.utils.FastJsonUtil;
@@ -28,7 +30,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/reject")
 @Api(tags = {"退单数据接口"})
-//@CrossOrigin(origins="*", maxAge=3600)
+@CrossOrigin(origins="*", maxAge=3600)
 public class RejectController {
 
 	private static Logger logger = LoggerFactory.getLogger(RejectController.class);
@@ -110,7 +112,7 @@ public class RejectController {
      * @return
      */
     @RequestMapping(value = "/queryRejectAlarmList", method = RequestMethod.GET)
-    public String queryRejectAlarmList(Reject reject, Integer page, Integer limit) throws Exception {
+    public String queryRejectAlarmList(RejectModel reject, Integer page, Integer limit) throws Exception {
     	ResultUtil result = rejectService.queryRejectAlarmList(reject, page, limit);
     	return FastJsonUtil.objectToString(result);
     }
@@ -122,7 +124,7 @@ public class RejectController {
      * @throws Exception 
      */
     @RequestMapping(value = "/rejectAlarmListExcel", method = RequestMethod.GET)
-    public void rejectAlarmListExcel(Reject reject, HttpServletResponse response) throws Exception {
+    public void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception {
     	rejectService.rejectAlarmListExcel(reject, response);
     }
 }

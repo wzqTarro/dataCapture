@@ -32,6 +32,7 @@ import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
+import com.data.model.OrderModel;
 import com.data.service.ICodeDictService;
 import com.data.service.IOrderService;
 import com.data.service.IRedisService;
@@ -398,7 +399,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil queryOrderAlarmList(Order order, Integer page, Integer limit) throws Exception {
+	public ResultUtil queryOrderAlarmList(OrderModel order, Integer page, Integer limit) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(order);
 		logger.info("--->>>订单报警列表查询参数: {}<<<---", FastJsonUtil.objectToString(params));
 		PageRecord<Order> orderPageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_ALARM_LIST,
@@ -406,7 +407,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return ResultUtil.success(orderPageRecord);
 	}
 	
-	private Map<String, Object> buildQueryParamsMap(Order order) {
+	private Map<String, Object> buildQueryParamsMap(OrderModel order) {
 		Map<String, Object> params = new HashMap<>(10);
 		String sysId = order.getSysId();
 		if(CommonUtil.isNotBlank(sysId)) {
@@ -453,7 +454,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void orderAlarmListExcel(Order order, HttpServletResponse response) throws Exception {
+	public void orderAlarmListExcel(OrderModel order, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(order);
 		List<Map<String, Object>> orderReportList = queryListByObject(QueryId.QUERY_ORDER_ALARM_LIST_FOR_REPORT, params);
 		for(Map<String, Object> map : orderReportList) {
