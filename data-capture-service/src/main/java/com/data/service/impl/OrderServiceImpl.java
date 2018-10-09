@@ -373,14 +373,23 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		// 自选导出excel表查询字段
 		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column, order.getSysId());
 		
-		// 门店编号
-		if (CommonUtil.isNotBlank(order.getStoreCode())) {
-			param.put("storeCode", order.getStoreCode());
+		if (CommonUtil.isNotBlank(order.getSysId())) {
+			map.put("sysId", order.getSysId());
 		}
-		
-		// 单据号码
+		if (CommonUtil.isNotBlank(order.getSimpleBarCode())) {
+			map.put("simpleBarCode", order.getSimpleBarCode());
+		}
+		if (CommonUtil.isNotBlank(order.getStoreCode())) {
+			map.put("storeCode", order.getStockCode());
+		}
+		if (CommonUtil.isNotBlank(order.getRegion())) {
+			map.put("region", order.getRegion());
+		}
+		if (CommonUtil.isNotBlank(order.getProvinceArea())) {
+			map.put("provinceArea", order.getProvinceArea());
+		}
 		if (CommonUtil.isNotBlank(order.getReceiptCode())) {
-			param.put("receiptCode", order.getReceiptCode());
+			map.put("receiptCode", order.getReceiptCode());
 		}
 		List<Order> dataList = queryListByObject(QueryId.QUERY_ORDER_BY_ANY_COLUMN, param);
 		

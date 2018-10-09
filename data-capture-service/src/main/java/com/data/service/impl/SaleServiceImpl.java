@@ -470,21 +470,37 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		// 自选导出excel表查询字段
 		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column,
 				sale.getSysId());
-		
+
 		// 门店编号
-		if (CommonUtil.isNotBlank(sale.getStoreCode())) {
-			param.put("storeCode", sale.getStoreCode());
+		if (StringUtils.isNoneBlank(sale.getStoreCode())) {
+			map.put("storeCode", sale.getStoreCode());
+		}
+
+		// 区域
+		if (StringUtils.isNoneBlank(sale.getRegion())) {
+			map.put("region", sale.getRegion());
+		}
+
+		// 省区
+		if (StringUtils.isNoneBlank(sale.getProvinceArea())) {
+			map.put("provinceArea", sale.getProvinceArea());
 		}
 
 		// 品牌
-		if (CommonUtil.isNotBlank(sale.getBrand())) {
-			param.put("brand", sale.getBrand());
+		if (StringUtils.isNoneBlank(sale.getBrand())) {
+			map.put("brand", sale.getBrand());
 		}
-		
+
 		// 单品条码
-		if (CommonUtil.isNotBlank(sale.getSimpleBarCode())) {
-			param.put("simpleBarCode", sale.getSimpleBarCode());
+		if (StringUtils.isNoneBlank(sale.getSimpleBarCode())) {
+			map.put("simpleBarCode", sale.getSimpleBarCode());
 		}
+
+		// 系统ID
+		if (StringUtils.isNoneBlank(sale.getSysId())) {
+			map.put("sysId", sale.getSysId());
+		}
+
 		List<Sale> dataList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 
 		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();

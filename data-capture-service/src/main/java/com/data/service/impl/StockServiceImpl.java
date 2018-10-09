@@ -1074,6 +1074,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 自选导出excel表查询字段
 		Map<String, Object> param = exportUtil.joinParam(null, null, column, stock.getSysId());
 		
+		// 系统编号
+		if (CommonUtil.isNotBlank(stock.getSysId())) {
+			param.put("sysId", stock.getSysId());
+		}
+		
 		// 门店编号
 		if (CommonUtil.isNotBlank(stock.getStoreCode())) {
 			param.put("storeCode", stock.getStoreCode());
@@ -1087,6 +1092,16 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		// 单品条码
 		if (CommonUtil.isNotBlank(stock.getSimpleBarCode())) {
 			param.put("simpleBarCode", stock.getSimpleBarCode());
+		}
+		
+		// 大区
+		if (CommonUtil.isNotBlank(stock.getRegion())) {
+			param.put("region", stock.getRegion());
+		}
+				
+		// 省区
+		if (CommonUtil.isNotBlank(stock.getProvinceArea())) {
+			param.put("provinceArea", stock.getProvinceArea());
 		}
 		List<Stock> dataList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 

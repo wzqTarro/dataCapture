@@ -355,14 +355,17 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		Map<String, Object> param = exportUtil.joinParam(common.getStartDate(), common.getEndDate(), column,
 				reject.getSysId());
 
-		// 门店编号
-		if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
-			param.put("rejectDepartmentId", reject.getRejectDepartmentId());
+		if (CommonUtil.isNotBlank(reject.getSysId())) {
+			map.put("sysId", reject.getSysId());
 		}
-
-		// 单据号码
+		if (CommonUtil.isNotBlank(reject.getSimpleBarCode())) {
+			map.put("simpleBarCode", reject.getSimpleBarCode());
+		}
 		if (CommonUtil.isNotBlank(reject.getReceiptCode())) {
-			param.put("receiptCode", reject.getReceiptCode());
+			map.put("receiptCode", reject.getReceiptCode());
+		}
+		if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
+			map.put("rejectDepartmentId", reject.getRejectDepartmentId());
 		}
 		List<Reject> dataList = queryListByObject(QueryId.QUERY_REJECT_BY_ANY_COLUMN, param);
 
