@@ -77,7 +77,7 @@
   		AND deliver_start_date &gt;= #{startDate}
   	</if>
   	<if test="queryDate != null and queryDate != ''">
-  		AND deliver_start_date = #{queryDate}
+  		AND deliver_start_date = '${queryDate}'
   	</if>
   </sql>
   

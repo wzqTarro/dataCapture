@@ -67,217 +67,238 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
-		
+		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
 		if (CommonUtil.isBlank(sysId)) {
 			throw new DataException("503");
 		}
-		Map<String, Object> queryParam = new HashMap<>(2);
-		queryParam.put("queryDate", queryDate);
-		queryParam.put("sysId", sysId);
-		int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
 		
-		logger.info("------>>>>>>count:{}<<<<<<-------", count);
-		List<Reject> rejectList = null;
-		
-		if (count == 0) {
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-			rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
+		// 同步
+		synchronized (sysId) {
+			logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
+			Map<String, Object> queryParam = new HashMap<>(2);
+			queryParam.put("queryDate", queryDate);
+			queryParam.put("sysId", sysId);
+			int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
 			
-			if (rejectList.size() == 0) {
-				pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
-				return ResultUtil.success(pageRecord);
-			}
+			logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
+			List<Reject> rejectList = null;
 			
-			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
-			List<TemplateProduct> productList = redisService.queryTemplateProductList();
-			Reject  reject = null;
-			
-			// 查询促销明细
-			Map<String, Object> param = new HashMap<>(2);
-			param.put("sysId", sysId);
-			param.put("queryDate", queryDate);
-			long start = new Date().getTime();
-			logger.info("----->>>>>>>查询促销:{}<<<<<<-------", start);
-			List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
-			logger.info("----->>>>>>>查询结束:{}<<<<<<--------", new Date().getTime()-start);
-			
-			PromotionDetail promotionDetail = null;
-			
-			// 入库方式
-			String supplyOrderType = null;
-			
-			// 含税进价
-			BigDecimal rejectPrice = null;
-			
-			// 促销供价
-			BigDecimal supplyPrice = null;
-			
-			// 含税合同供价
-			BigDecimal contractPrice = null;
-			for (int i = 0, size = rejectList.size(); i < size; i++) {
-				reject = rejectList.get(i);
-				reject.setSysId(sysId);
-				// 系统名称
-				String sysName = supply.getSysName();
+			if (count == 0) {
+				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+				rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
 				
-				// 单品编码
-				String simpleCode = reject.getSimpleCode();
+				boolean flag = true;
 				
-				// 单品条码
-				String simpleBarCode = reject.getSimpleBarCode();
-				
-				// 门店编码
-				String storeCode = reject.getRejectDepartmentId();
-				
-				// 条码信息
-				simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-				if (CommonUtil.isBlank(simpleBarCode)) {
-					reject.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-					continue;
-				}
-
-				reject.setSysName(supply.getRegion() + sysName);
-				
-				// 单品模板信息
-				TemplateProduct product = null;
-				String tempSysId = null;
-				String tempSimpleBarCode = null;
-				for (int j = 0, len = productList.size(); j < len; j++) {
-					product = productList.get(j);
-					tempSysId = product.getSysId();
-					tempSimpleBarCode = product.getSimpleBarCode();
-					if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
-						break;
+				while (flag) {
+					try {
+						rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
+						if (rejectList != null) {
+							flag = false;
+							logger.info("----->>>>抓取退单数据结束<<<<------");
+						}
+					} catch (Exception e) {
+						flag = true;
 					}
-					product = null;
-				}
-				if (CommonUtil.isBlank(product)) {
-					reject.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
-					continue;
 				}
 				
-				// 单品条码
-				reject.setSimpleBarCode(simpleBarCode);
+				if (rejectList.size() == 0) {
+					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
+					return ResultUtil.success(pageRecord);
+				}
 				
-				// 单品名称
-				reject.setSimpleName(product.getStandardName());
-					
-				// 库存编号
-				reject.setStockCode(product.getStockCode());
+				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
+				List<TemplateProduct> productList = redisService.queryTemplateProductList();
+				Reject  reject = null;
+				
+				// 查询促销明细
+				Map<String, Object> param = new HashMap<>(2);
+				param.put("sysId", sysId);
+				param.put("queryDate", queryDate);
+				long start = new Date().getTime();
+				logger.info("----->>>>>>>查询促销:{}<<<<<<-------", start);
+				List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
+				logger.info("----->>>>>>>查询结束:{}<<<<<<--------", new Date().getTime()-start);
+				
+				PromotionDetail promotionDetail = null;
+				
+				// 入库方式
+				String supplyOrderType = null;
+				
+				// 含税进价
+				BigDecimal rejectPrice = null;
+				
+				// 促销供价
+				BigDecimal supplyPrice = null;
 				
 				// 含税合同供价
-				contractPrice = product.getIncludeTaxPrice();
-				reject.setContractPrice(contractPrice);
-				
-				// 退货价格
-				rejectPrice = reject.getRejectPrice();
-				
-				int j = 0;
-				int len = 0;
-				for (j = 0, len = promotionList.size(); j < len; j++) {
-					promotionDetail = promotionList.get(j);
-					if (simpleBarCode.equals(promotionDetail.getProductCode())) {
-						// 促销供价开始、结束时间
-						reject.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
-						reject.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
-						
-						// 供价方式
-						supplyOrderType = promotionDetail.getSupplyOrderType();
-						
-						if ("特供价入库".equals(supplyOrderType)) {				
-							
-							// 促销供价
-							supplyPrice = promotionDetail.getSupplyPrice();
-							reject.setDiscountPrice(supplyPrice);
-							
-							// 促销供价差异
-							reject.setDiffPriceDiscount(rejectPrice.subtract(supplyPrice));
-							
-							// 促销供价差异汇总
-							reject.setDiffPriceDiscountTotal(reject.getDiffPriceDiscount().multiply(new BigDecimal(reject.getSimpleAmount())));
-							
-							// 供价示警
-							if (rejectPrice.compareTo(supplyPrice) > 0) {
-								reject.setDiscountAlarmFlag("退货价格高于促销供价，请检查促销是否已经生效");
-							}
-							
-						} else if ("原价入库".equals(supplyOrderType)) {
-							
-							// 合同供价差异
-							reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
-							
-							// 合同供价差异汇总
-							reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
-							
-							if (rejectPrice.compareTo(contractPrice) > 0) {
-								reject.setDiscountAlarmFlag("退货价格高于合同供价，处于促销日期");
-							}
-						}
-						break;
-						
+				BigDecimal contractPrice = null;
+				for (int i = 0, size = rejectList.size(); i < size; i++) {
+					reject = rejectList.get(i);
+					reject.setSysId(sysId);
+					// 系统名称
+					String sysName = supply.getSysName();
+					
+					// 单品编码
+					String simpleCode = reject.getSimpleCode();
+					
+					// 单品条码
+					String simpleBarCode = reject.getSimpleBarCode();
+					
+					// 门店编码
+					String storeCode = reject.getRejectDepartmentId();
+					
+					// 条码信息
+					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+					if (CommonUtil.isBlank(simpleBarCode)) {
+						reject.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+						continue;
 					}
-				}
-				
-				// 不处于促销范围之内
-				if (j == len) {
+	
+					reject.setSysName(supply.getRegion() + sysName);
+					
+					// 单品模板信息
+					TemplateProduct product = null;
+					String tempSysId = null;
+					String tempSimpleBarCode = null;
+					for (int j = 0, len = productList.size(); j < len; j++) {
+						product = productList.get(j);
+						tempSysId = product.getSysId();
+						tempSimpleBarCode = product.getSimpleBarCode();
+						if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
+							break;
+						}
+						product = null;
+					}
+					if (CommonUtil.isBlank(product)) {
+						reject.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+						continue;
+					}
+					
+					// 单品条码
+					reject.setSimpleBarCode(simpleBarCode);
+					
+					// 单品名称
+					reject.setSimpleName(product.getStandardName());
+						
+					// 库存编号
+					reject.setStockCode(product.getStockCode());
 					
 					// 含税合同供价
 					contractPrice = product.getIncludeTaxPrice();
 					reject.setContractPrice(contractPrice);
 					
-					// 合同供价差异
-					reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
+					// 退货价格
+					rejectPrice = reject.getRejectPrice();
 					
-					// 合同供价差异汇总
-					reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
-					
-					if (rejectPrice.compareTo(contractPrice) > 0) {
-						reject.setContractAlarmFlag("没有促销信息，退单价高于合同价");
+					int j = 0;
+					int len = 0;
+					for (j = 0, len = promotionList.size(); j < len; j++) {
+						promotionDetail = promotionList.get(j);
+						if (simpleBarCode.equals(promotionDetail.getProductCode())) {
+							// 促销供价开始、结束时间
+							reject.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
+							reject.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
+							
+							// 供价方式
+							supplyOrderType = promotionDetail.getSupplyOrderType();
+							
+							if ("特供价入库".equals(supplyOrderType)) {				
+								
+								// 促销供价
+								supplyPrice = promotionDetail.getSupplyPrice();
+								reject.setDiscountPrice(supplyPrice);
+								
+								// 促销供价差异
+								reject.setDiffPriceDiscount(rejectPrice.subtract(supplyPrice));
+								
+								// 促销供价差异汇总
+								reject.setDiffPriceDiscountTotal(reject.getDiffPriceDiscount().multiply(new BigDecimal(reject.getSimpleAmount())));
+								
+								// 供价示警
+								if (rejectPrice.compareTo(supplyPrice) > 0) {
+									reject.setDiscountAlarmFlag("退货价格高于促销供价，请检查促销是否已经生效");
+								}
+								
+							} else if ("原价入库".equals(supplyOrderType)) {
+								
+								// 合同供价差异
+								reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
+								
+								// 合同供价差异汇总
+								reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
+								
+								if (rejectPrice.compareTo(contractPrice) > 0) {
+									reject.setDiscountAlarmFlag("退货价格高于合同供价，处于促销日期");
+								}
+							}
+							break;
+							
+						}
 					}
-				}
-				
-				// 汇总差异
-				reject.setDiffPrice(reject.getDiffPriceContractTotal().add(reject.getDiffPriceDiscountTotal()==null?new BigDecimal(0):reject.getDiffPriceDiscountTotal()));
-				
-				// 单品门店信息
-				TemplateStore store = null;
-				String tempStoreCode = null;
-				String tempOrderStoreName = null;
-				for (j = 0, len = storeList.size(); j < len; j++) {
-					store = storeList.get(j);
-					tempSysId = store.getSysId();
-					tempStoreCode = store.getStoreCode();
-					tempOrderStoreName = store.getOrderStoreName() == null ? "" : store.getOrderStoreName();
-					if (sysId.equals(tempSysId) && (storeCode.equals(tempStoreCode) || tempOrderStoreName.contains(storeCode))) {
-						break;
+					
+					// 不处于促销范围之内
+					if (j == len) {
+						
+						// 含税合同供价
+						contractPrice = product.getIncludeTaxPrice();
+						reject.setContractPrice(contractPrice);
+						
+						// 合同供价差异
+						reject.setDiffPriceContract(rejectPrice.subtract(contractPrice));
+						
+						// 合同供价差异汇总
+						reject.setDiffPriceContractTotal(reject.getDiffPriceContract().multiply(new BigDecimal(reject.getSimpleAmount())));
+						
+						if (rejectPrice.compareTo(contractPrice) > 0) {
+							reject.setContractAlarmFlag("没有促销信息，退单价高于合同价");
+						}
 					}
-					store = null;
+					
+					// 汇总差异
+					reject.setDiffPrice(reject.getDiffPriceContractTotal().add(reject.getDiffPriceDiscountTotal()==null?new BigDecimal(0):reject.getDiffPriceDiscountTotal()));
+					
+					// 单品门店信息
+					TemplateStore store = null;
+					String tempStoreCode = null;
+					String tempOrderStoreName = null;
+					for (j = 0, len = storeList.size(); j < len; j++) {
+						store = storeList.get(j);
+						tempSysId = store.getSysId();
+						tempStoreCode = store.getStoreCode();
+						tempOrderStoreName = store.getOrderStoreName() == null ? "" : store.getOrderStoreName();
+						if (sysId.equals(tempSysId) && (storeCode.equals(tempStoreCode) || tempOrderStoreName.contains(storeCode))) {
+							break;
+						}
+						store = null;
+					}
+					
+					// 门店信息为空
+					if (CommonUtil.isBlank(store)) {
+						reject.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+						continue;
+					} 
+					// 大区
+					reject.setRegion(store.getRegion());
+						
+					// 省区
+					reject.setProvinceArea(store.getProvinceArea());
+						
+					// 门店名称
+					reject.setRejectDepartmentName(store.getStandardStoreName());
 				}
-				
-				// 门店信息为空
-				if (CommonUtil.isBlank(store)) {
-					reject.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
-					continue;
-				} 
-				// 大区
-				reject.setRegion(store.getRegion());
-					
-				// 省区
-				reject.setProvinceArea(store.getProvinceArea());
-					
-				// 门店名称
-				reject.setRejectDepartmentName(store.getStandardStoreName());
+				// 插入数据
+				logger.info("------>>>>>开始插入退单数据<<<<<-------");
+				dataCaptureUtil.insertData(rejectList, InsertId.INSERT_BATCH_REJECT);
+			} else {
+				rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, queryParam);
 			}
-			// 插入数据
-			logger.info("------>>>>>开始插入退单数据<<<<<-------");
-			dataCaptureUtil.insertData(rejectList, InsertId.INSERT_BATCH_REJECT);
-		} else {
-			rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, queryParam);
+			
+			pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
+			
 		}
-		pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 		return ResultUtil.success(pageRecord);
 	}
 
