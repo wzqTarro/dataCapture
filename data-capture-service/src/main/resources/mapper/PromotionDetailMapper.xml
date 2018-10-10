@@ -52,8 +52,8 @@
   		AND supply_price_end_date &gt;= #{queryDate}
   	</if>
   	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
-  		AND supply_price_start_date &gt; #{startDate}
-  		AND supply_price_start_date &lt; #{endDate}
+  		AND supply_price_start_date &gt;= #{startDate}
+  		AND supply_price_start_date &lt;= #{endDate}
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">

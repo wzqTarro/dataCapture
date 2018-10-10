@@ -257,7 +257,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		if (null != stock) {
 			
 			// 门店编号
-			if (StringUtils.isNoneBlank(stock.getStockCode())) {
+			if (StringUtils.isNoneBlank(stock.getStoreCode())) {
 				map.put("storeCode", stock.getStoreCode());
 			}
 			 
