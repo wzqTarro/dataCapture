@@ -38,12 +38,22 @@
     p.supply_price, p.supply_order_type, p.normal_sell_price, p.supply_sell_price, p.profit, p.discount
   </sql>
   <sql id="Query_Condition">
+  	<if test="id != null">
+  		AND id = #{id}
+  	</if>
   	<if test="sysId != null and sysId != ''">
   		AND sys_id = #{sysId}
   	</if>
+  	<if test="productCode != null and productCode != ''">
+  		AND product_code = #{productCode}
+  	</if>
   	<if test="queryDate != null and queryDate != ''">
-  		 AND supply_price_start_date &lt;= #{queryDate}
-  		 AND supply_price_end_date &gt;= #{queryDate}
+  		AND supply_price_start_date &lt;= #{queryDate}
+  		AND supply_price_end_date &gt;= #{queryDate}
+  	</if>
+  	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+  		AND supply_price_start_date &gt; #{startDate}
+  		AND supply_price_start_date &lt; #{endDate}
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">

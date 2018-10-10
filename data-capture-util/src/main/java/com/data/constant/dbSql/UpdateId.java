@@ -26,4 +26,6 @@ public final class UpdateId {
 	public static final String UPDATE_USER_MESSAGE_BY_WORK_NO = "UserMapper.updateUserMessageByWorkNo";
 	
 	public static final String UPDATE_STOCK_BY_MESSAGE = "StockMapper.updateByPrimaryKeySelective";
+	
+	public static final String UPDATE_PROMOTION_DETAIL_BY_MESSAGE = "PromotionDetailMapper.updateByPrimaryKeySelective";
 }

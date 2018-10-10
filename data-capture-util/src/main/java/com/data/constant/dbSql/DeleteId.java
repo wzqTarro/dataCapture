@@ -25,4 +25,5 @@ public final class DeleteId {
 	
 	public static final String DELETE_STOCK_BY_SYS_ID = "StockMapper.deleteBySysId";
 	
+	public static final String DELETE_PROMOTION_DETAIL_BY_ID = "PromotionDetailMapper.deleteByPrimaryKey";
 }

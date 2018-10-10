@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 促销活动明细
  * @author Alex
@@ -21,12 +23,16 @@ public class PromotionDetail implements Serializable {
 
     private String storeName;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date supplyPriceStartDate;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date supplyPriceEndDate;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date sellPriceStartDate;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date sellPriceEndDate;
 
     private String supplyName;
