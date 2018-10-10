@@ -158,15 +158,15 @@
   <!-- 退单警报报表导出 -->
   <select id="queryRejectAlarmListForReport" parameterType="map" resultType="map">
   	SELECT o1.sys_id sysId, o1.sys_name sysName, o1.region, o1.province_area provinceArea, 
-  	o1.reject_department_id rejectDepartmentId, o1.reject_department_name rejectDepartmentName, o1.receipt_code, receiptCode, o1.simple_code simpleCode,
+  	o1.reject_department_id rejectDepartmentId, o1.reject_department_name rejectDepartmentName, o1.receipt_code receiptCode, o1.simple_code simpleCode,
   	o1.simple_bar_code simpleBarCode, o1.stock_code stockCode, o1.simple_name simpleName, o1.reject_price_with_rate rejectPriceWithRate, 
   	o1.reject_price rejectPrice, o1.discount_price discountPrice, o1.contract_price contractPrice,   
   	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag 
   	FROM db_reject o1 WHERE o1.discount_alarm_flag != ''
   	UNION
   	SELECT o2.sys_id sysId, o2.sys_name sysName, o2.region, o2.province_area provinceArea, 
-  	o2.reject_department_id rejectDepartmentId, o1.reject_department_name rejectDepartmentName, o2.receipt_code, receiptCode, o2.simple_code simpleCode,
-  	o2.simple_bar_code simpleBarCode, o2.stock_code stockCode, o2.simple_name simpleName, o2.reject_price_with_rate rejectPriceWithRate  
+  	o2.reject_department_id rejectDepartmentId, o2.reject_department_name rejectDepartmentName, o2.receipt_code receiptCode, o2.simple_code simpleCode,
+  	o2.simple_bar_code simpleBarCode, o2.stock_code stockCode, o2.simple_name simpleName, o2.reject_price_with_rate rejectPriceWithRate,  
   	o2.reject_price rejectPrice, o2.discount_price discountPrice, o2.contract_price contractPrice,
   	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag 
   	FROM db_reject o2 WHERE o2.contract_alarm_flag != ''

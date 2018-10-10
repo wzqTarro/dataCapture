@@ -402,7 +402,21 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 						}
 					}
 				}
-				saleDataList.addAll(saleInfoList);
+				Map<String, Object> resultMap = new HashMap<>(10);
+				for(int o = 0; o < saleInfoList.size(); o++) {
+					resultMap.put((String) saleInfoList.get(o).get("storeCode"), saleInfoList.get(o));
+				}
+				List<Map<String, Object>> resultList = new ArrayList<>(10);
+				//去除重复数据
+				saleList = removeDuplicate(saleList);
+				for(int i = 0; i < saleList.size(); i++) {
+					Sale saleModel = saleList.get(i);
+					Map<String, Object> resultData = (Map<String, Object>) resultMap.get(saleModel.getStoreCode());
+					if(CommonUtil.isNotBlank(resultData)) {
+						resultList.add(resultData);
+					}
+				}
+				saleDataList.addAll(resultList);
 				try {
 					logger.info("--->>>日报表:  {}<<<---" + JsonUtil.toJson(saleDataList));
 				} catch (JsonProcessingException e) {
@@ -437,6 +451,22 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		}
 		return ResultUtil.success();
 	}
+	
+	/**
+	 * 去除重复数据
+	 * @param saleList
+	 * @return
+	 */
+	private List<Sale> removeDuplicate(List<Sale> saleList) {
+		for(int i = 0; i < saleList.size() - 1; i++) {
+			for(int j = saleList.size() - 1; j > i; j--) {
+				if(saleList.get(j).getStoreCode().equals(saleList.get(i).getStoreCode())) {
+					saleList.remove(j);
+				}
+			}
+		}
+		return saleList;
+ 	}
 	
 	/***
 	 * 门店一天的销售额
