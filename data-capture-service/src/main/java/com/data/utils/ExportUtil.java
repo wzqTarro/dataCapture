@@ -4,11 +4,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Component;
 
 import com.data.constant.enums.ICommonEnum;
-import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
 
@@ -78,8 +76,8 @@ public class ExportUtil {
 		Map<String, Object> param = new HashMap<>(4);
 		param.put("column", column);
 		if (CommonUtil.isNotBlank(startDate) && CommonUtil.isNotBlank(endDate)) {
-			param.put("startDate", startDate);
-			param.put("endDate", endDate);
+			param.put("startDate", startDate.trim());
+			param.put("endDate", endDate.trim());
 		}
 		param.put("sysId", sysId);
 		return param;

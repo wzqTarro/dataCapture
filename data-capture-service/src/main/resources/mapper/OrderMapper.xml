@@ -116,40 +116,58 @@
   <sql id="Query_Order_Alarm">
   	WHERE 1=1 
   	<if test="sysId != null and sysId != ''">
-  		AND sys_id=#{sysId}
+  		<!-- AND sys_id=#{sysId} -->
+  		AND a.sysId=#{sysId} 
   	</if>
   	<if test="sysName != null and sysName != ''">
-  		AND sys_name LIKE CONCAT(CONCAT('%', #{sysName}), '%')
+  		<!-- AND sys_name LIKE CONCAT(CONCAT('%', #{sysName}), '%') -->
+  		AND a.sysName LIKE CONCAT(CONCAT('%', #{sysName}), '%')
 	</if>
 	<if test="region != null and region != ''">
-		AND region LIKE CONCAT(CONCAT('%', #{region}), '%') 
+		<!-- AND region LIKE CONCAT(CONCAT('%', #{region}), '%') -->
+		AND a.region LIKE CONCAT(CONCAT('%', #{region}), '%') 
 	</if>
 	<if test="provinceArea != null and provinceArea != ''">
-		AND province_area LIKE CONCAT(CONCAT('%', #{provinceArea}), '%') 
+		<!-- AND province_area LIKE CONCAT(CONCAT('%', #{provinceArea}), '%') -->
+		 AND a.provinceArea LIKE CONCAT(CONCAT('%', #{provinceArea}), '%')
 	</if>
 	<if test="storeCode != null and storeCode != ''">
-		AND store_code=#{storeCode} 
+		<!-- AND store_code=#{storeCode} -->
+		AND a.storeCode=#{storeCode} 
 	</if>
 	<if test="storeName != null and storeName != ''">
-		AND store_name LIKE CONCAT(CONCAT('%', #{storeName}), '%') 
+		<!-- AND store_name LIKE CONCAT(CONCAT('%', #{storeName}), '%') -->
+		AND a.storeName LIKE CONCAT(CONCAT('%', #{storeName}), '%') 
 	</if>
 	<if test="simpleCode != null and simpleCode != ''">
-		AND simple_code=#{simpleCode} 
+		<!-- AND simple_code=#{simpleCode} -->
+		AND a.simpleCode=#{simpleCode} 
 	</if>
 	<if test="simpleBarCode != null and simpleBarCode != ''">
-		AND simple_bar_code=#{simpleBarCode} 
+		<!-- AND simple_bar_code=#{simpleBarCode}  -->
+		AND a.simpleBarCode=#{simpleBarCode} 
 	</if>
 	<if test="receiptCode != null and receiptCode != ''">
-		AND receipt_code=#{receiptCode} 
+		<!-- AND receipt_code=#{receiptCode} -->
+		AND a.receiptCode=#{receiptCode}  
 	</if>
 	<if test="simpleName != null and simpleName != ''">
-		AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') 
+		<!-- AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') -->  
+		AND a.simpleName LIKE CONCAT(CONCAT('%', #{simpleName}), '%') 
 	</if>
   </sql>
   <!-- 查询订单警报集合 -->
   <select id="queryOrderAlarmList" parameterType="map" resultMap="BaseResultMap">
-  	SELECT <include refid="Base_Column_List" />
+  	<!-- SELECT <include refid="Base_Column_List" />
   	FROM db_order 
+  	<include refid="Query_Order_Alarm" />
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if> -->
+  	SELECT a.sysId,a.sysName,a.region,a.provinceArea,a.storeCode,a.storeName,a.receiptCode,
+  		a.simpleCode,a.simpleBarCode,a.stockCode,a.simpleName,a.buyingPriceWithRate,a.buyingPrice,
+  		a.discountPrice,a.contractPrice,a.discountAlarmFlag,a.contractAlarmFlag 
+  	FROM (<include refid="Alarm_List"/>) a 
   	<include refid="Query_Order_Alarm" />
   	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize}
@@ -158,13 +176,15 @@
   
   <!-- 查询订单警报总数 -->
   <select id="queryCountOrderAlarmList" parameterType="map" resultType="int">
-  	SELECT COUNT(1) 
+  	<!-- SELECT COUNT(1) 
   	FROM db_order 
+  	<include refid="Query_Order_Alarm" /> -->
+  	SELECT COUNT(1) 
+  	FROM (<include refid="Alarm_List"/>) a
   	<include refid="Query_Order_Alarm" />
   </select>
   
-  <!-- 查询订单警报导出集合 -->
-  <select id="queryOrderAlarmListForReport" parameterType="map" resultType="map">
+  <sql id="Alarm_List">
   	SELECT o1.sys_id sysId, o1.sys_name sysName, o1.region, o1.province_area provinceArea, 
   	o1.store_code storeCode, o1.store_name storeName, o1.receipt_code receiptCode, o1.simple_code simpleCode,
   	o1.simple_bar_code simpleBarCode, o1.stock_code stockCode, o1.simple_name simpleName, o1.buying_price_with_rate buyingPriceWithRate,
@@ -178,6 +198,11 @@
   	o2.buying_price buyingPrice, o2.discount_price discountPrice, o2.contract_price contractPrice,   
   	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag 
   	FROM db_order o2 WHERE o2.contract_alarm_flag != ''
+  </sql>
+  
+  <!-- 查询订单警报导出集合 -->
+  <select id="queryOrderAlarmListForReport" parameterType="map" resultType="map">
+  	<include refid="Alarm_List"/>
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
