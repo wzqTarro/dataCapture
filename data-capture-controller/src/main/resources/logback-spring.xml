@@ -18,23 +18,62 @@
         </filter>-->
 		<encoder>
 			<pattern>
-				%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n
+				%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
 	<!-- 输出到文件 -->
-	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<!-- <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- 日志名称 -->
+			日志名称
 			<fileNamePattern>
 				${LOG_HOME}/controller.%d{yyyy-MM-dd}.log
 			</fileNamePattern>
-			<!-- 保留天数-->
+			保留天数
 			<MaxHistory>30</MaxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
 		</encoder>
+	</appender> -->
+	<!-- error错误日志 -->
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_HOME}/error.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<append>true</append>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
+		</encoder>
+		<!-- 只打印ERROR日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+        </filter>
+	</appender>
+    
+	<!-- info错误日志 -->
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_HOME}/info.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<append>true</append>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0} - %msg%n</pattern>
+		</encoder>
+		<!-- 只打印INFO日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+        </filter>
 	</appender>
 	
 	<!--myibatis log configure--> 
@@ -45,24 +84,29 @@
 	
 	<root level="info">
 		<appender-ref ref="console"/>
-		<appender-ref ref="file"/>
+		<!-- <appender-ref ref="file"/> -->
+		<appender-ref ref="INFO_FILE"/>
+		<appender-ref ref="ERROR_FILE"/>
 	</root>
 	
 	<!-- logback为java中的包 -->
     <!--<logger name="com.dudu.controller"/>-->
     <!--logback.LogbackDemo：类的全路径 -->
     <!-- 只在控制台输出WARN及其以上级别的日志信息  additivity=false表示不使用父节点设置 -->
-    <logger name="com.data.controller" level="WARN" additivity="false">
+    <logger name="com.data.controller" level="info" additivity="false">
         <appender-ref ref="console"/>
+       	<appender-ref ref="ERROR_FILE"/>
+       	<appender-ref ref="INFO_FILE"/>
     </logger>
 
     <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
-    <springProfile name="test,dev">
-        <logger name="com.data.controller" level="info" />
-    </springProfile>
-    <!-- 生产环境. -->
-    <springProfile name="prod">
+<!--     <springProfile name="test,dev">
+        <logger name="com.data.controller" level="INFO" />
         <logger name="com.data.controller" level="ERROR" />
     </springProfile>
+	    生产环境.
+    <springProfile name="prod">
+        <logger name="com.data.controller" level="ERROR" />
+    </springProfile> -->
 	
 </configuration>
