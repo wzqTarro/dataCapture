@@ -33,6 +33,11 @@ spring:
       charset: utf-8
   jwt: 
     secretKey: H5hjgbDSAyyteE23uMNveppCUl
+  
+  #文件上传io操作临时目录
+  io: 
+    multipart: 
+      tempDir: /srv/data/data-capture
       
 mybatis:
   mapper-locations: classpath:mapper/*.xml
