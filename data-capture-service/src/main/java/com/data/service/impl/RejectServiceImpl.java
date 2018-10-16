@@ -367,6 +367,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if (CommonUtil.isNotBlank(reject.getRejectDepartmentId())) {
 			param.put("rejectDepartmentId", reject.getRejectDepartmentId());
 		}
+		logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
 		List<Reject> dataList = queryListByObject(QueryId.QUERY_REJECT_BY_ANY_COLUMN, param);
 
 		ExcelUtil<Reject> excelUtil = new ExcelUtil<>();

@@ -392,8 +392,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (CommonUtil.isNotBlank(order.getReceiptCode())) {
 			param.put("receiptCode", order.getReceiptCode());
 		}
+		logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
 		List<Order> dataList = queryListByObject(QueryId.QUERY_ORDER_BY_ANY_COLUMN, param);
-		
 		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
 		excelUtil.exportCustom2007("订单信息", header, methodNameArray, dataList, output);
 	}

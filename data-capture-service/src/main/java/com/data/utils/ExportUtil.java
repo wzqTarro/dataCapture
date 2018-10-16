@@ -54,7 +54,7 @@ public class ExportUtil {
 		for (String s : header) {
 			T e = EnumUtil.getEnumByMsg(clazz, s.trim());
 			if (e == null) {
-				throw new Exception(s.trim()+"列名错误");
+				throw new DataException(s.trim()+"列名错误");
 			}
 			builder.append(e.getColumn());
 			builder.append(",");

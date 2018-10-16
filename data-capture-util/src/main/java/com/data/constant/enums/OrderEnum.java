@@ -9,11 +9,11 @@ public enum OrderEnum implements ICommonEnum {
 
     PROVINCE_AREA("省区", "province_area", "getProvinceArea"),
     
-    SIMPLE_CODE("单品编号", "simple_code", "getSimpleCode"),
+    SIMPLE_CODE("单品编码", "simple_code", "getSimpleCode"),
     
     SIMPLE_BAR_CODE("单品条码", "simple_bar_code", "getSimpleBarCode"),
 
-    STOCK_CODE("库存编码", "stock_code", "getStockCode"),
+    STOCK_CODE("存货编码", "stock_code", "getStockCode"),
 
     SIMPLE_NAME("单品名称", "simple_name", "getSimpleName"),
     
@@ -25,7 +25,7 @@ public enum OrderEnum implements ICommonEnum {
     
     TAX_RATE("税率", "tax_rate", "getTaxRate"),
     
-    BOX_STANDARD("箱规", "box_standard", "getBoxStandard"),
+    BOX_STANDARD("箱装规格", "box_standard", "getBoxStandard"),
     
     SIMPLE_AMOUNT("单品数量", "simple_amount", "getSimpleAmount"),
     
@@ -49,7 +49,7 @@ public enum OrderEnum implements ICommonEnum {
     
     DIFF_PRICE_DISCOUNT("促销供价差异", "diff_price_discount", "getDiffPriceDiscount"),
     
-    DIFF_PRICE_DISCOUNT_TOTAL("促销供价差异汇总", "diff_price_discountTotal", "getDiffPriceDiscountTotal"),
+    DIFF_PRICE_DISCOUNT_TOTAL("促销供价差异汇总", "diff_price_discount_total", "getDiffPriceDiscountTotal"),
     
     DISCOUNT_ALARM_FLAG("促销供价报警标志", "discount_alarm_flag", "getDiscountAlarmFlag"),
     
@@ -63,7 +63,7 @@ public enum OrderEnum implements ICommonEnum {
     
     DIFF_PRICE("汇总供价差异", "diff_price", "getDiffPrice"),
     
-    REMARK("备注", "remark", "remark")
+    REMARK("备注", "remark", "getRemark")
     
     ;
     

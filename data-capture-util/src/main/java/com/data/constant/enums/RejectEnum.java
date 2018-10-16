@@ -9,7 +9,7 @@ public enum RejectEnum implements ICommonEnum{
 
     PROVINCE_AREA("省区", "province_area", "getProvinceArea"),
     
-    SIMPLE_CODE("单品编号", "simple_code", "getSimpleCode"),
+    SIMPLE_CODE("单品编码", "simple_code", "getSimpleCode"),
     
     SIMPLE_BAR_CODE("单品条码", "simple_bar_code", "getSimpleBarCode"),
 
@@ -39,13 +39,9 @@ public enum RejectEnum implements ICommonEnum{
     
     DISCOUNT_END_DATE("促销供价结束日期", "discount_end_date", "getDiscountEndDate"),
     
-    ORDER_EFFECTIVE_JUDGE("订单有效性判断", "order_effective_judge", "getOrderEffectiveJudge"),
-    
-    BALANCE_WAY("补差方式", "balance_way", "getBalanceWay"),
-    
     DIFF_PRICE_DISCOUNT("促销供价差异", "diff_price_discount", "getDiffPriceDiscount"),
     
-    DIFF_PRICE_DISCOUNT_TOTAL("促销供价差异汇总", "diff_price_discountTotal", "getDiffPriceDiscountTotal"),
+    DIFF_PRICE_DISCOUNT_TOTAL("促销供价差异汇总", "diff_price_discount_total", "getDiffPriceDiscountTotal"),
     
     DISCOUNT_ALARM_FLAG("促销供价报警标志", "discount_alarm_flag", "getDiscountAlarmFlag"),
     
@@ -59,7 +55,7 @@ public enum RejectEnum implements ICommonEnum{
     
     DIFF_PRICE("汇总供价差异", "diff_price", "getDiffPrice"),
     
-    REMARK("备注", "remark", "remark")
+    REMARK("备注", "remark", "getRemark")
     ;
     
     private String msg;

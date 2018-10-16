@@ -1104,6 +1104,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		if (CommonUtil.isNotBlank(stock.getProvinceArea())) {
 			param.put("provinceArea", stock.getProvinceArea());
 		}
+		logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
 		List<Stock> dataList = queryListByObject(QueryId.QUERY_STOCK_BY_ANY_COLUMN, param);
 
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
