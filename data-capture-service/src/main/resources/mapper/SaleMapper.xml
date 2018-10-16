@@ -175,6 +175,25 @@
   	SELECT store_code storeCode FROM db_sale GROUP BY store_code
   </select>
   
+  <!-- 查询门店集合，包含门店数据 昨日销售额 -->
+  <select id="queryStoreNumByRegion" resultType="map">
+  	SELECT region, COUNT(store_code) storeNum, SUM(sell_price) price FROM db_sale 
+  	GROUP BY region
+  </select>
+  
+  <!-- 按区域查询本月销售额 -->
+  <select id="queryRegionSaleByDate" parameterType="map" resultType="map">
+  	SELECT region, SUM(sell_price) monthSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="createDate != null and createDate != ''">
+  		AND createDate &gt;=#{createDate} 
+  	</if>
+  	<if test="endDate != null and endDate != ''">
+  		AND endDate &lt;=#{endDate} 
+  	</if>
+  	GROUP BY region
+  </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />

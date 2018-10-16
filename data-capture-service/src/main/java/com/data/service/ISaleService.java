@@ -61,4 +61,9 @@ public interface ISaleService {
 	 * @return
 	 */
 	ResultUtil queryStoreDailySaleReport(String system, String region, String province, String store, Integer page, Integer limit) throws Exception;
+	
+	/**
+	 * 按区域公司一级表
+	 */
+	void exportSaleExcelByRegion(String region);
 }

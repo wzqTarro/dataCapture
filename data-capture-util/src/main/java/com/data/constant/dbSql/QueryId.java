@@ -150,5 +150,11 @@ public final class QueryId {
 	
 	/**查询退单警报列表集合**/
 	public static final String QUERY_REJECT_ALARM_LIST_FOR_REPORT = "RejectMapper.queryRejectAlarmListForReport";
+	
+	/**查询区域门店数量**/
+	public static final String QUERY_STORE_NUM_BY_REGION = "SaleMapper.queryStoreNumByRegion";
+	
+	/**查询区域月销售额**/
+	public static final String QUERY_REGION_SALE_BY_DATE = "SaleMapper.queryRegionSaleByDate";
 
 }

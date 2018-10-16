@@ -52,7 +52,7 @@ import com.google.common.collect.Maps;
 @Service
 public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger logger = LoggerFactory.getLogger(SaleServiceImpl.class);
 	
 	private static final int PAGE_NUM = 1;
 	
@@ -570,6 +570,46 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		PageRecord<Sale> salePageRecord = queryPageByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT,
 				QueryId.QUERY_SALE_LIST_REPORT, params, page, limit);
 		return ResultUtil.success(salePageRecord);
+	}
+
+	@Override
+	public void exportSaleExcelByRegion(String region) {
+		Map<String, Object> params = new HashMap<>(8);
+		params.put("region", region);
+		//前一天的数据
+		params.put("saleDate", new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1)));
+		int oldSaleNum = queryCountByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT, params);
+		List<Sale> oldSaleList = queryListByObject(QueryId.QUERY_SALE_LIST_REPORT, params);
+		
+		//区域集合 包括区域名称 门店数量 昨日销售额
+		List<Map<String, Object>> regionDataList = new ArrayList<>(10);
+		regionDataList = queryListByObject(QueryId.QUERY_STORE_NUM_BY_REGION, null);
+		//得到前一个月26号到昨天的日期字符串
+		List<String> daysList = DateUtil.getMonthDays(DateUtil.getSystemDate());
+		String dateStr = DateUtil.getCurrentDateStr();
+		int index = daysList.indexOf(dateStr);
+		List<String> newDaysList = new ArrayList<>(10);
+		for(int i = 0; i < index; i++) {
+			newDaysList.add(daysList.get(i));
+		}
+		//需要计算每个区域上个月26号到昨天的销售额
+		Map<String, Object> dateParams = new HashMap<>(4);
+		dateParams.put("startDate", daysList.get(0));
+		dateParams.put("endDate", new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1)));
+		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
+		regionMonthSaleList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_DATE, dateParams);
+		// TODO 将本月销售添加到regionDataList里面
+//		for(Map<String, Object> regionMonthSaleMap : regionMonthSaleList) {
+//			for(Map.Entry<String, Object> entry : regionMonthSaleMap.entrySet()) {
+//				if(entry.getKey().equals()) {
+//					
+//				}
+//			}
+//		}
+		
+		
+		
+		
 	}
 	
 }
