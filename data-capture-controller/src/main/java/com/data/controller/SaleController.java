@@ -81,22 +81,18 @@ public class SaleController {
 	 * @param stockNameStr
 	 * @param common
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/exportSaleExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "选择字段导出销售数据表", httpMethod = "GET")
 	public void expertSaleExcel(Sale sale, CommonDTO common, HttpServletResponse response,
-			@RequestParam(value = "stockNameStr", required = true)String stockNameStr) {
+			@RequestParam(value = "stockNameStr", required = true)String stockNameStr) throws Exception {
 		String fileName = "销售处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			saleService.exportSaleExcel(stockNameStr, common, sale, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		saleService.exportSaleExcel(stockNameStr, common, sale, output);
 	}
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {

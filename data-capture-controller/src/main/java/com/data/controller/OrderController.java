@@ -74,23 +74,19 @@ public class OrderController {
 	 * @param stockNameStr
 	 * @param common
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/exportOrderExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "选择字段导出订单数据表", httpMethod = "GET")
 	public void expertOrderExcel(@RequestParam(value = "sysId", required = true)String sysId, 
 			@RequestParam(value = "stockNameStr", required = true)String stockNameStr, 
-			CommonDTO common, Order order, HttpServletResponse response) {
+			CommonDTO common, Order order, HttpServletResponse response) throws Exception {
 		String fileName = "订单处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			orderService.exportOrderExcel(stockNameStr, common, order, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		orderService.exportOrderExcel(stockNameStr, common, order, output);
 	}
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {

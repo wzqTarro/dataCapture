@@ -74,22 +74,18 @@ public class RejectController {
 	 * @param stockNameStr
 	 * @param common
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/exportRejectExcel", method = RequestMethod.GET)
 	@ApiOperation(value = "选择字段导出退单数据表", httpMethod = "GET")
 	public void expertRejectExcel(Reject reject, CommonDTO common, HttpServletResponse response,
-			@RequestParam(value = "stockNameStr", required = true)String stockNameStr) {
+			@RequestParam(value = "stockNameStr", required = true)String stockNameStr) throws Exception {
 		String fileName = "退单处理表" + DateUtil.format(new Date(), "yyyyMMddHHmmss");
 		
 		// 设置响应头
 		setResponseHeader(response, fileName);
-		OutputStream output;
-		try {
-			output = response.getOutputStream();
-			rejectService.exportRejectExcel(stockNameStr, common, reject, output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		OutputStream output = response.getOutputStream();
+		rejectService.exportRejectExcel(stockNameStr, common, reject, output);
 	}
 	//发送响应流方法
     public void setResponseHeader(HttpServletResponse response, String fileName) {
