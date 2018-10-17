@@ -1,12 +1,12 @@
 package com.data.service.impl;
 
-import java.awt.image.IndexColorModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -592,6 +592,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		return ResultUtil.success(salePageRecord);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void exportSaleExcelByRegion(String region) {
 		Map<String, Object> params = new HashMap<>(8);
@@ -619,16 +620,71 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
 		regionMonthSaleList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_DATE, dateParams);
 		// TODO 将本月销售添加到regionDataList里面
-//		for(Map<String, Object> regionMonthSaleMap : regionMonthSaleList) {
-//			for(Map.Entry<String, Object> entry : regionMonthSaleMap.entrySet()) {
-//				if(entry.getKey().equals()) {
-//					
-//				}
-//			}
-//		}
+		Map<String, Object> dataMap = new HashMap<>(10);
+		for(Map<String, Object> map : regionMonthSaleList) {
+			dataMap.put((String) dataMap.get("region"), map);
+		}
+		//区域集合 包括区域名称 门店数量 本月销售目标 昨日销售额 月销售 昨日销售占比 本月达成率
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> monthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("region"));
+			if(CommonUtil.isNotBlank(monthSaleMap)) {
+				double monthSale = (double) monthSaleMap.get("monthSale");
+				double price = (double) regionData.get("price");
+				//月销售
+				regionData.put("monthSale", monthSale);
+				//昨日销售占比
+				regionData.put("yesterdayMonthSale", price / monthSale);
+				//本月销售目标 暂无  百亚自行维护
+				regionData.put("monthGoalTarget", 0);
+				//本月达成率 (本月销售)/(本月销售目标)
+				regionData.put("monthGoalSale", 0);
+			}
+		}
 		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(DateUtil.getSystemDate());
+		calendar.add(Calendar.MONTH, -1);
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+		//上月今日销售额
+		List<Map<String, Object>> lastMonthDateList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_DATE_STR, date);
+		dataMap.clear();
+		for(int i = 0; i < lastMonthDateList.size(); i++) {
+			dataMap.put((String) lastMonthDateList.get(i).get("region"), lastMonthDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastMonthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("region"));
+			if(CommonUtil.isNotBlank(lastMonthSaleMap)) {
+				//上月同期销售金额
+				regionData.put("lastMonthDateSale", lastMonthSaleMap.get("dateSale"));
+			}
+		}
 		
-		
+		calendar.setTime(DateUtil.getSystemDate());
+		calendar.add(Calendar.YEAR, -1);
+		date = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+		//去年今日销售额
+		List<Map<String, Object>> lastYearDateList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_DATE_STR, date);
+		dataMap.clear();
+		for(int i = 0; i < lastYearDateList.size(); i++) {
+			dataMap.put((String) lastYearDateList.get(i).get("region"), lastYearDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastYearSaleMap = (Map<String, Object>) dataMap.get(regionData.get("region"));
+			if(CommonUtil.isNotBlank(lastYearSaleMap)) {
+				//去年同月同期销售金额
+				regionData.put("lastYearDateSale", lastYearSaleMap.get("dateSale"));
+				double monthGoalTarget = (double) regionData.get("monthGoalTarget");
+				double lastMonthDateSale = (double) regionData.get("lastMonthDateSale");
+				double price = (double) regionData.get("price");
+				//环比
+				regionData.put("chaimIndex", monthGoalTarget / price);
+				//同比
+				regionData.put("yearBasis", lastMonthDateSale / price);
+			}
+		}
 		
 	}
 

@@ -232,6 +232,16 @@
   	GROUP BY region
   </select>
   
+  <!-- 按区域查询去年进入销售额 -->
+  <select id="queryRegionSaleByDateStr" parameterType="string" resultType="map">
+  	SELECT region, SUM(sell_price) dateSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="date != null and date != ''">
+  		AND create_time=#{date} 
+  	</if>
+  	GROUP BY region
+  </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
