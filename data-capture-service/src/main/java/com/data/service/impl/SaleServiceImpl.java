@@ -1681,6 +1681,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				lastYearCompareCell.setCellStyle(cellStyle);
 			}
 			lastYearCompareCell.setCellValue(lastYearCompare + "%");
+			// 哦豁尴尬了
 		}
 		
 		wb.write(output);
