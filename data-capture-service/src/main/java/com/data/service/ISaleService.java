@@ -66,4 +66,16 @@ public interface ISaleService {
 	 * 按区域公司一级表
 	 */
 	void exportSaleExcelByRegion(String region);
+	/**
+	 * 按系统导出公司一级表
+	 */
+	void exportCompanyExcelBySys(String queryDate, OutputStream output) throws Exception;
+	/**
+	 * 按系统导出区域表一级表
+	 */
+	void exportRegionFirstExcelBySys(String queryDate, String sysId, OutputStream output) throws Exception;
+	/**
+	 * 按系统导出区域表二级表
+	 */
+	void exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws Exception;
 }

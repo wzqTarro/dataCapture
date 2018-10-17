@@ -138,4 +138,28 @@ public class SaleController {
     	ResultUtil result = saleService.queryStoreDailySaleReport(system, region, province, store, page, limit);
     	return FastJsonUtil.objectToString(result);
     }
+    @RequestMapping(value = "/exportCompanyExcelBySys", method = RequestMethod.GET)
+    @ApiOperation(value = "按系统-导出公司一级表", httpMethod = "GET")
+    public void exportCompanyExcelBySys(String queryDate, HttpServletResponse response) throws Exception {
+    	String fileName = "按系统-公司一级表" + DateUtil.getCurrentDateStr();
+    	setResponseHeader(response, fileName);
+    	OutputStream output = response.getOutputStream();
+    	saleService.exportCompanyExcelBySys(queryDate, output);
+    }
+    @RequestMapping(value = "/exportRegionFirstExcelBySys", method = RequestMethod.GET)
+    @ApiOperation(value = "按系统-导出区域表一级表", httpMethod = "GET")
+    public void exportRegionFirstExcelBySys(String queryDate, String sysId, HttpServletResponse response) throws Exception {
+    	String fileName = "按系统-导出区域表一级表" + DateUtil.getCurrentDateStr();
+    	setResponseHeader(response, fileName);
+    	OutputStream output = response.getOutputStream();
+    	saleService.exportRegionFirstExcelBySys(queryDate, sysId, output);
+    }
+    @RequestMapping(value = "/exportRegionSecondExcelBySys", method = RequestMethod.GET)
+    @ApiOperation(value = "按系统-导出区域表二级表", httpMethod = "GET")
+    public void exportRegionSecondExcelBySys(String queryDate, String sysId, String region, HttpServletResponse response) throws Exception {
+    	String fileName = "按系统-导出区域表二级表" + DateUtil.getCurrentDateStr();
+    	setResponseHeader(response, fileName);
+    	OutputStream output = response.getOutputStream();
+    	saleService.exportRegionSecondExcelBySys(queryDate, sysId, region, output);
+    }
 }

@@ -557,7 +557,7 @@ public class ExcelUtil<T> {
 	 * @param color 背景颜色
 	 * @return 
 	 */
-	public CellStyle getCellStyle(SXSSFWorkbook wb, short color) {
+	public CellStyle getCellStyle(Workbook wb, short color) {
 		CellStyle cellStyle = wb.createCellStyle();
 		
 		// 填充单元格

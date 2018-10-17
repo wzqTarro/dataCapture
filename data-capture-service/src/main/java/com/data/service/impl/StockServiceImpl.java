@@ -1,16 +1,14 @@
 package com.data.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +16,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -45,7 +42,6 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
-import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
@@ -1196,10 +1192,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[sysStockList.size()][6];
 		for (i = 0, size = sysStockList.size(); i < size; i++) {
@@ -1317,10 +1313,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[regionStockList.size()][6];
 		for (i = 0, size = regionStockList.size(); i < size; i++) {
@@ -1446,10 +1442,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合 
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[storeStockList.size()][6];
 		for (i = 0, size = storeStockList.size(); i < size; i++) {
@@ -1565,10 +1561,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[regionStockList.size()][6];
 		for (i = 0, size = regionStockList.size(); i < size; i++) {
@@ -1681,10 +1677,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[sysStockList.size()][6];
 		for (i = 0, size = sysStockList.size(); i < size; i++) {
@@ -1806,10 +1802,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[provinceAreaStockList.size()][6];
 		for (i = 0, size = provinceAreaStockList.size(); i < size; i++) {
@@ -1936,10 +1932,10 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		double stockDay = 0;
 
 		// 门店集合
-		Set<String> storeSet = new LinkedHashSet<>();
+		Set<String> storeSet = new HashSet<>();
 		
 		// 品牌集合
-		Set<String> brandSet = new LinkedHashSet<>();
+		Set<String> brandSet = new HashSet<>();
 		brandSet.add("全部");
 		String[][] rowValue = new String[storeStockList.size()][6];
 		for (i = 0, size = storeStockList.size(); i < size; i++) {

@@ -157,4 +157,12 @@ public final class QueryId {
 	/**查询区域月销售额**/
 	public static final String QUERY_REGION_SALE_BY_DATE = "SaleMapper.queryRegionSaleByDate";
 
+	/**按系统分组查询销售数据**/
+	public static final String QUERY_SYS_SALE_BY_CONDTION = "SaleMapper.selectSysSaleByCondition";
+	
+	/**按大区分组查询销售数据**/
+	public static final String QUERY_REGION_SALE_BY_CONDITION = "SaleMapper.selectRegionSaleByCondition";
+	
+	/**按门店分组查询销售数据**/
+	public static final String QUERY_STORE_SALE_BY_CONDITION = "SaleMapper.selectStoreSaleByCondition";
 }

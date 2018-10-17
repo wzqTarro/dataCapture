@@ -1,26 +1,39 @@
 package com.data.service.impl;
 
+import java.awt.image.IndexColorModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.data.bean.Sale;
+import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
@@ -34,6 +47,9 @@ import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
+import com.data.model.RegionSaleModel;
+import com.data.model.StoreSaleModel;
+import com.data.model.SysSaleModel;
 import com.data.service.ICodeDictService;
 import com.data.service.IRedisService;
 import com.data.service.ISaleService;
@@ -45,6 +61,7 @@ import com.data.utils.ExportUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.JsonUtil;
 import com.data.utils.ResultUtil;
+import com.data.utils.StockDataUtil;
 import com.data.utils.TemplateDataUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
@@ -72,6 +89,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private ExportUtil exportUtil;
+	
+	@Autowired
+	private StockDataUtil stockDataUtil;
 
 	@Override
 	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer limit) throws Exception{
@@ -609,6 +629,1063 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		
 		
 		
+		
+	}
+
+	@Override
+	public void exportCompanyExcelBySys(String queryDate, OutputStream output) throws Exception {
+		if (StringUtils.isBlank(queryDate)) {
+			throw new DataException("534");
+		}
+		
+		String title = "全公司直营KA分系统日报表";
+		String[] headers = new String[] {"系统", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比", "同比", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比",
+				"可比门店同比"};
+		
+		// 获取查询时间当天销售数据
+		Map<String, Object> param = new HashMap<>();
+		param.put("queryDate", queryDate);
+		List<SysSaleModel> sysSaleList = queryListByObject(QueryId.QUERY_SYS_SALE_BY_CONDTION, param);
+		
+		// 查询时间的前一天
+		String lastDay = LocalDate.parse(queryDate).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastDay);
+		param.put("column", " sys_id, sell_price ");
+		List<Sale> lastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 上个月同期
+		String lastMonth = LocalDate.parse(queryDate).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastMonth);
+		param.put("column", " sys_id, sell_price ");
+		List<Sale> lastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 本月销售数据
+		String startDate = LocalDate.parse(queryDate).minusMonths(1L).withDayOfMonth(26).toString();
+		param.clear();
+		param.put("startDate", startDate);
+		param.put("endDate", lastDay);
+		param.put("column", " sys_id, sell_price ");
+		List<Sale> lastMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期
+		String lastYearDay = LocalDate.parse(queryDate).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearDay);
+		param.put("column", " sys_id, sell_price, store_code ");
+		List<Sale> lastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期前一天销售数据
+		String lastYearLastDay = LocalDate.parse(queryDate).minusYears(1L).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastDay);
+		param.put("column", " sys_id, sell_price, store_code ");
+		List<Sale> lastYearLastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的一个月销售数据
+		String lastYear26Day = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).withDayOfMonth(26).toString();	
+		param.clear();
+		param.put("startDate", lastYear26Day);
+		param.put("endDate", lastYearLastDay);
+		param.put("column", " sys_id, sell_price, store_code ");
+		List<Sale> lastYearMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的上一个月同期销售数据
+		String lastYearLastMonthDay = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastMonthDay);
+		param.put("column", " sys_id, sell_price, store_code ");
+		List<Sale> lastYearLastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的去年同期销售数据
+		String lastYearLastYearDay = LocalDate.parse(queryDate).minusYears(1L).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastYearDay);
+		param.put("column", " sys_id, sell_price, store_code ");
+		List<Sale> lastYearLastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		SysSaleModel sysSale = null;
+		String sysId = null;
+		String sysName = null;
+		List<Sale> saleList = null;
+		Sale sale = null;
+		
+		// 品牌
+		Set<String> brandSet = new HashSet<>();
+		
+		// 当前门店
+		Set<String> storeSet = new HashSet<>();
+		
+		// 可比门店
+		Set<String> lastStoreSet = new HashSet<>();
+		
+		
+		String[][] rowValue = new String[sysSaleList.size()][headers.length];
+		for (int i = 0, size = sysSaleList.size(); i<size; i++) {
+			sysSale = sysSaleList.get(i);
+			sysId = sysSale.getSysId();
+			sysName = sysSale.getSysName();
+			saleList = sysSale.getSaleList();
+			
+			storeSet.clear();
+			
+			// 当天销售
+			for (int j = 0, sysSize = saleList.size(); j<sysSize; j++) {
+				sale = saleList.get(j);
+				if (StringUtils.isNoneBlank(sale.getBrand())) {
+					brandSet.add(sale.getBrand());
+				}
+				storeSet.add(sale.getStoreCode());
+			}
+
+			// 昨日销售
+			double nowSellPriceSum = 0;
+			for (int j = 0, daySize = lastDaySaleList.size(); j < daySize; j++) {
+				sale = lastDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					nowSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 本月销售
+			double monthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthSaleList.size(); j<monthSize; j++) {
+				sale = lastMonthSaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					monthSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 昨日销售占比
+			double lastSellPercent = 0;
+			if (monthSellPriceSum != 0) {
+				lastSellPercent = nowSellPriceSum / monthSellPriceSum;
+			}
+		
+			// 上月同期销售金额
+			double lastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastMonthDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					lastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 去年同期销售
+			double lastYearDaySellPriceSum = 0;
+			lastStoreSet.clear();
+			for (int j = 0, monthSize = lastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					lastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastStoreSet.add(sale.getStoreCode());
+					}
+				}
+			}
+			
+			// 环比
+			double aroundCompare = 0;
+			if (monthSellPriceSum != 0) {
+				aroundCompare = lastMonthDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 同比
+			double yearCompare = 0;
+			if (monthSellPriceSum != 0) {
+				yearCompare = lastYearDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 去年同期前一天销售
+			double lastYearLastDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期一个月销售
+			double lastYearMonthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearMonthSaleList.size(); j < monthSize; j++) {
+				sale = lastYearMonthSaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearMonthSellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的上个月同期销售
+			double lastYearLastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastMonthDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的去年同期销售
+			double lastYearLastYearDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastYearDaySaleList.get(j);
+				if (sale.getSysId().equals(sysId)) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 可比门店环比
+			double storeAroundCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeAroundCompare = lastYearLastMonthDaySellPriceSum/lastYearMonthSellPriceSum;
+			}
+
+			// 可比门店同比
+			double storeYearCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeYearCompare = lastYearLastYearDaySellPriceSum / lastYearMonthSellPriceSum;
+			}
+			rowValue[i] = new String[] {
+				sysName, // 系统名称
+				String.valueOf(storeSet.size()), // 门店数量
+				"" , //本月目标
+				String.valueOf(CommonUtil.setScale("0.00", nowSellPriceSum)), // 昨日销量
+				String.valueOf(CommonUtil.setScale("0.00", monthSellPriceSum)), // 本月销售 
+				String.valueOf(CommonUtil.setScale("0.00", lastSellPercent*100) + "%"), // 昨日销售占比
+				String.valueOf(0), // 本月达成率
+				String.valueOf(CommonUtil.setScale("0.00", lastMonthDaySellPriceSum)), // 上月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", lastYearDaySellPriceSum)), // 去年同月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", aroundCompare*100)), // 环比
+				String.valueOf(CommonUtil.setScale("0.00", yearCompare*100)), // 同比 
+				String.valueOf(lastStoreSet.size()), // 可比门店数量
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastDaySellPriceSum)), // 可比门店昨日销售
+				String.valueOf(CommonUtil.setScale("0.00", lastYearMonthSellPriceSum)), // 可比门店本月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastMonthDaySellPriceSum)), // 可比门店上月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastYearDaySellPriceSum)), // 可比门店去年
+				String.valueOf(CommonUtil.setScale("0.00", storeAroundCompare*100)), // 可比门店环比
+				String.valueOf(CommonUtil.setScale("0.00", storeYearCompare*100))// 可比门店同比
+			};
+		}
+		
+		
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet = wb.createSheet("公司一级表");
+		
+		// 报表时间
+		Row dateRow = sheet.createRow(0);
+		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+		
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+		
+		// 标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
+		
+		// 表头
+		Row headerRow = sheet.createRow(3);
+		excelUtil.createRow(headerRow, headers, true);
+		
+		// 红底样式
+		CellStyle cellStyle = excelUtil.getCellStyle(wb, IndexedColors.RED.index);
+		
+		// 白字
+		Font font = excelUtil.getColorFont(wb, IndexedColors.WHITE.index);
+		cellStyle.setFont(font);
+		
+		Row row = null;
+		for (int i = 0, size = rowValue.length; i<size; i++) {
+			String[] value = rowValue[i];
+			row = sheet.createRow(i+4);
+			row.createCell(0).setCellValue(value[0]);
+			row.createCell(1).setCellValue(value[1]);
+			row.createCell(2).setCellValue(value[2]);
+			row.createCell(3).setCellValue(value[3]);
+			row.createCell(4).setCellValue(value[4]);
+			row.createCell(5).setCellValue(value[5]);
+			
+			// 本月达成率
+			Cell reachCell = row.createCell(6);
+			reachCell.setCellValue(value[6]);
+			
+			row.createCell(7).setCellValue(value[7]);
+			row.createCell(8).setCellValue(value[8]);
+			
+			// 环比
+			double monthCompare = Double.valueOf(value[9]);
+			Cell monthCompareCell = row.createCell(9);
+			if (monthCompare < 100) {
+				monthCompareCell.setCellStyle(cellStyle);
+			}
+			monthCompareCell.setCellValue(monthCompare + "%");
+
+			// 同比
+		    double yearCompare = Double.valueOf(value[10]);
+			Cell yearCompareCell = row.createCell(10);
+			if (yearCompare < 100) {
+				yearCompareCell.setCellStyle(cellStyle);
+			}
+			yearCompareCell.setCellValue(yearCompare + "%");
+			
+			row.createCell(11).setCellValue(value[11]);
+			row.createCell(12).setCellValue(value[12]);
+			row.createCell(13).setCellValue(value[13]);
+			row.createCell(14).setCellValue(value[14]);
+			row.createCell(15).setCellValue(value[15]);
+			
+			// 可比门店环比
+			double lastMonthCompare = Double.valueOf(value[16]);
+			Cell lastMonthCompareCell = row.createCell(16);
+			if (lastMonthCompare < 100) {
+				lastMonthCompareCell.setCellStyle(cellStyle);
+			}
+			lastMonthCompareCell.setCellValue(lastMonthCompare + "%");
+
+			// 同比
+			double lastYearCompare = Double.valueOf(value[17]);
+			Cell lastYearCompareCell = row.createCell(17);
+			if (lastYearCompare < 100) {
+				lastYearCompareCell.setCellStyle(cellStyle);
+			}
+			lastYearCompareCell.setCellValue(lastYearCompare + "%");
+		}
+		
+		wb.write(output);
+		output.flush();
+		output.close();
+	}
+
+	@Override
+	public void exportRegionFirstExcelBySys(String queryDate, String sysId, OutputStream output) throws Exception {
+		if (StringUtils.isBlank(queryDate)) {
+			throw new DataException("534");
+		}
+		if (StringUtils.isBlank(sysId)) {
+			throw new DataException("538");
+		}
+		
+		// 表头
+		String[] headers = new String[] {"系统", "大区", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比", "同比", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比",
+				"可比门店同比"};
+		
+		// 获取查询时间当天销售数据
+		Map<String, Object> param = new HashMap<>();
+		param.put("queryDate", queryDate);
+		param.put("sysId", sysId);
+		List<RegionSaleModel> regionSaleList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_CONDITION, param);
+		
+		// 系统名称
+		String sysName = regionSaleList.get(0).getSaleList().get(0).getSysName();
+		
+		// 标题
+		String title = sysName + "直营KA分大区日报表";
+		
+		// 查询时间的前一天
+		String lastDay = LocalDate.parse(queryDate).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 上个月同期
+		String lastMonth = LocalDate.parse(queryDate).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastMonth);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 本月销售数据
+		String startDate = LocalDate.parse(queryDate).minusMonths(1L).withDayOfMonth(26).toString();
+		param.clear();
+		param.put("startDate", startDate);
+		param.put("endDate", lastDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期
+		String lastYearDay = LocalDate.parse(queryDate).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期前一天销售数据
+		String lastYearLastDay = LocalDate.parse(queryDate).minusYears(1L).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastYearLastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的一个月销售数据
+		String lastYear26Day = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).withDayOfMonth(26).toString();	
+		param.clear();
+		param.put("startDate", lastYear26Day);
+		param.put("endDate", lastYearLastDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastYearMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的上一个月同期销售数据
+		String lastYearLastMonthDay = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastMonthDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastYearLastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的去年同期销售数据
+		String lastYearLastYearDay = LocalDate.parse(queryDate).minusYears(1L).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastYearDay);
+		param.put("sysId", sysId);
+		param.put("column", " region, sell_price, store_code ");
+		List<Sale> lastYearLastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		RegionSaleModel regionSale = null;
+		String region = null;
+		List<Sale> saleList = null;
+		Sale sale = null;
+		
+		// 品牌
+		Set<String> brandSet = new HashSet<>();
+		
+		// 当前门店
+		Set<String> storeSet = new HashSet<>();
+		
+		// 可比门店
+		Set<String> lastStoreSet = new HashSet<>();
+		
+		
+		String[][] rowValue = new String[regionSaleList.size()][headers.length];
+		for (int i = 0, size = regionSaleList.size(); i<size; i++) {
+			regionSale = regionSaleList.get(i);
+			region = regionSale.getRegion() == null ? "" : regionSale.getRegion();
+			saleList = regionSale.getSaleList();
+			
+			storeSet.clear();
+			
+			// 当天销售
+			for (int j = 0, regionSize = saleList.size(); j<regionSize; j++) {
+				sale = saleList.get(j);
+				if (StringUtils.isNoneBlank(sale.getBrand())) {
+					brandSet.add(sale.getBrand());
+				}
+				storeSet.add(sale.getStoreCode());
+			}
+
+			// 昨日销售
+			double nowSellPriceSum = 0;
+			for (int j = 0, daySize = lastDaySaleList.size(); j < daySize; j++) {
+				sale = lastDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					nowSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 本月销售
+			double monthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthSaleList.size(); j<monthSize; j++) {
+				sale = lastMonthSaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					monthSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 昨日销售占比
+			double lastSellPercent = 0;
+			if (monthSellPriceSum != 0) {
+				lastSellPercent = nowSellPriceSum / monthSellPriceSum;
+			}
+		
+			// 上月同期销售金额
+			double lastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastMonthDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					lastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 去年同期销售
+			double lastYearDaySellPriceSum = 0;
+			lastStoreSet.clear();
+			for (int j = 0, monthSize = lastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					lastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastStoreSet.add(sale.getStoreCode());
+					}
+				}
+			}
+			
+			// 环比
+			double aroundCompare = 0;
+			if (monthSellPriceSum != 0) {
+				aroundCompare = lastMonthDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 同比
+			double yearCompare = 0;
+			if (monthSellPriceSum != 0) {
+				yearCompare = lastYearDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 去年同期前一天销售
+			double lastYearLastDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期一个月销售
+			double lastYearMonthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearMonthSaleList.size(); j < monthSize; j++) {
+				sale = lastYearMonthSaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearMonthSellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的上个月同期销售
+			double lastYearLastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastMonthDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的去年同期销售
+			double lastYearLastYearDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastYearDaySaleList.get(j);
+				if (region.equals(sale.getRegion())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 可比门店环比
+			double storeAroundCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeAroundCompare = lastYearLastMonthDaySellPriceSum/lastYearMonthSellPriceSum;
+			}
+
+			// 可比门店同比
+			double storeYearCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeYearCompare = lastYearLastYearDaySellPriceSum / lastYearMonthSellPriceSum;
+			}
+			rowValue[i] = new String[] {
+				sysName, // 系统名称
+				region, // 大区
+				String.valueOf(storeSet.size()), // 门店数量
+				"" , //本月目标
+				String.valueOf(CommonUtil.setScale("0.00", nowSellPriceSum)), // 昨日销量
+				String.valueOf(CommonUtil.setScale("0.00", monthSellPriceSum)), // 本月销售 
+				String.valueOf(CommonUtil.setScale("0.00", lastSellPercent*100) + "%"), // 昨日销售占比
+				String.valueOf(0), // 本月达成率
+				String.valueOf(CommonUtil.setScale("0.00", lastMonthDaySellPriceSum)), // 上月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", lastYearDaySellPriceSum)), // 去年同月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", aroundCompare*100)), // 环比
+				String.valueOf(CommonUtil.setScale("0.00", yearCompare*100)), // 同比 
+				String.valueOf(lastStoreSet.size()), // 可比门店数量
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastDaySellPriceSum)), // 可比门店昨日销售
+				String.valueOf(CommonUtil.setScale("0.00", lastYearMonthSellPriceSum)), // 可比门店本月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastMonthDaySellPriceSum)), // 可比门店上月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastYearDaySellPriceSum)), // 可比门店去年
+				String.valueOf(CommonUtil.setScale("0.00", storeAroundCompare*100)), // 可比门店环比
+				String.valueOf(CommonUtil.setScale("0.00", storeYearCompare*100))// 可比门店同比
+			};
+		}
+		
+		
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet = wb.createSheet("区域表一级表");
+		
+		// 报表时间
+		Row dateRow = sheet.createRow(0);
+		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+		
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+		
+		// 标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
+		
+		// 表头
+		Row headerRow = sheet.createRow(3);
+		excelUtil.createRow(headerRow, headers, true);
+		
+		// 红底样式
+		CellStyle cellStyle = excelUtil.getCellStyle(wb, IndexedColors.RED.index);
+		
+		// 白字
+		Font font = excelUtil.getColorFont(wb, IndexedColors.WHITE.index);
+		cellStyle.setFont(font);
+		
+		Row row = null;
+		for (int i = 0, size = rowValue.length; i<size; i++) {
+			String[] value = rowValue[i];
+			row = sheet.createRow(i+4);
+			row.createCell(0).setCellValue(value[0]);
+			row.createCell(1).setCellValue(value[1]);
+			row.createCell(2).setCellValue(value[2]);
+			row.createCell(3).setCellValue(value[3]);
+			row.createCell(4).setCellValue(value[4]);
+			row.createCell(5).setCellValue(value[5]);
+			row.createCell(6).setCellValue(value[6]);
+			
+			// 本月达成率
+			Cell reachCell = row.createCell(7);
+			reachCell.setCellValue(value[7]);
+			
+			row.createCell(8).setCellValue(value[8]);
+			row.createCell(9).setCellValue(value[9]);
+			
+			// 环比
+			double monthCompare = Double.valueOf(value[10]);
+			Cell monthCompareCell = row.createCell(10);
+			if (monthCompare < 100) {
+				monthCompareCell.setCellStyle(cellStyle);
+			}
+			monthCompareCell.setCellValue(monthCompare + "%");
+
+			// 同比
+		    double yearCompare = Double.valueOf(value[11]);
+			Cell yearCompareCell = row.createCell(11);
+			if (yearCompare < 100) {
+				yearCompareCell.setCellStyle(cellStyle);
+			}
+			yearCompareCell.setCellValue(yearCompare + "%");
+			
+			row.createCell(12).setCellValue(value[12]);
+			row.createCell(13).setCellValue(value[13]);
+			row.createCell(14).setCellValue(value[14]);
+			row.createCell(15).setCellValue(value[15]);
+			row.createCell(16).setCellValue(value[16]);
+			
+			// 可比门店环比
+			double lastMonthCompare = Double.valueOf(value[17]);
+			Cell lastMonthCompareCell = row.createCell(17);
+			if (lastMonthCompare < 100) {
+				lastMonthCompareCell.setCellStyle(cellStyle);
+			}
+			lastMonthCompareCell.setCellValue(lastMonthCompare + "%");
+
+			// 同比
+			double lastYearCompare = Double.valueOf(value[18]);
+			Cell lastYearCompareCell = row.createCell(18);
+			if (lastYearCompare < 100) {
+				lastYearCompareCell.setCellStyle(cellStyle);
+			}
+			lastYearCompareCell.setCellValue(lastYearCompare + "%");
+		}
+		
+		wb.write(output);
+		output.flush();
+		output.close();
+	}
+
+	@Override
+	public void exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output)
+			throws Exception {
+		if (StringUtils.isBlank(queryDate)) {
+			throw new DataException("534");
+		}
+		if (StringUtils.isBlank(sysId)) {
+			throw new DataException("538");
+		}
+		if (StringUtils.isBlank(region)) {
+			throw new DataException("539");
+		}
+		// 表头
+		String[] headers = new String[] {"系统", "大区", "门店编号", "门店名称", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比", "同比", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比",
+				"可比门店同比"};
+		
+		// 获取查询时间当天销售数据
+		Map<String, Object> param = new HashMap<>();
+		param.put("queryDate", queryDate);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		List<StoreSaleModel> storeSaleList = queryListByObject(QueryId.QUERY_STORE_SALE_BY_CONDITION, param);
+		
+		// 系统名称
+		String sysName = storeSaleList.get(0).getSaleList().get(0).getSysName();
+		
+		// 标题
+		String title = sysName + "直营KA分大区日报表";
+		
+		// 查询时间的前一天
+		String lastDay = LocalDate.parse(queryDate).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 上个月同期
+		String lastMonth = LocalDate.parse(queryDate).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastMonth);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 本月销售数据
+		String startDate = LocalDate.parse(queryDate).minusMonths(1L).withDayOfMonth(26).toString();
+		param.clear();
+		param.put("startDate", startDate);
+		param.put("endDate", lastDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期
+		String lastYearDay = LocalDate.parse(queryDate).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期前一天销售数据
+		String lastYearLastDay = LocalDate.parse(queryDate).minusYears(1L).minusDays(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastYearLastDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的一个月销售数据
+		String lastYear26Day = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).withDayOfMonth(26).toString();	
+		param.clear();
+		param.put("startDate", lastYear26Day);
+		param.put("endDate", lastYearLastDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastYearMonthSaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的上一个月同期销售数据
+		String lastYearLastMonthDay = LocalDate.parse(queryDate).minusYears(1L).minusMonths(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastMonthDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastYearLastMonthDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		// 去年同期的去年同期销售数据
+		String lastYearLastYearDay = LocalDate.parse(queryDate).minusYears(1L).minusYears(1L).toString();
+		param.clear();
+		param.put("queryDate", lastYearLastYearDay);
+		param.put("sysId", sysId);
+		param.put("region", region);
+		param.put("column", " sell_price, store_code ");
+		List<Sale> lastYearLastYearDaySaleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
+		
+		StoreSaleModel storeSale = null;
+		String storeCode = null;
+		String storeName = null;
+		List<Sale> saleList = null;
+		Sale sale = null;
+		
+		// 品牌
+		Set<String> brandSet = new HashSet<>();
+		
+		// 当前门店
+		Set<String> storeSet = new HashSet<>();
+		
+		// 可比门店
+		Set<String> lastStoreSet = new HashSet<>();
+		
+		
+		String[][] rowValue = new String[storeSaleList.size()][headers.length];
+		for (int i = 0, size = storeSaleList.size(); i<size; i++) {
+			storeSale = storeSaleList.get(i);
+			storeName = storeSale.getStoreName() == null ? "" : storeSale.getStoreName();
+			storeCode = storeSale.getStoreCode();
+			saleList = storeSale.getSaleList();
+			
+			storeSet.clear();
+			
+			// 当天销售
+			for (int j = 0, regionSize = saleList.size(); j<regionSize; j++) {
+				sale = saleList.get(j);
+				if (StringUtils.isNoneBlank(sale.getBrand())) {
+					brandSet.add(sale.getBrand());
+				}
+				storeSet.add(sale.getStoreCode());
+			}
+
+			// 昨日销售
+			double nowSellPriceSum = 0;
+			for (int j = 0, daySize = lastDaySaleList.size(); j < daySize; j++) {
+				sale = lastDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					nowSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 本月销售
+			double monthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthSaleList.size(); j<monthSize; j++) {
+				sale = lastMonthSaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					monthSellPriceSum += (sale.getSellPrice() == null) ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 昨日销售占比
+			double lastSellPercent = 0;
+			if (monthSellPriceSum != 0) {
+				lastSellPercent = nowSellPriceSum / monthSellPriceSum;
+			}
+		
+			// 上月同期销售金额
+			double lastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastMonthDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					lastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+				}
+			}
+			
+			// 去年同期销售
+			double lastYearDaySellPriceSum = 0;
+			lastStoreSet.clear();
+			for (int j = 0, monthSize = lastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					lastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastStoreSet.add(sale.getStoreCode());
+					}
+				}
+			}
+			
+			// 环比
+			double aroundCompare = 0;
+			if (monthSellPriceSum != 0) {
+				aroundCompare = lastMonthDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 同比
+			double yearCompare = 0;
+			if (monthSellPriceSum != 0) {
+				yearCompare = lastYearDaySellPriceSum / monthSellPriceSum;
+			}
+			
+			// 去年同期前一天销售
+			double lastYearLastDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期一个月销售
+			double lastYearMonthSellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearMonthSaleList.size(); j < monthSize; j++) {
+				sale = lastYearMonthSaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearMonthSellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的上个月同期销售
+			double lastYearLastMonthDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastMonthDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastMonthDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastMonthDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 去年同期的去年同期销售
+			double lastYearLastYearDaySellPriceSum = 0;
+			for (int j = 0, monthSize = lastYearLastYearDaySaleList.size(); j < monthSize; j++) {
+				sale = lastYearLastYearDaySaleList.get(j);
+				if (storeCode.equals(sale.getStoreCode())) {
+					if (storeSet.contains(sale.getStoreCode())) {
+						lastYearLastYearDaySellPriceSum += sale.getSellPrice() == null ? 0 : sale.getSellPrice();
+					}
+				}
+			}
+
+			// 可比门店环比
+			double storeAroundCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeAroundCompare = lastYearLastMonthDaySellPriceSum/lastYearMonthSellPriceSum;
+			}
+
+			// 可比门店同比
+			double storeYearCompare = 0;
+			if (lastYearMonthSellPriceSum != 0) {
+				storeYearCompare = lastYearLastYearDaySellPriceSum / lastYearMonthSellPriceSum;
+			}
+			rowValue[i] = new String[] {
+				sysName, // 系统名称
+				region, // 大区
+				storeCode, // 门店编号
+				storeName, // 门店名称
+				String.valueOf(storeSet.size()), // 门店数量
+				"" , //本月目标
+				String.valueOf(CommonUtil.setScale("0.00", nowSellPriceSum)), // 昨日销量
+				String.valueOf(CommonUtil.setScale("0.00", monthSellPriceSum)), // 本月销售 
+				String.valueOf(CommonUtil.setScale("0.00", lastSellPercent*100) + "%"), // 昨日销售占比
+				String.valueOf(0), // 本月达成率
+				String.valueOf(CommonUtil.setScale("0.00", lastMonthDaySellPriceSum)), // 上月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", lastYearDaySellPriceSum)), // 去年同月同期销售金额
+				String.valueOf(CommonUtil.setScale("0.00", aroundCompare*100)), // 环比
+				String.valueOf(CommonUtil.setScale("0.00", yearCompare*100)), // 同比 
+				String.valueOf(lastStoreSet.size()), // 可比门店数量
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastDaySellPriceSum)), // 可比门店昨日销售
+				String.valueOf(CommonUtil.setScale("0.00", lastYearMonthSellPriceSum)), // 可比门店本月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastMonthDaySellPriceSum)), // 可比门店上月
+				String.valueOf(CommonUtil.setScale("0.00", lastYearLastYearDaySellPriceSum)), // 可比门店去年
+				String.valueOf(CommonUtil.setScale("0.00", storeAroundCompare*100)), // 可比门店环比
+				String.valueOf(CommonUtil.setScale("0.00", storeYearCompare*100))// 可比门店同比
+			};
+		}
+		
+		
+		
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet = wb.createSheet("区域表一级表");
+		
+		// 报表时间
+		Row dateRow = sheet.createRow(0);
+		stockDataUtil.createDateRow(wb, dateRow, "报表日期", queryDate);
+		
+		// 生成品牌
+		Row brandRow = sheet.createRow(1);
+		stockDataUtil.createDateRow(wb, brandRow, "品牌:", brandSet.toArray());
+		
+		// 标题
+		stockDataUtil.createBolderTitle(wb, sheet, title, 2, 0, headers.length);
+		
+		// 表头
+		Row headerRow = sheet.createRow(3);
+		excelUtil.createRow(headerRow, headers, true);
+		
+		// 红底样式
+		CellStyle cellStyle = excelUtil.getCellStyle(wb, IndexedColors.RED.index);
+		
+		// 白字
+		Font font = excelUtil.getColorFont(wb, IndexedColors.WHITE.index);
+		cellStyle.setFont(font);
+		
+		Row row = null;
+		for (int i = 0, size = rowValue.length; i<size; i++) {
+			String[] value = rowValue[i];
+			row = sheet.createRow(i+4);
+			row.createCell(0).setCellValue(value[0]);
+			row.createCell(1).setCellValue(value[1]);
+			row.createCell(2).setCellValue(value[2]);
+			row.createCell(3).setCellValue(value[3]);
+			row.createCell(4).setCellValue(value[4]);
+			row.createCell(5).setCellValue(value[5]);
+			row.createCell(6).setCellValue(value[6]);
+			row.createCell(7).setCellValue(value[7]);
+			row.createCell(8).setCellValue(value[8]);
+			
+			// 本月达成率
+			Cell reachCell = row.createCell(9);
+			reachCell.setCellValue(value[9]);
+			
+			row.createCell(10).setCellValue(value[10]);
+			row.createCell(11).setCellValue(value[11]);
+			
+			// 环比
+			double monthCompare = Double.valueOf(value[12]);
+			Cell monthCompareCell = row.createCell(12);
+			if (monthCompare < 100) {
+				monthCompareCell.setCellStyle(cellStyle);
+			}
+			monthCompareCell.setCellValue(monthCompare + "%");
+
+			// 同比
+		    double yearCompare = Double.valueOf(value[13]);
+			Cell yearCompareCell = row.createCell(13);
+			if (yearCompare < 100) {
+				yearCompareCell.setCellStyle(cellStyle);
+			}
+			yearCompareCell.setCellValue(yearCompare + "%");
+			
+			row.createCell(14).setCellValue(value[14]);
+			row.createCell(15).setCellValue(value[15]);
+			row.createCell(16).setCellValue(value[16]);
+			row.createCell(17).setCellValue(value[17]);
+			row.createCell(18).setCellValue(value[18]);
+			
+			// 可比门店环比
+			double lastMonthCompare = Double.valueOf(value[19]);
+			Cell lastMonthCompareCell = row.createCell(19);
+			if (lastMonthCompare < 100) {
+				lastMonthCompareCell.setCellStyle(cellStyle);
+			}
+			lastMonthCompareCell.setCellValue(lastMonthCompare + "%");
+
+			// 同比
+			double lastYearCompare = Double.valueOf(value[20]);
+			Cell lastYearCompareCell = row.createCell(20);
+			if (lastYearCompare < 100) {
+				lastYearCompareCell.setCellStyle(cellStyle);
+			}
+			lastYearCompareCell.setCellValue(lastYearCompare + "%");
+		}
+		
+		wb.write(output);
+		output.flush();
+		output.close();
 		
 	}
 	

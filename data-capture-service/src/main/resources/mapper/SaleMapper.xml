@@ -29,6 +29,23 @@
     <result column="store_manager" property="storeManager" jdbcType="CHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
   </resultMap>
+  <resultMap type="com.data.model.SysSaleModel" id="SysSaleMap">
+  	<result column="sys_id" property="sysId" jdbcType="CHAR" />
+    <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
+  	<collection property="saleList" ofType="com.data.bean.Sale" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
+  <resultMap type="com.data.model.RegionSaleModel" id="RegionSaleMap">
+    <result column="region" property="region" jdbcType="VARCHAR" />
+  	<collection property="saleList" ofType="com.data.bean.Sale" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
+  <resultMap type="com.data.model.StoreSaleModel" id="StoreSaleMap">
+  	<result column="store_code" property="storeCode" jdbcType="VARCHAR" />
+    <result column="store_name" property="storeName" jdbcType="VARCHAR" />
+  	<collection property="saleList" ofType="com.data.bean.Sale" resultMap="BaseResultMap">
+  	</collection>
+  </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
@@ -101,6 +118,27 @@
   		AND create_time=#{saleDate}
   	</if>
   </sql>
+  <!-- 按系统分组 -->
+  <select id="selectSysSaleByCondition" resultMap = "SysSaleMap" parameterType="map">
+  	SELECT sys_id, sys_name, store_code, brand
+  	FROM db_sale
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <!-- 按大区分组 -->
+  <select id="selectRegionSaleByCondition" resultMap = "RegionSaleMap" parameterType="map">
+  	SELECT region, store_code, brand, sys_name
+  	FROM db_sale
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
+  <!-- 按门店分组 -->
+  <select id="selectStoreSaleByCondition" resultMap = "StoreSaleMap" parameterType="map">
+  	SELECT store_code, store_name, brand, sys_name
+  	FROM db_sale
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </select>
   <!-- 选择字段查询 -->
   <select id="selectByAnyColumn" resultMap = "BaseResultMap" parameterType="map">
   	SELECT ${column}
