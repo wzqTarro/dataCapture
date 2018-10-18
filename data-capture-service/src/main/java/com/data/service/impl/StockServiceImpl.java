@@ -761,9 +761,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		param.put("queryDate", lastDay);
 		param.put("column", " sys_id, region, sell_num, store_code, simple_bar_code ");
 		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
-		if (CommonUtil.isBlank(saleList)) {
-			throw new DataException("542");
-		}
 		
 		CountDownLatch latch = new CountDownLatch(2);
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
