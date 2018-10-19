@@ -242,6 +242,13 @@
   	GROUP BY region
   </select>
   
+  <!-- 按区域查询当前门店编号 -->
+  <select id="queryNowStoreCode" parameterType="string" resultType="string">
+  	SELECT region, store_code storeCode storeNum  FROM db_sale 
+  	WHERE create_time=#{dateStr} GROUP BY region, store_code
+  </select>
+  
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />

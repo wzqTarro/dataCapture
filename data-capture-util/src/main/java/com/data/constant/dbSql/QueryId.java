@@ -168,4 +168,7 @@ public final class QueryId {
 	
 	/**查询上个月或去年今日销售额**/
 	public static final String QUERY_REGION_SALE_BY_DATE_STR = "SaleMapper.queryRegionSaleByDateStr";
+	
+	/**查询当前门店**/
+	public static final String QUERY_NOW_STORE_CODE = "SaleMapper.queryNowStoreCode";
 }

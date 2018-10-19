@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -128,6 +129,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 							flag = false;
 							logger.info("----->>>>抓取销售数据结束<<<<------");
 						}
+					} catch (DataException e) {
+						return ResultUtil.error(e.getMessage());
 					} catch (Exception e) {
 						flag = true;
 					}
@@ -619,7 +622,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		dateParams.put("endDate", new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1)));
 		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
 		regionMonthSaleList = queryListByObject(QueryId.QUERY_REGION_SALE_BY_DATE, dateParams);
-		// TODO 将本月销售添加到regionDataList里面
+
 		Map<String, Object> dataMap = new HashMap<>(10);
 		for(Map<String, Object> map : regionMonthSaleList) {
 			dataMap.put((String) dataMap.get("region"), map);
@@ -686,6 +689,50 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			}
 		}
 		
+		
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Map<String, Object>> getCalculateStoreDataByRegion() {
+		List<Map<String, Object>> regionDataList = new ArrayList<>(10);
+		//当前的门店
+		String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getSystemDate());
+		List<Map<String, Object>> nowStoreCodeList = queryListByObject(QueryId.QUERY_NOW_STORE_CODE, dateStr);
+		//去年门店数量
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(DateUtil.getSystemDate());
+		calendar.add(Calendar.YEAR, -1);
+		Date lastYearDate = calendar.getTime();
+		dateStr = new SimpleDateFormat("yyyy-MM-dd").format(lastYearDate);
+		List<Map<String, Object>> lastYearStoreList = queryListByObject(QueryId.QUERY_NOW_STORE_CODE, dateStr);
+		//可比门店集合
+		Map<String, Object> nowStoreCodeMap = new HashMap<>(10);
+		for(int i = 0, size = nowStoreCodeList.size(); i < size; i++) {
+			nowStoreCodeMap.put((String) nowStoreCodeList.get(i).get("storeCode"), nowStoreCodeList.get(i));
+		}
+		List<Map<String, Object>> regionStoreNum = new ArrayList<>(10);
+//		for(int i = 0, size = lastYearStoreList.size(); i < size; i++) {
+//			Map<String, Object> lastYearStoreMap = lastYearStoreList.get(i);
+//			String storeCode = (String) lastYearStoreMap.get("storeCode");
+//			Map<String, Object> nowStoreCodeData = (Map<String, Object>) nowStoreCodeMap.get(storeCode);
+//			if(!lastYearStoreMap.equals(nowStoreCodeData)) {
+//				//去掉不相同的门店
+//				nowStoreCodeMap.remove(storeCode);
+//			}
+//		}
+		for(int i = 0, size = nowStoreCodeList.size(); i < size; i++) {
+			for(int j = 0, num = lastYearStoreList.size(); j < num; j++) {
+				if(!nowStoreCodeList.get(i).equals(lastYearStoreList.get(j))) {
+					//去除不相同的店
+					nowStoreCodeList.remove(i);
+				}
+			}
+		}
+		
+		
+		
+		return null;
 	}
 
 	@Override
