@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +148,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 							flag = false;
 							logger.info("----->>>>抓取订单数据结束<<<<------");
 						}
+					} catch (DataException e) {
+						return ResultUtil.error(e.getMessage());
 					} catch (Exception e) {
 						flag = true;
 					}
@@ -399,8 +402,13 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil queryOrderAlarmList(OrderModel order, Integer page, Integer limit) throws Exception {
+	public ResultUtil queryOrderAlarmList(CommonDTO common, OrderModel order, Integer page, Integer limit) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(order);
+		if (common == null || StringUtils.isBlank(common.getStartDate()) || StringUtils.isBlank(common.getEndDate())) {
+			throw new DataException("534");
+		}
+		params.put("startDate", common.getStartDate());
+		params.put("endDate", common.getEndDate());
 		logger.info("--->>>订单报警列表查询参数: {}<<<---", FastJsonUtil.objectToString(params));
 		PageRecord<Order> orderPageRecord = queryPageByObject(QueryId.QUERY_COUNT_ORDER_ALARM_LIST,
 							QueryId.QUERY_ORDER_ALARM_LIST, params, page, limit);
@@ -454,8 +462,13 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void orderAlarmListExcel(OrderModel order, HttpServletResponse response) throws Exception {
+	public void orderAlarmListExcel(CommonDTO common, OrderModel order, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(order);
+		if (common == null || StringUtils.isBlank(common.getStartDate()) || StringUtils.isBlank(common.getEndDate())) {
+			throw new DataException("534");
+		}
+		params.put("startDate", common.getStartDate());
+		params.put("endDate", common.getEndDate());
 		List<Map<String, Object>> orderReportList = queryListByObject(QueryId.QUERY_ORDER_ALARM_LIST_FOR_REPORT, params);
 		for(Map<String, Object> map : orderReportList) {
 			String discountAlarmFlag = (String) map.get("discountAlarmFlag");

@@ -42,12 +42,12 @@ public interface IOrderService {
 	 * @param order
 	 * @return
 	 */
-	ResultUtil queryOrderAlarmList(OrderModel order, Integer page, Integer limit) throws Exception;
+	ResultUtil queryOrderAlarmList(CommonDTO common, OrderModel order, Integer page, Integer limit) throws Exception;
 	
 	/**
 	 * 报警订单报表输出
 	 * @param order
 	 * @param response
 	 */
-	void orderAlarmListExcel(OrderModel order, HttpServletResponse response) throws Exception;
+	void orderAlarmListExcel(CommonDTO common, OrderModel order, HttpServletResponse response) throws Exception;
 }

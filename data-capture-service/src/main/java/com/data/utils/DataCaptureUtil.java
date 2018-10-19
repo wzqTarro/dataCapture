@@ -1,6 +1,7 @@
 package com.data.utils;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,10 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	
 	@Autowired
 	private RestTemplate restTemplate;
-	
+	public static void main(String[] args) {
+		System.err.println(Integer.parseInt(DateUtil.format(new Date(), "yyyyMMdd")));
+		System.err.println(Integer.parseInt("2018-10-19".replace("-", "")));
+	}
 	/**
 	 * 获取python抓取的数据
 	 * @param common
@@ -53,15 +57,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				end = start;
 				
 				// 禁止查询当天
-				if (DateUtil.format(new Date(), "yyyy-MM-dd").equals(start)) {
-					throw new DataException("523");
+				if (Integer.parseInt(DateUtil.format(new Date(), "yyyyMMdd"))<=Integer.valueOf(start.replace("-", ""))) {
+					throw new DataException("只可以查询今天之前的数据");
 				}		
 			}
 		} else {
-			throw new DataException("524");
+			throw new DataException("查询时间不能为空");
 		}		
 		if (false == supply.getIsVal()) {
-			throw new DataException("504");
+			throw new DataException("供应链尚未开通");
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);

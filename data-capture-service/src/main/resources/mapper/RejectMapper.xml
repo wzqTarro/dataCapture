@@ -145,6 +145,11 @@
 		<!-- AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') -->
 		AND r.simpleName LIKE CONCAT(CONCAT('%', #{simpleName}), '%') 
 	</if>
+	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+		<!-- AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') -->
+		AND r.rejectDate &lt;= #{endDate}
+		AND r.rejectDate &gt;= #{startDate}
+	</if>
   </sql>
   
   <!-- 查询退单警报集合 -->
@@ -155,9 +160,12 @@
   	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize} 
   	</if> -->
-  	SELECT r.sysId,r.sysName,r.region,r.provinceArea,r.rejectDepartmentId,r.rejectDepartmentName,r.receiptCode,
-  		r.simpleCode,r.simpleBarCode,r.stockCode,r.simpleName,r.rejectPriceWithRate,r.rejectPrice,r.discountPrice,
-  		r.contractPrice,r.discountAlarmFlag,r.contractAlarmFlag 
+  	SELECT r.sysId sys_id,r.sysName sys_name,r.region,r.provinceArea province_area,r.rejectDepartmentId reject_department_id,
+  	    r.rejectDepartmentName reject_department_name, r.receiptCode receipt_code, r.simpleCode simple_code,
+  	    r.simpleBarCode simple_bar_code, r.stockCode stock_code, r.simpleName simple_name,
+  	    r.rejectPriceWithRate reject_price_with_rate, r.rejectPrice reject_price, r.discountPrice discount_price,
+  		r.contractPrice contract_price, r.discountAlarmFlag discount_alarm_flag, r.contractAlarmFlag contract_alarm_flag, 
+  		r.rejectDate reject_date
   	FROM (<include refid="Alarm_List"/>) r 
   	<include refid="Query_Reject_Alarm"></include> 
   	<if test="pageNum != null and pageSize != null">
@@ -180,20 +188,24 @@
   	o1.reject_department_id rejectDepartmentId, o1.reject_department_name rejectDepartmentName, o1.receipt_code receiptCode, o1.simple_code simpleCode,
   	o1.simple_bar_code simpleBarCode, o1.stock_code stockCode, o1.simple_name simpleName, o1.reject_price_with_rate rejectPriceWithRate, 
   	o1.reject_price rejectPrice, o1.discount_price discountPrice, o1.contract_price contractPrice,   
-  	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag 
+  	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag, o1.reject_date rejectDate
   	FROM db_reject o1 WHERE o1.discount_alarm_flag != ''
   	UNION
   	SELECT o2.sys_id sysId, o2.sys_name sysName, o2.region, o2.province_area provinceArea, 
   	o2.reject_department_id rejectDepartmentId, o2.reject_department_name rejectDepartmentName, o2.receipt_code receiptCode, o2.simple_code simpleCode,
   	o2.simple_bar_code simpleBarCode, o2.stock_code stockCode, o2.simple_name simpleName, o2.reject_price_with_rate rejectPriceWithRate,  
   	o2.reject_price rejectPrice, o2.discount_price discountPrice, o2.contract_price contractPrice,
-  	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag 
+  	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag, o2.reject_date rejectDate
   	FROM db_reject o2 WHERE o2.contract_alarm_flag != ''
   </sql>
   
   <!-- 退单警报报表导出 -->
   <select id="queryRejectAlarmListForReport" parameterType="map" resultType="map">
-  	<include refid="Alarm_List"/>
+  	SELECT r.sysId,r.sysName,r.region,r.provinceArea,r.rejectDepartmentId,r.rejectDepartmentName, r.receiptCode, 
+  		r.simpleCode,r.simpleBarCode, r.stockCode, r.simpleName,r.rejectPriceWithRate, r.rejectPrice, r.discountPrice,
+  		r.contractPrice, r.discountAlarmFlag, r.contractAlarmFlag, date_format(r.rejectDate, '%Y-%c-%d') rejectDate
+  	FROM (<include refid="Alarm_List"/>) r 
+  	<include refid="Query_Reject_Alarm"></include> 
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

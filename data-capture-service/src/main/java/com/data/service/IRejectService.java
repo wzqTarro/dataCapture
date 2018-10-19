@@ -46,12 +46,12 @@ public interface IRejectService {
 	 * @param limit
 	 * @return
 	 */
-	ResultUtil queryRejectAlarmList(RejectModel reject, Integer page, Integer limit) throws Exception;
+	ResultUtil queryRejectAlarmList(CommonDTO common, RejectModel reject, Integer page, Integer limit) throws Exception;
 	
 	/**
 	 * 退单报表导出
 	 * @param reject
 	 * @param response
 	 */
-	void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception;
+	void rejectAlarmListExcel(CommonDTO common, RejectModel reject, HttpServletResponse response) throws Exception;
 }

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +101,8 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 							flag = false;
 							logger.info("----->>>>抓取退单数据结束<<<<------");
 						}
+					} catch (DataException e) {
+						return ResultUtil.error(e.getMessage());
 					} catch (Exception e) {
 						flag = true;
 					}
@@ -375,8 +378,13 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	}
 
 	@Override
-	public ResultUtil queryRejectAlarmList(RejectModel reject, Integer page, Integer limit) throws Exception {
+	public ResultUtil queryRejectAlarmList(CommonDTO common, RejectModel reject, Integer page, Integer limit) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(reject);
+		if (common == null || StringUtils.isBlank(common.getStartDate()) || StringUtils.isBlank(common.getEndDate())) {
+			throw new DataException("534");
+		}
+		params.put("startDate", common.getStartDate());
+		params.put("endDate", common.getEndDate());
 		logger.info("--->>>订单报警列表查询参数: {}<<<---", FastJsonUtil.objectToString(params));
 		PageRecord<Reject> rejectPageRecord = queryPageByObject(QueryId.QUERY_COUNT_REJECT_ALARM_LIST,
 							QueryId.QUERY_REJECT_ALARM_LIST, params, page, limit);
@@ -430,8 +438,13 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception {
+	public void rejectAlarmListExcel(CommonDTO common, RejectModel reject, HttpServletResponse response) throws Exception {
 		Map<String, Object> params = buildQueryParamsMap(reject);
+		if (common == null || StringUtils.isBlank(common.getStartDate()) || StringUtils.isBlank(common.getEndDate())) {
+			throw new DataException("534");
+		}
+		params.put("startDate", common.getStartDate());
+		params.put("endDate", common.getEndDate());
 		List<Map<String, Object>> rejectReportList = queryListByObject(QueryId.QUERY_REJECT_ALARM_LIST_FOR_REPORT, params);
 		for(Map<String, Object> map : rejectReportList) {
 			String discountAlarmFlag = (String) map.get("discountAlarmFlag");

@@ -107,8 +107,8 @@ public class OrderController {
      * @throws Exception 
      */
     @RequestMapping(value = "/queryOrderAlarmList", method = RequestMethod.GET)
-    public String queryOrderAlarmList(OrderModel order, Integer page, Integer limit) throws Exception {
-    	ResultUtil result = orderService.queryOrderAlarmList(order, page, limit);
+    public String queryOrderAlarmList(CommonDTO common, OrderModel order, Integer page, Integer limit) throws Exception {
+    	ResultUtil result = orderService.queryOrderAlarmList(common, order, page, limit);
     	return FastJsonUtil.objectToString(result);
     }
     
@@ -119,7 +119,7 @@ public class OrderController {
      * @throws Exception 
      */
     @RequestMapping(value = "/orderAlarmListExcel", method = RequestMethod.GET)
-    public void orderAlarmListExcel(OrderModel order, HttpServletResponse response) throws Exception {
-    	orderService.orderAlarmListExcel(order, response);
+    public void orderAlarmListExcel(CommonDTO common, OrderModel order, HttpServletResponse response) throws Exception {
+    	orderService.orderAlarmListExcel(common, order, response);
     }
 }

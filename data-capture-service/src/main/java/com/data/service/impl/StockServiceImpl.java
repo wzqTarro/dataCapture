@@ -108,6 +108,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 						flag = false;
 						logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
 					}
+				} catch (DataException e) {
+					return ResultUtil.error(e.getMessage());
 				} catch (Exception e) {
 					flag = true;
 				}

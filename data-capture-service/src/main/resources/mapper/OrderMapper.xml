@@ -155,6 +155,11 @@
 		<!-- AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') -->  
 		AND a.simpleName LIKE CONCAT(CONCAT('%', #{simpleName}), '%') 
 	</if>
+	<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+		<!-- AND simple_name LIKE CONCAT(CONCAT('%', #{simpleName}), '%') -->
+		AND a.deliverStartDate &lt;= #{endDate}
+		AND a.deliverStartDate &gt;= #{startDate}
+	</if>
   </sql>
   <!-- 查询订单警报集合 -->
   <select id="queryOrderAlarmList" parameterType="map" resultMap="BaseResultMap">
@@ -164,9 +169,11 @@
   	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize}
   	</if> -->
-  	SELECT a.sysId,a.sysName,a.region,a.provinceArea,a.storeCode,a.storeName,a.receiptCode,
-  		a.simpleCode,a.simpleBarCode,a.stockCode,a.simpleName,a.buyingPriceWithRate,a.buyingPrice,
-  		a.discountPrice,a.contractPrice,a.discountAlarmFlag,a.contractAlarmFlag 
+  	SELECT a.sysId sys_id,a.sysName sys_name,a.region,a.provinceArea province_area,a.storeCode store_code,
+  		a.storeName store_name,a.receiptCode receipt_code,a.simpleCode simple_code,a.simpleBarCode simple_bar_code,
+  		a.stockCode stock_code,a.simpleName simple_name,a.buyingPriceWithRate buying_price_with_rate,
+  		a.buyingPrice buying_price,a.discountPrice discount_price,a.contractPrice contract_price,
+  		a.discountAlarmFlag discount_alarm_flag,a.contractAlarmFlag contract_alarm_flag, a.deliverStartDate deliver_start_date
   	FROM (<include refid="Alarm_List"/>) a 
   	<include refid="Query_Order_Alarm" />
   	<if test="pageNum != null and pageSize != null">
@@ -189,20 +196,26 @@
   	o1.store_code storeCode, o1.store_name storeName, o1.receipt_code receiptCode, o1.simple_code simpleCode,
   	o1.simple_bar_code simpleBarCode, o1.stock_code stockCode, o1.simple_name simpleName, o1.buying_price_with_rate buyingPriceWithRate,
   	o1.buying_price buyingPrice, o1.discount_price discountPrice, o1.contract_price contractPrice,   
-  	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag 
+  	o1.discount_alarm_flag discountAlarmFlag, o1.contract_alarm_flag contractAlarmFlag,
+  	o1.deliver_start_date deliverStartDate 
   	FROM db_order o1 WHERE o1.discount_alarm_flag != ''
   	UNION
   	SELECT o2.sys_id sysId, o2.sys_name sysName, o2.region, o2.province_area provinceArea, 
   	o2.store_code storeCode, o2.store_name storeName, o2.receipt_code receiptCode, o2.simple_code simpleCode,
   	o2.simple_bar_code simpleBarCode, o2.stock_code stockCode, o2.simple_name simpleName, o2.buying_price_with_rate buyingPriceWithRate, 
   	o2.buying_price buyingPrice, o2.discount_price discountPrice, o2.contract_price contractPrice,   
-  	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag 
+  	o2.discount_alarm_flag discountAlarmFlag, o2.contract_alarm_flag contractAlarmFlag,
+  	o2.deliver_start_date deliverStartDate  
   	FROM db_order o2 WHERE o2.contract_alarm_flag != ''
   </sql>
   
   <!-- 查询订单警报导出集合 -->
   <select id="queryOrderAlarmListForReport" parameterType="map" resultType="map">
-  	<include refid="Alarm_List"/>
+  	SELECT a.sysId,a.sysName,a.region,a.provinceArea,a.storeCode,a.storeName,a.receiptCode,a.simpleCode,a.simpleBarCode,
+  		a.stockCode,a.simpleName,a.buyingPriceWithRate,a.buyingPrice,a.discountPrice,a.contractPrice,
+  		a.discountAlarmFlag, a.contractAlarmFlag, date_format(a.deliverStartDate, '%Y-%c-%d') deliverStartDate
+  	FROM (<include refid="Alarm_List"/>) a 
+  	<include refid="Query_Order_Alarm" />
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

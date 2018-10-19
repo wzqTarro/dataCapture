@@ -128,6 +128,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 							flag = false;
 							logger.info("----->>>>抓取销售数据结束<<<<------");
 						}
+					} catch (DataException e) {
+						return ResultUtil.error(e.getMessage());
 					} catch (Exception e) {
 						flag = true;
 					}

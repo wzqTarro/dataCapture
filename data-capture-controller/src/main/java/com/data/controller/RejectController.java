@@ -108,8 +108,8 @@ public class RejectController {
      * @return
      */
     @RequestMapping(value = "/queryRejectAlarmList", method = RequestMethod.GET)
-    public String queryRejectAlarmList(RejectModel reject, Integer page, Integer limit) throws Exception {
-    	ResultUtil result = rejectService.queryRejectAlarmList(reject, page, limit);
+    public String queryRejectAlarmList(CommonDTO common, RejectModel reject, Integer page, Integer limit) throws Exception {
+    	ResultUtil result = rejectService.queryRejectAlarmList(common, reject, page, limit);
     	return FastJsonUtil.objectToString(result);
     }
     
@@ -120,7 +120,7 @@ public class RejectController {
      * @throws Exception 
      */
     @RequestMapping(value = "/rejectAlarmListExcel", method = RequestMethod.GET)
-    public void rejectAlarmListExcel(RejectModel reject, HttpServletResponse response) throws Exception {
-    	rejectService.rejectAlarmListExcel(reject, response);
+    public void rejectAlarmListExcel(CommonDTO common, RejectModel reject, HttpServletResponse response) throws Exception {
+    	rejectService.rejectAlarmListExcel(common, reject, response);
     }
 }
