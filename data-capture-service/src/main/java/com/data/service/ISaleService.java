@@ -65,7 +65,7 @@ public interface ISaleService {
 	/**
 	 * 按区域公司一级表
 	 */
-	void exportSaleExcelByRegion(String region);
+	void exportSaleExcelByRegion(String saleDate, HttpServletResponse response) throws Exception;
 	/**
 	 * 按系统导出公司一级表
 	 */

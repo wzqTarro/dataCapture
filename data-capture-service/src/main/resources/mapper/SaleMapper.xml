@@ -213,9 +213,24 @@
   	SELECT store_code storeCode FROM db_sale GROUP BY store_code
   </select>
   
+  <sql id="Region_Query_List">
+  	<where>
+  		<if test="startDate != null and startDate != ''">
+  			AND create_time&gt;=#{startDate} 
+  		</if>
+  		<if test="endDate != null and endDate != ''">
+  			AND create_time&lt;=#{endDate} 
+  		</if>
+  		<if test="saleDate != null and saleDate != ''">
+  			AND create_time=#{saleDate}
+  		</if>
+  	</where>
+  </sql>
+  
   <!-- 查询门店集合，包含门店数据 昨日销售额 -->
-  <select id="queryStoreNumByRegion" resultType="map">
+  <select id="queryStoreNumByRegion" parameterType="map" resultType="map">
   	SELECT region, COUNT(store_code) storeNum, SUM(sell_price) price FROM db_sale 
+  	<include refid="Region_Query_List"></include>
   	GROUP BY region
   </select>
   
@@ -223,11 +238,11 @@
   <select id="queryRegionSaleByDate" parameterType="map" resultType="map">
   	SELECT region, SUM(sell_price) monthSale FROM db_sale 
   	WHERE 1=1 
-  	<if test="createDate != null and createDate != ''">
-  		AND createDate &gt;=#{createDate} 
+  	<if test="startDate != null">
+  		AND create_time &gt;=#{startDate} 
   	</if>
-  	<if test="endDate != null and endDate != ''">
-  		AND endDate &lt;=#{endDate} 
+  	<if test="endDate != null">
+  		AND create_time &lt;=#{endDate} 
   	</if>
   	GROUP BY region
   </select>
@@ -236,8 +251,9 @@
   <select id="queryRegionSaleByDateStr" parameterType="string" resultType="map">
   	SELECT region, SUM(sell_price) dateSale FROM db_sale 
   	WHERE 1=1 
-  	<if test="date != null and date != ''">
-  		AND create_time=#{date} 
+  	<!-- <if test="dateString != null and dateString != ''"> -->
+  	<if test="_parameter != null and _parameter != ''">
+  		AND create_time=#{dateString} 
   	</if>
   	GROUP BY region
   </select>
@@ -246,6 +262,12 @@
   <select id="queryNowStoreCode" parameterType="string" resultType="string">
   	SELECT region, store_code storeCode storeNum  FROM db_sale 
   	WHERE create_time=#{dateStr} GROUP BY region, store_code
+  </select>
+  
+  <!-- 按日期查询门店信息 -->
+  <select id="queryStoreBySaleDate" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> FROM db_sale 
+  	<include refid="Region_Query_List"></include>
   </select>
   
   

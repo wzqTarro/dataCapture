@@ -46,7 +46,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/error",
 				"/user/login",
 				"/sale/storeDailyExcel",
-				"/sale/calculateStoreDailySale"
+				"/sale/calculateStoreDailySale",
+				"/sale/exportSaleExcelByRegion"
 				
 		};
 	}

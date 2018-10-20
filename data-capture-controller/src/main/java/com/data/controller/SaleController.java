@@ -162,4 +162,16 @@ public class SaleController {
     	OutputStream output = response.getOutputStream();
     	saleService.exportRegionSecondExcelBySys(queryDate, sysId, region, output);
     }
+    
+    /**
+     * 按区域导出公司一级表
+     * @param saleDate
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/exportSaleExcelByRegion", method = RequestMethod.GET)
+    @ApiOperation(value = "按区域-导出公司一级表", httpMethod = "GET")
+    public void exportSaleExcelByRegion(String saleDate, HttpServletResponse response) throws Exception {
+    	saleService.exportSaleExcelByRegion(saleDate, response);
+    }
 }

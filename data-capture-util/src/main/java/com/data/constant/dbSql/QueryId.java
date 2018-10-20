@@ -171,4 +171,7 @@ public final class QueryId {
 	
 	/**查询当前门店**/
 	public static final String QUERY_NOW_STORE_CODE = "SaleMapper.queryNowStoreCode";
+	
+	/**按时间查询销售信息**/
+	public static final String QUERY_STORE_BY_SALE_DATE = "SaleMapper.queryStoreBySaleDate";
 }

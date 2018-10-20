@@ -53,7 +53,7 @@ public class WebConfigure implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		/*registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
+		registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
 						.excludePathPatterns("/webjars/**",
 											 "/swagger-resources/**",
 											 "/static/**",
@@ -61,22 +61,22 @@ public class WebConfigure implements WebMvcConfigurer {
 											 "/css/**",
 											 "/resource/**",
 											 "/html/**",
-											 "/img/**");*/
+											 "/img/**");
 	}
 	
 	/**
 	 * 设置时间转换器
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
-	@Bean
-	public ConversionService getConversionService() {
-		ConversionServiceFactoryBean factory = new ConversionServiceFactoryBean();
-		Set<Converter> converterSet = new HashSet<>(10);
-		converterSet.add(dateConverter);
-		factory.setConverters(converterSet);
-		return factory.getObject();
-	}
+//	@SuppressWarnings("rawtypes")
+//	@Bean
+//	public ConversionService getConversionService() {
+//		ConversionServiceFactoryBean factory = new ConversionServiceFactoryBean();
+//		Set<Converter> converterSet = new HashSet<>(10);
+//		converterSet.add(dateConverter);
+//		factory.setConverters(converterSet);
+//		return factory.getObject();
+//	}
 	
 	/**
 	 * 文件上传配置
