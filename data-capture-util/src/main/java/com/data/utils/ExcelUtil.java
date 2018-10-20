@@ -441,7 +441,10 @@ public class ExcelUtil<T> {
 								}
 							}
 							break;
-						} 
+						} else {
+							Cell cell = row.createCell(i);
+							cell.setCellValue(0);
+						}
 					}
 				}
 			}
