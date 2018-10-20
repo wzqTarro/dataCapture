@@ -174,4 +174,31 @@ public final class QueryId {
 	
 	/**按时间查询销售信息**/
 	public static final String QUERY_STORE_BY_SALE_DATE = "SaleMapper.queryStoreBySaleDate";
+	
+	/**按区域 区域一级报表**/
+	public static final String QUERY_SALE_REPORT_BY_REGION = "SaleMapper.querySaleReportByRegion";
+	
+	/**按区域 区域一级表 月销售**/
+	public static final String QUERY_SALE_REPORT_BY_DATE = "SaleMapper.querySaleReportByDate";
+	
+	/**按区域 区域一级表 条件查询**/
+	public static final String QUERY_SALE_REPORT_BY_PARAMS = "SaleMapper.querySaleReportByParams";
+	
+	/**按区域 区域二级表**/
+	public static final String QUERY_SALE_REPORT_BY_PROVINCE_AREA = "SaleMapper.querySaleReportByProvinceArea";
+	
+	/**按区域 区域二级表 月销售**/
+	public static final String QUERY_SALE_REPORT_BY_PROVINCE_AREA_AND_DATE = "SaleMapper.querySaleReportByProvinceAreaAndDate";
+	
+	/**按区域 区域二级表 条件查询**/
+	public static final String QUERY_SALE_REPORT_SECOND_BY_PARAMS = "SaleMapper.querySaleReportSecondByParams";
+	
+	/**按区域 区域三级表**/
+	public static final String QUERY_SALE_REPORT_BY_STORE_CODE = "SaleMapper.querySaleReportByStoreCode";
+	
+	/**按区域 区域三级表 月销售**/
+	public static final String QUERY_SALE_REPORT_BY_STORE_CODE_AND_DATE = "SaleMapper.querySaleReportByStoreCodeAndDate";
+	
+	/**按区域 区域三级表 条件查询**/
+	public static final String QUERY_SALE_REPORT_THIRD_BY_PARAMS = "SaleMapper.querySaleReportThirdByParams";
 }

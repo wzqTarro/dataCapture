@@ -66,6 +66,35 @@ public interface ISaleService {
 	 * 按区域公司一级表
 	 */
 	void exportSaleExcelByRegion(String saleDate, HttpServletResponse response) throws Exception;
+	
+	/**
+	 * 按区域 系统一级表
+	 * @param sysId
+	 * @param saleDate
+	 * @param response
+	 * @throws Exception
+	 */
+	void exportSaleExcelBySysId(String region, String saleDate, HttpServletResponse response) throws Exception;
+	
+	/**
+	 * 按区域 省区一级表
+	 * @param region
+	 * @param saleDate
+	 * @param response
+	 * @throws Exception
+	 */
+	void exportSaleExcelByProvinceArea(String region, String saleDate, HttpServletResponse response) throws Exception;
+	
+	/**
+	 * 按区域 门店一级表
+	 * @param storeCode
+	 * @param saleDate
+	 * @param response
+	 * @throws Exception
+	 */
+	void exportSaleExcelByStoreCode(String provinceArea, String saleDate, HttpServletResponse response) throws Exception;
+	
+	
 	/**
 	 * 按系统导出公司一级表
 	 */

@@ -174,4 +174,40 @@ public class SaleController {
     public void exportSaleExcelByRegion(String saleDate, HttpServletResponse response) throws Exception {
     	saleService.exportSaleExcelByRegion(saleDate, response);
     }
+    
+    /**
+     * 按区域导出区域一级报表
+     * @param saleDate
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/exportSaleExcelBySysId", method = RequestMethod.GET)
+    @ApiOperation(value = "按区域-导出区域一级表", httpMethod = "GET")
+    public void exportSaleExcelBySysId(String region, String saleDate, HttpServletResponse response) throws Exception {
+    	saleService.exportSaleExcelBySysId(region, saleDate, response);
+    }
+    
+    /**
+     * 按区域导出区域二级报表
+     * @param saleDate
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/exportSaleExcelByProvinceArea", method = RequestMethod.GET)
+    @ApiOperation(value = "按区域-导出区域二级表", httpMethod = "GET")
+    public void exportSaleExcelByProvinceArea(String region, String saleDate, HttpServletResponse response) throws Exception {
+    	saleService.exportSaleExcelByProvinceArea(region, saleDate, response);
+    }
+    
+    /**
+     * 按区域导出区域三级报表
+     * @param saleDate
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(value = "/exportSaleExcelByStoreCode", method = RequestMethod.GET)
+    @ApiOperation(value = "按区域-导出区域三级表", httpMethod = "GET")
+    public void exportSaleExcelByStoreCode(String provinceArea, String saleDate, HttpServletResponse response) throws Exception {
+    	saleService.exportSaleExcelByStoreCode(provinceArea, saleDate, response);
+    }
 }

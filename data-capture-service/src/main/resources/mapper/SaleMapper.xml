@@ -215,6 +215,12 @@
   
   <sql id="Region_Query_List">
   	<where>
+  		<if test="region != null and region != ''">
+  			AND region=#{region} 
+  		</if>
+  		<if test="provinceArea != null and provinceArea != ''">
+  			AND province_area=#{provinceArea} 
+  		</if>
   		<if test="startDate != null and startDate != ''">
   			AND create_time&gt;=#{startDate} 
   		</if>
@@ -234,6 +240,27 @@
   	GROUP BY region
   </select>
   
+  <!-- 按区域查 指定区域一级表 -->
+  <select id="querySaleReportByRegion" parameterType="map" resultType="map">
+  	SELECT region,sys_id sysId, COUNT(store_code) storeNum, SUM(sell_price) price FROM db_sale 
+  	<include refid="Region_Query_List"></include>
+  	GROUP BY region, sys_id
+  </select>
+  
+  <!-- 按区域查 指定区域二级表 -->
+  <select id="querySaleReportByProvinceArea" parameterType="map" resultType="map">
+  	SELECT region,province_area provinceArea, COUNT(store_code) storeNum, SUM(sell_price) price FROM db_sale 
+  	<include refid="Region_Query_List"></include>
+  	GROUP BY region, province_area
+  </select>
+  
+  <!-- 按区域查 指定区域三级表 -->
+  <select id="querySaleReportByStoreCode" parameterType="map" resultType="map">
+  	SELECT province_area provinceArea, store_code storeCode, COUNT(store_code) storeNum, SUM(sell_price) price FROM db_sale 
+  	<include refid="Region_Query_List"></include>
+  	GROUP BY province_area, store_code
+  </select>
+  
   <!-- 按区域查询本月销售额 -->
   <select id="queryRegionSaleByDate" parameterType="map" resultType="map">
   	SELECT region, SUM(sell_price) monthSale FROM db_sale 
@@ -247,6 +274,54 @@
   	GROUP BY region
   </select>
   
+  <!-- 按区域 区域一级表  查询月销售 -->
+  <select id="querySaleReportByDate" parameterType="map" resultType="map">
+  	SELECT sys_id sysId, SUM(sell_price) monthSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="region != null and region != ''">
+  		AND region=#{region} 
+  	</if>
+  	<if test="startDate != null">
+  		AND create_time &gt;=#{startDate} 
+  	</if>
+  	<if test="endDate != null">
+  		AND create_time &lt;=#{endDate} 
+  	</if>
+  	GROUP BY sys_id
+  </select>
+  
+  <!-- 按区域 区域二级表  查询月销售 -->
+  <select id="querySaleReportByProvinceAreaAndDate" parameterType="map" resultType="map">
+  	SELECT province_area provinceArea, SUM(sell_price) monthSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="region != null and region != ''">
+  		AND region=#{region} 
+  	</if>
+  	<if test="startDate != null">
+  		AND create_time &gt;=#{startDate} 
+  	</if>
+  	<if test="endDate != null">
+  		AND create_time &lt;=#{endDate} 
+  	</if>
+  	GROUP BY province_area
+  </select>
+  
+  <!-- 按区域 区域三级表  查询月销售 -->
+  <select id="querySaleReportByStoreCodeAndDate" parameterType="map" resultType="map">
+  	SELECT store_code storeCode, SUM(sell_price) monthSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="provinceArea != null and provinceArea != ''">
+  		AND province_area=#{provinceArea} 
+  	</if>
+  	<if test="startDate != null">
+  		AND create_time &gt;=#{startDate} 
+  	</if>
+  	<if test="endDate != null">
+  		AND create_time &lt;=#{endDate} 
+  	</if>
+  	GROUP BY store_code
+  </select>
+  
   <!-- 按区域查询去年进入销售额 -->
   <select id="queryRegionSaleByDateStr" parameterType="string" resultType="map">
   	SELECT region, SUM(sell_price) dateSale FROM db_sale 
@@ -256,6 +331,45 @@
   		AND create_time=#{dateString} 
   	</if>
   	GROUP BY region
+  </select>
+  
+  <!-- 按区域 区域一级表 按时间查询销售信息 -->
+  <select id="querySaleReportByParams" parameterType="map" resultType="map">
+  	SELECT sys_id sysId, SUM(sell_price) dateSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="region != null and region != ''">
+  		AND region=#{region} 
+  	</if>
+  	<if test="dateString != null and dateString != ''">
+  		AND create_time=#{dateString} 
+  	</if>
+  	GROUP BY sys_id
+  </select>
+  
+  <!-- 按区域 区域二级表 按时间查询销售信息 -->
+  <select id="querySaleReportSecondByParams" parameterType="map" resultType="map">
+  	SELECT province_area provinceArea, SUM(sell_price) dateSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="region != null and region != ''">
+  		AND region=#{region} 
+  	</if>
+  	<if test="dateString != null and dateString != ''">
+  		AND create_time=#{dateString} 
+  	</if>
+  	GROUP BY province_area
+  </select>
+  
+  <!-- 按区域 区域三级表 按时间查询销售信息 -->
+  <select id="querySaleReportThirdByParams" parameterType="map" resultType="map">
+  	SELECT store_code storeCode, SUM(sell_price) dateSale FROM db_sale 
+  	WHERE 1=1 
+  	<if test="provinceArea != null and provinceArea != ''">
+  		AND province_area=#{provinceArea} 
+  	</if>
+  	<if test="dateString != null and dateString != ''">
+  		AND create_time=#{dateString} 
+  	</if>
+  	GROUP BY store_code
   </select>
   
   <!-- 按区域查询当前门店编号 -->

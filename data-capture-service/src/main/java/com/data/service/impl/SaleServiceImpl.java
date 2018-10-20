@@ -737,7 +737,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			Map<String, Object> regionDataMap = regionDataList.get(i);
 			int num = 0;
 			for(Sale sale : saleSet) {
-				if(CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
 					if(sale.getRegion().equals(regionDataMap.get("region"))) {
 						regionDataMap.put("differNum", num++);
 					}
@@ -765,7 +765,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			Map<String, Object> regionDataMap = regionDataList.get(i);
 			double differSale = 0;
 			for(Sale sale : lastYearSaleList) {
-				if(CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
 					if(sale.getRegion().equals(regionDataMap.get("region"))) {
 						regionDataMap.put("differYesterDaySale", differSale++);
 					}
@@ -792,7 +792,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			Map<String, Object> regionDataMap = regionDataList.get(i);
 			double differSale = 0;
 			for (Sale sale : monthDataList) {
-				if(CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
 					if (sale.getRegion().equals(regionDataMap.get("region"))) {
 						regionDataMap.put("differMonthSale", differSale++);
 					}
@@ -817,7 +817,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			Map<String, Object> regionDataMap = regionDataList.get(i);
 			double differSale = 0;
 			for (Sale sale : lastMonthDataDiffList) {
-				if(CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
 					if (sale.getRegion().equals(regionDataMap.get("region"))) {
 						regionDataMap.put("differLastMonthDateSale", differSale++);
 					}
@@ -842,7 +842,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			Map<String, Object> regionDataMap = regionDataList.get(i);
 			double differSale = 0;
 			for (Sale sale : lastYearDataDiffList) {
-				if(CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("region")) && CommonUtil.isNotBlank(sale.getRegion())) {
 					if (sale.getRegion().equals(regionDataMap.get("region"))) {
 						regionDataMap.put("differLastYearDateSale", differSale++);
 					}
@@ -870,11 +870,11 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			
 		}
 		logger.info("--->>>组装数据完成<<<---");
-		String title = "全公司直营KA分系统日报表";
+		String title = "全公司直营KA分大区日报表";
 		String[] header = new String[] {"大区", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
-				"昨日销售占比", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比", "同比", 
-				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比",
-				"可比门店同比"};
+				"昨日销售占比(%)", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比(%)", "同比(%)", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
+				"可比门店同比(%)"};
 		List<String> codeList = codeDictService
 				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_COMPANY_REPORT.getValue());
 		String fileName = "按区域一级报表-" + DateUtil.getCurrentDateStr();
@@ -1941,6 +1941,920 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		output.flush();
 		output.close();
 		
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void exportSaleExcelBySysId(String region, String saleDate, HttpServletResponse response) throws Exception {
+		if(CommonUtil.isBlank(region)) {
+			throw new DataException("102");
+		}
+		if(CommonUtil.isBlank(saleDate)) {
+			throw new DataException("534");
+		}
+		Map<String, Object> params = new HashMap<>(8);
+		//区域集合 包括区域名称 门店数量 指定日期的销售额
+		List<Map<String, Object>> regionDataList = new ArrayList<>(10);
+		params.put("region", region);
+		params.put("saleDate", saleDate);
+		regionDataList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_REGION, params);
+		logger.info("--->>>regionDataList.first: {}<<<", JsonUtil.toJson(regionDataList));
+		//得到前一个月26号到指定日期的日期字符串
+		List<String> daysList = DateUtil.getMonthDays(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		String dateStr = DateUtil.getCurrentDateStr();
+		int index = daysList.indexOf(dateStr);
+		List<String> newDaysList = new ArrayList<>(10);
+		for(int i = 0; i < index; i++) {
+			newDaysList.add(daysList.get(i));
+		}
+		//需要计算每个区域上个月26号到指定日期的销售额
+		Map<String, Object> dateParams = new HashMap<>(4);
+		dateParams.put("region", region);
+		dateParams.put("startDate", daysList.get(0));
+		dateParams.put("endDate", saleDate);
+		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
+		regionMonthSaleList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_DATE, dateParams);
+		logger.info("-->>通过: {}<<--", JsonUtil.toJson(regionMonthSaleList));
+		
+		Map<String, Object> dataMap = new HashMap<>(10);
+		for(Map<String, Object> map : regionMonthSaleList) {
+			dataMap.put((String) map.get("sysId"), map);
+		}
+		//区域集合 包括区域名称 门店数量 本月销售目标 昨日销售额 月销售 昨日销售占比 本月达成率
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> monthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("sysId"));
+			if(CommonUtil.isNotBlank(monthSaleMap)) {
+				double monthSale = CommonUtil.isBlank(monthSaleMap.get("monthSale")) ? 0.0 : (double) monthSaleMap.get("monthSale");
+				double price = CommonUtil.isBlank(regionData.get("price")) ? 0.0 : (double) regionData.get("price");
+				//月销售
+				regionData.put("monthSale", monthSale);
+				if(monthSale != 0) {
+					//昨日销售占比
+					regionData.put("yesterdayMonthSale", price / monthSale);
+				} else {
+					regionData.put("yesterdayMonthSale", 0);
+				}
+				//本月销售目标 暂无  百亚自行维护
+				regionData.put("monthGoalTarget", 0);
+				//本月达成率 (本月销售)/(本月销售目标)
+				regionData.put("monthGoalSale", 0);
+			}
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.MONTH, -1);
+		String dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		logger.info("--->>>上月今日:{}<<<---", dateString);
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("region", region);
+		//上月今日销售额
+		List<Map<String, Object>> lastMonthDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_PARAMS, params);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateString);
+		//可比上月今日销售集合
+		List<Sale> lastMonthDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastMonthDateList.size(); i++) {
+			dataMap.put((String) lastMonthDateList.get(i).get("sysId"), lastMonthDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastMonthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("sysId"));
+			if(CommonUtil.isNotBlank(lastMonthSaleMap)) {
+				//上月同期销售金额
+				regionData.put("lastMonthDateSale", lastMonthSaleMap.get("dateSale"));
+			}
+		}
+		logger.info("-->>通过上月同期: {}<<--", JsonUtil.toJson(lastMonthDateList));
+		
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("region", region);
+		//去年今日销售额
+		List<Map<String, Object>> lastYearDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_PARAMS, params);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateString);
+		//可比去年今日销售集合
+		List<Sale> lastYearDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastYearDateList.size(); i++) {
+			dataMap.put((String) lastYearDateList.get(i).get("sysId"), lastYearDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastYearSaleMap = (Map<String, Object>) dataMap.get(regionData.get("sysId"));
+			if(CommonUtil.isNotBlank(lastYearSaleMap)) {
+				//去年同月同期销售金额
+				regionData.put("lastYearDateSale", lastYearSaleMap.get("dateSale"));
+				double lastMonthDateSale = CommonUtil.isBlank(regionData.get("lastMonthDateSale")) ? 0.0 : (double) regionData.get("lastMonthDateSale");
+				double monthSale = CommonUtil.isBlank(regionData.get("monthSale")) ? 0.0 : (double) regionData.get("monthSale");
+				double lastYearDateSale = CommonUtil.isBlank(regionData.get("lastYearDateSale")) ? 0.0 : (double) regionData.get("lastYearDateSale");
+				if(monthSale != 0) {
+					//环比
+					regionData.put("chaimIndex", lastMonthDateSale / monthSale);
+					//同比
+					regionData.put("yearBasis", lastYearDateSale / monthSale);
+				} else {
+					regionData.put("chaimIndex", 0.0);
+					regionData.put("yearBasis", 0.0);
+				}
+			}
+		}
+		logger.info("-->>通过去年同期<<--");
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", saleDate);
+		//指定日期销售门店
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去年门店
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		Date lastYearDate = calendar.getTime();
+		dateStr = DateUtil.format(lastYearDate, DateUtil.DATE_PATTERN.YYYY_MM_DD);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateStr);
+		List<Sale> lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//指定日期与上年同时有销售的销售集合
+		Set<Sale> saleSet = new HashSet<>(10);
+		for(int i = 0, size = saleList.size(); i < size; i++) {
+			for(int j = 0, num = lastYearSaleList.size(); j < num; j++) {
+				Sale newSale = saleList.get(i);
+				Sale oldSale = lastYearSaleList.get(j);
+				if((newSale.getSysId().equals(oldSale.getSysId())) && (newSale.getStoreCode().equals(oldSale.getStoreCode()))) {					
+					saleSet.add(newSale);
+				}
+			}
+		}
+		//可比门店数量
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			int num = 0;
+			for(Sale sale : saleSet) {
+				if(CommonUtil.isNotBlank(regionDataMap.get("sysId")) && CommonUtil.isNotBlank(sale.getSysId())) {
+					if(sale.getSysId().equals(regionDataMap.get("sysId"))) {
+						regionDataMap.put("differNum", num++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比门店<<--");
+		Date yesterday = DateUtil.addDate(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD), Calendar.DATE, -1);
+		//去年前一天销售
+		Date lastYearYesterday = DateUtil.addDate(yesterday, Calendar.YEAR, -1);
+		lastYearSaleList.clear();
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", DateUtil.format(lastYearYesterday, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0; i < lastYearSaleList.size(); i++) {
+				if(!sale.getStoreCode().equals(lastYearSaleList.get(i).getStoreCode())) {
+					lastYearSaleList.remove(i);
+				}
+			}
+		}
+		//可比门店昨日销售
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for(Sale sale : lastYearSaleList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("sysId")) && CommonUtil.isNotBlank(sale.getSysId())) {
+					if(sale.getSysId().equals(regionDataMap.get("sysId"))) {
+						regionDataMap.put("differYesterDaySale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比昨日销售<<--");
+		List<Sale> monthDataList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, dateParams);
+		//logger.info(">>>可比本月数据: {}<<<", JsonUtil.toJson(monthDataList));
+		LinkedList<Sale> monthDataLinkList = new LinkedList<>();
+		monthDataLinkList.addAll(monthDataList);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = monthDataLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(monthDataLinkList.get(i).getStoreCode())) {
+					monthDataLinkList.remove(i);
+				}
+			}
+		}
+		monthDataList.clear();
+		monthDataList.addAll(monthDataLinkList);
+		//可比本月销售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : monthDataList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("sysId")) && CommonUtil.isNotBlank(sale.getSysId())) {
+					if (sale.getSysId().equals(regionDataMap.get("sysId"))) {
+						regionDataMap.put("differMonthSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比本月销售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastMonthDataDiffLinkList = new LinkedList<>();
+		lastMonthDataDiffLinkList.addAll(lastMonthDataDiffList);
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = lastMonthDataDiffLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(lastMonthDataDiffLinkList.get(i).getStoreCode())) {
+					lastMonthDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastMonthDataDiffList.clear();
+		lastMonthDataDiffList.addAll(lastMonthDataDiffLinkList);
+		//可比上月同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastMonthDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("sysId")) && CommonUtil.isNotBlank(sale.getSysId())) {
+					if (sale.getSysId().equals(regionDataMap.get("sysId"))) {
+						regionDataMap.put("differLastMonthDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比上月同期銷售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastYearDataDiffLinkList = new LinkedList<>();
+		lastYearDataDiffLinkList.addAll(lastYearDataDiffList);
+		for (Sale sale : saleSet) {
+			for (int i = 0, size = lastYearDataDiffLinkList.size(); i < size; i++) {
+				if (!sale.getStoreCode().equals(lastYearDataDiffLinkList.get(i).getStoreCode())) {
+					lastYearDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastYearDataDiffList.clear();
+		lastYearDataDiffList.addAll(lastYearDataDiffLinkList);
+		//可比去年同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastYearDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("sysId")) && CommonUtil.isNotBlank(sale.getSysId())) {
+					if (sale.getSysId().equals(regionDataMap.get("sysId"))) {
+						regionDataMap.put("differLastYearDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比去年同期銷售 <<--");
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			//可比月銷售
+			double differMonthSale = CommonUtil.isBlank(regionDataMap.get("differMonthSale")) ? 0.0 : (double) regionDataMap.get("differMonthSale");
+			//可比上月銷售
+			double differLastMonthDateSale = CommonUtil.isBlank(regionDataMap.get("differLastMonthDateSale")) ? 0.0 : (double) regionDataMap.get("differLastMonthDateSale");
+			//可比去年銷售
+			double differLastYearDateSale = CommonUtil.isBlank(regionDataMap.get("differLastYearDateSale")) ? 0.0 : (double) regionDataMap.get("differLastYearDateSale");
+			if(differMonthSale != 0) {
+				//可比环比
+				regionDataMap.put("differChaimIndex", differLastMonthDateSale / differMonthSale);
+				//可比同比
+				regionDataMap.put("differYearBasis", differLastYearDateSale / differMonthSale);
+			} else {
+				regionDataMap.put("differChaimIndex", 0.0);
+				regionDataMap.put("differYearBasis", 0.0);
+			}
+			
+		}
+		logger.info("--->>>组装数据完成<<<---");
+		String title = "大区2直营KA分系统日报表";
+		String[] header = new String[] {"大区", "系统", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比(%)", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比(%)", "同比(%)", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
+				"可比门店同比(%)"};
+		List<String> codeList = codeDictService
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_SYSTEM_REPORT.getValue());
+		String fileName = "按区域 区域表一级报表-" + DateUtil.getCurrentDateStr();
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
+		ExcelUtil excelUtil = new ExcelUtil();
+		excelUtil.exportTemplateByMap(header, regionDataList, title, codeList, response.getOutputStream());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void exportSaleExcelByProvinceArea(String region, String saleDate, HttpServletResponse response)
+			throws Exception {
+		if(CommonUtil.isBlank(region)) {
+			throw new DataException("102");
+		}
+		if(CommonUtil.isBlank(saleDate)) {
+			throw new DataException("534");
+		}
+		Map<String, Object> params = new HashMap<>(8);
+		//区域集合 包括区域名称 门店数量 指定日期的销售额
+		List<Map<String, Object>> regionDataList = new ArrayList<>(10);
+		params.put("region", region);
+		params.put("saleDate", saleDate);
+		regionDataList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_PROVINCE_AREA, params);
+		logger.info("--->>>regionDataList.first: {}<<<", JsonUtil.toJson(regionDataList));
+		//得到前一个月26号到指定日期的日期字符串
+		List<String> daysList = DateUtil.getMonthDays(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		String dateStr = DateUtil.getCurrentDateStr();
+		int index = daysList.indexOf(dateStr);
+		List<String> newDaysList = new ArrayList<>(10);
+		for(int i = 0; i < index; i++) {
+			newDaysList.add(daysList.get(i));
+		}
+		//需要计算每个区域上个月26号到指定日期的销售额
+		Map<String, Object> dateParams = new HashMap<>(4);
+		dateParams.put("region", region);
+		dateParams.put("startDate", daysList.get(0));
+		dateParams.put("endDate", saleDate);
+		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
+		regionMonthSaleList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_PROVINCE_AREA_AND_DATE, dateParams);
+		logger.info("-->>通过: {}<<--", JsonUtil.toJson(regionMonthSaleList));
+		
+		Map<String, Object> dataMap = new HashMap<>(10);
+		for(Map<String, Object> map : regionMonthSaleList) {
+			dataMap.put((String) map.get("provinceArea"), map);
+		}
+		//区域集合 包括区域名称 门店数量 本月销售目标 昨日销售额 月销售 昨日销售占比 本月达成率
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> monthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("provinceArea"));
+			if(CommonUtil.isNotBlank(monthSaleMap)) {
+				double monthSale = CommonUtil.isBlank(monthSaleMap.get("monthSale")) ? 0.0 : (double) monthSaleMap.get("monthSale");
+				double price = CommonUtil.isBlank(regionData.get("price")) ? 0.0 : (double) regionData.get("price");
+				//月销售
+				regionData.put("monthSale", monthSale);
+				if(monthSale != 0) {
+					//昨日销售占比
+					regionData.put("yesterdayMonthSale", price / monthSale);
+				} else {
+					regionData.put("yesterdayMonthSale", 0);
+				}
+				//本月销售目标 暂无  百亚自行维护
+				regionData.put("monthGoalTarget", 0);
+				//本月达成率 (本月销售)/(本月销售目标)
+				regionData.put("monthGoalSale", 0);
+			}
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.MONTH, -1);
+		String dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		logger.info("--->>>上月今日:{}<<<---", dateString);
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("region", region);
+		//上月今日销售额
+		List<Map<String, Object>> lastMonthDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_SECOND_BY_PARAMS, params);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateString);
+		//可比上月今日销售集合
+		List<Sale> lastMonthDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastMonthDateList.size(); i++) {
+			dataMap.put((String) lastMonthDateList.get(i).get("provinceArea"), lastMonthDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastMonthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("provinceArea"));
+			if(CommonUtil.isNotBlank(lastMonthSaleMap)) {
+				//上月同期销售金额
+				regionData.put("lastMonthDateSale", lastMonthSaleMap.get("dateSale"));
+			}
+		}
+		logger.info("-->>通过上月同期: {}<<--", JsonUtil.toJson(lastMonthDateList));
+		
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("region", region);
+		//去年今日销售额
+		List<Map<String, Object>> lastYearDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_SECOND_BY_PARAMS, params);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateString);
+		//可比去年今日销售集合
+		List<Sale> lastYearDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastYearDateList.size(); i++) {
+			dataMap.put((String) lastYearDateList.get(i).get("provinceArea"), lastYearDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastYearSaleMap = (Map<String, Object>) dataMap.get(regionData.get("provinceArea"));
+			if(CommonUtil.isNotBlank(lastYearSaleMap)) {
+				//去年同月同期销售金额
+				regionData.put("lastYearDateSale", lastYearSaleMap.get("dateSale"));
+				double lastMonthDateSale = CommonUtil.isBlank(regionData.get("lastMonthDateSale")) ? 0.0 : (double) regionData.get("lastMonthDateSale");
+				double monthSale = CommonUtil.isBlank(regionData.get("monthSale")) ? 0.0 : (double) regionData.get("monthSale");
+				double lastYearDateSale = CommonUtil.isBlank(regionData.get("lastYearDateSale")) ? 0.0 : (double) regionData.get("lastYearDateSale");
+				if(monthSale != 0) {
+					//环比
+					regionData.put("chaimIndex", lastMonthDateSale / monthSale);
+					//同比
+					regionData.put("yearBasis", lastYearDateSale / monthSale);
+				} else {
+					regionData.put("chaimIndex", 0.0);
+					regionData.put("yearBasis", 0.0);
+				}
+			}
+		}
+		logger.info("-->>通过去年同期<<--");
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", saleDate);
+		//指定日期销售门店
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去年门店
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		Date lastYearDate = calendar.getTime();
+		dateStr = DateUtil.format(lastYearDate, DateUtil.DATE_PATTERN.YYYY_MM_DD);
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", dateStr);
+		List<Sale> lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//指定日期与上年同时有销售的销售集合
+		Set<Sale> saleSet = new HashSet<>(10);
+		for(int i = 0, size = saleList.size(); i < size; i++) {
+			for(int j = 0, num = lastYearSaleList.size(); j < num; j++) {
+				Sale newSale = saleList.get(i);
+				Sale oldSale = lastYearSaleList.get(j);
+				if((newSale.getSysId().equals(oldSale.getSysId())) && (newSale.getStoreCode().equals(oldSale.getStoreCode()))) {					
+					saleSet.add(newSale);
+				}
+			}
+		}
+		//可比门店数量
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			int num = 0;
+			for(Sale sale : saleSet) {
+				if(CommonUtil.isNotBlank(regionDataMap.get("provinceArea")) && CommonUtil.isNotBlank(sale.getProvinceArea())) {
+					if(sale.getProvinceArea().equals(regionDataMap.get("provinceArea"))) {
+						regionDataMap.put("differNum", num++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比门店<<--");
+		Date yesterday = DateUtil.addDate(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD), Calendar.DATE, -1);
+		//去年前一天销售
+		Date lastYearYesterday = DateUtil.addDate(yesterday, Calendar.YEAR, -1);
+		lastYearSaleList.clear();
+		params.clear();
+		params.put("region", region);
+		params.put("saleDate", DateUtil.format(lastYearYesterday, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0; i < lastYearSaleList.size(); i++) {
+				if(!sale.getStoreCode().equals(lastYearSaleList.get(i).getStoreCode())) {
+					lastYearSaleList.remove(i);
+				}
+			}
+		}
+		//可比门店昨日销售
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for(Sale sale : lastYearSaleList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("provinceArea")) && CommonUtil.isNotBlank(sale.getProvinceArea())) {
+					if(sale.getProvinceArea().equals(regionDataMap.get("provinceArea"))) {
+						regionDataMap.put("differYesterDaySale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比昨日销售<<--");
+		List<Sale> monthDataList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, dateParams);
+		//logger.info(">>>可比本月数据: {}<<<", JsonUtil.toJson(monthDataList));
+		LinkedList<Sale> monthDataLinkList = new LinkedList<>();
+		monthDataLinkList.addAll(monthDataList);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = monthDataLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(monthDataLinkList.get(i).getStoreCode())) {
+					monthDataLinkList.remove(i);
+				}
+			}
+		}
+		monthDataList.clear();
+		monthDataList.addAll(monthDataLinkList);
+		//可比本月销售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : monthDataList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("provinceArea")) && CommonUtil.isNotBlank(sale.getProvinceArea())) {
+					if (sale.getProvinceArea().equals(regionDataMap.get("provinceArea"))) {
+						regionDataMap.put("differMonthSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比本月销售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastMonthDataDiffLinkList = new LinkedList<>();
+		lastMonthDataDiffLinkList.addAll(lastMonthDataDiffList);
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = lastMonthDataDiffLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(lastMonthDataDiffLinkList.get(i).getStoreCode())) {
+					lastMonthDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastMonthDataDiffList.clear();
+		lastMonthDataDiffList.addAll(lastMonthDataDiffLinkList);
+		//可比上月同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastMonthDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("provinceArea")) && CommonUtil.isNotBlank(sale.getProvinceArea())) {
+					if (sale.getProvinceArea().equals(regionDataMap.get("provinceArea"))) {
+						regionDataMap.put("differLastMonthDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比上月同期銷售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastYearDataDiffLinkList = new LinkedList<>();
+		lastYearDataDiffLinkList.addAll(lastYearDataDiffList);
+		for (Sale sale : saleSet) {
+			for (int i = 0, size = lastYearDataDiffLinkList.size(); i < size; i++) {
+				if (!sale.getStoreCode().equals(lastYearDataDiffLinkList.get(i).getStoreCode())) {
+					lastYearDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastYearDataDiffList.clear();
+		lastYearDataDiffList.addAll(lastYearDataDiffLinkList);
+		//可比去年同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastYearDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("provinceArea")) && CommonUtil.isNotBlank(sale.getProvinceArea())) {
+					if (sale.getProvinceArea().equals(regionDataMap.get("provinceArea"))) {
+						regionDataMap.put("differLastYearDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比去年同期銷售 <<--");
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			//可比月銷售
+			double differMonthSale = CommonUtil.isBlank(regionDataMap.get("differMonthSale")) ? 0.0 : (double) regionDataMap.get("differMonthSale");
+			//可比上月銷售
+			double differLastMonthDateSale = CommonUtil.isBlank(regionDataMap.get("differLastMonthDateSale")) ? 0.0 : (double) regionDataMap.get("differLastMonthDateSale");
+			//可比去年銷售
+			double differLastYearDateSale = CommonUtil.isBlank(regionDataMap.get("differLastYearDateSale")) ? 0.0 : (double) regionDataMap.get("differLastYearDateSale");
+			if(differMonthSale != 0) {
+				//可比环比
+				regionDataMap.put("differChaimIndex", differLastMonthDateSale / differMonthSale);
+				//可比同比
+				regionDataMap.put("differYearBasis", differLastYearDateSale / differMonthSale);
+			} else {
+				regionDataMap.put("differChaimIndex", 0.0);
+				regionDataMap.put("differYearBasis", 0.0);
+			}
+			
+		}
+		logger.info("--->>>组装数据完成<<<---");
+		String title = "大区2直营KA分省区日报表";
+		String[] header = new String[] {"大区", "省区", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比(%)", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比(%)", "同比(%)", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
+				"可比门店同比(%)"};
+		List<String> codeList = codeDictService
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_PROVINCE_AREA_REPORT.getValue());
+		String fileName = "按区域 区域表二级报表-" + DateUtil.getCurrentDateStr();
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
+		ExcelUtil excelUtil = new ExcelUtil();
+		excelUtil.exportTemplateByMap(header, regionDataList, title, codeList, response.getOutputStream());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void exportSaleExcelByStoreCode(String provinceArea, String saleDate,
+			HttpServletResponse response) throws Exception {
+		if(CommonUtil.isBlank(provinceArea)) {
+			throw new DataException("103");
+		}
+		if(CommonUtil.isBlank(saleDate)) {
+			throw new DataException("534");
+		}
+		Map<String, Object> params = new HashMap<>(8);
+		//区域集合 包括区域名称 门店数量 指定日期的销售额
+		List<Map<String, Object>> regionDataList = new ArrayList<>(10);
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", saleDate);
+		regionDataList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_STORE_CODE, params);
+		logger.info("--->>>regionDataList.first: {}<<<", JsonUtil.toJson(regionDataList));
+		//得到前一个月26号到指定日期的日期字符串
+		List<String> daysList = DateUtil.getMonthDays(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		String dateStr = DateUtil.getCurrentDateStr();
+		int index = daysList.indexOf(dateStr);
+		List<String> newDaysList = new ArrayList<>(10);
+		for(int i = 0; i < index; i++) {
+			newDaysList.add(daysList.get(i));
+		}
+		//需要计算每个区域上个月26号到指定日期的销售额
+		Map<String, Object> dateParams = new HashMap<>(4);
+		dateParams.put("provinceArea", provinceArea);
+		dateParams.put("startDate", daysList.get(0));
+		dateParams.put("endDate", saleDate);
+		List<Map<String, Object>> regionMonthSaleList = new ArrayList<>(10);
+		regionMonthSaleList = queryListByObject(QueryId.QUERY_SALE_REPORT_BY_STORE_CODE_AND_DATE, dateParams);
+		logger.info("-->>通过: {}<<--", JsonUtil.toJson(regionMonthSaleList));
+		
+		Map<String, Object> dataMap = new HashMap<>(10);
+		for(Map<String, Object> map : regionMonthSaleList) {
+			dataMap.put((String) map.get("storeCode"), map);
+		}
+		//区域集合 包括区域名称 门店数量 本月销售目标 昨日销售额 月销售 昨日销售占比 本月达成率
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> monthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("storeCode"));
+			if(CommonUtil.isNotBlank(monthSaleMap)) {
+				double monthSale = CommonUtil.isBlank(monthSaleMap.get("monthSale")) ? 0.0 : (double) monthSaleMap.get("monthSale");
+				double price = CommonUtil.isBlank(regionData.get("price")) ? 0.0 : (double) regionData.get("price");
+				//月销售
+				regionData.put("monthSale", monthSale);
+				if(monthSale != 0) {
+					//昨日销售占比
+					regionData.put("yesterdayMonthSale", price / monthSale);
+				} else {
+					regionData.put("yesterdayMonthSale", 0);
+				}
+				//本月销售目标 暂无  百亚自行维护
+				regionData.put("monthGoalTarget", 0);
+				//本月达成率 (本月销售)/(本月销售目标)
+				regionData.put("monthGoalSale", 0);
+			}
+		}
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.MONTH, -1);
+		String dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		logger.info("--->>>上月今日:{}<<<---", dateString);
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("provinceArea", provinceArea);
+		//上月今日销售额
+		List<Map<String, Object>> lastMonthDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_THIRD_BY_PARAMS, params);
+		params.clear();
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", dateString);
+		//可比上月今日销售集合
+		List<Sale> lastMonthDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastMonthDateList.size(); i++) {
+			dataMap.put((String) lastMonthDateList.get(i).get("storeCode"), lastMonthDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastMonthSaleMap = (Map<String, Object>) dataMap.get(regionData.get("storeCode"));
+			if(CommonUtil.isNotBlank(lastMonthSaleMap)) {
+				//上月同期销售金额
+				regionData.put("lastMonthDateSale", lastMonthSaleMap.get("dateSale"));
+			}
+		}
+		logger.info("-->>通过上月同期: {}<<--", JsonUtil.toJson(lastMonthDateList));
+		
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		dateString = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD).format(calendar.getTime());
+		params.clear();
+		params.put("dateString", dateString);
+		params.put("provinceArea", provinceArea);
+		//去年今日销售额
+		List<Map<String, Object>> lastYearDateList = queryListByObject(QueryId.QUERY_SALE_REPORT_THIRD_BY_PARAMS, params);
+		params.clear();
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", dateString);
+		//可比去年今日销售集合
+		List<Sale> lastYearDataDiffList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		dataMap.clear();
+		for(int i = 0; i < lastYearDateList.size(); i++) {
+			dataMap.put((String) lastYearDateList.get(i).get("storeCode"), lastYearDateList.get(i));
+		}
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionData = regionDataList.get(i);
+			Map<String, Object> lastYearSaleMap = (Map<String, Object>) dataMap.get(regionData.get("storeCode"));
+			if(CommonUtil.isNotBlank(lastYearSaleMap)) {
+				//去年同月同期销售金额
+				regionData.put("lastYearDateSale", lastYearSaleMap.get("dateSale"));
+				double lastMonthDateSale = CommonUtil.isBlank(regionData.get("lastMonthDateSale")) ? 0.0 : (double) regionData.get("lastMonthDateSale");
+				double monthSale = CommonUtil.isBlank(regionData.get("monthSale")) ? 0.0 : (double) regionData.get("monthSale");
+				double lastYearDateSale = CommonUtil.isBlank(regionData.get("lastYearDateSale")) ? 0.0 : (double) regionData.get("lastYearDateSale");
+				if(monthSale != 0) {
+					//环比
+					regionData.put("chaimIndex", lastMonthDateSale / monthSale);
+					//同比
+					regionData.put("yearBasis", lastYearDateSale / monthSale);
+				} else {
+					regionData.put("chaimIndex", 0.0);
+					regionData.put("yearBasis", 0.0);
+				}
+			}
+		}
+		logger.info("-->>通过去年同期<<--");
+		params.clear();
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", saleDate);
+		//指定日期销售门店
+		List<Sale> saleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去年门店
+		calendar.setTime(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		calendar.add(Calendar.YEAR, -1);
+		Date lastYearDate = calendar.getTime();
+		dateStr = DateUtil.format(lastYearDate, DateUtil.DATE_PATTERN.YYYY_MM_DD);
+		params.clear();
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", dateStr);
+		List<Sale> lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//指定日期与上年同时有销售的销售集合
+		Set<Sale> saleSet = new HashSet<>(10);
+		for(int i = 0, size = saleList.size(); i < size; i++) {
+			for(int j = 0, num = lastYearSaleList.size(); j < num; j++) {
+				Sale newSale = saleList.get(i);
+				Sale oldSale = lastYearSaleList.get(j);
+				if((newSale.getSysId().equals(oldSale.getSysId())) && (newSale.getStoreCode().equals(oldSale.getStoreCode()))) {					
+					saleSet.add(newSale);
+				}
+			}
+		}
+		//可比门店数量
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			int num = 0;
+			for(Sale sale : saleSet) {
+				if(CommonUtil.isNotBlank(regionDataMap.get("storeCode")) && CommonUtil.isNotBlank(sale.getStoreCode())) {
+					if(sale.getStoreCode().equals(regionDataMap.get("storeCode"))) {
+						regionDataMap.put("differNum", num++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比门店<<--");
+		Date yesterday = DateUtil.addDate(DateUtil.getDateFromString(saleDate, DateUtil.DATE_PATTERN.YYYY_MM_DD), Calendar.DATE, -1);
+		//去年前一天销售
+		Date lastYearYesterday = DateUtil.addDate(yesterday, Calendar.YEAR, -1);
+		lastYearSaleList.clear();
+		params.clear();
+		params.put("provinceArea", provinceArea);
+		params.put("saleDate", DateUtil.format(lastYearYesterday, DateUtil.DATE_PATTERN.YYYY_MM_DD));
+		lastYearSaleList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, params);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0; i < lastYearSaleList.size(); i++) {
+				if(!sale.getStoreCode().equals(lastYearSaleList.get(i).getStoreCode())) {
+					lastYearSaleList.remove(i);
+				}
+			}
+		}
+		//可比门店昨日销售
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for(Sale sale : lastYearSaleList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("storeCode")) && CommonUtil.isNotBlank(sale.getStoreCode())) {
+					if(sale.getStoreCode().equals(regionDataMap.get("storeCode"))) {
+						regionDataMap.put("differYesterDaySale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比昨日销售<<--");
+		List<Sale> monthDataList = queryListByObject(QueryId.QUERY_STORE_BY_SALE_DATE, dateParams);
+		//logger.info(">>>可比本月数据: {}<<<", JsonUtil.toJson(monthDataList));
+		LinkedList<Sale> monthDataLinkList = new LinkedList<>();
+		monthDataLinkList.addAll(monthDataList);
+		//去除不同的门店销售
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = monthDataLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(monthDataLinkList.get(i).getStoreCode())) {
+					monthDataLinkList.remove(i);
+				}
+			}
+		}
+		monthDataList.clear();
+		monthDataList.addAll(monthDataLinkList);
+		//可比本月销售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : monthDataList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("storeCode")) && CommonUtil.isNotBlank(sale.getStoreCode())) {
+					if (sale.getStoreCode().equals(regionDataMap.get("storeCode"))) {
+						regionDataMap.put("differMonthSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比本月销售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastMonthDataDiffLinkList = new LinkedList<>();
+		lastMonthDataDiffLinkList.addAll(lastMonthDataDiffList);
+		for(Sale sale : saleSet) {
+			for(int i = 0, size = lastMonthDataDiffLinkList.size(); i < size; i++) {
+				if(!sale.getStoreCode().equals(lastMonthDataDiffLinkList.get(i).getStoreCode())) {
+					lastMonthDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastMonthDataDiffList.clear();
+		lastMonthDataDiffList.addAll(lastMonthDataDiffLinkList);
+		//可比上月同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastMonthDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("storeCode")) && CommonUtil.isNotBlank(sale.getStoreCode())) {
+					if (sale.getStoreCode().equals(regionDataMap.get("storeCode"))) {
+						regionDataMap.put("differLastMonthDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比上月同期銷售<<--");
+		//去除不同的门店销售
+		LinkedList<Sale> lastYearDataDiffLinkList = new LinkedList<>();
+		lastYearDataDiffLinkList.addAll(lastYearDataDiffList);
+		for (Sale sale : saleSet) {
+			for (int i = 0, size = lastYearDataDiffLinkList.size(); i < size; i++) {
+				if (!sale.getStoreCode().equals(lastYearDataDiffLinkList.get(i).getStoreCode())) {
+					lastYearDataDiffLinkList.remove(i);
+				}
+			}
+		}
+		lastYearDataDiffList.clear();
+		lastYearDataDiffList.addAll(lastYearDataDiffLinkList);
+		//可比去年同期銷售
+		for (int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			double differSale = 0;
+			for (Sale sale : lastYearDataDiffList) {
+				if(CommonUtil.isNotBlank(saleSet) && CommonUtil.isNotBlank(regionDataMap.get("storeCode")) && CommonUtil.isNotBlank(sale.getStoreCode())) {
+					if (sale.getStoreCode().equals(regionDataMap.get("storeCode"))) {
+						regionDataMap.put("differLastYearDateSale", differSale++);
+					}
+				}
+			}
+		}
+		logger.info("-->>通过可比去年同期銷售 <<--");
+		for(int i = 0; i < regionDataList.size(); i++) {
+			Map<String, Object> regionDataMap = regionDataList.get(i);
+			//可比月銷售
+			double differMonthSale = CommonUtil.isBlank(regionDataMap.get("differMonthSale")) ? 0.0 : (double) regionDataMap.get("differMonthSale");
+			//可比上月銷售
+			double differLastMonthDateSale = CommonUtil.isBlank(regionDataMap.get("differLastMonthDateSale")) ? 0.0 : (double) regionDataMap.get("differLastMonthDateSale");
+			//可比去年銷售
+			double differLastYearDateSale = CommonUtil.isBlank(regionDataMap.get("differLastYearDateSale")) ? 0.0 : (double) regionDataMap.get("differLastYearDateSale");
+			if(differMonthSale != 0) {
+				//可比环比
+				regionDataMap.put("differChaimIndex", differLastMonthDateSale / differMonthSale);
+				//可比同比
+				regionDataMap.put("differYearBasis", differLastYearDateSale / differMonthSale);
+			} else {
+				regionDataMap.put("differChaimIndex", 0.0);
+				regionDataMap.put("differYearBasis", 0.0);
+			}
+			
+		}
+		logger.info("--->>>组装数据完成<<<---");
+		String title = "省区1直营KA门店日报表";
+		String[] header = new String[] {"省区", "门店", "门店数量", "本月销售目标", "昨日销售", "本月销售", 
+				"昨日销售占比(%)", "本月达成率", "上月同期销售金额", "去年同月同期销售金额", "环比(%)", "同比(%)", 
+				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
+				"可比门店同比(%)"};
+		List<String> codeList = codeDictService
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_STORE_CODE_REPORT.getValue());
+		String fileName = "按区域 区域表三级报表-" + DateUtil.getCurrentDateStr();
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
+		ExcelUtil excelUtil = new ExcelUtil();
+		excelUtil.exportTemplateByMap(header, regionDataList, title, codeList, response.getOutputStream());
 	}
 	
 }
