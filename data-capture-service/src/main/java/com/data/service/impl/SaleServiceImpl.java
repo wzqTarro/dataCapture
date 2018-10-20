@@ -482,13 +482,16 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	 * @return
 	 */
 	private List<Sale> removeDuplicate(List<Sale> saleList) {
-		for(int i = 0; i < saleList.size() - 1; i++) {
-			for(int j = saleList.size() - 1; j > i; j--) {
-				if(saleList.get(j).getStoreCode().equals(saleList.get(i).getStoreCode())) {
-					saleList.remove(j);
+		LinkedList<Sale> saleLinkList = new LinkedList<>(saleList);
+		for(int i = 0; i < saleLinkList.size() - 1; i++) {
+			for(int j = saleLinkList.size() - 1; j > i; j--) {
+				if(saleLinkList.get(j).getStoreCode().equals(saleLinkList.get(i).getStoreCode())) {
+					saleLinkList.remove(j);
 				}
 			}
 		}
+		saleList.clear();
+		saleList.addAll(saleLinkList);
 		return saleList;
  	}
 	
