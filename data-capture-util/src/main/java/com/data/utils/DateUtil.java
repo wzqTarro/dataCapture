@@ -349,6 +349,26 @@ public final class DateUtil {
 		return calendar.getTime();
 	}
 	
+	/**
+	 * 按照指定日期转换日期格式
+	 * @param dateStr
+	 * @param format
+	 * @return
+	 */
+	public static final Date getDateFromString(String dateStr, String format) {
+		if(CommonUtil.isNotBlank(format)) {
+			SimpleDateFormat converter = new SimpleDateFormat(format);
+			try {
+				if(CommonUtil.isNotBlank(dateStr)) {
+					return converter.parse(dateStr);
+				}
+			} catch (ParseException e) {
+				logger.error("--->>>日期格式错误，转换时间类型异常：{}<<<---", dateStr);
+			}
+		}
+		return null;
+	}
+	
 	public static void main(String[] args) throws JsonProcessingException {
 //		System.out.println(getMonthEndDate("2018-02"));
 //		Map<String, Object> map = new HashMap<>(4);
