@@ -68,15 +68,15 @@ public class WebConfigure implements WebMvcConfigurer {
 	 * 设置时间转换器
 	 * @return
 	 */
-//	@SuppressWarnings("rawtypes")
-//	@Bean
-//	public ConversionService getConversionService() {
-//		ConversionServiceFactoryBean factory = new ConversionServiceFactoryBean();
-//		Set<Converter> converterSet = new HashSet<>(10);
-//		converterSet.add(dateConverter);
-//		factory.setConverters(converterSet);
-//		return factory.getObject();
-//	}
+	@SuppressWarnings("rawtypes")
+	@Bean
+	public ConversionService getConversionService() {
+		ConversionServiceFactoryBean factory = new ConversionServiceFactoryBean();
+		Set<Converter> converterSet = new HashSet<>(10);
+		converterSet.add(dateConverter);
+		factory.setConverters(converterSet);
+		return factory.getObject();
+	}
 	
 	/**
 	 * 文件上传配置
