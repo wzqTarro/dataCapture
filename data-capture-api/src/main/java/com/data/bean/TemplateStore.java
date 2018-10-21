@@ -3,6 +3,8 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 库存模板实体类
  * @author Alex
@@ -37,6 +39,7 @@ public class TemplateStore implements Serializable {
 
     private String logisticsModel;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date practiceTime;
 
     private String distributionCode;

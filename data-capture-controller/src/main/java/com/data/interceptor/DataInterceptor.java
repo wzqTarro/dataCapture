@@ -50,7 +50,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/sale/exportSaleExcelByRegion",
 				"/sale/exportSaleExcelBySysId",
 				"/sale/exportSaleExcelByProvinceArea",
-				"/sale/exportSaleExcelByStoreCode"
+				"/sale/exportSaleExcelByStoreCode",
+				"/stock/getStockByParam"
 				
 		};
 	}

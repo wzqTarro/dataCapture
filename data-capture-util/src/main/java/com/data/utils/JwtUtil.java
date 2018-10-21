@@ -25,7 +25,7 @@ public class JwtUtil {
 	
 	private static Base64.Decoder DECODER = Base64.getDecoder();
 	
-	private static final int EXPIRE_DATE = 60 * 60 * 30 * 1000; 
+	private static final int EXPIRE_DATE = 60 * 60 * 300 * 1000; 
 	
 	/**
 	 * 生成jwt
@@ -71,11 +71,11 @@ public class JwtUtil {
 								.setIssuer("JWT")
 								.signWith(algorithm, secretKeySpec);
 		//设置过期时间
-		if(EXPIRE_DATE >= 0) {
-			long expireMillis = nowTimeMillis + EXPIRE_DATE;
-			Date expireDate = new Date(expireMillis);
-			builder.setExpiration(expireDate).setNotBefore(nowDate);
-		}
+//		if(EXPIRE_DATE >= 0) {
+//			long expireMillis = nowTimeMillis + EXPIRE_DATE;
+//			Date expireDate = new Date(expireMillis);
+//			builder.setExpiration(expireDate).setNotBefore(nowDate);
+//		}
 		return builder.compact();
 	}
 	
