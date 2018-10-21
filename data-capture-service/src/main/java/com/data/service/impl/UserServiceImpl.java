@@ -90,6 +90,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			//throw new DataException("401");
 			return ResultUtil.error("传入用户信息不存在");
 		}
+		user.setWorkNo(CommonUtil.createWorkNo());
+		user.setPassword(EncryptUtil.Md5Encrypt("123456"));
 		insert(InsertId.INSERT_NEW_USER_MESSAGE, user);
 		return ResultUtil.success();
 	}
@@ -101,6 +103,10 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		if(CommonUtil.isBlank(user)) {
 			//throw new DataException("401");
 			return ResultUtil.error("传入用户信息不存在");
+		}
+		String password = user.getPassword();
+		if(CommonUtil.isNotBlank(password)) {
+			user.setPassword(EncryptUtil.Md5Encrypt(password));
 		}
 		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
 		return ResultUtil.success();
