@@ -34,4 +34,11 @@ public interface IPromotionDetail {
 	 * @return
 	 */
 	ResultUtil deletePromotionDetail(int id);
+	
+	/**
+	 * 按id查询促销明细信息
+	 * @param id
+	 * @return
+	 */
+	ResultUtil queryPromotionInfo(String id);
 }

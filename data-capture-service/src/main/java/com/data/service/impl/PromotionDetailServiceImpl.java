@@ -106,4 +106,15 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 		return ResultUtil.success();
 	}
 
+	@Override
+	public ResultUtil queryPromotionInfo(String id) {
+		if(CommonUtil.isNotBlank(id)) {
+			Map<String, Object> params = new HashMap<>(4);
+			params.put("id", Integer.parseInt(id));
+			PromotionDetail detail = (PromotionDetail) queryObjectByParameter(QueryId.QUERY_PROMOTION_DETAIL_INFO_BY_ID, params);
+			return ResultUtil.success(detail);
+		}
+		return null;
+	}
+
 }

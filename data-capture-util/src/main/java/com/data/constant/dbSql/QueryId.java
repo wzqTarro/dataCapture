@@ -213,4 +213,7 @@ public final class QueryId {
 	
 	/**查询标准条码信息**/
 	public static final String QUERY_SIMPLE_CODE_INFO_BY_ID = "SimpleCodeMapper.querySimpleCodeInfoById";
+	
+	/**查询促销明细信息**/
+	public static final String QUERY_PROMOTION_DETAIL_INFO_BY_ID = "PromotionDetailMapper.queryPromotionDetailInfoById";
 }

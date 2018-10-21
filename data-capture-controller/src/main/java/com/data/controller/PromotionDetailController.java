@@ -66,4 +66,16 @@ public class PromotionDetailController {
 		ResultUtil result = promotionDetailService.deletePromotionDetail(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
+	/**
+	 * 按id查询促销明细接口
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/queryPromotionInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "按ID查询促销明细信息", httpMethod = "POST")
+	public String queryPromotionInfo(String id) {
+		ResultUtil result = promotionDetailService.queryPromotionInfo(id);
+		return FastJsonUtil.objectToString(result);
+	}
 }

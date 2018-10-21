@@ -75,6 +75,13 @@
   	WHERE 1=1
   	<include refid="Query_Condition"></include>
   </select>
+  
+  <!-- 按id查询促销明细信息 -->
+  <select id="queryPromotionDetailInfoById" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_promotion_detail WHERE id=#{id}
+  </select>
+  
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
