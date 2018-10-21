@@ -2,6 +2,7 @@ package com.data.utils;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,8 +57,13 @@ public class JwtUtil {
 	 * @return
 	 */
 	private static String createJwt(SignatureAlgorithm algorithm, long ttl, String secret, Map<String, Object> claims) {
-		long nowTimeMillis = System.currentTimeMillis();
-		Date nowDate = new Date(nowTimeMillis);
+//		long nowTimeMillis = System.currentTimeMillis();
+//		Date nowDate = new Date(nowTimeMillis);
+		
+		Calendar nowTime = Calendar.getInstance();
+		//设置1天后过期
+		nowTime.add(Calendar.DATE, 1);
+		Date expireDate = nowTime.getTime();
 		
 		if(CommonUtil.isBlank(secret)) {
 			throw new DataException("511");
@@ -75,7 +81,9 @@ public class JwtUtil {
 //			long expireMillis = nowTimeMillis + EXPIRE_DATE;
 //			Date expireDate = new Date(expireMillis);
 //			builder.setExpiration(expireDate).setNotBefore(nowDate);
+//			
 //		}
+		builder.setExpiration(expireDate).setNotBefore(DateUtil.getSystemDate());
 		return builder.compact();
 	}
 	
