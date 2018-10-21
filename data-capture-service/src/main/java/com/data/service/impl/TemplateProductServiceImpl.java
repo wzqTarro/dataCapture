@@ -140,5 +140,14 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success(brandList);
 	}
 
-	
+	@Override
+	public ResultUtil queryProductInfo(String id) {
+		if(CommonUtil.isNotBlank(id)) {
+			Map<String, Object> params = new HashMap<>(4);
+			params.put("id", Integer.parseInt(id));
+			TemplateProduct product = (TemplateProduct) queryObjectByParameter(QueryId.QUERY_PRODUCT_BY_ID, params);
+			return ResultUtil.success(product);
+		}
+		return null;
+	}
 }

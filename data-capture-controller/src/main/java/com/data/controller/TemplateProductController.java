@@ -61,4 +61,16 @@ public class TemplateProductController {
 		return FastJsonUtil.objectToString(templateProductService.getBrandMenu(sysId));
 	}
 	
+	/**
+	 *	
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/queryProductInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "按ID查询产品信息", httpMethod = "POST")
+	public String queryProductInfo(String id) {
+		ResultUtil result = templateProductService.queryProductInfo(id);
+		return FastJsonUtil.objectToString(result);
+	}
+	
 }

@@ -201,4 +201,13 @@ public final class QueryId {
 	
 	/**按区域 区域三级表 条件查询**/
 	public static final String QUERY_SALE_REPORT_THIRD_BY_PARAMS = "SaleMapper.querySaleReportThirdByParams";
+	
+	/**查询门店信息**/
+	public static final String QUERY_STORE_INFO_BY_ID = "TemplateStoreMapper.queryStoreInfoById";
+	
+	/**查询产品信息**/
+	public static final String QUERY_PRODUCT_INFO_BY_ID = "TemplateProductMapper.queryProductInfoById";
+	
+	/**查询供应商信息**/
+	public static final String QUERY_SUPPLY_INFO_BY_ID = "TemplateSupplyMapper.querySupplyInfoById";
 }

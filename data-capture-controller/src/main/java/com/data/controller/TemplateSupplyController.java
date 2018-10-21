@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.data.bean.TemplateSupply;
 import com.data.service.ITemplateSupplyService;
 import com.data.utils.FastJsonUtil;
+import com.data.utils.ResultUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -74,5 +75,17 @@ public class TemplateSupplyController {
 	@ApiOperation(value = "获取供应链菜单", httpMethod = "GET")
 	public String getSupplyMenu() {
 		return FastJsonUtil.objectToString(supplyService.getSupplyMenu());
+	}
+	
+	/**
+	 *	
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/querySupplyInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "按ID查询供应商信息", httpMethod = "POST")
+	public String querySupplyInfo(String id) {
+		ResultUtil result = supplyService.querySupplyInfo(id);
+		return FastJsonUtil.objectToString(result);
 	}
 }

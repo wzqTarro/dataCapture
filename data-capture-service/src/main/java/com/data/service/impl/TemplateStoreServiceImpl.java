@@ -137,4 +137,15 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		List<Map<String, Object>> storeList = queryListByObject(QueryId.QUERY_STORE_MENU, param);
 		return ResultUtil.success(storeList);
 	}
+
+	@Override
+	public ResultUtil queryStoreInfo(String id) {
+		if(CommonUtil.isNotBlank(id)) {
+			Map<String, Object> params = new HashMap<>(4);
+			params.put("id", Integer.parseInt(id));
+			TemplateStore store = (TemplateStore) queryObjectByParameter(QueryId.QUERY_STORE_BY_ID, params);
+			return ResultUtil.success(store);
+		}
+		return null;
+	}
 }

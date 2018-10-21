@@ -110,6 +110,13 @@
     from db_template_product
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <!-- 按id查询产品信息 -->
+  <select id="queryProductInfoById" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_template_product WHERE id=#{id}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_template_product
     where id = #{id,jdbcType=INTEGER}

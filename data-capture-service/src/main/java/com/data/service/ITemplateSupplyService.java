@@ -35,4 +35,11 @@ public interface ITemplateSupplyService {
 	 * @return
 	 */
 	ResultUtil getSupplyMenu();
+	
+	/**
+	 * 按id查询供应商信息
+	 * @param id
+	 * @return
+	 */
+	ResultUtil querySupplyInfo(String id);
 }

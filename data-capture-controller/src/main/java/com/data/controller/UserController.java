@@ -1,5 +1,8 @@
 package com.data.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.User;
 import com.data.service.IUserService;
+import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -109,5 +113,16 @@ public class UserController {
 	public String logout(String userId) {
 		ResultUtil result = userService.logout(userId);
 		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 返回用户工号
+	 * @return
+	 */
+	@RequestMapping(value = "/createUserWorkNo", method = RequestMethod.GET)
+	public String createUserWorkNo() {
+		Map<String, Object> map = new HashMap<>(4);
+		map.put("workNo", CommonUtil.createWorkNo());
+		return FastJsonUtil.objectToString(map);
 	}
 }

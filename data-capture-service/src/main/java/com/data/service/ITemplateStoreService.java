@@ -44,4 +44,11 @@ public interface ITemplateStoreService {
 	 * @return
 	 */
 	ResultUtil getStoreMenu(String sysId);
+	
+	/**
+	 * 查询门店信息
+	 * @param id
+	 * @return
+	 */
+	ResultUtil queryStoreInfo(String id);
 }

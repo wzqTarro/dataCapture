@@ -128,4 +128,15 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		List<Map<String, Object>> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_ANY_COLUMN, param);
 		return ResultUtil.success(supplyList);
 	}
+
+	@Override
+	public ResultUtil querySupplyInfo(String id) {
+		if(CommonUtil.isNotBlank(id)) {
+			Map<String, Object> params = new HashMap<>(4);
+			params.put("id", Integer.parseInt(id));
+			TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_INFO_BY_ID, params);
+			return ResultUtil.success(supply);
+		}
+		return null;
+	}
 }

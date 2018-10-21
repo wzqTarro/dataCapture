@@ -35,4 +35,11 @@ public interface ITemplateProductService {
 	 * @return
 	 */
 	ResultUtil getBrandMenu(String sysId);
+	
+	/**
+	 * 按id查询产品信息
+	 * @param id
+	 * @return
+	 */
+	ResultUtil queryProductInfo(String id);
 }

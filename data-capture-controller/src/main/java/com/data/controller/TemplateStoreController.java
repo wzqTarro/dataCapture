@@ -108,4 +108,16 @@ public class TemplateStoreController {
 		return FastJsonUtil.objectToString(result);
 	}
 	
+	/**
+	 *	
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/queryStoreInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "按ID查询门店信息", httpMethod = "POST")
+	public String queryStoreInfo(String id) {
+		ResultUtil result = storeService.queryStoreInfo(id);
+		return FastJsonUtil.objectToString(result);
+	}
+	
 }
