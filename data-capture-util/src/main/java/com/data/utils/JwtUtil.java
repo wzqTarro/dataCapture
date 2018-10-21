@@ -71,11 +71,11 @@ public class JwtUtil {
 								.setIssuer("JWT")
 								.signWith(algorithm, secretKeySpec);
 		//设置过期时间
-//		if(EXPIRE_DATE >= 0) {
-//			long expireMillis = nowTimeMillis + EXPIRE_DATE;
-//			Date expireDate = new Date(expireMillis);
-//			builder.setExpiration(expireDate).setNotBefore(nowDate);
-//		}
+		if(EXPIRE_DATE >= 0) {
+			long expireMillis = nowTimeMillis + EXPIRE_DATE;
+			Date expireDate = new Date(expireMillis);
+			builder.setExpiration(expireDate).setNotBefore(nowDate);
+		}
 		return builder.compact();
 	}
 	
