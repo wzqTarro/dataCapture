@@ -210,4 +210,7 @@ public final class QueryId {
 	
 	/**查询供应商信息**/
 	public static final String QUERY_SUPPLY_INFO_BY_ID = "TemplateSupplyMapper.querySupplyInfoById";
+	
+	/**查询标准条码信息**/
+	public static final String QUERY_SIMPLE_CODE_INFO_BY_ID = "SimpleCodeMapper.querySimpleCodeInfoById";
 }

@@ -84,4 +84,15 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 		delete(DeleteId.DELETE_SIMPLE_CODE_BY_ID, id);
 		return ResultUtil.success();
 	}
+
+	@Override
+	public ResultUtil querySimpleCodeInfo(String id) {
+		if(CommonUtil.isNotBlank(id)) {
+			Map<String, Object> params = new HashMap<>(4);
+			params.put("id", Integer.parseInt(id));
+			SimpleCode code = (SimpleCode) queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_ID, params);
+			return ResultUtil.success(code);
+		}
+		return null;
+	}
 }

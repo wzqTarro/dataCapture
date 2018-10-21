@@ -53,4 +53,16 @@ public class SimpleCodeController {
 		ResultUtil result = simpleCodeService.deleteSimpleCode(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
+	/**
+	 * 按照id查询标准条码的基本信息
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/querySimpleCodeInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "按ID查询产品信息", httpMethod = "POST")
+	public String querySimpleCodeInfo(String id) {
+		ResultUtil result = simpleCodeService.querySimpleCodeInfo(id);
+		return FastJsonUtil.objectToString(result);
+	}
 }

@@ -29,4 +29,11 @@ public interface ISimpleCodeService {
 	 * @return
 	 */
 	ResultUtil deleteSimpleCode(int id);
+	
+	/**
+	 * 按id查标准条码的详情
+	 * @param id
+	 * @return
+	 */
+	ResultUtil querySimpleCodeInfo(String id);
 }

@@ -67,6 +67,13 @@
   	WHERE 1=1 
   	<include refid="Query_Condition"></include>
   </select>
+  
+  <!-- 按id查询标准条码信息 -->
+  <select id="querySimpleCodeInfoById" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_simple_code WHERE id=#{id}
+  </select>
+  
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -91,6 +98,7 @@
       #{drf,jdbcType=VARCHAR}, #{wem,jdbcType=VARCHAR}, #{zb,jdbcType=VARCHAR}, #{cb,jdbcType=VARCHAR}
       )
   </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.SimpleCode" >
     insert into db_simple_code
     <trim prefix="(" suffix=")" suffixOverrides="," >
