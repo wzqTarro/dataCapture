@@ -216,4 +216,13 @@ public final class QueryId {
 	
 	/**查询促销明细信息**/
 	public static final String QUERY_PROMOTION_DETAIL_INFO_BY_ID = "PromotionDetailMapper.queryPromotionDetailInfoById";
+	
+	/**根据用工号查询用户角色**/
+	public static final String QUERY_USER_ROLE_BY_WORK_NO = "SystemUserRoleMapper.queryUserRoleByWorkNo";
+	
+	/**根据角色查询目录集合**/
+	public static final String QUERY_ROLE_MENU_BY_ROLE_ID = "SystemMenuMapper.queryRoleMenuByRoleId";
+	
+	/**根据角色查询按钮动作集合**/
+	public static final String QUERY_FUNCTION_BY_ROLE_ID = "SystemFunctionMapper.queryFunctionByRoleId";
 }

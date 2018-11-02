@@ -16,6 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring-boot-starter-web.version>2.0.3.RELEASE</spring-boot-starter-web.version>
+		<spring-boot-starter-webflux.version>2.0.3.RELEASE</spring-boot-starter-webflux.version>
 		<spring-boot-starter-aop.version>2.0.3.RELEASE</spring-boot-starter-aop.version>
 		<spring-boot-starter-test.version>2.0.3.RELEASE</spring-boot-starter-test.version>
 		<spring-boot-starter-data-redis.version>2.0.3.RELEASE</spring-boot-starter-data-redis.version>
@@ -43,6 +44,11 @@
 				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${spring-boot-starter-web.version}</version>
 			</dependency>
+			<dependency>
+		        <groupId>org.springframework.boot</groupId>
+		        <artifactId>spring-boot-starter-webflux</artifactId>
+		        <version>${spring-boot-starter-webflux.version}</version>
+		    </dependency>
 			<dependency>
 	            <groupId>org.springframework.boot</groupId>
 	            <artifactId>spring-boot-starter-aop</artifactId>

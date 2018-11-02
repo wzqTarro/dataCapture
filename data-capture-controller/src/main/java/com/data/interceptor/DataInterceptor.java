@@ -1,5 +1,7 @@
 package com.data.interceptor;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,12 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.data.bean.SystemFunction;
 import com.data.constant.CommonValue;
 import com.data.exception.AuthException;
 import com.data.exception.DataException;
 import com.data.service.IRedisService;
+import com.data.service.ISystemFunctionService;
 import com.data.utils.CommonUtil;
 import com.data.utils.JwtUtil;
 
@@ -35,6 +40,9 @@ public class DataInterceptor implements HandlerInterceptor {
 	
 	@Autowired
 	private IRedisService redisService;
+	
+	@Autowired
+	private ISystemFunctionService functionService;
 	
 	//免拦截过滤的链接
 	private String[] filterUrls;
@@ -113,6 +121,15 @@ public class DataInterceptor implements HandlerInterceptor {
 			logger.info("--->>>后台保存的token: {} <<<---", token);
 			if(CommonUtil.isBlank(token)) {
 				throw new AuthException("520");
+			}
+			String roleId = claims.get("roleId").toString();
+			List<SystemFunction> functionList = functionService.queryFunctionList(roleId);
+			
+			AntPathMatcher matcher;
+			for(SystemFunction function : functionList) {
+				String url = function.getFunctionUrl();
+				matcher = new AntPathMatcher(url);
+				//if(matcher.match(pattern, path))
 			}
 			/**
 			 * TODO

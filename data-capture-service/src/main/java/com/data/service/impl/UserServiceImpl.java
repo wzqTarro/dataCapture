@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.data.bean.SystemUserRole;
 import com.data.bean.User;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
@@ -184,6 +185,10 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		map.put("workNo", userId);
 		map.put("username", user.getUsername());
 		map.put("accessToken", accessToken);
+		Map<String, Object> params = new HashMap<>(4);
+		params.put("workNo", userId);
+		SystemUserRole userRole = (SystemUserRole) queryObjectByParameter(QueryId.QUERY_USER_ROLE_BY_WORK_NO, params);
+		map.put("roleId", userRole.getRoleId());
 		logger.info("--->>>用户登录通过: {} <<<---", FastJsonUtil.objectToString(map));
 		return ResultUtil.success(map);
 	}
