@@ -22,12 +22,22 @@ public class SystemFunction implements Serializable {
     private String functionUrl;
 
     private String functionAuth;
+    
+    private String functionMethod;
 
     private String isEnable;
 
     private String isDelete;
 
-    public Integer getId() {
+    public String getFunctionMethod() {
+		return functionMethod;
+	}
+
+	public void setFunctionMethod(String functionMethod) {
+		this.functionMethod = functionMethod;
+	}
+
+	public Integer getId() {
         return id;
     }
 

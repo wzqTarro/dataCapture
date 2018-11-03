@@ -8,16 +8,17 @@
     <result column="function_icon" jdbcType="VARCHAR" property="functionIcon" />
     <result column="function_url" jdbcType="VARCHAR" property="functionUrl" />
     <result column="function_auth" jdbcType="VARCHAR" property="functionAuth" />
+    <result column="function_method" jdbcType="VARCHAR" property="functionMethod"/>
     <result column="is_enable" jdbcType="VARCHAR" property="isEnable" />
     <result column="is_delete" jdbcType="VARCHAR" property="isDelete" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, function_id, function_name, function_icon, function_url, function_auth, is_enable, 
+    id, function_id, function_name, function_icon, function_url, function_auth, function_method, is_enable, 
     is_delete
   </sql>
   
   <sql id="Query_Function_List">
-  	f.id, f.function_id, f.function_name, f.function_icon, f.function_url, f.function_auth, f.is_enable, 
+  	f.id, f.function_id, f.function_name, f.function_icon, f.function_url, f.function_auth, f.function_method, f.is_enable, 
     f.is_delete
   </sql>
   
@@ -42,13 +43,13 @@
     delete from db_system_function
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="model.SystemFunction">
+  <insert id="insert" parameterType="com.data.bean.SystemFunction">
     insert into db_system_function (id, function_id, function_name, 
-      function_icon, function_url, function_auth, 
+      function_icon, function_url, function_auth, function_method,
       is_enable, is_delete)
     values (#{id,jdbcType=INTEGER}, #{functionId,jdbcType=VARCHAR}, #{functionName,jdbcType=VARCHAR}, 
       #{functionIcon,jdbcType=VARCHAR}, #{functionUrl,jdbcType=VARCHAR}, #{functionAuth,jdbcType=VARCHAR}, 
-      #{isEnable,jdbcType=VARCHAR}, #{isDelete,jdbcType=VARCHAR})
+      #{functionMethod,jdbcType=VARCHAR}, #{isEnable,jdbcType=VARCHAR}, #{isDelete,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.SystemFunction">
     insert into db_system_function
@@ -70,6 +71,9 @@
       </if>
       <if test="functionAuth != null">
         function_auth,
+      </if>
+      <if test="functionMethod != null">
+      	function_method,
       </if>
       <if test="isEnable != null">
         is_enable,
@@ -97,6 +101,9 @@
       <if test="functionAuth != null">
         #{functionAuth,jdbcType=VARCHAR},
       </if>
+      <if test="functionMethod != null">
+      	#{functionMethod,jdbcType=VARCHAR},
+      </if>
       <if test="isEnable != null">
         #{isEnable,jdbcType=VARCHAR},
       </if>
@@ -123,6 +130,9 @@
       <if test="functionAuth != null">
         function_auth = #{functionAuth,jdbcType=VARCHAR},
       </if>
+      <if test="functionMethod != null">
+      	function_method = #{functionMethod,jdbcType=VARCHAR},
+      </if>
       <if test="isEnable != null">
         is_enable = #{isEnable,jdbcType=VARCHAR},
       </if>
@@ -139,6 +149,7 @@
       function_icon = #{functionIcon,jdbcType=VARCHAR},
       function_url = #{functionUrl,jdbcType=VARCHAR},
       function_auth = #{functionAuth,jdbcType=VARCHAR},
+      function_method = #{functionMethod,jdbcType=VARCHAR},
       is_enable = #{isEnable,jdbcType=VARCHAR},
       is_delete = #{isDelete,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}

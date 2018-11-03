@@ -99,7 +99,7 @@ public class DataInterceptor implements HandlerInterceptor {
 				logger.info("--->>>token解析失败<<<---");
 				throw new AuthException("521");
 			}
-			if(isAuthenticate(accessToken, claims)) {
+			if(isAuthenticate(accessToken, claims, request)) {
 				String userId = claims.get(CommonValue.USER_ID).toString();
 				request.setAttribute("workNo", userId);
 				logger.info("--->>>用户: {} 认证通过<<<---", userId);
@@ -112,7 +112,7 @@ public class DataInterceptor implements HandlerInterceptor {
 		}
 	}
 	
-	private boolean isAuthenticate(String accessToken, Claims claims) {
+	private boolean isAuthenticate(String accessToken, Claims claims, HttpServletRequest request) {
 		logger.info("--->>>前台传回生成的accessToken: {} <<<---", accessToken);
 		String token = "";
 		try {
@@ -122,23 +122,33 @@ public class DataInterceptor implements HandlerInterceptor {
 			if(CommonUtil.isBlank(token)) {
 				throw new AuthException("520");
 			}
+			if(!token.equals(accessToken)) {
+				logger.error("--->>>token校验不通过<<<---");
+				throw new AuthException("537");
+			}
 			String roleId = claims.get("roleId").toString();
 			List<SystemFunction> functionList = functionService.queryFunctionList(roleId);
-			
-			AntPathMatcher matcher;
+			String requestPath = request.getServletPath();
 			for(SystemFunction function : functionList) {
 				String url = function.getFunctionUrl();
-				matcher = new AntPathMatcher(url);
-				//if(matcher.match(pattern, path))
+				String method = function.getFunctionMethod();
+				if(url.equals(requestPath)) {
+//					if(method.equals(request.getMethod()) || "ALL".equals(method)) {
+//						return true;
+//					}
+					return true;
+				}
 			}
-			/**
-			 * TODO
-			 * 用户续命问题
-			 */
-			return token.equals(accessToken);
+			logger.error("--->>>{}角色没有相关权限<<<---", roleId);
+			throw new AuthException("538");
 		} catch (Exception e) {
 			logger.info("--->>>令牌已失效，请重新登录<<<---");
 			return false;
 		}
+	}
+	
+	public static void main(String[] args) {
+		AntPathMatcher matcher = new AntPathMatcher("/user/addUser");
+		System.err.println(matcher.isPattern("/**/**"));
 	}
 }
