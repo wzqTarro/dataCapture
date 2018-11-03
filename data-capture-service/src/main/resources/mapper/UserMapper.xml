@@ -61,11 +61,12 @@
   </select>
   
   <select id="queryCountUserByUserId" parameterType="string" resultType="int">
-  	SELECT COUNT(1) FROM db_user WHERE work_no=#{userId}
+  	SELECT COUNT(1) FROM db_user WHERE work_no=#{userId} OR mobile_code=#{userId} 
   </select>
   
   <select id="queryUserByWorkNo" parameterType="string" resultMap="BaseResultMap">
-  	SELECT <include refid="Base_Column_List"></include> FROM db_user WHERE work_no=#{userId}
+  	SELECT <include refid="Base_Column_List"></include> FROM db_user WHERE work_no=#{userId} 
+  	OR mobile_code=#{userId} 
   </select>
   
   <select id="queryUserByCondition" parameterType="map" resultMap="BaseResultMap">
