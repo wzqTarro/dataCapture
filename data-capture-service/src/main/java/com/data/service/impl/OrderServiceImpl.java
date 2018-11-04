@@ -475,7 +475,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			map.put("alarmFlag", CommonUtil.isNotBlank(discountAlarmFlag) ? discountAlarmFlag : (String) map.get("contractAlarmFlag"));
 		}
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_ORDER_ALARM_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_ORDER_ALARM_REPORT.value());
 		String title = "订单警报报表";
 		ExcelUtil excelUtil = new ExcelUtil();
 		String fileName = "订单警报报表-" + DateUtil.getCurrentDateStr();

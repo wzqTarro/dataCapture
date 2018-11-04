@@ -41,50 +41,42 @@
 	<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-lang3</artifactId>
-		<version>${commons-lang3.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-io</artifactId>
-		<version>${commons-io.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>commons-net</groupId>
 		<artifactId>commons-net</artifactId>
-		<version>${commons-net.version}</version>
 	</dependency>
 
 	<!-- 文件上传组件 -->
 	<dependency>
 		<groupId>commons-fileupload</groupId>
 		<artifactId>commons-fileupload</artifactId>
-		<version>${commons-fileupload.version}</version>
 	</dependency>
 
 	<!-- poi -->
 	<dependency>
 		<groupId>org.apache.poi</groupId>
 		<artifactId>poi</artifactId>
-		<version>${poi.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.apache.poi</groupId>
 		<artifactId>poi-ooxml</artifactId>
-		<version>${poi.version}</version>
 	</dependency>
 
 	<!-- fastjson依赖 -->
 	<dependency>
 		<groupId>com.alibaba</groupId>
 		<artifactId>fastjson</artifactId>
-		<version>${fastjson.version}</version>
 	</dependency>
 
 	<!-- jsonpath -->
 	<dependency>
 		<groupId>com.jayway.jsonpath</groupId>
 		<artifactId>json-path</artifactId>
-		<version>${json-path.version}</version>
 	</dependency>
 
 	<!-- redis -->
@@ -97,41 +89,35 @@
 	<dependency>
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-pool2</artifactId>
-		<version>${commons-pool2.version}</version>
 	</dependency>
 
 	<!-- google -->
 	<dependency>
 		<groupId>com.google.guava</groupId>
 		<artifactId>guava</artifactId>
-		<version>${guava.version}</version>
 	</dependency>
 	
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
-		<version>${spring-boot-starter-web.version}</version>
 	</dependency>
 	
 	<!-- mybatis -->
 	<dependency>
 		<groupId>org.mybatis.spring.boot</groupId>
 		<artifactId>mybatis-spring-boot-starter</artifactId>
-		<version>${mybatis.spring.version}</version>
 	</dependency>
 
 	<!-- mysql -->
 	<dependency>
 		<groupId>mysql</groupId>
 		<artifactId>mysql-connector-java</artifactId>
-		<version>${mysql.version}</version>
 	</dependency>
 
 	<!-- durid -->
 	<dependency>
 		<groupId>com.alibaba</groupId>
 		<artifactId>druid</artifactId>
-		<version>${druid.version}</version>
 	</dependency>
 		<!-- jwt -->
 	<dependency>
@@ -140,6 +126,11 @@
 	    <version>0.9.1</version>
 	</dependency>
 	<!-- jwt -->
-	
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-configuration-processor</artifactId>
+		<optional>true</optional>
+	</dependency>
   </dependencies>
 </project>

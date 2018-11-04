@@ -451,7 +451,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			map.put("alarmFlag", CommonUtil.isNotBlank(discountAlarmFlag) ? discountAlarmFlag : (String) map.get("contractAlarmFlag"));
 		}
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REJECT_ALARM_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REJECT_ALARM_REPORT.value());
 		String title = "退单警报报表";
 		ExcelUtil excelUtil = new ExcelUtil();
 		String fileName = "退单警报报表-" + DateUtil.getCurrentDateStr();

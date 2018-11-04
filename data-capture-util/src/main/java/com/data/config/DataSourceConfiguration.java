@@ -61,6 +61,7 @@ public class DataSourceConfiguration {
 	 * druid访问页配置
 	 * @return
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public ServletRegistrationBean statViewServlet() {
 		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
@@ -76,6 +77,7 @@ public class DataSourceConfiguration {
 	/**
 	 * 过滤规则
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public FilterRegistrationBean statFilter() {
 		//创建过滤器

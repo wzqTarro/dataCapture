@@ -38,6 +38,16 @@ public interface ICommonService {
 	<T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter, Integer pageNum, Integer pageSize) throws Exception;
 	
 	/**
+	 * 分页查询返回分页bean
+	 * @param statement
+	 * @param parameter
+	 * @param pageNum
+	 * @param pageSize
+	 * @return
+	 */
+	<T> PageRecord<T> queryPageByObject(String countStatement, String listStatement, Object parameter, String pageNum, String pageSize) throws Exception;
+	
+	/**
 	 * 查询总数
 	 * @param statement
 	 * @param parameter

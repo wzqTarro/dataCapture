@@ -225,4 +225,13 @@ public final class QueryId {
 	
 	/**根据角色查询按钮动作集合**/
 	public static final String QUERY_FUNCTION_BY_ROLE_ID = "SystemFunctionMapper.queryFunctionByRoleId";
+	
+	/**根据目录编号查询数量**/
+	public static final String QUERY_COUNT_MENU_BY_MENU_ID = "SystemMenuMapper.queryCountMenuByMenuId";
+	
+	/**查询目录总数**/
+	public static final String QUERY_COUNT_MENU_BY_PAGE = "SystemMenuMapper.queryCountMenuByPage";
+	
+	/**查询目录集合**/
+	public static final String QUERY_MENU_LIST_BY_PAGE = "SystemMenuMapper.queryMenuListByPage";
 }

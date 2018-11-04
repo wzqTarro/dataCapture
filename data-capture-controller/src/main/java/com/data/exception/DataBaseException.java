@@ -52,7 +52,7 @@ public class DataBaseException {
 			errorMessage = PropertiesUtil.getMessage(errorCode);
 			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
 			if(CommonUtil.isNotBlank(errorMessage)) {
-				result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
+				result.setCode(CodeEnum.RESPONSE_99_CODE.value());
 				result.setMsg(errorMessage);
 			}
 			
@@ -61,11 +61,19 @@ public class DataBaseException {
 			errorMessage = PropertiesUtil.getMessage(errorCode);
 			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
 			if(CommonUtil.isNotBlank(errorMessage)) {
-				result.setCode(CodeEnum.RESPONSE_01_CODE.getValue());
+				result.setCode(CodeEnum.RESPONSE_01_CODE.value());
+				result.setMsg(errorMessage);
+			}
+		} else if(e instanceof GlobalException) {
+			errorCode = ((GlobalException) e).getErrorCode();
+			errorMessage = ((GlobalException) e).getErrorMsg();
+			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
+			if(CommonUtil.isNotBlank(errorCode) && CommonUtil.isNotBlank(errorMessage)) {
+				result.setCode(errorCode);
 				result.setMsg(errorMessage);
 			}
 		} else {
-			result.setCode(CodeEnum.RESPONSE_99_CODE.getValue());
+			result.setCode(CodeEnum.RESPONSE_99_CODE.value());
 			result.setMsg(e.getMessage());
 		}
 		return FastJsonUtil.objectToString(result);

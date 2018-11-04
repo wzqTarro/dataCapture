@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.data.bean.SystemFunction;
@@ -126,16 +125,13 @@ public class DataInterceptor implements HandlerInterceptor {
 				logger.error("--->>>token校验不通过<<<---");
 				throw new AuthException("537");
 			}
+			//动作权限检验
 			String roleId = claims.get("roleId").toString();
 			List<SystemFunction> functionList = functionService.queryFunctionList(roleId);
 			String requestPath = request.getServletPath();
 			for(SystemFunction function : functionList) {
 				String url = function.getFunctionUrl();
-				String method = function.getFunctionMethod();
 				if(url.equals(requestPath)) {
-//					if(method.equals(request.getMethod()) || "ALL".equals(method)) {
-//						return true;
-//					}
 					return true;
 				}
 			}
@@ -145,10 +141,5 @@ public class DataInterceptor implements HandlerInterceptor {
 			logger.info("--->>>令牌已失效，请重新登录<<<---");
 			return false;
 		}
-	}
-	
-	public static void main(String[] args) {
-		AntPathMatcher matcher = new AntPathMatcher("/user/addUser");
-		System.err.println(matcher.isPattern("/**/**"));
 	}
 }

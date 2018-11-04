@@ -178,4 +178,14 @@ public class CommonUtil {
 		dataFormat.setRoundingMode(RoundingMode.HALF_UP);
 		return Double.valueOf(dataFormat.format(d));
 	}
+	
+	/**
+	 * 判断给定的字符串是否超出数据库长度限定
+	 * @param source
+	 * @param limit
+	 * @return
+	 */
+	public static boolean isOverLength(String source, int limit) {
+		return source.length() > limit ? true : false;
+	}
 }

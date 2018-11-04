@@ -1,14 +1,10 @@
 package com.data.config;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.MultipartConfigElement;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -82,16 +78,16 @@ public class WebConfigure implements WebMvcConfigurer {
 	 * 文件上传配置
 	 * @return
 	 */
-	@Bean
-	public MultipartConfigElement multipartConfigElement() {
-		//设置文件上传io操作临时文件夹
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		String dir = tempDir;
-		File tempFile = new File(dir);
-		if(!tempFile.exists() ) {
-			tempFile.mkdirs();
-		}
-		factory.setLocation(dir);
-		return factory.createMultipartConfig();
-	}
+//	@Bean
+//	public MultipartConfigElement multipartConfigElement() {
+//		//设置文件上传io操作临时文件夹
+//		MultipartConfigFactory factory = new MultipartConfigFactory();
+//		String dir = tempDir;
+//		File tempFile = new File(dir);
+//		if(!tempFile.exists()) {
+//			tempFile.mkdirs();
+//		}
+//		factory.setLocation(dir);
+//		return factory.createMultipartConfig();
+//	}
 }

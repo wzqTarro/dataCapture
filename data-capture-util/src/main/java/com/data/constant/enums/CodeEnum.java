@@ -37,7 +37,7 @@ public enum CodeEnum {
 	
 	String value;
 	
-	public String getValue() {
+	public String value() {
 		return value;
 	}
 	

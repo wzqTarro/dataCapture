@@ -448,7 +448,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				}
 				// 写入单元格
 				List<String> codeList = codeDictService
-						.queryCodeListByServiceCode(CodeEnum.CODE_DICT_DAILY_STORE_REPORT.getValue());
+						.queryCodeListByServiceCode(CodeEnum.CODE_DICT_DAILY_STORE_REPORT.value());
 				String title = "销售日报表";
 				ExcelUtil excelUtil = new ExcelUtil();
 				try {
@@ -879,7 +879,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
 				"可比门店同比(%)"};
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_COMPANY_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_COMPANY_REPORT.value());
 		String fileName = "按区域一级报表-" + DateUtil.getCurrentDateStr();
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
@@ -2242,7 +2242,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
 				"可比门店同比(%)"};
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_SYSTEM_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_SYSTEM_REPORT.value());
 		String fileName = "按区域 区域表一级报表-" + DateUtil.getCurrentDateStr();
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
@@ -2547,7 +2547,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
 				"可比门店同比(%)"};
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_PROVINCE_AREA_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_PROVINCE_AREA_REPORT.value());
 		String fileName = "按区域 区域表二级报表-" + DateUtil.getCurrentDateStr();
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
@@ -2852,7 +2852,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				"可比门店数量", "可比门店昨日销售", "可比门店本月", "可比门店上月", "可比门店去年", "可比门店环比(%)",
 				"可比门店同比(%)"};
 		List<String> codeList = codeDictService
-				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_STORE_CODE_REPORT.getValue());
+				.queryCodeListByServiceCode(CodeEnum.CODE_DICT_REGION_STORE_CODE_REPORT.value());
 		String fileName = "按区域 区域表三级报表-" + DateUtil.getCurrentDateStr();
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");

@@ -28,4 +28,7 @@ public final class UpdateId {
 	public static final String UPDATE_STOCK_BY_MESSAGE = "StockMapper.updateByPrimaryKeySelective";
 	
 	public static final String UPDATE_PROMOTION_DETAIL_BY_MESSAGE = "PromotionDetailMapper.updateByPrimaryKeySelective";
+	
+	/**根据目录id更新目录信息**/
+	public static final String UPDATE_MENU_BY_MENU_ID = "SystemMenuMapper.updateMenuByMenuId";
 }

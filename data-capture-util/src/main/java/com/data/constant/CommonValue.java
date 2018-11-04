@@ -12,6 +12,10 @@ public class CommonValue {
 	
 	public static final int SIZE = 10;
 	
+	public static final String PAGE_STRING = "1";
+	
+	public static final String SIZE_STRING = "10";
+	
 	public static final String DELETE_OPERATE = "delete";
 	
 	public static final String RECOVERY_OPERATE = "recovery";

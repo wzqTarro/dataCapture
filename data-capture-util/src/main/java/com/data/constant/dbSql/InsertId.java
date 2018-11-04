@@ -41,4 +41,6 @@ public final class InsertId {
 	
 	public static final String INSERT_PROMOTION_DETAIL_BY_MESSAGE = "PromotionDetailMapper.insertSelective";
 	
+	public static final String INSERT_ADD_NEW_MENU = "SystemMenuMapper.insertNewMenu";
+	
 }
