@@ -29,6 +29,15 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <!-- 根据目录编号查询动作按钮集合 -->
+  <select id="queryMenuFunctionListByMenuId" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Query_Function_List"></include> 
+  	FROM db_system_function f 
+  	INNER JOIN db_system_menu_function mf ON(mf.function_id=f.function_id) 
+  	WHERE mf.menu_id=#{menuId}
+  </select>
+  
+  <!-- 根据角色查询动作按钮 -->
   <select id="queryFunctionByRoleId" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Query_Function_List"></include> 
   	FROM db_system_function f 

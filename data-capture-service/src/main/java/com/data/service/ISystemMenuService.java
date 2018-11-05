@@ -4,7 +4,7 @@ package com.data.service;
 import com.data.bean.SystemMenu;
 import com.data.utils.ResultUtil;
 
-public interface IMenuService {
+public interface ISystemMenuService {
 
 	/**
 	 * 根据角色id得到目录权限列表
@@ -42,5 +42,10 @@ public interface IMenuService {
 	 */
 	ResultUtil queryMenuList(String page, String limit) throws Exception;
 	
-	
+	/**
+	 *  罗列权限列表
+	 * @param roleId
+	 * @return
+	 */
+	ResultUtil queryRoleMenuFunctionList(String roleId);
 }

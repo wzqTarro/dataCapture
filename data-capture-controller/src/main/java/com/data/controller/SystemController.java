@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.SystemMenu;
-import com.data.service.IMenuService;
+import com.data.service.ISystemMenuService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -21,7 +21,7 @@ import com.data.utils.ResultUtil;
 public class SystemController {
 
 	@Autowired
-	private IMenuService menuService;
+	private ISystemMenuService menuService;
 	
 	/**
 	 * 获取用户动作权限列表
@@ -77,6 +77,17 @@ public class SystemController {
 	@RequestMapping(value = "/queryMenuListByPage", method = RequestMethod.POST)
 	public String queryMenuListByPage(String page, String limit) throws Exception {
 		ResultUtil result = menuService.queryMenuList(page, limit);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 根据roleId得到权限列表
+	 * @param roleId
+	 * @return
+	 */
+	@RequestMapping(value = "/queryRoleMenuList", method = RequestMethod.POST)
+	public String queryRoleMenuList(String roleId) {
+		ResultUtil result = menuService.queryRoleMenuFunctionList(roleId);
 		return FastJsonUtil.objectToString(result);
 	}
 

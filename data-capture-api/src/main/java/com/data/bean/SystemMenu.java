@@ -32,7 +32,17 @@ public class SystemMenu implements Serializable {
     
     private List<SystemMenu> childMenuList;
     
-    public List<SystemMenu> getChildMenuList() {
+    private List<SystemFunction> functionList;
+    
+    public List<SystemFunction> getFunctionList() {
+		return functionList;
+	}
+
+	public void setFunctionList(List<SystemFunction> functionList) {
+		this.functionList = functionList;
+	}
+
+	public List<SystemMenu> getChildMenuList() {
 		return childMenuList;
 	}
 

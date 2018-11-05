@@ -20,15 +20,15 @@ import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.CodeEnum;
 import com.data.exception.GlobalException;
-import com.data.service.IMenuService;
+import com.data.service.ISystemMenuService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
-@Service("menuService")
-public class MenuServiceImpl extends CommonServiceImpl implements IMenuService {
+@Service("systemMenuService")
+public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemMenuService {
 
-	private static final Logger logger = LoggerFactory.getLogger(MenuServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(SystemMenuServiceImpl.class);
 	
 	@Override
 	public ResultUtil buildMenuList(String roleId) {
@@ -232,4 +232,68 @@ public class MenuServiceImpl extends CommonServiceImpl implements IMenuService {
 		return ResultUtil.success(menuPage);
 	}
 
+	@Override
+	public ResultUtil queryRoleMenuFunctionList(String roleId) {
+		Map<String, Object> params = new HashMap<>(4);
+		params.put("roleId", roleId);
+		//所有menu
+		List<SystemMenu> menuList = queryListByObject(QueryId.QUERY_MENU_LIST_BY_PAGE, null);
+		//父menu
+		Set<SystemMenu> parentMenuSet = new HashSet<>(10);
+		for(SystemMenu menu : menuList) {
+			if("00".equals(menu.getIsParent())) {
+				parentMenuSet.add(menu);
+			}
+		}
+		//构建子目录
+		buildChildMenu(menuList, parentMenuSet);
+		//构建方法按钮集合
+		buildMenuFunctionList(parentMenuSet);
+		//角色拥有的权限
+		List<SystemFunction> functionList = queryListByObject(QueryId.QUERY_FUNCTION_BY_ROLE_ID, params);
+		Map<String, Object> resultMap = new HashMap<>(4);
+		resultMap.put("menuList", parentMenuSet);
+		resultMap.put("roleFunction", functionList);
+		return ResultUtil.success(resultMap);
+	}
+	
+	private void buildChildMenu(List<SystemMenu> menuList, Set<SystemMenu> parentMenuSet) {
+		Map<String, Object> parentMenuMap = new HashMap<>(10);
+		for(SystemMenu menu : parentMenuSet) {
+			parentMenuMap.put(menu.getMenuId(), menu);
+		}
+		
+		for(int i = 0, size = menuList.size(); i < size; i++) {
+			SystemMenu childMenu = menuList.get(i);
+			if("01".equals(childMenu.getIsParent())) {
+				String parentId = childMenu.getParentId();
+				SystemMenu parentMenu = (SystemMenu) parentMenuMap.get(parentId);
+				List<SystemMenu> childMenuList = parentMenu.getChildMenuList();
+				if(childMenuList == null) {
+					childMenuList = new ArrayList<>(10);
+				}
+				childMenuList.add(childMenu);
+				parentMenu.setChildMenuList(childMenuList);
+			}
+		}
+		parentMenuSet.clear();
+		for(Map.Entry<String, Object> entry : parentMenuMap.entrySet()) {
+			parentMenuSet.add((SystemMenu) entry.getValue());
+		}
+	}
+	
+	private void buildMenuFunctionList(Set<SystemMenu> parentMenuSet) {
+		Map<String, Object> params = new HashMap<>(4);
+		for(SystemMenu menu : parentMenuSet) {
+			List<SystemMenu> childMenuList = menu.getChildMenuList();
+			if(childMenuList != null && !childMenuList.isEmpty()) {
+				for(SystemMenu childMenu : childMenuList) {
+					String menuId = childMenu.getMenuId();
+					params.put("menuId", menuId);
+					List<SystemFunction> functionList = queryListByObject(QueryId.QUERY_MENU_FUNCTION_LIST_BY_MENU_ID, params);
+					childMenu.setFunctionList(functionList);
+				}
+			}
+		}
+	}
 }

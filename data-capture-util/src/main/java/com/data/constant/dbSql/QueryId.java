@@ -234,4 +234,7 @@ public final class QueryId {
 	
 	/**查询目录集合**/
 	public static final String QUERY_MENU_LIST_BY_PAGE = "SystemMenuMapper.queryMenuListByPage";
+	
+	/**根据目录编号查询动作按钮**/
+	public static final String QUERY_MENU_FUNCTION_LIST_BY_MENU_ID = "SystemFunctionMapper.queryMenuFunctionListByMenuId";
 }
