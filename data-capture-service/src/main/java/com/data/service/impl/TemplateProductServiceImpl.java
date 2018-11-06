@@ -133,9 +133,6 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 
 	@Override
 	public ResultUtil getBrandMenu(String sysId) {
-		if (CommonUtil.isBlank(sysId)) {
-			return ResultUtil.error(TipsEnum.SYS_ID_IS_NULL.getValue());
-		}
 		List<String> brandList = queryListByObject(QueryId.QUERY_PRODUCT_BRAND, sysId);
 		return ResultUtil.success(brandList);
 	}
