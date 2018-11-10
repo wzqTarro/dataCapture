@@ -31,4 +31,7 @@ public final class UpdateId {
 	
 	/**根据目录id更新目录信息**/
 	public static final String UPDATE_MENU_BY_MENU_ID = "SystemMenuMapper.updateMenuByMenuId";
+	
+	/**根据角色id更新角色信息**/
+	public static final String UPDATE_ROLE_BY_ROLE_ID = "SystemRoleMapper.updateRoleByRoleId";
 }

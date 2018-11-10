@@ -46,7 +46,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		List<SystemMenu> roleMenuList = queryListByObject(QueryId.QUERY_ROLE_MENU_BY_ROLE_ID, params);
 		Set<SystemMenu> parentMenuSet = new HashSet<>(10);
 		for(SystemMenu menu : roleMenuList) {
-			if("00".equals(menu.getIsParent())) {
+			if(CodeEnum.CODE_VALUE_00_ENUM.value().equals(menu.getIsParent())) {
 				parentMenuSet.add(menu);
 			}
 		}
@@ -73,7 +73,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		
 		for(int i = 0, size = roleMenuList.size(); i < size; i++) {
 			SystemMenu childMenu = roleMenuList.get(i);
-			if("01".equals(childMenu.getIsParent())) {
+			if(CodeEnum.CODE_VALUE_01_ENUM.value().equals(childMenu.getIsParent())) {
 				String parentId = childMenu.getParentId();
 				SystemMenu parentMenu = (SystemMenu) parentMenuMap.get(parentId);
 				List<SystemMenu> childMenuList = parentMenu.getChildMenuList();
@@ -150,8 +150,9 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录编号不能为空！");
 		}
 		Map<String, Object> params = new HashMap<>(10);
-		params.put("isDelete", "01");
-		params.put("isEnable", "01");
+		params.put("menuId", menuId);
+		params.put("isDelete", CodeEnum.CODE_VALUE_01_ENUM.value());
+		params.put("isEnable", CodeEnum.CODE_VALUE_01_ENUM.value());
 		int count = update(UpdateId.UPDATE_MENU_BY_MENU_ID, params);
 		return ResultUtil.success(count);
 	}
@@ -199,7 +200,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		params.put("menuIcon", menuIcon);
 		String isParent = menu.getIsParent();
 		String parentId = menu.getParentId();
-		if("01".equals(isParent)) {
+		if(CodeEnum.CODE_VALUE_01_ENUM.value().equals(isParent)) {
 			//如果是子目录 需要验证父级目录检验
 			if(CommonUtil.isBlank(parentId)) {
 				throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "父目录不能为空！");
@@ -207,14 +208,14 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 			if(CommonUtil.isOverLength(parentId, 16)) {
 				throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "父目录编号长度不能超过16位！");
 			}
-			params.put("isParent", "01");
+			params.put("isParent", CodeEnum.CODE_VALUE_01_ENUM.value());
 			params.put("parentId", parentId);
 		} else if("00".equals(isParent)) {
-			params.put("isParent", "00");
-			params.put("parentId", "00");
+			params.put("isParent", CodeEnum.CODE_VALUE_00_ENUM.value());
+			params.put("parentId", CodeEnum.CODE_VALUE_00_ENUM.value());
 		}
 		params.put("isEnable", menu.getIsEnable());
-		params.put("isDelete", "00");
+		params.put("isDelete", CodeEnum.CODE_VALUE_00_ENUM.value());
 		return params;
 	}
 
@@ -241,7 +242,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		//父menu
 		Set<SystemMenu> parentMenuSet = new HashSet<>(10);
 		for(SystemMenu menu : menuList) {
-			if("00".equals(menu.getIsParent())) {
+			if(CodeEnum.CODE_VALUE_00_ENUM.value().equals(menu.getIsParent())) {
 				parentMenuSet.add(menu);
 			}
 		}
@@ -265,7 +266,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		
 		for(int i = 0, size = menuList.size(); i < size; i++) {
 			SystemMenu childMenu = menuList.get(i);
-			if("01".equals(childMenu.getIsParent())) {
+			if(CodeEnum.CODE_VALUE_01_ENUM.value().equals(childMenu.getIsParent())) {
 				String parentId = childMenu.getParentId();
 				SystemMenu parentMenu = (SystemMenu) parentMenuMap.get(parentId);
 				List<SystemMenu> childMenuList = parentMenu.getChildMenuList();
@@ -296,4 +297,5 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 			}
 		}
 	}
+
 }

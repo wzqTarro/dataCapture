@@ -48,4 +48,5 @@ public interface ISystemMenuService {
 	 * @return
 	 */
 	ResultUtil queryRoleMenuFunctionList(String roleId);
+	
 }

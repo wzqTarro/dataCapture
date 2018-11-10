@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.SystemMenu;
 import com.data.service.ISystemMenuService;
+import com.data.service.ISystemRoleFunctionService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
+
 
 
 /**
@@ -22,6 +24,9 @@ public class SystemController {
 
 	@Autowired
 	private ISystemMenuService menuService;
+	
+	@Autowired
+	private ISystemRoleFunctionService roleFunctionService;
 	
 	/**
 	 * 获取用户动作权限列表
@@ -88,6 +93,18 @@ public class SystemController {
 	@RequestMapping(value = "/queryRoleMenuList", method = RequestMethod.POST)
 	public String queryRoleMenuList(String roleId) {
 		ResultUtil result = menuService.queryRoleMenuFunctionList(roleId);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 更新角色权限
+	 * @param roleId
+	 * @param functionIds
+	 * @return
+	 */
+	@RequestMapping(value = "/updateRoleFunction", method = RequestMethod.POST)
+	public String updateRoleFunction(String roleId, String functionIds) {
+		ResultUtil result = roleFunctionService.updateRoleFunction(roleId, functionIds);
 		return FastJsonUtil.objectToString(result);
 	}
 
