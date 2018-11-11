@@ -19,6 +19,7 @@ import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.CodeEnum;
+import com.data.exception.AuthException;
 import com.data.exception.GlobalException;
 import com.data.service.ISystemMenuService;
 import com.data.utils.CommonUtil;
@@ -39,7 +40,7 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		Map<String, Object> params = new HashMap<>(4);
 		params.put("roleId", roleId);
 		Map<String, Boolean> authMap = new HashMap<>(10);
-		List<SystemFunction> functionList = queryListByObject(QueryId.QUERY_FUNCTION_BY_ROLE_ID, params);
+		List<SystemFunction> functionList = queryListByObject(QueryId.QUERY_ROLE_FUNCTION_LIST_BY_ROLE_ID, params);
 		for(SystemFunction function : functionList) {
 			authMap.put(function.getFunctionAuth(), true);
 		}
@@ -49,6 +50,9 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 			if(CodeEnum.CODE_VALUE_00_ENUM.value().equals(menu.getIsParent())) {
 				parentMenuSet.add(menu);
 			}
+		}
+		if(CommonUtil.isBlank(parentMenuSet)) {
+			throw new AuthException("539");
 		}
 		List<SystemMenu> userMenuList = new ArrayList<>(10);
 		userMenuList = buildChildMenu(userMenuList, parentMenuSet, roleMenuList);

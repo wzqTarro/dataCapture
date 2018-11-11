@@ -43,7 +43,9 @@ public class SystemFunctionServiceImpl extends CommonServiceImpl implements ISys
 		if(CommonUtil.isBlank(functionList)) {
 			functionList = new ArrayList<>(10); 
 		}
-		return ResultUtil.success(FastJsonUtil.objectToString(functionList));
+		ResultUtil result = ResultUtil.success();
+		result.setData(FastJsonUtil.objectToString(functionList));
+		return result;
 	}
 	
 }

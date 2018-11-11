@@ -31,12 +31,14 @@ public class JwtUtil {
 	/**
 	 * 生成jwt
 	 * @param userId
+	 * @param roleId
 	 * @param secret
 	 * @return
 	 */
-	public static String createJwt(String userId, String secret) {
+	public static String createJwt(String userId, String roleId, String secret) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put(CommonValue.USER_ID, userId);
+		claims.put(CommonValue.ROLE_ID, roleId);
 		return createJwt(SignatureAlgorithm.HS256, EXPIRE_DATE, secret, claims);
 	}
 	
