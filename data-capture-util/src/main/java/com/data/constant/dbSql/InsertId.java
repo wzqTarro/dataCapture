@@ -43,4 +43,8 @@ public final class InsertId {
 	
 	public static final String INSERT_ADD_NEW_MENU = "SystemMenuMapper.insertNewMenu";
 	
+	public static final String INSERT_ADD_NEW_ROLE = "SystemRoleMapper.insertSelective";
+	
+	public static final String BATCH_INSERT_ROLE_FUNCTION = "SystemRoleFunctionMapper.batchInsertRoleFunction";
+	
 }

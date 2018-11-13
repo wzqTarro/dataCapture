@@ -237,4 +237,19 @@ public final class QueryId {
 	
 	/**根据目录编号查询动作按钮**/
 	public static final String QUERY_MENU_FUNCTION_LIST_BY_MENU_ID = "SystemFunctionMapper.queryMenuFunctionListByMenuId";
+	
+	/**根据角色查询动作权限按钮**/
+	public static final String QUERY_ROLE_FUNCTION_LIST_BY_ROLE_ID = "SystemFunctionMapper.queryRoleFunctionListByRoleId";
+	
+	/**查询角色分页总数**/
+	public static final String QUERY_COUNT_ROLE_BY_PAGE = "SystemRoleMapper.queryCountRoleByPage";
+	
+	/**查询角色分页列表**/
+	public static final String QUERY_ROLE_LIST_BY_PAGE = "SystemRoleMapper.queryRoleListByPage";
+	
+	/**根据角色id查询角色数量**/
+	public static final String QUERY_COUNT_ROLE_BY_ROLE_ID = "SystemRoleMapper.queryCountRoleByRoleId";
+	
+	/**根据角色id查询角色信息**/
+	public static final String QUERY_ROLE_BY_ROLE_ID = "SystemRoleMapper.queryRoleByRoleId";
 }

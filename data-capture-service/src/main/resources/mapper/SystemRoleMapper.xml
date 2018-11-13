@@ -17,6 +17,32 @@
     from db_system_role
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <!-- 根据角色编号查询角色信息 -->
+  <select id="queryRoleByRoleId" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_system_role WHERE role_id=#{roleId} 
+  </select>
+  
+  <!-- 查询角色分页总数 -->
+  <select id="queryCountRoleByPage" resultType="int">
+  	SELECT COUNT(1) FROM db_system_role 
+  </select>
+  
+  <!-- 根据角色id查询数量 -->
+  <select id="queryCountRoleByRoleId" parameterType="map" resultType="int">
+  	SELECT COUNT(1) FROM db_system_role WHERE role_id=#{roleId} 
+  </select>
+  
+  <!-- 查询角色分页列表 -->
+  <select id="queryRoleListByPage" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_system_role 
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_system_role
     where id = #{id,jdbcType=INTEGER}
@@ -82,6 +108,27 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <!-- 根据角色id更新角色信息 -->
+  <update id="updateRoleByRoleId" parameterType="com.data.bean.SystemRole">
+    update db_system_role
+    <set>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleName != null">
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where role_id = #{roleId,jdbcType=VARCHAR} 
+  </update>
+  
   <update id="updateByPrimaryKey" parameterType="com.data.bean.SystemRole">
     update db_system_role
     set role_id = #{roleId,jdbcType=VARCHAR},

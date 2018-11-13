@@ -149,7 +149,7 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		logger.info("--->>>登录前台传回用户id: {} 密码: {} <<<---", userId, password);
 		if(CommonUtil.isBlank(userId) || CommonUtil.isBlank(password)) {
 			//throw new DataException("405");
-			return ResultUtil.error("用工号或密码不能为空");
+			return ResultUtil.error("登录信息不能为空!");
 		}
 		int count = queryCountByObject(QueryId.QUERY_COUNT_USER_BY_USER_ID, userId);
 		if(count == 0) {
@@ -174,21 +174,23 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			//throw new DataException("407");
 			return ResultUtil.error("密码不正确，请重新输入");
 		}
+		String workNo = user.getWorkNo();
+		Map<String, Object> params = new HashMap<>(4);
+		params.put("workNo", workNo);
+		SystemUserRole userRole = (SystemUserRole) queryObjectByParameter(QueryId.QUERY_USER_ROLE_BY_WORK_NO, params);
+		String roleId = userRole.getRoleId();
 		//生成token并且放入缓存中
-		String accessToken = JwtUtil.createJwt(userId, secret);
+		String accessToken = JwtUtil.createJwt(workNo, roleId, secret);
 		accessToken = CommonValue.ELLE + accessToken;
-		redisService.setAccessToken(CommonValue.ACCESS_TOKEN_KEY + userId, accessToken);
+		redisService.setAccessToken(CommonValue.ACCESS_TOKEN_KEY + workNo, accessToken);
 		//更新用户登录次数及时间
-		updateUserLoginTrace(userId);
+		updateUserLoginTrace(workNo);
 		Map<String, Object> map = new HashMap<>();
 		//workNo就是userId
-		map.put("workNo", userId);
+		map.put("workNo", workNo);
 		map.put("username", user.getUsername());
 		map.put("accessToken", accessToken);
-		Map<String, Object> params = new HashMap<>(4);
-		params.put("workNo", userId);
-		SystemUserRole userRole = (SystemUserRole) queryObjectByParameter(QueryId.QUERY_USER_ROLE_BY_WORK_NO, params);
-		map.put("roleId", userRole.getRoleId());
+		map.put("roleId", roleId);
 		logger.info("--->>>用户登录通过: {} <<<---", FastJsonUtil.objectToString(map));
 		return ResultUtil.success(map);
 	}

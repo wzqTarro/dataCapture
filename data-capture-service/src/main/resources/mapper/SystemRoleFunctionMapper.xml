@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SystemRoleFunctionMapper">
+  <resultMap id="BaseResultMap" type="com.data.bean.SystemRoleFunction">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+    <result column="function_id" jdbcType="VARCHAR" property="functionId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, role_id, function_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from db_system_role_function
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from db_system_role_function
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除roleId的权限绑定 -->
+  <delete id="deleteByRoleId" parameterType="map">
+  	DELETE FROM db_system_role_function WHERE role_id=#{roleId} 
+  </delete>
+  
+  <insert id="insert" parameterType="com.data.bean.SystemRoleFunction">
+    insert into db_system_role_function (id, role_id, function_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{roleId,jdbcType=VARCHAR}, #{functionId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.SystemRoleFunction">
+    insert into db_system_role_function
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="functionId != null">
+        function_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionId != null">
+        #{functionId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 批量插入角色权限绑定 -->
+  <insert id="batchInsertRoleFunction" parameterType="map">
+  	INSERT INTO db_system_role_function(role_id, function_id) 
+  	VALUES
+  	<foreach collection="list" item="roleFunction" separator=",">
+  		(#{roleFunction.roleId}, #{roleFunction.functionId})
+  	</foreach>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.SystemRoleFunction">
+    update db_system_role_function
+    <set>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionId != null">
+        function_id = #{functionId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.data.bean.SystemRoleFunction">
+    update db_system_role_function
+    set role_id = #{roleId,jdbcType=VARCHAR},
+      function_id = #{functionId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

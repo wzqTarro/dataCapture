@@ -15,6 +15,14 @@
     from db_system_user_role
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <!-- 根据workNo查询角色 -->
+  <select id="queryUserRoleByWorkNo" parameterType="map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> 
+  	FROM db_system_user_role 
+  	WHERE work_no=#{workNo} 
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_system_user_role
     where id = #{id,jdbcType=INTEGER}
