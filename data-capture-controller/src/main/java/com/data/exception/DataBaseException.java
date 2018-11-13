@@ -56,14 +56,6 @@ public class DataBaseException {
 				result.setMsg(errorMessage);
 			}
 			
-		} else if(e instanceof AuthException) {
-			errorCode = e.getMessage();
-			errorMessage = PropertiesUtil.getMessage(errorCode);
-			logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
-			if(CommonUtil.isNotBlank(errorMessage)) {
-				result.setCode(CodeEnum.RESPONSE_01_CODE.value());
-				result.setMsg(errorMessage);
-			}
 		} else if(e instanceof GlobalException) {
 			errorCode = ((GlobalException) e).getErrorCode();
 			errorMessage = ((GlobalException) e).getErrorMsg();
@@ -75,6 +67,27 @@ public class DataBaseException {
 		} else {
 			result.setCode(CodeEnum.RESPONSE_99_CODE.value());
 			result.setMsg(e.getMessage());
+		}
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 认证异常响应处理
+	 * @param e
+	 * @return
+	 */
+	@ResponseBody
+	@ExceptionHandler(AuthException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public String resolveAuthException(AuthException e) {
+		ResultUtil result = new ResultUtil();
+		String errorCode, errorMessage;
+		errorCode = e.getMessage();
+		errorMessage = PropertiesUtil.getMessage(errorCode);
+		logger.error("--->>>异常编号为: {}, 异常信息: {}<<<---", errorCode, errorMessage);
+		if (CommonUtil.isNotBlank(errorMessage)) {
+			result.setCode(CodeEnum.RESPONSE_01_CODE.value());
+			result.setMsg(errorMessage);
 		}
 		return FastJsonUtil.objectToString(result);
 	}

@@ -23,6 +23,9 @@ public class CommonValue {
 	/**全局用户id标识**/
 	public static final String USER_ID = "userId";
 	
+	/**全局角色id标识**/
+	public static final String ROLE_ID = "roleId";
+	
 	/**全局jwt生成token字段标识**/
 	public static final String ACCESS_TOKEN_KEY = "accessToken";
 	

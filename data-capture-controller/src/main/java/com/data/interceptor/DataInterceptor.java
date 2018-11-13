@@ -1,5 +1,6 @@
 package com.data.interceptor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,12 +16,16 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.data.bean.SystemFunction;
 import com.data.constant.CommonValue;
+import com.data.constant.enums.CodeEnum;
 import com.data.exception.AuthException;
 import com.data.exception.DataException;
+import com.data.exception.GlobalException;
 import com.data.service.IRedisService;
 import com.data.service.ISystemFunctionService;
 import com.data.utils.CommonUtil;
+import com.data.utils.FastJsonUtil;
 import com.data.utils.JwtUtil;
+import com.data.utils.ResultUtil;
 
 import io.jsonwebtoken.Claims;
 
@@ -58,7 +63,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/sale/exportSaleExcelBySysId",
 				"/sale/exportSaleExcelByProvinceArea",
 				"/sale/exportSaleExcelByStoreCode",
-				"/stock/getStockByParam"
+				"/stock/getStockByParam",
+				"/system/buildMenuList"
 				
 		};
 	}
@@ -95,7 +101,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			try {
 				claims = JwtUtil.parseJwt(accessToken, secret);
 			} catch (Exception e) {
-				logger.info("--->>>token解析失败<<<---");
+				logger.error("--->>>token解析失败<<<---");
 				throw new AuthException("521");
 			}
 			if(isAuthenticate(accessToken, claims, request)) {
@@ -105,19 +111,20 @@ public class DataInterceptor implements HandlerInterceptor {
 				return true;
 			} else {
 				//认证失败
-				logger.info("--->>>token校验失败<<<---");
+				logger.error("--->>>token校验失败<<<---");
 				throw new AuthException("521");
 			}
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean isAuthenticate(String accessToken, Claims claims, HttpServletRequest request) {
 		logger.info("--->>>前台传回生成的accessToken: {} <<<---", accessToken);
 		String token = "";
 		try {
 			token = redisService.getAccessToken(CommonValue.ACCESS_TOKEN_KEY + claims.get("userId").toString());
 			token = token.substring(5);
-			logger.info("--->>>后台保存的token: {} <<<---", token);
+			logger.error("--->>>后台保存的token: {} <<<---", token);
 			if(CommonUtil.isBlank(token)) {
 				throw new AuthException("520");
 			}
@@ -127,7 +134,13 @@ public class DataInterceptor implements HandlerInterceptor {
 			}
 			//动作权限检验
 			String roleId = claims.get("roleId").toString();
-			List<SystemFunction> functionList = functionService.queryFunctionList(roleId);
+			List<SystemFunction> functionList = new ArrayList<>(10);
+			ResultUtil resultUtil = functionService.queryRoleFunctionList(roleId);
+			if(CodeEnum.RESPONSE_00_CODE.value().equals(resultUtil.getCode())) {
+				String functionListJson = (String) resultUtil.getData();
+				logger.info("--->>>用户{}角色为{},所具有的权限为{}<<<---", claims.get("userId").toString(), roleId, functionListJson);
+				functionList = (List<SystemFunction>) FastJsonUtil.jsonToList(functionListJson, SystemFunction.class);
+			}
 			String requestPath = request.getServletPath();
 			for(SystemFunction function : functionList) {
 				String url = function.getFunctionUrl();
@@ -137,8 +150,8 @@ public class DataInterceptor implements HandlerInterceptor {
 			}
 			logger.error("--->>>{}角色没有相关权限<<<---", roleId);
 			throw new AuthException("538");
-		} catch (Exception e) {
-			logger.info("--->>>令牌已失效，请重新登录<<<---");
+		} catch (DataException | GlobalException e) {
+			logger.error("--->>>令牌已失效<<<---");
 			return false;
 		}
 	}
