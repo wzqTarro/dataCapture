@@ -1,5 +1,9 @@
 package com.data.service;
 
+import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.TemplateProduct;
 import com.data.utils.ResultUtil;
 
@@ -42,4 +46,10 @@ public interface ITemplateProductService {
 	 * @return
 	 */
 	ResultUtil queryProductInfo(String id);
+	/**
+	 * 导入商品模板表
+	 * @param file
+	 * @return
+	 */
+	ResultUtil importProductExcel(MultipartFile file) throws IOException ;
 }
