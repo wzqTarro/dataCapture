@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.TemplateProduct;
 import com.data.constant.PageRecord;
@@ -19,6 +21,7 @@ import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateProductService;
 import com.data.utils.CommonUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.RedisUtil;
 import com.data.utils.ResultUtil;
@@ -91,7 +94,6 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success(pageRecord);
 	}
 
-	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil updateTemplateProduct(TemplateProduct product) {
 		if (null == product) {
@@ -106,7 +108,6 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success();
 	}
 
-	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil insertTemplateProduct(TemplateProduct product) {
 		if (null == product) {
@@ -119,7 +120,6 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return ResultUtil.success();
 	}
 
-	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil deleteTemplateProduct(int id) {
 		if (0 == id) {
@@ -146,5 +146,12 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 			return ResultUtil.success(product);
 		}
 		return null;
+	}
+
+	@Override
+	public ResultUtil importProductExcel(MultipartFile file) throws IOException {
+		ExcelUtil<TemplateProduct> excelUtil = new ExcelUtil();
+		List<Map<String, Object>> productList = excelUtil.getExcelList(file);
+		return ResultUtil.success();
 	}
 }

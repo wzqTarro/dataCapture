@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -25,8 +27,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.exception.DataException;
 
@@ -525,6 +529,49 @@ public class ExcelUtil<T> {
 			output.flush();
 			output.close();
 		}
+	}
+	
+	@SuppressWarnings("resource")
+	public List<Map<String, Object>> getExcelList(MultipartFile file) throws IOException {
+		if (file == null) {
+			return null;
+		}
+		String fileName = file.getOriginalFilename();
+		String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
+		Workbook wb = null;
+		
+		if ("xlxs".equals(prefix)) {
+			wb = new XSSFWorkbook(file.getInputStream());
+		} else if ("xls".equals(prefix)) {
+			wb = new HSSFWorkbook(file.getInputStream());
+		} else {
+			return null;
+		}
+		Sheet sheet = wb.getSheetAt(0);
+		Row row = null;
+		Cell cell = null;
+		List<Map<String, Object>> list = new ArrayList<>(sheet.getLastRowNum());
+		for (int i = 1, size = sheet.getLastRowNum(); i <= size; i++) {
+			row = sheet.getRow(i);
+			Map<String, Object> map = new HashMap<>(row.getLastCellNum() + 1);
+			for (int j = 0, cellSize = row.getLastCellNum(); j <= cellSize; j++) {
+				cell = row.getCell(j);
+				Object value = null;
+				switch (cell.getCellTypeEnum()) {
+				case NUMERIC: // 数字
+					value = cell.getNumericCellValue();
+					break;
+				case STRING: // 字符串
+					value = cell.getStringCellValue();
+					break;
+				default:
+					return null;
+				}
+				map.put(sheet.getRow(0).getCell(j).getStringCellValue(), value);
+			}
+			list.add(map);
+		}
+		return list;
 	}
 	
 	/**
