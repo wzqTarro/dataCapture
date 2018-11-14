@@ -27,6 +27,8 @@ public final class InsertId {
 	
 	public static final String INSERT_SIMPLE_CODE_BY_MESSAGE = "SimpleCodeMapper.insertSelective";
 	
+	public static final String INSERT_BATCH_SIMPLE_CODE = "SimpleCodeMapper.insertBatch";
+	
 	public static final String INSERT_STORE_BY_MESSAGE = "TemplateStoreMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_STORE = "TemplateStoreMapper.insertBatch";

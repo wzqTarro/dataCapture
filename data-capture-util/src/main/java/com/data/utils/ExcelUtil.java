@@ -540,7 +540,7 @@ public class ExcelUtil<T> {
 		String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
 		Workbook wb = null;
 		
-		if ("xlxs".equals(prefix)) {
+		if ("xlsx".equals(prefix)) {
 			wb = new XSSFWorkbook(file.getInputStream());
 		} else if ("xls".equals(prefix)) {
 			wb = new HSSFWorkbook(file.getInputStream());
@@ -551,23 +551,28 @@ public class ExcelUtil<T> {
 		Row row = null;
 		Cell cell = null;
 		List<Map<String, Object>> list = new ArrayList<>(sheet.getLastRowNum());
+		Row firstRow = sheet.getRow(0);
 		for (int i = 1, size = sheet.getLastRowNum(); i <= size; i++) {
 			row = sheet.getRow(i);
 			Map<String, Object> map = new HashMap<>(row.getLastCellNum() + 1);
-			for (int j = 0, cellSize = row.getLastCellNum(); j <= cellSize; j++) {
+			for (int j = 0, cellSize = firstRow.getLastCellNum(); j < cellSize; j++) {
 				cell = row.getCell(j);
 				Object value = null;
-				switch (cell.getCellTypeEnum()) {
-				case NUMERIC: // 数字
-					value = cell.getNumericCellValue();
-					break;
-				case STRING: // 字符串
-					value = cell.getStringCellValue();
-					break;
-				default:
-					return null;
+				if (cell == null) {
+					value = "";
+				}else {
+					switch (cell.getCellTypeEnum()) {
+					case NUMERIC: // 数字
+						value = cell.getNumericCellValue();
+						break;
+					case STRING: // 字符串
+						value = cell.getStringCellValue();
+						break;
+					default:
+						value = "";
+					}
 				}
-				map.put(sheet.getRow(0).getCell(j).getStringCellValue(), value);
+				map.put(firstRow.getCell(j).getStringCellValue(), value);
 			}
 			list.add(map);
 		}

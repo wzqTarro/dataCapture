@@ -1,6 +1,8 @@
 package com.data.service.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,10 +150,43 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return null;
 	}
 
+	@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil importProductExcel(MultipartFile file) throws IOException {
 		ExcelUtil<TemplateProduct> excelUtil = new ExcelUtil();
-		List<Map<String, Object>> productList = excelUtil.getExcelList(file);
+		List<Map<String, Object>> productMapList = excelUtil.getExcelList(file);
+		if (productMapList == null) {
+			return ResultUtil.error("导入excel表不符合规范或者内容为空");
+		}
+		Map<String, Object> map = null;
+		TemplateProduct product = null;
+		List<TemplateProduct> productList = new ArrayList<>(productMapList.size());
+		for (int i = 0, size = productMapList.size(); i < size; i++) {
+			map = productMapList.get(i);
+			product = new TemplateProduct();
+			product.setProductId((String)map.get("商品编号"));
+			product.setSysId(String.valueOf(map.get("系统编号")));
+			product.setSysName((String)map.get("系统"));
+			product.setSimpleCode(String.valueOf((double)map.get("单品编码")));
+			product.setSimpleBarCode(String.valueOf((double)map.get("条码")));
+			product.setBoxStandard((String)map.get("箱规"));
+			product.setBrand((String)map.get("品牌"));
+			product.setClassify((String)map.get("分类"));
+			product.setExcludeTaxPrice(new BigDecimal((double)map.get("含税供价")));
+			product.setIncludeTaxPrice(new BigDecimal((double)map.get("不含税供价")));
+			product.setFunc((String)map.get("功能"));
+			product.setMaterial((String)map.get("材质"));
+			product.setPiecesNum((int)map.get("包装数量"));
+			product.setSellPrice(new BigDecimal((double)map.get("零售价格")));
+			product.setSeries((String)map.get("系列"));
+			product.setStockCode(String.valueOf((double)map.get("存货编码")));
+			product.setStandardName((String)map.get("标准名称"));
+			product.setSimpleName((String)map.get("单品名称"));
+			product.setStockNo((String)map.get("货号"));
+			productList.add(product);
+		}
+		logger.info(FastJsonUtil.objectToString(productList));
+		//insert(InsertId.INSERT_BATCH_PRODUCT, productList);
 		return ResultUtil.success();
 	}
 }

@@ -138,6 +138,26 @@
       #{sysId,jdbcType=CHAR}
       )
   </insert>
+  <insert id="insertBatch" parameterType="list">
+    insert into db_template_product (id, product_id, sys_name, 
+      simple_code, simple_bar_code, stock_code, 
+      simple_name, standard_name, brand, 
+      classify, series, func, material, 
+      pieces_num, box_standard, stock_no, 
+      sell_price, exclude_tax_price, include_tax_price, sys_id
+      )
+    values 
+    <foreach collection="list" item="product" separator=",">
+    (#{product.id,jdbcType=INTEGER}, #{product.productId,jdbcType=VARCHAR}, #{product.sysName,jdbcType=CHAR}, 
+      #{product.simpleCode,jdbcType=VARCHAR}, #{product.simpleBarCode,jdbcType=VARCHAR}, #{product.stockCode,jdbcType=VARCHAR}, 
+      #{product.simpleName,jdbcType=VARCHAR}, #{product.standardName,jdbcType=VARCHAR}, #{product.brand,jdbcType=CHAR}, 
+      #{product.classify,jdbcType=CHAR}, #{product.series,jdbcType=CHAR}, #{product.func,jdbcType=CHAR}, #{product.material,jdbcType=CHAR}, 
+      #{product.piecesNum,jdbcType=INTEGER}, #{product.boxStandard,jdbcType=VARCHAR}, #{product.stockNo,jdbcType=VARCHAR}, 
+      #{product.sellPrice,jdbcType=DECIMAL}, #{product.excludeTaxPrice,jdbcType=DECIMAL}, #{product.includeTaxPrice,jdbcType=DECIMAL},
+      #{product.sysId,jdbcType=CHAR}
+      )
+    </foreach>
+  </insert>
   <insert id="insertSelective" parameterType="com.data.bean.TemplateProduct">
     insert into db_template_product
     <trim prefix="(" suffix=")" suffixOverrides=",">

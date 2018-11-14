@@ -98,7 +98,21 @@
       #{drf,jdbcType=VARCHAR}, #{wem,jdbcType=VARCHAR}, #{zb,jdbcType=VARCHAR}, #{cb,jdbcType=VARCHAR}
       )
   </insert>
-  
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_simple_code (id, simple_name, bar_code, 
+      bbg, rrl, jrd, yc, 
+      hnth, os, bl, bjhl, 
+      ws, gcs, oycb, jh, 
+      drf, wem, zb, cb
+      )
+    <foreach collection="list" separator="," item="code"></foreach>
+    values (#{code.id,jdbcType=INTEGER}, #{code.simpleName,jdbcType=VARCHAR}, #{code.barCode,jdbcType=VARCHAR}, 
+      #{code.bbg,jdbcType=VARCHAR}, #{code.rrl,jdbcType=VARCHAR}, #{code.jrd,jdbcType=VARCHAR}, #{code.yc,jdbcType=VARCHAR}, 
+      #{code.hnth,jdbcType=VARCHAR}, #{code.os,jdbcType=VARCHAR}, #{code.bl,jdbcType=VARCHAR}, #{code.bjhl,jdbcType=VARCHAR}, 
+      #{code.ws,jdbcType=VARCHAR}, #{code.gcs,jdbcType=VARCHAR}, #{code.oycb,jdbcType=VARCHAR}, #{code.jh,jdbcType=VARCHAR}, 
+      #{code.drf,jdbcType=VARCHAR}, #{code.wem,jdbcType=VARCHAR}, #{code.zb,jdbcType=VARCHAR}, #{code.cb,jdbcType=VARCHAR}
+      )
+  </insert>
   <insert id="insertSelective" parameterType="com.data.bean.SimpleCode" >
     insert into db_simple_code
     <trim prefix="(" suffix=")" suffixOverrides="," >
