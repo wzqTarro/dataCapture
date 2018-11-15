@@ -1,5 +1,6 @@
 package com.data.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.TemplateStore;
 import com.data.service.ITemplateStoreService;
@@ -119,5 +121,16 @@ public class TemplateStoreController {
 		ResultUtil result = storeService.queryStoreInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
-	
+	/**
+	 * 导入excel
+	 * @param excelFile
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/importStoreExcel", method = RequestMethod.POST)
+	@ApiOperation(value = "导入门店模板", httpMethod = "POST")
+	public String importProductExcel(MultipartFile excelFile) throws IOException {
+		ResultUtil result = storeService.importStoreExcel(excelFile);
+		return FastJsonUtil.objectToString(result);
+	}
 }

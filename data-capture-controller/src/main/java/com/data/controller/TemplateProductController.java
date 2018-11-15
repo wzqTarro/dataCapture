@@ -75,6 +75,12 @@ public class TemplateProductController {
 		ResultUtil result = templateProductService.queryProductInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	/**
+	 * 导入excel
+	 * @param excelFile
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/importProductExcel", method = RequestMethod.POST)
 	@ApiOperation(value = "导入单品模板", httpMethod = "POST")
 	public String importProductExcel(MultipartFile excelFile) throws IOException {

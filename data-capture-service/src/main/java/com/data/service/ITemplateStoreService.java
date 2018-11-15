@@ -1,6 +1,9 @@
 package com.data.service;
 
+import java.io.IOException;
 import java.text.ParseException;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.TemplateStore;
 import com.data.utils.ResultUtil;
@@ -51,4 +54,10 @@ public interface ITemplateStoreService {
 	 * @return
 	 */
 	ResultUtil queryStoreInfo(String id);
+	/**
+	 * 导入门店模板表
+	 * @param file
+	 * @return
+	 */
+	ResultUtil importStoreExcel(MultipartFile file) throws IOException ;
 }

@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -532,7 +535,7 @@ public class ExcelUtil<T> {
 	}
 	
 	@SuppressWarnings("resource")
-	public List<Map<String, Object>> getExcelList(MultipartFile file) throws IOException {
+	public List<Map<String, Object>> getExcelList(MultipartFile file, String[] headers) throws IOException {
 		if (file == null) {
 			return null;
 		}
@@ -548,8 +551,17 @@ public class ExcelUtil<T> {
 			return null;
 		}
 		Sheet sheet = wb.getSheetAt(0);
-		Row row = null;
+		List<String> headerList = Arrays.asList(headers);
+		Row headerRow = sheet.getRow(0);
 		Cell cell = null;
+		for (int i = 0, cellNum = headerRow.getLastCellNum(); i < cellNum; i++) {
+			cell = headerRow.getCell(i);
+			if (!headerList.contains(cell.getStringCellValue().trim())) {
+				return null;
+			}
+		}
+		Row row = null;
+		
 		List<Map<String, Object>> list = new ArrayList<>(sheet.getLastRowNum());
 		Row firstRow = sheet.getRow(0);
 		for (int i = 1, size = sheet.getLastRowNum(); i <= size; i++) {
@@ -559,18 +571,24 @@ public class ExcelUtil<T> {
 				cell = row.getCell(j);
 				Object value = null;
 				if (cell == null) {
-					value = "";
-				}else {
-					switch (cell.getCellTypeEnum()) {
-					case NUMERIC: // 数字
+					cell = row.createCell(j);
+				}
+				switch (cell.getCellTypeEnum()) {
+				case NUMERIC: // 数字
+					if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						value = cell.getDateCellValue();
+					} else {
 						value = cell.getNumericCellValue();
-						break;
-					case STRING: // 字符串
-						value = cell.getStringCellValue();
-						break;
-					default:
-						value = "";
+						BigDecimal bd1 = new BigDecimal(Double.toString((double)value));
+				        // 去掉后面无用的零  如小数点后面全是零则去掉小数点
+	                    value = bd1.toPlainString().replaceAll("0+?$", "").replaceAll("[.]$", "");
 					}
+					break;
+				case STRING: // 字符串
+					value = cell.getStringCellValue();
+					break;
+				default:
+					value = "";
 				}
 				map.put(firstRow.getCell(j).getStringCellValue(), value);
 			}
