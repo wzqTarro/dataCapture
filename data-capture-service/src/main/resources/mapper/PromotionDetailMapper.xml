@@ -110,6 +110,29 @@
       #{normalSellPrice,jdbcType=DECIMAL}, #{supplySellPrice,jdbcType=DECIMAL}, #{profit,jdbcType=DOUBLE}, 
       #{discount,jdbcType=DOUBLE})
   </insert>
+  
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_promotion_detail (sys_id, sys_name, 
+      store_name, supply_price_start_date, supply_price_end_date, 
+      sell_price_start_date, sell_price_end_date, supply_name, 
+      supply_type, control_type, compensation_type, 
+      compensation_cost, product_code, origin_price, 
+      normal_supply_price, supply_price, supply_order_type, 
+      normal_sell_price, supply_sell_price, profit, 
+      discount) values 
+    	<foreach collection="list" item="item" separator=",">
+			(#{item.sys_id,jdbcType=VARCHAR}, #{item.sys_name,jdbcType=VARCHAR}, 
+	      #{item.store_name,jdbcType=VARCHAR}, #{item.supply_price_start_date,jdbcType=DATE}, #{item.supply_price_end_date,jdbcType=DATE}, 
+	      #{item.sell_price_start_date,jdbcType=DATE}, #{item.sell_price_end_date,jdbcType=DATE}, #{item.supply_name,jdbcType=VARCHAR}, 
+	      #{item.supply_type,jdbcType=VARCHAR}, #{item.control_type,jdbcType=VARCHAR}, #{item.compensation_type,jdbcType=VARCHAR}, 
+	      #{item.compensation_cost,jdbcType=VARCHAR}, #{item.product_code,jdbcType=VARCHAR}, #{item.origin_price,jdbcType=DECIMAL}, 
+	      #{item.normal_supply_price,jdbcType=DECIMAL}, #{item.supply_price,jdbcType=DECIMAL}, #{item.supply_order_type,jdbcType=VARCHAR}, 
+	      #{item.normal_sell_price,jdbcType=DECIMAL}, #{item.supply_sell_price,jdbcType=DECIMAL}, #{item.profit,jdbcType=DOUBLE}, 
+	      #{item.discount,jdbcType=DOUBLE})
+    	
+    	</foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.PromotionDetail">
     insert into db_promotion_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">

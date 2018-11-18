@@ -2,6 +2,7 @@ package com.data.service.impl;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.SystemUserRole;
 import com.data.bean.User;
@@ -18,11 +20,13 @@ import com.data.constant.PageRecord;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.ExcelEnum;
 import com.data.exception.DataException;
 import com.data.service.IRedisService;
 import com.data.service.IUserService;
 import com.data.utils.CommonUtil;
 import com.data.utils.EncryptUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.JwtUtil;
 import com.data.utils.ResultUtil;
@@ -211,6 +215,17 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		user.setLastLoginDate(new Date(System.currentTimeMillis()));
 		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
 		logger.info("--->>>更新用户登录信息成功<<<---");
+	}
+
+	@Override
+	public ResultUtil uploadUserData(MultipartFile file) throws Exception {
+		ExcelUtil<User> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> userMapList = excelUtil.getExcelList(file, ExcelEnum.USER_TEMPLATE_TYPE.value());
+		if (userMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_USER, userMapList);
+		return ResultUtil.success();
 	}
 
 }

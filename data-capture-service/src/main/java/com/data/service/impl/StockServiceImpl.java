@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
 import com.data.bean.Stock;
@@ -42,6 +43,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.exception.DataException;
@@ -2010,5 +2012,16 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		wb.write(output);
 		output.flush();
 		output.close();
+	}
+	
+	@Override
+	public ResultUtil uploadStockData(MultipartFile file) throws Exception {
+		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> stockMapList = excelUtil.getExcelList(file, ExcelEnum.STOCK_TEMPLATE_TYPE.value());
+		if (stockMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_STOCK, stockMapList);
+		return ResultUtil.success();
 	}
 }

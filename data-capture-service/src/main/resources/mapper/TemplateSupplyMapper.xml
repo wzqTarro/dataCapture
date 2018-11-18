@@ -89,6 +89,22 @@
       #{sysId,jdbcType=CHAR}, #{parentId,jdbcType=VARCHAR}
       )
   </insert>
+  
+  <insert id="insertBatch" parameterType="list">
+    insert into db_template_supply (region, sys_name, 
+      url, login_user_name, login_password, 
+      company_code, controller_name, is_val, sys_id, parent_id
+      )
+    values 
+      <foreach collection="list" item="supply" separator=",">
+	    (#{supply.region,jdbcType=VARCHAR}, #{supply.sys_name,jdbcType=VARCHAR}, 
+	      #{supply.url,jdbcType=VARCHAR}, #{supply.login_user_name,jdbcType=VARCHAR}, #{supply.login_password,jdbcType=VARCHAR}, 
+	      #{supply.company_code,jdbcType=VARCHAR}, #{supply.controller_name,jdbcType=VARCHAR}, #{supply.is_val,jdbcType=BIT},
+	      #{supply.sys_id,jdbcType=CHAR}, #{supply.parent_id,jdbcType=VARCHAR}
+	      )
+      </foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.TemplateSupply">
     insert into db_template_supply
     <trim prefix="(" suffix=")" suffixOverrides=",">

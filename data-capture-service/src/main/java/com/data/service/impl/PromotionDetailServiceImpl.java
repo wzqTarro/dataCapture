@@ -1,6 +1,7 @@
 package com.data.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
 import com.data.constant.PageRecord;
@@ -15,11 +17,13 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.service.IPromotionDetail;
 import com.data.utils.CommonUtil;
 import com.data.utils.DateUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -115,6 +119,17 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			return ResultUtil.success(detail);
 		}
 		return null;
+	}
+
+	@Override
+	public ResultUtil uploadPromotionDetailData(MultipartFile file) throws Exception {
+		ExcelUtil<PromotionDetail> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> promotionDetailMapList = excelUtil.getExcelList(file, ExcelEnum.PROMOTION_DETAIL_TEMPLATE_TYPE.value());
+		if (promotionDetailMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_PROMOTION_DETAIL, promotionDetailMapList);
+		return ResultUtil.success();
 	}
 
 }

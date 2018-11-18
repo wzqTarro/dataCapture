@@ -3,7 +3,9 @@ package com.data.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
 import com.data.dto.CommonDTO;
@@ -78,4 +80,17 @@ public class PromotionDetailController {
 		ResultUtil result = promotionDetailService.queryPromotionInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+
+    /**
+     * 促销明细数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadPromotionDetailExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "促销明细数据导入", httpMethod = "POST")
+    public String uploadPromotionDetailExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = promotionDetailService.uploadPromotionDetailData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

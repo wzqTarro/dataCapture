@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
@@ -28,6 +29,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.RejectEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -458,5 +460,16 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 		excelUtil.exportTemplateByMap(CommonValue.REJECT_ALARM_REPORT_HEADER, rejectReportList, title, codeList, response.getOutputStream());
+	}
+
+	@Override
+	public ResultUtil uploadRejectData(MultipartFile file) throws Exception {
+		ExcelUtil<Reject> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> rejectMapList = excelUtil.getExcelList(file, ExcelEnum.REJECT_TEMPLATE_TYPE.value());
+		if (rejectMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_REJECT, rejectMapList);
+		return ResultUtil.success();
 	}
 }

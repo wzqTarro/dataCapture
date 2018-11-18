@@ -4,6 +4,8 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.Sale;
 import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
@@ -107,4 +109,12 @@ public interface ISaleService {
 	 * 按系统导出区域表二级表
 	 */
 	void exportRegionSecondExcelBySys(String queryDate, String sysId, String region, OutputStream output) throws Exception;
+	
+	/**
+	 * 销售数据导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadSaleData(MultipartFile file) throws Exception;
 }

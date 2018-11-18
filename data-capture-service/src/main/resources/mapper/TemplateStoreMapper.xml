@@ -141,21 +141,28 @@
       #{ascriptionSole,jdbcType=CHAR}, #{sysId,jdbcType=CHAR})
   </insert>
   <insert id="insertBatch" parameterType="list">
-    insert into db_template_store (id, store_code, order_store_name, 
+    insert into db_template_store (store_code, order_store_name, 
       return_store_name, sale_store_name, standard_store_name, 
       store_market, store_city, sys_name, 
       store_manager, logistics_model, practice_time, 
       distribution_code, distribution_name, distribution_user, 
       region, province_area, ascription, 
-      ascription_sole, sys_id)
+      ascription_sole, sys_id) values 
     <foreach collection="list" item="store" separator=",">
-    values (#{store.id,jdbcType=INTEGER}, #{store.storeCode,jdbcType=VARCHAR}, #{store.orderStoreName,jdbcType=VARCHAR}, 
+    <!-- (#{store.storeCode,jdbcType=VARCHAR}, #{store.orderStoreName,jdbcType=VARCHAR}, 
       #{store.returnStoreName,jdbcType=VARCHAR}, #{store.saleStoreName,jdbcType=VARCHAR}, #{store.standardStoreName,jdbcType=VARCHAR}, 
       #{store.storeMarket,jdbcType=VARCHAR}, #{store.storeCity,jdbcType=CHAR}, #{store.sysName,jdbcType=CHAR}, 
       #{store.storeManager,jdbcType=CHAR}, #{store.logisticsModel,jdbcType=VARCHAR}, #{store.practiceTime,jdbcType=TIMESTAMP}, 
       #{store.distributionCode,jdbcType=VARCHAR}, #{store.distributionName,jdbcType=VARCHAR}, #{store.distributionUser,jdbcType=CHAR}, 
       #{store.region,jdbcType=VARCHAR}, #{store.provinceArea,jdbcType=VARCHAR}, #{store.ascription,jdbcType=CHAR}, 
-      #{store.ascriptionSole,jdbcType=CHAR}, #{store.sysId,jdbcType=CHAR})
+      #{store.ascriptionSole,jdbcType=CHAR}, #{store.sysId,jdbcType=CHAR}) -->
+       (#{store.store_code,jdbcType=VARCHAR}, #{store.order_store_name,jdbcType=VARCHAR}, 
+      #{store.return_store_name,jdbcType=VARCHAR}, #{store.sale_store_name,jdbcType=VARCHAR}, #{store.standard_store_name,jdbcType=VARCHAR}, 
+      #{store.store_market,jdbcType=VARCHAR}, #{store.store_city,jdbcType=CHAR}, #{store.sys_name,jdbcType=CHAR}, 
+      #{store.store_manager,jdbcType=CHAR}, #{store.logistics_model,jdbcType=VARCHAR}, #{store.practice_time,jdbcType=TIMESTAMP}, 
+      #{store.distribution_code,jdbcType=VARCHAR}, #{store.distribution_name,jdbcType=VARCHAR}, #{store.distribution_user,jdbcType=CHAR}, 
+      #{store.region,jdbcType=VARCHAR}, #{store.province_area,jdbcType=VARCHAR}, #{store.ascription,jdbcType=CHAR}, 
+      #{store.ascription_sole,jdbcType=CHAR}, #{store.sys_id,jdbcType=CHAR})
     </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.TemplateStore">

@@ -1,12 +1,14 @@
 package com.data.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.SimpleCode;
 import com.data.bean.TemplateProduct;
@@ -15,9 +17,11 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ISimpleCodeService;
 import com.data.utils.CommonUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -94,5 +98,16 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 			return ResultUtil.success(code);
 		}
 		return null;
+	}
+
+	@Override
+	public ResultUtil uploadSimpleCodeData(MultipartFile file) throws Exception {
+		ExcelUtil<SimpleCode> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> simpleCodeMapList = excelUtil.getExcelList(file, ExcelEnum.SIMPLE_CODE_TEMPLATE_TYPE.value());
+		if (simpleCodeMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_SIMPLE_CODE, simpleCodeMapList);
+		return ResultUtil.success();
 	}
 }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
@@ -29,6 +30,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -482,6 +484,16 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 		excelUtil.exportTemplateByMap(CommonValue.ORDER_ALARM_REPORT_HEADER, orderReportList, title, codeList, response.getOutputStream());
+	}
+	@Override
+	public ResultUtil uploadOrderData(MultipartFile file) throws Exception {
+		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> orderMapList = excelUtil.getExcelList(file, ExcelEnum.ORDER_TEMPLATE_TYPE.value());
+		if (orderMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_ORDER, orderMapList);
+		return ResultUtil.success();
 	}
 
 }

@@ -7,14 +7,13 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
@@ -32,8 +31,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = {"退单数据接口"})
 @CrossOrigin(origins="*", maxAge=3600)
 public class RejectController {
-
-	private static Logger logger = LoggerFactory.getLogger(RejectController.class);
 	
 	@Autowired
 	private IRejectService rejectService;
@@ -108,6 +105,7 @@ public class RejectController {
      * @return
      */
     @RequestMapping(value = "/queryRejectAlarmList", method = RequestMethod.GET)
+    @ApiOperation(value = "退单报警集合列表", httpMethod = "GET")
     public String queryRejectAlarmList(CommonDTO common, RejectModel reject, Integer page, Integer limit) throws Exception {
     	ResultUtil result = rejectService.queryRejectAlarmList(common, reject, page, limit);
     	return FastJsonUtil.objectToString(result);
@@ -120,7 +118,21 @@ public class RejectController {
      * @throws Exception 
      */
     @RequestMapping(value = "/rejectAlarmListExcel", method = RequestMethod.GET)
+    @ApiOperation(value = "警报报表输出", httpMethod = "GET")
     public void rejectAlarmListExcel(CommonDTO common, RejectModel reject, HttpServletResponse response) throws Exception {
     	rejectService.rejectAlarmListExcel(common, reject, response);
+    }
+    
+    /**
+     * 退单数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadRejectExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "退单数据导入", httpMethod = "POST")
+    public String uploadRejectExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = rejectService.uploadRejectData(file);
+    	return FastJsonUtil.objectToString(result);
     }
 }

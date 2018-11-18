@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
 import com.data.dto.CommonDTO;
@@ -209,5 +210,18 @@ public class SaleController {
     @ApiOperation(value = "按区域-导出区域三级表", httpMethod = "GET")
     public void exportSaleExcelByStoreCode(String provinceArea, String saleDate, HttpServletResponse response) throws Exception {
     	saleService.exportSaleExcelByStoreCode(provinceArea, saleDate, response);
+    }
+    
+    /**
+     * 销售数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadSaleExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "销售数据导入", httpMethod = "POST")
+    public String uploadSaleExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = saleService.uploadSaleData(file);
+    	return FastJsonUtil.objectToString(result);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.TemplateSupply;
 import com.data.service.ITemplateSupplyService;
@@ -88,4 +89,17 @@ public class TemplateSupplyController {
 		ResultUtil result = supplyService.querySupplyInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
+	/**
+     * 模板供应商数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadTemplateSupplyExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "模板供应商数据导入", httpMethod = "POST")
+    public String uploadTemplateSupplyExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = supplyService.uploadTemplateSupplyData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

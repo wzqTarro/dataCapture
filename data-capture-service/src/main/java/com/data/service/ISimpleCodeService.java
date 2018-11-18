@@ -1,5 +1,7 @@
 package com.data.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.SimpleCode;
 import com.data.utils.ResultUtil;
 
@@ -36,4 +38,12 @@ public interface ISimpleCodeService {
 	 * @return
 	 */
 	ResultUtil querySimpleCodeInfo(String id);
+	
+	/**
+	 * 条码数据导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadSimpleCodeData(MultipartFile file) throws Exception;
 }

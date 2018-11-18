@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.Order;
 import com.data.dto.CommonDTO;
 import com.data.model.OrderModel;
@@ -50,4 +52,11 @@ public interface IOrderService {
 	 * @param response
 	 */
 	void orderAlarmListExcel(CommonDTO common, OrderModel order, HttpServletResponse response) throws Exception;
+	
+	/**
+	 * 导入订单数据
+	 * @param file
+	 * @return
+	 */
+	ResultUtil uploadOrderData(MultipartFile file) throws Exception;
 }

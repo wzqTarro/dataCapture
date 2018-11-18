@@ -49,4 +49,8 @@ public final class InsertId {
 	
 	public static final String BATCH_INSERT_ROLE_FUNCTION = "SystemRoleFunctionMapper.batchInsertRoleFunction";
 	
+	public static final String INSERT_BATCH_PROMOTION_DETAIL = "PromotionDetailMapper.insertBatch";
+	
+	public static final String INSERT_BATCH_USER = "UserMapper.insertBatch";
+	
 }

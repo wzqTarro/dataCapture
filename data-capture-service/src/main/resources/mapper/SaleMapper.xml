@@ -417,7 +417,7 @@
   </insert>
   
   <insert id="insertBatch" parameterType="list" >
-    insert into db_sale (id, sys_id, sys_name, 
+    insert into db_sale (sys_id, sys_name, 
       store_code, store_name, region, 
       province_area, ascription, ascription_sole, 
       simple_code, simple_bar_code, stock_code, 
@@ -428,7 +428,7 @@
       store_manager, local_name)
     values 
     <foreach collection="list" item="sale" separator=",">
-    (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
+    <!-- (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
       #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
       #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 
       #{sale.simpleCode,jdbcType=VARCHAR}, #{sale.simpleBarCode,jdbcType=VARCHAR}, #{sale.stockCode,jdbcType=VARCHAR}, 
@@ -436,7 +436,16 @@
       #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
       #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
       #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
+      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	 -->
+      (#{sale.sys_id,jdbcType=CHAR}, #{sale.sys_name,jdbcType=VARCHAR}, 
+      #{sale.store_code,jdbcType=VARCHAR}, #{sale.store_name,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
+      #{sale.province_area,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascription_sole,jdbcType=CHAR}, 
+      #{sale.simple_code,jdbcType=VARCHAR}, #{sale.simple_bar_code,jdbcType=VARCHAR}, #{sale.stock_code,jdbcType=VARCHAR}, 
+      #{sale.simple_name,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
+      #{sale.day_night,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.pieces_num,jdbcType=INTEGER}, 
+      #{sale.box_standard,jdbcType=VARCHAR}, #{sale.stock_no,jdbcType=VARCHAR}, #{sale.sell_num,jdbcType=INTEGER}, 
+      #{sale.sell_price,jdbcType=DOUBLE}, #{sale.create_time,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
+      #{sale.store_manager,jdbcType=CHAR}, #{sale.local_name,jdbcType=CHAR})
     </foreach>
   </insert>
   

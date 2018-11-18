@@ -64,7 +64,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/sale/exportSaleExcelByProvinceArea",
 				"/sale/exportSaleExcelByStoreCode",
 				"/stock/getStockByParam",
-				"/system/buildMenuList"
+				"/system/buildMenuList",
+				"/order/uoloadOrderExcel"
 				
 		};
 	}
@@ -138,7 +139,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			ResultUtil resultUtil = functionService.queryRoleFunctionList(roleId);
 			if(CodeEnum.RESPONSE_00_CODE.value().equals(resultUtil.getCode())) {
 				String functionListJson = (String) resultUtil.getData();
-				logger.info("--->>>用户{}角色为{},所具有的权限为{}<<<---", claims.get("userId").toString(), roleId, functionListJson);
+				//logger.info("--->>>用户{}角色为{},所具有的权限为{}<<<---", claims.get("userId").toString(), roleId, functionListJson);
 				functionList = (List<SystemFunction>) FastJsonUtil.jsonToList(functionListJson, SystemFunction.class);
 			}
 			String requestPath = request.getServletPath();

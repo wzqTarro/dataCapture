@@ -1,5 +1,7 @@
 package com.data.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.User;
 import com.data.utils.ResultUtil;
 
@@ -62,4 +64,12 @@ public interface IUserService {
 	 * @return
 	 */
 	ResultUtil logout(String userId);
+	
+	/**
+	 * 用户数据导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadUserData(MultipartFile file) throws Exception;
 }

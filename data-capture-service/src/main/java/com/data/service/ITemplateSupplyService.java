@@ -1,5 +1,7 @@
 package com.data.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.TemplateSupply;
 import com.data.utils.ResultUtil;
 
@@ -42,4 +44,12 @@ public interface ITemplateSupplyService {
 	 * @return
 	 */
 	ResultUtil querySupplyInfo(String id);
+	
+	/**
+	 * 模板供应商导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadTemplateSupplyData(MultipartFile file) throws Exception;
 }

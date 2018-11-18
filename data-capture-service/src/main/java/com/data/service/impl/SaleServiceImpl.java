@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
 import com.data.bean.Stock;
@@ -45,6 +46,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.CodeEnum;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.SaleEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
@@ -2858,6 +2860,17 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 		ExcelUtil excelUtil = new ExcelUtil();
 		excelUtil.exportTemplateByMap(header, regionDataList, title, codeList, response.getOutputStream());
+	}
+
+	@Override
+	public ResultUtil uploadSaleData(MultipartFile file) throws Exception {
+		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> saleMapList = excelUtil.getExcelList(file, ExcelEnum.SALE_TEMPLATE_TYPE.value());
+		if (saleMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_SALE, saleMapList);
+		return ResultUtil.success();
 	}
 	
 }

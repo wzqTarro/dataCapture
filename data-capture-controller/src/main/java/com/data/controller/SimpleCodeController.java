@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.SimpleCode;
 import com.data.service.ISimpleCodeService;
@@ -65,4 +66,17 @@ public class SimpleCodeController {
 		ResultUtil result = simpleCodeService.querySimpleCodeInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
+	/**
+     * 条码数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadSimpleCodeExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "条码数据导入", httpMethod = "POST")
+    public String uploadSimpleCodeExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = simpleCodeService.uploadSimpleCodeData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

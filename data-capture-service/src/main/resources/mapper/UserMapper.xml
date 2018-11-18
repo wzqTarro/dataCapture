@@ -99,6 +99,23 @@
       #{loginTimes,jdbcType=INTEGER}, #{lastLoginDate,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, 
       #{isAlive,jdbcType=VARCHAR})
   </insert>
+  
+  <insert id="insertBatch" parameterType="list">
+    insert into db_user (work_no, username, 
+      password, gender, mobile_code, 
+      email, department, position, 
+      login_times, last_login_date, remark, 
+      is_alive)
+    values 
+    	<foreach collection="list" item="user" separator=",">
+	    (#{work_no,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+	      #{password,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{mobile_code,jdbcType=VARCHAR}, 
+	      #{email,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
+	      #{login_times,jdbcType=INTEGER}, #{last_login_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, 
+	      #{is_alive,jdbcType=VARCHAR}) 
+    	</foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.User">
     insert into db_user
     <trim prefix="(" suffix=")" suffixOverrides=",">

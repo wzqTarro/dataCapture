@@ -201,7 +201,7 @@
       #{createTime,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, #{localName,jdbcType=CHAR})
   </insert>
   <insert id="insertBatch" parameterType="list">
-  	insert into db_stock (id, sys_id, sys_name, 
+  	insert into db_stock (sys_id, sys_name, 
       store_code, store_name, region, 
       province_area, ascription, ascription_sole, 
       simple_code, simple_bar_code, stock_code, 
@@ -209,10 +209,10 @@
       series, day_night, material, 
       pieces_num, box_standard, stock_no, 
       stock_num, tax_cost_price, stock_price, 
-      create_time, remark, local_name)
+      create_time, remark, local_name) 
     values
     <foreach collection="list" item="stock" separator=",">
-    (#{stock.id}, #{stock.sysId}, #{stock.sysName}, 
+    <!-- (#{stock.id}, #{stock.sysId}, #{stock.sysName}, 
       #{stock.storeCode}, #{stock.storeName}, #{stock.region}, 
       #{stock.provinceArea}, #{stock.ascription}, #{stock.ascriptionSole}, 
       #{stock.simpleCode}, #{stock.simpleBarCode}, #{stock.stockCode}, 
@@ -220,7 +220,16 @@
       #{stock.series}, #{stock.dayNight}, #{stock.material}, 
       #{stock.piecesNum}, #{stock.boxStandard}, #{stock.stockNo}, 
       #{stock.stockNum}, #{stock.taxCostPrice}, #{stock.stockPrice}, 
-      #{stock.createTime}, #{stock.remark}, #{stock.localName})
+      #{stock.createTime}, #{stock.remark}, #{stock.localName}) -->
+      (#{stock.sys_id}, #{stock.sys_name}, 
+      #{stock.store_code}, #{stock.store_name}, #{stock.region}, 
+      #{stock.province_area}, #{stock.ascription}, #{stock.ascription_sole}, 
+      #{stock.simple_code}, #{stock.simple_bar_code}, #{stock.stock_code}, 
+      #{stock.simple_name}, #{stock.brand}, #{stock.classify}, 
+      #{stock.series}, #{stock.day_night}, #{stock.material}, 
+      #{stock.pieces_num}, #{stock.box_standard}, #{stock.stock_no}, 
+      #{stock.stock_num}, #{stock.tax_cost_price}, #{stock.stock_price}, 
+      #{stock.create_time}, #{stock.remark}, #{stock.local_name})
     </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Stock" >

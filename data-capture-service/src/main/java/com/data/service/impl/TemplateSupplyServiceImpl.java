@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.TemplateSupply;
 import com.data.constant.PageRecord;
@@ -16,9 +17,11 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateSupplyService;
 import com.data.utils.CommonUtil;
+import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 import com.google.common.collect.Maps;
@@ -138,5 +141,16 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 			return ResultUtil.success(supply);
 		}
 		return null;
+	}
+
+	@Override
+	public ResultUtil uploadTemplateSupplyData(MultipartFile file) throws Exception {
+		ExcelUtil<TemplateSupply> excelUtil = new ExcelUtil<>();
+		List<Map<String, Object>> templateSupplyMapList = excelUtil.getExcelList(file, ExcelEnum.TEMPLATE_SUPPLY_TEMPLATE_TYPE.value());
+		if (templateSupplyMapList == null) {
+			return ResultUtil.error("格式不符，导入失败");
+		}
+		insert(InsertId.INSERT_BATCH_ORDER, templateSupplyMapList);
+		return ResultUtil.success();
 	}
 }

@@ -1,5 +1,7 @@
 package com.data.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.PromotionDetail;
 import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
@@ -41,4 +43,12 @@ public interface IPromotionDetail {
 	 * @return
 	 */
 	ResultUtil queryPromotionInfo(String id);
+	
+	/**
+	 * 促销明细导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadPromotionDetailData(MultipartFile file) throws Exception;
 }

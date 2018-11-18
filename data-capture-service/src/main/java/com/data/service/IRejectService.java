@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.Reject;
 import com.data.dto.CommonDTO;
 import com.data.model.RejectModel;
@@ -54,4 +56,12 @@ public interface IRejectService {
 	 * @param response
 	 */
 	void rejectAlarmListExcel(CommonDTO common, RejectModel reject, HttpServletResponse response) throws Exception;
+	
+	/**
+	 * 退单数据导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadRejectData(MultipartFile file) throws Exception;
 }

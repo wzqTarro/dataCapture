@@ -3,6 +3,8 @@ package com.data.service;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.data.bean.Stock;
 import com.data.utils.ResultUtil;
 
@@ -98,4 +100,12 @@ public interface IStockService {
 	 * @return
 	 */
 	void exportRegionSecondExcelBySys(String sysId, String region, OutputStream output) throws IOException;
+	
+	/**
+	 * 库存数据导入
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil uploadStockData(MultipartFile file) throws Exception;
 }

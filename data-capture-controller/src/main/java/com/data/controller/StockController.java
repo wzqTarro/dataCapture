@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Stock;
 import com.data.service.IStockService;
@@ -277,5 +278,18 @@ public class StockController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    /**
+     * 库存数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadStockExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "库存数据导入", httpMethod = "POST")
+    public String uploadStockExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = stockServiceImpl.uploadStockData(file);
+    	return FastJsonUtil.objectToString(result);
     }
 }

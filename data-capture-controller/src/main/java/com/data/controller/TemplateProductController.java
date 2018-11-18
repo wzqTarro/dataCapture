@@ -1,7 +1,5 @@
 package com.data.controller;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,16 +73,17 @@ public class TemplateProductController {
 		ResultUtil result = templateProductService.queryProductInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
 	/**
-	 * 导入excel
-	 * @param excelFile
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/importProductExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "导入单品模板", httpMethod = "POST")
-	public String importProductExcel(MultipartFile excelFile) throws IOException {
-		ResultUtil result = templateProductService.importProductExcel(excelFile);
-		return FastJsonUtil.objectToString(result);
-	}
+     * 模板产品数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadTemplateProductExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "模板产品数据导入", httpMethod = "POST")
+    public String uploadTemplateProductExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = templateProductService.uploadTemplateProductData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

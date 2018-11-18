@@ -1,6 +1,5 @@
 package com.data.controller;
 
-import java.io.IOException;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,16 +120,17 @@ public class TemplateStoreController {
 		ResultUtil result = storeService.queryStoreInfo(id);
 		return FastJsonUtil.objectToString(result);
 	}
+	
 	/**
-	 * 导入excel
-	 * @param excelFile
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/importStoreExcel", method = RequestMethod.POST)
-	@ApiOperation(value = "导入门店模板", httpMethod = "POST")
-	public String importProductExcel(MultipartFile excelFile) throws IOException {
-		ResultUtil result = storeService.importStoreExcel(excelFile);
-		return FastJsonUtil.objectToString(result);
-	}
+     * 模板门店数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadTemplateStoreExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "模板门店数据导入", httpMethod = "POST")
+    public String uploadTemplateStoreExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = storeService.uploadTemplateStoreData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

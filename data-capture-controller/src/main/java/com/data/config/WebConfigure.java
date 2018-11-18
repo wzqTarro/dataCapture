@@ -46,10 +46,12 @@ public class WebConfigure implements WebMvcConfigurer {
 	
 	/**
 	 * 添加拦截器
+	 * 注意：
+	 * 测试的时候不要在这里将拦截器给屏蔽了   去拦截器里面把需要的url添加在免拦截数组里面！
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		/*registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
+		registry.addInterceptor(dataInterceptor).addPathPatterns("/**")
 						.excludePathPatterns("/webjars/**",
 											 "/swagger-resources/**",
 											 "/static/**",
@@ -57,7 +59,7 @@ public class WebConfigure implements WebMvcConfigurer {
 											 "/css/**",
 											 "/resource/**",
 											 "/html/**",
-											 "/img/**");*/
+											 "/img/**");
 	}
 	
 	/**

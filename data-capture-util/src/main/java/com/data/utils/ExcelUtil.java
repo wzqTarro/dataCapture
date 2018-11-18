@@ -1,13 +1,14 @@
 package com.data.utils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,6 +58,28 @@ public class ExcelUtil<T> {
 	
 	/**excel2007最大支持行数**/
 	public static final int MAX_ROW_COUNT_2007 = 1048576;
+	
+	public String[] orderExcelHeaderArray = {"sys_id","sys_name","region","province_area","store_code","store_name","receipt_code","simple_code","simple_bar_code","stock_code","simple_name","tax_rate","box_standard","simple_amount","buying_price_with_rate","buying_price","deliver_start_date","deliver_end_date","deliver_address","discount_price","discount_start_date","discount_end_date","order_effective_judge","balance_way","diff_price_discount","diff_price_discount_total","discount_alarm_flag","contract_price","diff_price_contract","diff_price_contract_total","contract_alarm_flag","diff_price","remark"};
+	
+	public String[] promotionDetailHeaderArray = {"sys_id","sys_name","store_name","supply_price_start_date","supply_price_end_date","sell_price_start_date","sell_price_end_date","supply_name","supply_type","control_type","compensation_type","compensation_cost","product_code","origin_price","normal_supply_price","supply_price","supply_order_type","normal_sell_price","supply_sell_price","profit","discount"};
+	
+	public String[] rejectHeaderArray = {"sys_id","sys_name","reject_department_id","region","province_area","reject_department_name","receipt_code","simple_code","simple_bar_code","stock_code","simple_name","tax_rate","simple_amount","reject_price_with_rate","reject_price","reject_date","discount_price","discount_start_date","discount_end_date","diff_price_discount","diff_price_discount_total","discount_alarm_flag","contract_price","diff_price_contract","diff_price_contract_total","contract_alarm_flag","diff_price","remark"};
+	
+	public String[] saleHeaderArray = {"sys_id","sys_name","store_code","store_name","region","province_area","ascription","ascription_sole","simple_code","simple_bar_code","stock_code","simple_name","brand","series","day_night","material","pieces_num","box_standard","stock_no","sell_num","sell_price","create_time","remark","store_manager","local_name"};
+	
+	public String[] simpleCodeHeaderArray = {"simple_name","bar_code","bbg","rrl","jrd","yc","hnth","os","bl","bjhl","ws","gcs","oycb","jh","drf","wem","zb","cb"};
+	
+	public String[] stockHeaderArray = {"sys_id","sys_name","store_code","store_name","region","province_area","ascription","ascription_sole","simple_code","simple_bar_code","stock_code","simple_name","brand","classify","series","day_night","material","pieces_num","box_standard","stock_no","stock_num","tax_cost_price","stock_price","create_time","remark","local_name"};
+	
+	public String[] templateOrderHeaderArray = {"order_id","no","contract_code","good_name","good_bar_code","good_code","order_type","good_type","order_shop","address","sell_price","count","simple_count","little_count","real_count","unit","stage_count","order_state","end_time","create_time","operator_name","company_code","brand","part_content","persent_num","contain_tax_price","contain_tax_money","remark"};
+	
+	public String[] templateProductHeaderArray = {"product_id","sys_id","sys_name","simple_code","simple_bar_code","stock_code","simple_name","standard_name","brand","classify","series","func","material","pieces_num","box_standard","stock_no","sell_price","exclude_tax_price","include_tax_price"};
+	
+	public String[] templateStoreExcelHeaderArray = {"sys_id","sys_name","store_code","order_store_name","return_store_name","sale_store_name","standard_store_name","store_market","store_city","store_manager","logistics_model","practice_time","distribution_code","distribution_name","distribution_user","region","province_area","ascription","ascription_sole"};
+	
+	public String[] templateSupplyHeaderArray = {"region","sys_name","url","login_user_name","login_password","company_code","controller_name","is_val","sys_id","parent_id"};
+	
+	public String[] userHeaderArray = {"work_no","username","password","gender","mobile_code","email","department","position","login_times","last_login_date","remark","is_alive"};
 	
 	/**
 	 * 导出2003excel表
@@ -534,33 +557,92 @@ public class ExcelUtil<T> {
 		}
 	}
 	
+	/**
+	 * 读取模板文件
+	 * @param uploadType
+	 * @return
+	 */
+	public static List<String> getTemplateHeaderList(String uploadType) {
+		InputStream in = null;
+		Workbook wb = null;
+		List<String> headerList = null;
+		try {
+			in = ExcelUtil.class.getClassLoader().getResourceAsStream("template/" + uploadType + "_template_excel.xlsx");
+			wb = new XSSFWorkbook(in);
+			Sheet sheet = wb.getSheetAt(0);
+			Row row = sheet.getRow(0);
+			int size = row.getLastCellNum();
+			headerList = new ArrayList<>(size);
+			Cell cell = null;
+			for(int i = 0; i < size; i++) {
+				cell = row.getCell(i);
+				headerList.add(cell.getStringCellValue().trim());
+			}
+			return headerList;
+		} catch (FileNotFoundException e) {
+			logger.error("--->>>未找到模板文件！<<<---");
+		} catch (IOException e) {
+			logger.error("--->>>读取模板文件时异常<<<---");
+		} finally {
+			if(wb != null) {
+				try {
+					wb.close();
+				} catch (IOException e) {
+					logger.error("--->>>导入文件读取模板文件关闭workbook对象异常<<<---");
+				}
+			}
+			if(in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					logger.error("--->>>导入文件读取模板文件关闭输入流异常<<<---");
+				}
+			}
+			
+		}
+		return null;
+	}
+	
+	/**
+	 * 得到上传文件内容数据集合
+	 * @param file 上传文件
+	 * @param headers 上传文件的头部  已改为在模板文件里面读取
+	 * @param uploadType 上传表类型   在ExcelEnum枚举类中做了定义   需要严格按照此方式来传值 否则会找不到模板文件
+	 * @return
+	 * @throws IOException
+	 */
 	@SuppressWarnings("resource")
-	public List<Map<String, Object>> getExcelList(MultipartFile file, String[] headers) throws IOException {
+	public List<Map<String, Object>> getExcelList(MultipartFile file, String uploadType) throws IOException {
 		if (file == null) {
 			return null;
 		}
 		String fileName = file.getOriginalFilename();
-		String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
+		String subfix = fileName.substring(fileName.lastIndexOf(".") + 1);
 		Workbook wb = null;
 		
-		if ("xlsx".equals(prefix)) {
+		if ("xlsx".equals(subfix)) {
 			wb = new XSSFWorkbook(file.getInputStream());
-		} else if ("xls".equals(prefix)) {
+		} else if ("xls".equals(subfix)) {
 			wb = new HSSFWorkbook(file.getInputStream());
 		} else {
 			return null;
 		}
 		Sheet sheet = wb.getSheetAt(0);
-		List<String> headerList = Arrays.asList(headers);
+		//去读取模板文件
+		List<String> headerList = getTemplateHeaderList(uploadType);
 		Row headerRow = sheet.getRow(0);
 		Cell cell = null;
+		//校验上传excel是否按照模板格式
 		for (int i = 0, cellNum = headerRow.getLastCellNum(); i < cellNum; i++) {
 			cell = headerRow.getCell(i);
-			if (!headerList.contains(cell.getStringCellValue().trim())) {
+			if(!CommonUtil.isInList(cell.getStringCellValue().trim(), headerList)) {
 				return null;
 			}
 		}
 		Row row = null;
+		
+		String[] codeArray = null;
+		codeArray = switchCodeArray(uploadType);
 		
 		List<Map<String, Object>> list = new ArrayList<>(sheet.getLastRowNum());
 		Row firstRow = sheet.getRow(0);
@@ -576,7 +658,9 @@ public class ExcelUtil<T> {
 				switch (cell.getCellTypeEnum()) {
 				case NUMERIC: // 数字
 					if (HSSFDateUtil.isCellDateFormatted(cell)) {
-						value = cell.getDateCellValue();
+						SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DATE_PATTERN.YYYY_MM_DD_HH_MM_SS);
+						Date date = cell.getDateCellValue(); 
+						value = sdf.format(date);
 					} else {
 						value = cell.getNumericCellValue();
 						BigDecimal bd1 = new BigDecimal(Double.toString((double)value));
@@ -584,17 +668,75 @@ public class ExcelUtil<T> {
 	                    value = bd1.toPlainString().replaceAll("0+?$", "").replaceAll("[.]$", "");
 					}
 					break;
+				case BOOLEAN: 
+					value = cell.getBooleanCellValue() ? "TRUE" : "FALSE";
+					break;
+				case FORMULA:
+					value = cell.getCellFormula() + "";
+					break;
 				case STRING: // 字符串
 					value = cell.getStringCellValue();
 					break;
-				default:
+				case BLANK: 
 					value = "";
+					break;
+				case ERROR: 
+					value = "非法字符";
+					break;
+				default:
+					value = "未知类型";
+					break;
 				}
-				map.put(firstRow.getCell(j).getStringCellValue(), value);
+				//此处不能拿中文匹配  当前做法是按照excel模板的顺序来写header
+				//map.put(firstRow.getCell(j).getStringCellValue(), value);
+				map.put(codeArray[j], value);
 			}
 			list.add(map);
 		}
 		return list;
+	}
+	
+	private String[] switchCodeArray(String uploadType) {
+		String[] arr = null;
+		switch(uploadType) {
+		case "order" : {
+			arr = this.orderExcelHeaderArray;
+			break;
+		}
+		case "promotion_detail": {
+			arr = this.promotionDetailHeaderArray;
+			break;
+		}
+		case "reject": {
+			arr = this.rejectHeaderArray;
+			break;
+		}
+		case "sale": {
+			arr = this.saleHeaderArray;
+			break;
+		}
+		case "simple_code": {
+			arr = this.simpleCodeHeaderArray;
+			break;
+		}
+		case "stock": {
+			arr = this.stockHeaderArray;
+			break;
+		}
+		case "template_product": {
+			arr = this.templateProductHeaderArray;
+			break;
+		}
+		case "template_store": {
+			arr = this.templateStoreExcelHeaderArray;
+			break;
+		}
+		case "template_supply": {
+			arr = this.templateSupplyHeaderArray;
+			break;
+		}
+		}
+		return arr;
 	}
 	
 	/**

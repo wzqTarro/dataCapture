@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.User;
 import com.data.service.IUserService;
@@ -125,4 +127,17 @@ public class UserController {
 		map.put("workNo", CommonUtil.createWorkNo());
 		return FastJsonUtil.objectToString(map);
 	}
+	
+	/**
+     * 用户数据导入
+     * @param file
+     * @param request
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/uploadUserExcel", method = RequestMethod.POST)
+    @ApiOperation(value = "用户数据导入", httpMethod = "POST")
+    public String uploadUserExcel(@RequestParam("file") MultipartFile file) throws Exception {
+    	ResultUtil result = userService.uploadUserData(file);
+    	return FastJsonUtil.objectToString(result);
+    }
 }

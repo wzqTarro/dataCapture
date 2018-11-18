@@ -139,7 +139,7 @@
       )
   </insert>
   <insert id="insertBatch" parameterType="list">
-    insert into db_template_product (id, product_id, sys_name, 
+    insert into db_template_product (product_id, sys_name, 
       simple_code, simple_bar_code, stock_code, 
       simple_name, standard_name, brand, 
       classify, series, func, material, 
@@ -148,13 +148,21 @@
       )
     values 
     <foreach collection="list" item="product" separator=",">
-    (#{product.id,jdbcType=INTEGER}, #{product.productId,jdbcType=VARCHAR}, #{product.sysName,jdbcType=CHAR}, 
+    <!-- (#{product.id,jdbcType=INTEGER}, #{product.productId,jdbcType=VARCHAR}, #{product.sysName,jdbcType=CHAR}, 
       #{product.simpleCode,jdbcType=VARCHAR}, #{product.simpleBarCode,jdbcType=VARCHAR}, #{product.stockCode,jdbcType=VARCHAR}, 
       #{product.simpleName,jdbcType=VARCHAR}, #{product.standardName,jdbcType=VARCHAR}, #{product.brand,jdbcType=CHAR}, 
       #{product.classify,jdbcType=CHAR}, #{product.series,jdbcType=CHAR}, #{product.func,jdbcType=CHAR}, #{product.material,jdbcType=CHAR}, 
       #{product.piecesNum,jdbcType=INTEGER}, #{product.boxStandard,jdbcType=VARCHAR}, #{product.stockNo,jdbcType=VARCHAR}, 
       #{product.sellPrice,jdbcType=DECIMAL}, #{product.excludeTaxPrice,jdbcType=DECIMAL}, #{product.includeTaxPrice,jdbcType=DECIMAL},
       #{product.sysId,jdbcType=CHAR}
+      ) -->
+      (#{product.product_id,jdbcType=VARCHAR}, #{product.sys_name,jdbcType=CHAR}, 
+      #{product.simple_code,jdbcType=VARCHAR}, #{product.simple_bar_code,jdbcType=VARCHAR}, #{product.stock_code,jdbcType=VARCHAR}, 
+      #{product.simple_name,jdbcType=VARCHAR}, #{product.standard_name,jdbcType=VARCHAR}, #{product.brand,jdbcType=CHAR}, 
+      #{product.classify,jdbcType=CHAR}, #{product.series,jdbcType=CHAR}, #{product.func,jdbcType=CHAR}, #{product.material,jdbcType=CHAR}, 
+      #{product.pieces_num,jdbcType=INTEGER}, #{product.box_standard,jdbcType=VARCHAR}, #{product.stock_no,jdbcType=VARCHAR}, 
+      #{product.sell_price,jdbcType=DECIMAL}, #{product.exclude_tax_price,jdbcType=DECIMAL}, #{product.include_tax_price,jdbcType=DECIMAL},
+      #{product.sys_id,jdbcType=CHAR}
       )
     </foreach>
   </insert>
