@@ -65,7 +65,19 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/sale/exportSaleExcelByStoreCode",
 				"/stock/getStockByParam",
 				"/system/buildMenuList",
-				"/order/uoloadOrderExcel"
+				
+				"/system/addMenu",
+				"/system/updateMenu",
+				"/system/deleteMenu",
+				"/system/queryMenuListByPage",
+				"/system/queryRoleMenuList",
+				"/system/updateRoleFunction",
+				"/systemRole/querySystemRoleByPage",
+				"/systemRole/querySystemRoleDetail",
+				"/systemRole/addSystemRole",
+				"/systemRole/updateSystemRole",
+				"/systemRole/deleteSystemRoleByRoleId",
+				"/systemRole/deleteSystemRoleByIds"
 				
 		};
 	}
