@@ -144,6 +144,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	}
 
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadTemplateSupplyData(MultipartFile file) throws Exception {
 		ExcelUtil<TemplateSupply> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> templateSupplyMapList = excelUtil.getExcelList(file, ExcelEnum.TEMPLATE_SUPPLY_TEMPLATE_TYPE.value());

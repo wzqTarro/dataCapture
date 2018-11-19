@@ -154,6 +154,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 	}
 
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadTemplateStoreData(MultipartFile file) throws IOException {
 		ExcelUtil<TemplateStore> excelUtil = new ExcelUtil<>();
 //		String[] headers = new String[]{"系统编号","门店编码","供应链订单店称","供应链退单店称","供应链销量店称","百亚标准门店名称","门店所在市场",
@@ -162,34 +163,6 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		if (storeMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
-		
-//		TemplateStore store = null;
-//		List<TemplateStore> storeList = new ArrayList<>();
-//		Map<String, Object> map = null;	
-//		for (int i = 0, size = storeMapList.size(); i < size; i++) {
-//			map = storeMapList.get(i);
-//			store = new TemplateStore();
-//			store.setSysId(String.valueOf(map.get("系统编号")));
-//			store.setSysName((String)map.get("门店系统"));
-//			store.setStoreCode((String)map.get("门店编码"));
-//			store.setOrderStoreName((String)map.get("供应链订单店称"));
-//			store.setReturnStoreName((String)map.get("供应链退单店称"));
-//			store.setSaleStoreName((String)map.get("供应链销量店称"));
-//			store.setStandardStoreName((String)map.get("百亚标准门店名称"));
-//			store.setStoreMarket((String)map.get("门店所在市场"));
-//			store.setStoreCity((String)map.get("门店所在城市"));
-//			store.setStoreManager((String)map.get("门店负责人"));
-//			store.setLogisticsModel((String)map.get("物流模式"));
-//			store.setPracticeTime((map.get("开业时间") != null && "".equals(map.get("开业时间")))?(Date)map.get("开业时间"):Date.from(LocalDateTime.MIN.toInstant(ZoneOffset.of("+8"))));
-//			store.setDistributionCode((String)map.get("配送商编码"));
-//			store.setDistributionName((String)map.get("配送商名称"));
-//			store.setDistributionUser((String)map.get("配送责任人"));
-//			store.setRegion((String)map.get("大区"));
-//			store.setProvinceArea((String)map.get("省区"));
-//			store.setAscription((String)map.get("归属"));
-//			store.setAscriptionSole((String)map.get("业绩归属"));
-//			storeList.add(store);
-//		}
 		insert(InsertId.INSERT_BATCH_STORE, storeMapList);
 		//insert(InsertId.INSERT_BATCH_STORE, storeList);
 		return ResultUtil.success();

@@ -148,8 +148,8 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		return null;
 	}
 
-	@Transactional(rollbackFor = {Exception.class})
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadTemplateProductData(MultipartFile file) throws Exception {
 		ExcelUtil<TemplateProduct> excelUtil = new ExcelUtil<>();
 //		String[] headers = new String[]{"商品编号", "系统编号", "系统",	"单品编码", "条码",	"存货编码",
@@ -160,35 +160,6 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 		if (productMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
-		
-//		TemplateProduct product = null;
-//		List<TemplateProduct> productList = new ArrayList<>();
-//		Map<String, Object> map = null;
-		
-//		for (int i = 0, size = productMapList.size(); i < size; i++) {
-//			map = productMapList.get(i);
-//			product = new TemplateProduct();
-//			product.setProductId((String)map.get("商品编号"));
-//			product.setSysId(String.valueOf(map.get("系统编号")));
-//			product.setSysName((String)map.get("系统"));
-//			product.setSimpleCode((String)map.get("单品编码"));
-//			product.setSimpleBarCode((String)map.get("条码"));
-//			product.setBoxStandard((String)map.get("箱规"));
-//			product.setBrand((String)map.get("品牌"));
-//			product.setClassify((String)map.get("分类"));
-//			product.setExcludeTaxPrice(new BigDecimal(StringUtils.isNoneBlank((String)map.get("含税供价"))?(String)map.get("含税供价") : "0"));
-//			product.setIncludeTaxPrice(new BigDecimal(StringUtils.isNoneBlank((String)map.get("不含税供价"))?(String)map.get("不含税供价") : "0"));
-//			product.setFunc((String)map.get("功能"));
-//			product.setMaterial((String)map.get("材质"));
-//			product.setPiecesNum(Integer.valueOf("".equals((String)map.get("包装数量"))?"0":(String)map.get("包装数量")));
-//			product.setSellPrice(new BigDecimal(StringUtils.isNoneBlank((String)map.get("零售价格"))?(String)map.get("零售价格") : "0"));
-//			product.setSeries((String)map.get("系列"));
-//			product.setStockCode(String.valueOf(map.get("存货编码")));
-//			product.setStandardName((String)map.get("标准名称"));
-//			product.setSimpleName((String)map.get("单品名称"));
-//			product.setStockNo((String)map.get("货号"));
-//			productList.add(product);
-//		}
 		insert(InsertId.INSERT_BATCH_PRODUCT, productMapList);
 		return ResultUtil.success();
 	}

@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
@@ -2015,6 +2016,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	}
 	
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadStockData(MultipartFile file) throws Exception {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> stockMapList = excelUtil.getExcelList(file, ExcelEnum.STOCK_TEMPLATE_TYPE.value());

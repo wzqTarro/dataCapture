@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
@@ -2863,6 +2864,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadSaleData(MultipartFile file) throws Exception {
 		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> saleMapList = excelUtil.getExcelList(file, ExcelEnum.SALE_TEMPLATE_TYPE.value());

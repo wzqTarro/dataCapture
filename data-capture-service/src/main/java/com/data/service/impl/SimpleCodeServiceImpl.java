@@ -101,6 +101,7 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 	}
 
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadSimpleCodeData(MultipartFile file) throws Exception {
 		ExcelUtil<SimpleCode> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> simpleCodeMapList = excelUtil.getExcelList(file, ExcelEnum.SIMPLE_CODE_TEMPLATE_TYPE.value());

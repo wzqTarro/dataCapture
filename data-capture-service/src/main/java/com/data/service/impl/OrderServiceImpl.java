@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Order;
@@ -485,7 +486,9 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx");
 		excelUtil.exportTemplateByMap(CommonValue.ORDER_ALARM_REPORT_HEADER, orderReportList, title, codeList, response.getOutputStream());
 	}
+	
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadOrderData(MultipartFile file) throws Exception {
 		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> orderMapList = excelUtil.getExcelList(file, ExcelEnum.ORDER_TEMPLATE_TYPE.value());

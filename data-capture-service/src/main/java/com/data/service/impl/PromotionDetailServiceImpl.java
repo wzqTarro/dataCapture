@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
@@ -122,6 +123,7 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 	}
 
 	@Override
+	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadPromotionDetailData(MultipartFile file) throws Exception {
 		ExcelUtil<PromotionDetail> excelUtil = new ExcelUtil<>();
 		List<Map<String, Object>> promotionDetailMapList = excelUtil.getExcelList(file, ExcelEnum.PROMOTION_DETAIL_TEMPLATE_TYPE.value());
