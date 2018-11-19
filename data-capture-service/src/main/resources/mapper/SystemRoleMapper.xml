@@ -59,16 +59,16 @@
       <if test="id != null">
         id,
       </if>
-      <if test="roleId != null">
+      <if test="roleId != null and roleId != ''">
         role_id,
       </if>
-      <if test="roleName != null">
+      <if test="roleName != null and roleName != ''">
         role_name,
       </if>
-      <if test="isEnable != null">
+      <if test="isEnable != null and isEnable != ''">
         is_enable,
       </if>
-      <if test="isDelete != null">
+      <if test="isDelete != null and isDelete != ''">
         is_delete,
       </if>
     </trim>
@@ -76,16 +76,16 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="roleId != null">
+      <if test="roleId != null and roleId != ''">
         #{roleId,jdbcType=VARCHAR},
       </if>
-      <if test="roleName != null">
+      <if test="roleName != null and roleName != ''">
         #{roleName,jdbcType=VARCHAR},
       </if>
-      <if test="isEnable != null">
+      <if test="isEnable != null and isEnable != ''">
         #{isEnable,jdbcType=VARCHAR},
       </if>
-      <if test="isDelete != null">
+      <if test="isDelete != null and isDelete != ''">
         #{isDelete,jdbcType=VARCHAR},
       </if>
     </trim>
@@ -93,16 +93,16 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.SystemRole">
     update db_system_role
     <set>
-      <if test="roleId != null">
+      <if test="roleId != null and roleId != ''">
         role_id = #{roleId,jdbcType=VARCHAR},
       </if>
-      <if test="roleName != null">
+      <if test="roleName != null and roleName != ''">
         role_name = #{roleName,jdbcType=VARCHAR},
       </if>
-      <if test="isEnable != null">
+      <if test="isEnable != null and isEnable != ''">
         is_enable = #{isEnable,jdbcType=VARCHAR},
       </if>
-      <if test="isDelete != null">
+      <if test="isDelete != null and isDelete != ''">
         is_delete = #{isDelete,jdbcType=VARCHAR},
       </if>
     </set>
@@ -110,19 +110,19 @@
   </update>
   
   <!-- 根据角色id更新角色信息 -->
-  <update id="updateRoleByRoleId" parameterType="com.data.bean.SystemRole">
+  <update id="updateRoleByRoleId" parameterType="map">
     update db_system_role
     <set>
-      <if test="roleId != null">
+      <if test="roleId != null and roleId != ''">
         role_id = #{roleId,jdbcType=VARCHAR},
       </if>
-      <if test="roleName != null">
+      <if test="roleName != null and roleName != ''">
         role_name = #{roleName,jdbcType=VARCHAR},
       </if>
-      <if test="isEnable != null">
+      <if test="isEnable != null and isEnable != ''">
         is_enable = #{isEnable,jdbcType=VARCHAR},
       </if>
-      <if test="isDelete != null">
+      <if test="isDelete != null and isDelete != ''">
         is_delete = #{isDelete,jdbcType=VARCHAR},
       </if>
     </set>

@@ -136,13 +136,15 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 		logger.info("--->>>批量删除角色编号{}<<<---", roleIds);
 		String[] roleIdArray = null;
 		Map<String, Object> params = new HashMap<>(4);
+		params.put("isDelete", CodeEnum.CODE_VALUE_01_ENUM.value());
+		params.put("isEnable", CodeEnum.CODE_VALUE_01_ENUM.value());
 		if(CommonUtil.isNotBlank(roleIds)) {
 			roleIdArray = CommonUtil.parseIdsCollection(roleIds, ",");
 			for(int i = 0, length = roleIdArray.length; i < length; i++) {
 				params.put("roleId", roleIdArray[i]);
+				update(UpdateId.UPDATE_ROLE_BY_ROLE_ID, params);
 			}
-			int count = update(UpdateId.UPDATE_ROLE_BY_ROLE_ID, params);
-			return ResultUtil.success(count);
+			return ResultUtil.success();
 		}
 		return null;
 	}
