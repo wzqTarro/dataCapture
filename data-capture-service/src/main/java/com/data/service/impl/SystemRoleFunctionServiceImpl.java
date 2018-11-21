@@ -17,6 +17,7 @@ import com.data.constant.enums.CodeEnum;
 import com.data.exception.GlobalException;
 import com.data.service.ISystemRoleFunctionService;
 import com.data.utils.CommonUtil;
+import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
 @Service("systemRoleFunctionService")
@@ -31,9 +32,9 @@ public class SystemRoleFunctionServiceImpl extends CommonServiceImpl implements 
 		if(CommonUtil.isBlank(roleId)) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色编号不能为空!");
 		}
-		logger.info("--->>>更新的动作权限编码为:{}<<<---", functionIds);
 		if(CommonUtil.isNotBlank(functionIds)) {
 			String[] idsArray = CommonUtil.parseIdsCollection(functionIds, ",");
+			logger.info("--->>>更新的动作权限编码为:{}<<<---", FastJsonUtil.objectToString(idsArray));
 			deleteRoleFunction(roleId);
 			addRoleFunction(roleId, idsArray);
 		}
@@ -53,6 +54,7 @@ public class SystemRoleFunctionServiceImpl extends CommonServiceImpl implements 
 			roleFunction.setFunctionId(idsArray[i]);
 			roleFunctionList.add(roleFunction);
 		}
+		logger.info("--->>>角色{} 更改权限集合为：{}<<<---", roleId, FastJsonUtil.objectToString(roleFunctionList));
 		Map<String, Object> params = new HashMap<>(4);
 		params.put("roleFunctionList", roleFunctionList);
 		insert(InsertId.BATCH_INSERT_ROLE_FUNCTION, params);

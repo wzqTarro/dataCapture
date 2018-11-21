@@ -262,7 +262,7 @@
       diff_price_contract_total, contract_alarm_flag, 
       diff_price, remark)
     values 
-    <foreach collection="list" item="order" separator=",">
+    <foreach collection="orderMapList" item="order" separator=",">
     <!-- (#{order.id,jdbcType=INTEGER}, #{order.sysId,jdbcType=CHAR}, #{order.sysName,jdbcType=VARCHAR}, 
       #{order.region,jdbcType=VARCHAR}, #{order.provinceArea,jdbcType=VARCHAR}, #{order.storeCode,jdbcType=VARCHAR}, 
       #{order.storeName,jdbcType=VARCHAR}, #{order.receiptCode,jdbcType=VARCHAR}, #{order.simpleCode,jdbcType=VARCHAR}, 

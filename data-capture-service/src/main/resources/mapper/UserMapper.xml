@@ -107,7 +107,7 @@
       login_times, last_login_date, remark, 
       is_alive)
     values 
-    	<foreach collection="list" item="user" separator=",">
+    	<foreach collection="userMapList" item="user" separator=",">
 	    (#{work_no,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
 	      #{password,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{mobile_code,jdbcType=VARCHAR}, 
 	      #{email,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 

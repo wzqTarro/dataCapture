@@ -147,7 +147,7 @@
       sell_price, exclude_tax_price, include_tax_price, sys_id
       )
     values 
-    <foreach collection="list" item="product" separator=",">
+    <foreach collection="productMapList" item="product" separator=",">
     <!-- (#{product.id,jdbcType=INTEGER}, #{product.productId,jdbcType=VARCHAR}, #{product.sysName,jdbcType=CHAR}, 
       #{product.simpleCode,jdbcType=VARCHAR}, #{product.simpleBarCode,jdbcType=VARCHAR}, #{product.stockCode,jdbcType=VARCHAR}, 
       #{product.simpleName,jdbcType=VARCHAR}, #{product.standardName,jdbcType=VARCHAR}, #{product.brand,jdbcType=CHAR}, 

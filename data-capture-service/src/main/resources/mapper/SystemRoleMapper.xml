@@ -21,12 +21,12 @@
   <!-- 根据角色编号查询角色信息 -->
   <select id="queryRoleByRoleId" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> 
-  	FROM db_system_role WHERE role_id=#{roleId} 
+  	FROM db_system_role WHERE role_id=#{roleId}
   </select>
   
   <!-- 查询角色分页总数 -->
   <select id="queryCountRoleByPage" resultType="int">
-  	SELECT COUNT(1) FROM db_system_role 
+  	SELECT COUNT(1) FROM db_system_role WHERE is_delete='00'
   </select>
   
   <!-- 根据角色id查询数量 -->
@@ -38,6 +38,7 @@
   <select id="queryRoleListByPage" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> 
   	FROM db_system_role 
+  	WHERE is_delete='00' 
   	<if test="pageNum != null and pageSize != null">
   		LIMIT #{pageNum}, #{pageSize}
   	</if>

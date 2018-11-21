@@ -111,8 +111,8 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		if(CommonUtil.isBlank(menu.getMenuId())) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录编号不能为空！");
 		}
-		if(CommonUtil.isOverLength(menu.getMenuName(), 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录名称长度不能超过16位！");
+		if(CommonUtil.isOverLength(menu.getMenuName(), 32)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录名称长度不能超过32位！");
 		}
 		if(CommonUtil.isOverLength(menu.getMenuIcon(), 128)) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录图标长度不能超过128位！");
@@ -176,15 +176,15 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 		if(count == 0) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "该目录编号已使用，请更换！");
 		}
-		if(CommonUtil.isOverLength(menuId, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录编号长度不能超过16位！");
+		if(CommonUtil.isOverLength(menuId, 32)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录编号长度不能超过32位！");
 		}
 		String menuName = menu.getMenuName();
 		if(CommonUtil.isBlank(menuName)) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录名称不能为空！");
 		}
-		if(CommonUtil.isOverLength(menuName, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录名称长度不能超过16位！");
+		if(CommonUtil.isOverLength(menuName, 32)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "目录名称长度不能超过32位！");
 		}
 		params.put("menuName", menuName);
 		String menuUrl = menu.getMenuUrl();
@@ -209,8 +209,8 @@ public class SystemMenuServiceImpl extends CommonServiceImpl implements ISystemM
 			if(CommonUtil.isBlank(parentId)) {
 				throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "父目录不能为空！");
 			}
-			if(CommonUtil.isOverLength(parentId, 16)) {
-				throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "父目录编号长度不能超过16位！");
+			if(CommonUtil.isOverLength(parentId, 32)) {
+				throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "父目录编号长度不能超过32位！");
 			}
 			params.put("isParent", CodeEnum.CODE_VALUE_01_ENUM.value());
 			params.put("parentId", parentId);

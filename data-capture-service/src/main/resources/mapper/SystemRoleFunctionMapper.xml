@@ -61,7 +61,7 @@
   <insert id="batchInsertRoleFunction" parameterType="map">
   	INSERT INTO db_system_role_function(role_id, function_id) 
   	VALUES
-  	<foreach collection="list" item="roleFunction" separator=",">
+  	<foreach collection="roleFunctionList" item="roleFunction" separator=",">
   		(#{roleFunction.roleId}, #{roleFunction.functionId})
   	</foreach>
   </insert>

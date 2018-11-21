@@ -148,7 +148,7 @@
       distribution_code, distribution_name, distribution_user, 
       region, province_area, ascription, 
       ascription_sole, sys_id) values 
-    <foreach collection="list" item="store" separator=",">
+    <foreach collection="storeMapList" item="store" separator=",">
     <!-- (#{store.storeCode,jdbcType=VARCHAR}, #{store.orderStoreName,jdbcType=VARCHAR}, 
       #{store.returnStoreName,jdbcType=VARCHAR}, #{store.saleStoreName,jdbcType=VARCHAR}, #{store.standardStoreName,jdbcType=VARCHAR}, 
       #{store.storeMarket,jdbcType=VARCHAR}, #{store.storeCity,jdbcType=CHAR}, #{store.sysName,jdbcType=CHAR}, 

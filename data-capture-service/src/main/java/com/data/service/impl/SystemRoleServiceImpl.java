@@ -59,18 +59,18 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 		}
 		params.put("roleId", roleId);
 		int count = queryCountByObject(QueryId.QUERY_COUNT_ROLE_BY_ROLE_ID, params);
-		if(count == 0) {
+		if(count > 0) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "该角色编号已使用，请更换！");
 		}
-		if(CommonUtil.isOverLength(roleId, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色编号长度不能超过16位！");
+		if(CommonUtil.isOverLength(roleId, 32)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色编号长度不能超过32位！");
 		}
 		String roleName = role.getRoleName();
 		if(CommonUtil.isBlank(roleName)) {
 			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色名称不能为空！");
 		}
-		if(CommonUtil.isOverLength(roleName, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色名称长度不能超过16位！");
+		if(CommonUtil.isOverLength(roleName, 24)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色名称长度不能超过24位！");
 		}
 		params.put("roleName", roleName);
 		params.put("isEnable", role.getIsEnable());
@@ -83,12 +83,12 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 	public ResultUtil updateSystemRole(SystemRole role) {
 		Map<String, Object> params = new HashMap<>(10);
 		String roleId = role.getRoleId();
-		if(CommonUtil.isOverLength(roleId, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色编号长度不能超过16位！");
+		if(CommonUtil.isOverLength(roleId, 32)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色编号长度不能超过32位！");
 		}
 		String roleName = role.getRoleName();
-		if(CommonUtil.isOverLength(roleName, 16)) {
-			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色名称长度不能超过16位！");
+		if(CommonUtil.isOverLength(roleName, 24)) {
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "角色名称长度不能超过24位！");
 		}
 		if(CommonUtil.isNotBlank(roleId)) {
 			params.put("roleId", roleId);
