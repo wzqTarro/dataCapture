@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.data.bean.SystemRole;
 import com.data.constant.PageRecord;
+import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
@@ -115,6 +116,7 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 		params.put("isDelete", CodeEnum.CODE_VALUE_01_ENUM.value());
 		params.put("isEnable", CodeEnum.CODE_VALUE_01_ENUM.value());
 		int count = update(UpdateId.UPDATE_ROLE_BY_ROLE_ID, params);
+		deleteRoleFunctionByRoleId(roleId);
 		return ResultUtil.success(count);
 	}
 
@@ -128,6 +130,19 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 		SystemRole role = (SystemRole) queryObjectByParameter(QueryId.QUERY_ROLE_BY_ROLE_ID, params);
 		logger.info("--->>>编号为{}的角色的详细信息为{}<<<---", roleId, role);
 		return ResultUtil.success(role);
+	}
+	
+	/**
+	 * 删除角色权限关联表角色的权限关联信息
+	 * @param roleId
+	 */
+	private void deleteRoleFunctionByRoleId(String roleId) {
+		Map<String, Object> params = new HashMap<>(4);
+		params.put("roleId", roleId);
+		int count = queryCountByObject(QueryId.QUERY_COUNT_ROLE_FUNCTION_BY_ROLE_ID, params);
+		if(count > 0) {
+			delete(DeleteId.DELETE_ROLE_FUNCTION_BY_ROLE_ID, params);			
+		}
 	}
 
 	@Override
@@ -143,6 +158,7 @@ public class SystemRoleServiceImpl extends CommonServiceImpl implements ISystemR
 			for(int i = 0, length = roleIdArray.length; i < length; i++) {
 				params.put("roleId", roleIdArray[i]);
 				update(UpdateId.UPDATE_ROLE_BY_ROLE_ID, params);
+				deleteRoleFunctionByRoleId(roleIdArray[i]);
 			}
 			return ResultUtil.success();
 		}

@@ -252,4 +252,10 @@ public final class QueryId {
 	
 	/**根据角色id查询角色信息**/
 	public static final String QUERY_ROLE_BY_ROLE_ID = "SystemRoleMapper.queryRoleByRoleId";
+	
+	/**根据角色id查询角色权限数量**/
+	public static final String QUERY_COUNT_ROLE_FUNCTION_BY_ROLE_ID = "SystemRoleFunctionMapper.queryCountRoleFunctionByRoleId";
+	
+	/**查询所有权限集合**/
+	public static final String QUERY_ALL_FUNCTION_LIST = "SystemFunctionMapper.queryAllFunctionList";
 }

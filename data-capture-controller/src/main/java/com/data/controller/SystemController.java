@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * 系统统一控制类
- * @author Administrator
+ * @author Alex
  *
  */
 @RestController
@@ -134,6 +134,17 @@ public class SystemController {
 	@ApiOperation(value = "更新角色权限", httpMethod = "POST")
 	public String updateRoleFunction(String roleId, String functionIds) {
 		ResultUtil result = roleFunctionService.updateRoleFunction(roleId, functionIds);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 获取所有权限
+	 * @return
+	 */
+	@RequestMapping(value = "/queryAllFunctionList", method = RequestMethod.GET)
+	@ApiOperation(value = "获取所有权限", httpMethod = "GET")
+	public String queryAllFunctionList() {
+		ResultUtil result = functionService.queryAllFunctionList();
 		return FastJsonUtil.objectToString(result);
 	}
 
