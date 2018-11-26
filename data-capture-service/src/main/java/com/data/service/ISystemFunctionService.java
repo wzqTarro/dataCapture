@@ -20,4 +20,10 @@ public interface ISystemFunctionService {
 	 * @return
 	 */
 	ResultUtil queryRoleFunctionList(String roleId);
+	
+	/**
+	 * 获取所有的权限
+	 * @return
+	 */
+	ResultUtil queryAllFunctionList();
 }

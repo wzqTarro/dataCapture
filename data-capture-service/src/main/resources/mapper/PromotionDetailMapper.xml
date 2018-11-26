@@ -120,7 +120,7 @@
       normal_supply_price, supply_price, supply_order_type, 
       normal_sell_price, supply_sell_price, profit, 
       discount) values 
-    	<foreach collection="list" item="item" separator=",">
+    	<foreach collection="promotionDetailMapList" item="item" separator=",">
 			(#{item.sys_id,jdbcType=VARCHAR}, #{item.sys_name,jdbcType=VARCHAR}, 
 	      #{item.store_name,jdbcType=VARCHAR}, #{item.supply_price_start_date,jdbcType=DATE}, #{item.supply_price_end_date,jdbcType=DATE}, 
 	      #{item.sell_price_start_date,jdbcType=DATE}, #{item.sell_price_end_date,jdbcType=DATE}, #{item.supply_name,jdbcType=VARCHAR}, 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.data.bean.SystemMenu;
+import com.data.service.ISystemFunctionService;
 import com.data.service.ISystemMenuService;
 import com.data.service.ISystemRoleFunctionService;
 import com.data.utils.FastJsonUtil;
@@ -19,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * 系统统一控制类
- * @author Administrator
+ * @author Alex
  *
  */
 @RestController
@@ -33,6 +34,9 @@ public class SystemController {
 	
 	@Autowired
 	private ISystemRoleFunctionService roleFunctionService;
+	
+	@Autowired
+	private ISystemFunctionService functionService;
 	
 	/**
 	 * 获取用户动作权限列表
@@ -109,6 +113,18 @@ public class SystemController {
 	}
 	
 	/**
+	 * 根据角色id查询角色权限集合
+	 * @param roleId
+	 * @return
+	 */
+	@RequestMapping(value = "/queryRoleFunctionByRoleId", method = RequestMethod.POST)
+	@ApiOperation(value = "根据角色id查询角色权限集合", httpMethod = "POST")
+	public String queryRoleFunctionByRoleId(String roleId) {
+		ResultUtil result = functionService.queryRoleFunctionList(roleId);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
 	 * 更新角色权限
 	 * @param roleId
 	 * @param functionIds
@@ -118,6 +134,17 @@ public class SystemController {
 	@ApiOperation(value = "更新角色权限", httpMethod = "POST")
 	public String updateRoleFunction(String roleId, String functionIds) {
 		ResultUtil result = roleFunctionService.updateRoleFunction(roleId, functionIds);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 获取所有权限
+	 * @return
+	 */
+	@RequestMapping(value = "/queryAllFunctionList", method = RequestMethod.GET)
+	@ApiOperation(value = "获取所有权限", httpMethod = "GET")
+	public String queryAllFunctionList() {
+		ResultUtil result = functionService.queryAllFunctionList();
 		return FastJsonUtil.objectToString(result);
 	}
 

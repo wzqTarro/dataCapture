@@ -427,7 +427,7 @@
       sell_price, create_time, remark, 
       store_manager, local_name)
     values 
-    <foreach collection="list" item="sale" separator=",">
+    <foreach collection="saleMapList" item="sale" separator=",">
     <!-- (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
       #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
       #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 

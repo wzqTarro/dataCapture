@@ -105,7 +105,7 @@
       ws, gcs, oycb, jh, 
       drf, wem, zb, cb
       ) values 
-    <foreach collection="list" separator="," item="code"></foreach>
+    <foreach collection="simpleCodeMapList" separator="," item="code"></foreach>
      <!-- (#{code.id,jdbcType=INTEGER}, #{code.simpleName,jdbcType=VARCHAR}, #{code.barCode,jdbcType=VARCHAR}, 
       #{code.bbg,jdbcType=VARCHAR}, #{code.rrl,jdbcType=VARCHAR}, #{code.jrd,jdbcType=VARCHAR}, #{code.yc,jdbcType=VARCHAR}, 
       #{code.hnth,jdbcType=VARCHAR}, #{code.os,jdbcType=VARCHAR}, #{code.bl,jdbcType=VARCHAR}, #{code.bjhl,jdbcType=VARCHAR}, 

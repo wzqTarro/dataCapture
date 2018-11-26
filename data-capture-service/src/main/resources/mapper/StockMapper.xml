@@ -211,7 +211,7 @@
       stock_num, tax_cost_price, stock_price, 
       create_time, remark, local_name) 
     values
-    <foreach collection="list" item="stock" separator=",">
+    <foreach collection="stockMapList" item="stock" separator=",">
     <!-- (#{stock.id}, #{stock.sysId}, #{stock.sysName}, 
       #{stock.storeCode}, #{stock.storeName}, #{stock.region}, 
       #{stock.provinceArea}, #{stock.ascription}, #{stock.ascriptionSole}, 

@@ -29,6 +29,11 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <!-- 查询所有权限集合 -->
+  <select id="queryAllFunctionList" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"></include> FROM db_system_function
+  </select>
+  
   <!-- 根据目录编号查询动作按钮集合 -->
   <select id="queryMenuFunctionListByMenuId" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Query_Function_List"></include> 

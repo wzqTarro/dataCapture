@@ -15,6 +15,13 @@
     from db_system_role_function
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <!-- 根据roleId查询角色权限数量 -->
+  <select id="queryCountRoleFunctionByRoleId" parameterType="map" resultType="int">
+  	SELECT COUNT(1) FROM db_system_role_function 
+  	WHERE rold_id=#{roleId}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_system_role_function
     where id = #{id,jdbcType=INTEGER}
@@ -61,7 +68,7 @@
   <insert id="batchInsertRoleFunction" parameterType="map">
   	INSERT INTO db_system_role_function(role_id, function_id) 
   	VALUES
-  	<foreach collection="list" item="roleFunction" separator=",">
+  	<foreach collection="roleFunctionList" item="roleFunction" separator=",">
   		(#{roleFunction.roleId}, #{roleFunction.functionId})
   	</foreach>
   </insert>
