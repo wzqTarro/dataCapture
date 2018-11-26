@@ -75,7 +75,11 @@
   <select id="selectBrandMenu" parameterType="java.lang.String" resultType="java.lang.String">
   	SELECT DISTINCT brand
   	FROM db_template_product 
-	WHERE sys_id = #{sysId}
+	WHERE 1=1 AND brand IS NOT NULL AND brand != ''
+	<if test="sysId != null and sysId != ''">
+		AND sys_id = #{sysId}
+	</if>
+	
   </select>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
     SELECT 
