@@ -13,6 +13,8 @@ public final class InsertId {
 	
 	public static final String INSERT_BATCH_ORDER = "OrderMapper.insertBatch";
 	
+	public static final String INSERT_ORDER_BATCH = "OrderMapper.insertOrderBatch";
+	
 	public static final String INSERT_NEW_SUPPLY_MESSAGE = "TemplateSupplyMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_SUPPLY = "TemplateSupplyMapper.insertBatch";
@@ -24,6 +26,8 @@ public final class InsertId {
 	public static final String INSERT_SALE_BY_MESSAGE = "SaleMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_SALE = "SaleMapper.insertBatch";
+	
+	public static final String INSERT_SALE_BATCH = "SaleMapper.insertSaleBatch";
 	
 	public static final String INSERT_SIMPLE_CODE_BY_MESSAGE = "SimpleCodeMapper.insertSelective";
 	
@@ -37,9 +41,13 @@ public final class InsertId {
 	
 	public static final String INSERT_BATCH_REJECT = "RejectMapper.insertBatch";
 	
+	public static final String INSERT_REJECT_BATCH = "RejectMapper.insertRejectBatch";
+	
 	public static final String INSERT_STOCK_BY_MESSAGE = "StockMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_STOCK = "StockMapper.insertBatch";
+	
+	public static final String INSERT_STOCK_BATCH = "StockMapper.insertStockBatch";
 	
 	public static final String INSERT_PROMOTION_DETAIL_BY_MESSAGE = "PromotionDetailMapper.insertSelective";
 	

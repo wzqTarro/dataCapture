@@ -3,6 +3,7 @@ package com.data.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,11 +44,12 @@ public class OrderController {
 	 * @param limit
 	 * @return
 	 * @throws IOException 
+	 * @throws ParseException 
 	 */
 	@RequestMapping(value = "/getOrderByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取订单数据", httpMethod = "GET")
 	public String getOrderByWeb(String queryDate, Integer limit,
-			@RequestParam(value = "sysId", required = true)String sysId) throws IOException {
+			@RequestParam(value = "sysId", required = true)String sysId) throws IOException, ParseException {
 		ResultUtil result = orderService.getOrderByWeb(queryDate, sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}

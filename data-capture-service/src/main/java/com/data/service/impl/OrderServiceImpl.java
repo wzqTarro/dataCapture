@@ -1,9 +1,12 @@
 package com.data.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +16,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +122,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException {		
+	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException, ParseException {		
 		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");		
 		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
@@ -139,6 +144,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
 			List<Order> orderList = null;
 			
+			String orderStr = null;
+			
 			if (count == 0) {
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 				
@@ -146,8 +153,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				
 				while (flag) {
 					try {
-						orderList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER, Order.class);
-						if (orderList != null) {
+						orderStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER);
+						if (orderStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取订单数据结束<<<<------");
 						}
@@ -157,6 +164,13 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 						flag = true;
 					}
 				}
+	
+				// 是否导出excel表
+				if ("1".equals(orderStr)) {
+					orderList = dataCaptureUtil.getOrderExcel(supply.getSysId());
+				} else {
+					orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
+				} 
 				
 				if (orderList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
@@ -353,7 +367,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				}
 				// 插入数据
 				logger.info("----->>>>>>开始插入订单数据<<<<<<------");
-				dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
+				insert(InsertId.INSERT_ORDER_BATCH, orderList);
+				// dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
 			} else {
 				orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, queryParam);
 			}

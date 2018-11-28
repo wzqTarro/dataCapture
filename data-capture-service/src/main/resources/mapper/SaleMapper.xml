@@ -449,6 +449,30 @@
     </foreach>
   </insert>
   
+  <insert id="insertSaleBatch" parameterType="list" >
+    insert into db_sale (sys_id, sys_name, 
+      store_code, store_name, region, 
+      province_area, ascription, ascription_sole, 
+      simple_code, simple_bar_code, stock_code, 
+      simple_name, brand, series, 
+      day_night, material, pieces_num, 
+      box_standard, stock_no, sell_num, 
+      sell_price, create_time, remark, 
+      store_manager, local_name)
+    values 
+    <foreach collection="list" item="sale" separator=",">
+    (#{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
+      #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
+      #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 
+      #{sale.simpleCode,jdbcType=VARCHAR}, #{sale.simpleBarCode,jdbcType=VARCHAR}, #{sale.stockCode,jdbcType=VARCHAR}, 
+      #{sale.simpleName,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
+      #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
+      #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
+      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
+      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
+    </foreach>
+  </insert>
+  
   <insert id="insertSelective" parameterType="com.data.bean.Sale" >
     insert into db_sale
     <trim prefix="(" suffix=")" suffixOverrides="," >

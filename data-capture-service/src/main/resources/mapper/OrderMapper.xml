@@ -263,18 +263,6 @@
       diff_price, remark)
     values 
     <foreach collection="orderMapList" item="order" separator=",">
-    <!-- (#{order.id,jdbcType=INTEGER}, #{order.sysId,jdbcType=CHAR}, #{order.sysName,jdbcType=VARCHAR}, 
-      #{order.region,jdbcType=VARCHAR}, #{order.provinceArea,jdbcType=VARCHAR}, #{order.storeCode,jdbcType=VARCHAR}, 
-      #{order.storeName,jdbcType=VARCHAR}, #{order.receiptCode,jdbcType=VARCHAR}, #{order.simpleCode,jdbcType=VARCHAR}, 
-      #{order.simpleBarCode,jdbcType=VARCHAR}, #{order.stockCode,jdbcType=VARCHAR}, #{order.simpleName,jdbcType=VARCHAR}, 
-      #{order.taxRate,jdbcType=DECIMAL}, #{order.boxStandard,jdbcType=VARCHAR}, #{order.simpleAmount,jdbcType=DECIMAL}, 
-      #{order.buyingPriceWithRate,jdbcType=DECIMAL}, #{order.buyingPrice,jdbcType=DECIMAL}, #{order.deliverStartDate,jdbcType=DATE}, 
-      #{order.deliverEndDate,jdbcType=DATE}, #{order.deliverAddress,jdbcType=VARCHAR}, #{order.discountPrice,jdbcType=DECIMAL}, 
-      #{order.discountStartDate,jdbcType=DATE}, #{order.discountEndDate,jdbcType=DATE}, #{order.orderEffectiveJudge,jdbcType=VARCHAR}, 
-      #{order.balanceWay,jdbcType=VARCHAR}, #{order.diffPriceDiscount,jdbcType=DECIMAL}, #{order.diffPriceDiscountTotal,jdbcType=DECIMAL}, 
-      #{order.discountAlarmFlag,jdbcType=VARCHAR}, #{order.contractPrice,jdbcType=DECIMAL}, #{order.diffPriceContract,jdbcType=DECIMAL}, 
-      #{order.diffPriceContractTotal,jdbcType=DECIMAL}, #{order.contractAlarmFlag,jdbcType=VARCHAR}, 
-      #{order.diffPrice,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR}) -->
 	      (#{order.sys_id,jdbcType=CHAR}, #{order.sys_name,jdbcType=VARCHAR}, 
 	      #{order.region,jdbcType=VARCHAR}, #{order.province_area,jdbcType=VARCHAR}, #{order.store_code,jdbcType=VARCHAR}, 
 	      #{order.store_name,jdbcType=VARCHAR}, #{order.receipt_code,jdbcType=VARCHAR}, #{order.simple_code,jdbcType=VARCHAR}, 
@@ -287,6 +275,35 @@
 	      #{order.discount_alarmFlag,jdbcType=VARCHAR}, #{order.contract_price,jdbcType=DECIMAL}, #{order.diff_price_contract,jdbcType=DECIMAL}, 
 	      #{order.diff_price_contract_total,jdbcType=DECIMAL}, #{order.contract_alarm_flag,jdbcType=VARCHAR}, 
 	      #{order.diff_price,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR})
+      </foreach>
+  </insert>
+  <insert id="insertOrderBatch" parameterType="list" >
+    insert into db_order (sys_id, sys_name, 
+      region, province_area, store_code, 
+      store_name, receipt_code, simple_code, 
+      simple_bar_code, stock_code, simple_name, 
+      tax_rate, box_standard, simple_amount, 
+      buying_price_with_rate, buying_price, deliver_start_date, 
+      deliver_end_date, deliver_address, discount_price, 
+      discount_start_date, discount_end_date, order_effective_judge, 
+      balance_way, diff_price_discount, diff_price_discount_total, 
+      discount_alarm_flag, contract_price, diff_price_contract, 
+      diff_price_contract_total, contract_alarm_flag, 
+      diff_price, remark)
+    values 
+    <foreach collection="list" item="order" separator=",">
+    (#{order.sysId,jdbcType=CHAR}, #{order.sysName,jdbcType=VARCHAR}, 
+      #{order.region,jdbcType=VARCHAR}, #{order.provinceArea,jdbcType=VARCHAR}, #{order.storeCode,jdbcType=VARCHAR}, 
+      #{order.storeName,jdbcType=VARCHAR}, #{order.receiptCode,jdbcType=VARCHAR}, #{order.simpleCode,jdbcType=VARCHAR}, 
+      #{order.simpleBarCode,jdbcType=VARCHAR}, #{order.stockCode,jdbcType=VARCHAR}, #{order.simpleName,jdbcType=VARCHAR}, 
+      #{order.taxRate,jdbcType=DECIMAL}, #{order.boxStandard,jdbcType=VARCHAR}, #{order.simpleAmount,jdbcType=DECIMAL}, 
+      #{order.buyingPriceWithRate,jdbcType=DECIMAL}, #{order.buyingPrice,jdbcType=DECIMAL}, #{order.deliverStartDate,jdbcType=DATE}, 
+      #{order.deliverEndDate,jdbcType=DATE}, #{order.deliverAddress,jdbcType=VARCHAR}, #{order.discountPrice,jdbcType=DECIMAL}, 
+      #{order.discountStartDate,jdbcType=DATE}, #{order.discountEndDate,jdbcType=DATE}, #{order.orderEffectiveJudge,jdbcType=VARCHAR}, 
+      #{order.balanceWay,jdbcType=VARCHAR}, #{order.diffPriceDiscount,jdbcType=DECIMAL}, #{order.diffPriceDiscountTotal,jdbcType=DECIMAL}, 
+      #{order.discountAlarmFlag,jdbcType=VARCHAR}, #{order.contractPrice,jdbcType=DECIMAL}, #{order.diffPriceContract,jdbcType=DECIMAL}, 
+      #{order.diffPriceContractTotal,jdbcType=DECIMAL}, #{order.contractAlarmFlag,jdbcType=VARCHAR}, 
+      #{order.diffPrice,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR})
       </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Order" >

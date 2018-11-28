@@ -2,6 +2,7 @@ package com.data.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +21,7 @@ public interface IOrderService {
 	 * @param limit
 	 * @return
 	 */
-	ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException ;
+	ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException, ParseException  ;
 	/**
 	 * 分页查询
 	 * @param queryDate

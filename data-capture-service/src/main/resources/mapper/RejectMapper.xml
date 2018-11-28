@@ -259,6 +259,31 @@
       #{reject.contract_alarm_flag,jdbcType=VARCHAR}, #{reject.diff_price,jdbcType=DECIMAL}, #{reject.remark,jdbcType=VARCHAR})
      </foreach>
   </insert>
+   <insert id="insertRejectBatch" parameterType="list" >
+    insert into db_reject (sys_id, sys_name, 
+      reject_department_id, region, province_area, 
+      reject_department_name, receipt_code, simple_code, 
+      simple_bar_code, stock_code, simple_name, 
+      tax_rate, simple_amount, reject_price_with_rate, 
+      reject_price, reject_date, discount_price, 
+      discount_start_date, discount_end_date, diff_price_discount, 
+      diff_price_discount_total, discount_alarm_flag, 
+      contract_price, diff_price_contract, diff_price_contract_total, 
+      contract_alarm_flag, diff_price, remark)
+    values 
+    <foreach collection="list" item="reject" separator=",">
+    (#{reject.sysId,jdbcType=CHAR}, #{reject.sysName,jdbcType=VARCHAR}, 
+      #{reject.rejectDepartmentId,jdbcType=VARCHAR}, #{reject.region,jdbcType=VARCHAR}, #{reject.provinceArea,jdbcType=VARCHAR}, 
+      #{reject.rejectDepartmentName,jdbcType=VARCHAR}, #{reject.receiptCode,jdbcType=VARCHAR}, #{reject.simpleCode,jdbcType=VARCHAR}, 
+      #{reject.simpleBarCode,jdbcType=VARCHAR}, #{reject.stockCode,jdbcType=VARCHAR}, #{reject.simpleName,jdbcType=VARCHAR}, 
+      #{reject.taxRate,jdbcType=DECIMAL}, #{reject.simpleAmount,jdbcType=DECIMAL}, #{reject.rejectPriceWithRate,jdbcType=DECIMAL}, 
+      #{reject.rejectPrice,jdbcType=DECIMAL}, #{reject.rejectDate,jdbcType=DATE}, #{reject.discountPrice,jdbcType=DECIMAL}, 
+      #{reject.discountStartDate,jdbcType=DATE}, #{reject.discountEndDate,jdbcType=DATE}, #{reject.diffPriceDiscount,jdbcType=DECIMAL}, 
+      #{reject.diffPriceDiscount_total,jdbcType=DECIMAL}, #{reject.discountAlarmFlag,jdbcType=VARCHAR}, 
+      #{reject.contractPrice,jdbcType=DECIMAL}, #{reject.diffPriceContract,jdbcType=DECIMAL}, #{reject.diffPriceContractTotal,jdbcType=DECIMAL}, 
+      #{reject.contractAlarmFlag,jdbcType=VARCHAR}, #{reject.diffPrice,jdbcType=DECIMAL}, #{reject.remark,jdbcType=VARCHAR})
+     </foreach>
+  </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Reject" >
     insert into db_reject
     <trim prefix="(" suffix=")" suffixOverrides="," >

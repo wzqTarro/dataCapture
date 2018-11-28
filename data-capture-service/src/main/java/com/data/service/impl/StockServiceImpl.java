@@ -100,14 +100,14 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
 			List<Stock> stockList = null;
-			
+			String stockStr = null;
 			boolean flag = true;
 			
 			while (flag) {
 				try {
 					// 抓取数据
-					stockList = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK, Stock.class);
-					if (stockList != null) {
+					stockStr = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK);
+					if (stockStr != null) {
 						flag = false;
 						logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
 					}
@@ -117,7 +117,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					flag = true;
 				}
 			}
-			
+			if ("1".equals(stockStr)) {
+				stockList = dataCaptureUtil.getStockExcel(supply.getSysId());
+			} else {
+				stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
+			}
 			if (stockList.size() == 0) {
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 				return ResultUtil.success(pageRecord);
@@ -244,7 +248,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			delete(DeleteId.DELETE_STOCK_BY_SYS_ID, sysId);
 			
 			logger.info("---->>>开始插入库存数据<<<-----");
-			dataCaptureUtil.insertData(stockList, InsertId.INSERT_BATCH_STOCK);
+			insert(InsertId.INSERT_STOCK_BATCH, stockList);
 			
 			pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 		}

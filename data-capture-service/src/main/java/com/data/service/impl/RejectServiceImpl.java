@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	private ICodeDictService codeDictService;
 
 	@Override
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException {
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException, ParseException {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
 		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
@@ -91,16 +92,17 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
 			List<Reject> rejectList = null;
 			
+			String rejectStr = null;
+			
 			if (count == 0) {
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-				rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
 				
 				boolean flag = true;
 				
 				while (flag) {
 					try {
-						rejectList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT, Reject.class);
-						if (rejectList != null) {
+						rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
+						if (rejectStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取退单数据结束<<<<------");
 						}
@@ -111,6 +113,12 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					}
 				}
 				
+				// 判断是否为解析excel表
+				if ("1".equals(rejectStr)) {
+					rejectList = dataCaptureUtil.getRejectExcel(supply.getSysId());
+				}else {
+					rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
+				}
 				if (rejectList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 					return ResultUtil.success(pageRecord);
@@ -298,7 +306,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				}
 				// 插入数据
 				logger.info("------>>>>>开始插入退单数据<<<<<-------");
-				dataCaptureUtil.insertData(rejectList, InsertId.INSERT_BATCH_REJECT);
+				insert(InsertId.INSERT_REJECT_BATCH, rejectList);
 			} else {
 				rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, queryParam);
 			}

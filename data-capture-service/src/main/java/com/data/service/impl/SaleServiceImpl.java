@@ -119,6 +119,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			
 			logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
 			List<Sale> saleList = null;
+			String saleStr = null;
 			if (count == 0) {
 				
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
@@ -128,8 +129,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				while (flag) {
 					try {
 						// 抓取数据
-						saleList = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE, Sale.class);
-						if (saleList != null) {
+						saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
+						if (saleStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取销售数据结束<<<<------");
 						}
@@ -140,6 +141,11 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					}
 				}
 				
+				if ("1".equals(saleStr)) {
+					saleList = dataCaptureUtil.getSaleExcel(supply.getSysId());
+				} else {
+					saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
+				}
 				if (saleList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 					return ResultUtil.success(pageRecord);
@@ -260,7 +266,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				}			
 				// 数据插入数据库
 				logger.info("------>>>>>开始插入销售数据<<<<<-------");
-				dataCaptureUtil.insertData(saleList, InsertId.INSERT_BATCH_SALE);
+				insert(InsertId.INSERT_SALE_BATCH, saleList);
 			} else {
 				saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, queryParam);
 			}
