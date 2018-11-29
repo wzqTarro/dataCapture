@@ -1,25 +1,20 @@
 package com.data.utils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +29,6 @@ import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
-import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.SupplyEnum;
 import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
@@ -79,6 +73,28 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		if (false == supply.getIsVal()) {
 			throw new DataException("供应链尚未开通");
 		}
+		// 订单
+		if (WebConstant.ORDER.equals(dataType)) {
+			if (supply.getSysId().equals(SupplyEnum.XSJ.getCode())) {
+				throw new DataException("供应链此功能尚未开通");
+			}
+		}
+		
+		// 退单
+		if (WebConstant.REJECT.equals(dataType)) {
+			if (supply.getSysId().equals(SupplyEnum.BBG.getCode()) 
+					|| supply.getSysId().equals(SupplyEnum.XSJ.getCode())
+					|| supply.getSysId().equals(SupplyEnum.CQ_ZB.getCode())) {
+				throw new DataException("供应链此功能尚未开通");
+			}
+		}
+		
+		// 销售
+		if (WebConstant.SALE.equals(dataType)) {
+			if (supply.getSysId().equals(SupplyEnum.BBG.getCode())) {
+				throw new DataException("供应链此功能尚未开通");
+			}
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
 		sb.append(supply.getControllerName());
@@ -113,7 +129,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public List<Order> getOrderExcel(String sysId) throws IOException, ParseException {
+	public static List<Order> getOrderExcel(String sysId) throws IOException, ParseException {
 		List<Order> orderList = new ArrayList<>();
 		// 永辉
 		if (SupplyEnum.YH_AH.getCode().equals(sysId) || SupplyEnum.YH_BJ.getCode().equals(sysId)
@@ -127,7 +143,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\yh\\订单.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -139,6 +155,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				Double buyPriceWithRate = row.getCell(13).getNumericCellValue();
 				String deliveryStartTime = row.getCell(6).getStringCellValue();
 				String deliveryEndTime = row.getCell(7).getStringCellValue();
+				String simpleCode = row.getCell(8).getStringCellValue();
 				
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 				Order order = new Order();
@@ -149,6 +166,38 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				order.setStoreCode(storeCode);
 				order.setDeliverStartDate(format.parse(deliveryStartTime));
 				order.setDeliverEndDate(format.parse(deliveryEndTime));
+				order.setSimpleCode(simpleCode);
+				orderList.add(order);
+			}
+			wb.close();
+		} else if (SupplyEnum.BBG.getCode().equals(sysId)) {
+			String filePath = "E:\\excel\\bbg\\订单.xls";
+			FileInputStream input = new FileInputStream(filePath);
+			Workbook wb = new XSSFWorkbook(input);
+			Sheet sheet = wb.getSheetAt(0);
+			
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				String receiptCode = row.getCell(1).getStringCellValue();
+				String storeCode = row.getCell(6).getStringCellValue();
+				storeCode = storeCode.substring(storeCode.lastIndexOf("(")+1, storeCode.lastIndexOf(")"));
+				String simpleBarCode = row.getCell(9).getStringCellValue();
+				Double buyNum = Double.valueOf(row.getCell(13).getStringCellValue());
+				Double buyPriceWithRate = Double.valueOf(row.getCell(12).getStringCellValue());
+				String deliveryStartTime = row.getCell(3).getStringCellValue();
+				String deliveryEndTime = row.getCell(4).getStringCellValue();
+				String simpleCode = row.getCell(7).getStringCellValue();
+				
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				Order order = new Order();
+				order.setBuyingPriceWithRate(BigDecimal.valueOf(buyPriceWithRate));
+				order.setSimpleBarCode(simpleBarCode);
+				order.setReceiptCode(receiptCode);
+				order.setSimpleAmount(buyNum.longValue());
+				order.setStoreCode(storeCode);
+				order.setDeliverStartDate(format.parse(deliveryStartTime));
+				order.setDeliverEndDate(format.parse(deliveryEndTime));
+				order.setSimpleCode(simpleCode);
 				orderList.add(order);
 			}
 			wb.close();
@@ -177,7 +226,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\yh\\销售.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -200,7 +249,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		} else if (SupplyEnum.CQ_ZB.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\cqzb\\销售.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -210,6 +259,31 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				String simpleBarCode = row.getCell(5).getStringCellValue();
 				Double sellNum = Double.valueOf(row.getCell(8).getStringCellValue());
 				Double simplePrice = Double.valueOf(row.getCell(10).getStringCellValue());
+				Double sellPrice = sellNum * simplePrice;
+				
+				Sale sale = new Sale();
+				sale.setStoreCode(storeCode);
+				sale.setSimpleCode(simpleCode);
+				sale.setSimpleBarCode(simpleBarCode);
+				sale.setSellNum(sellNum.intValue());
+				sale.setSellPrice(sellPrice);
+				saleList.add(sale);
+			}
+			wb.close();
+		} else if (SupplyEnum.XSJ.getCode().equals(sysId)) {
+			String filePath = "E:\\excel\\xsj\\销售.xls";
+			FileInputStream input = new FileInputStream(filePath);
+			Workbook wb = new XSSFWorkbook(input);
+			Sheet sheet = wb.getSheetAt(0);
+			
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				String storeCode = row.getCell(0).getStringCellValue();
+				storeCode = storeCode.substring(0, 4);
+				String simpleCode = row.getCell(1).getStringCellValue();
+				String simpleBarCode = row.getCell(2).getStringCellValue();
+				Double sellNum = Double.valueOf(row.getCell(4).getStringCellValue());
+				Double simplePrice = Double.valueOf(row.getCell(6).getStringCellValue());
 				Double sellPrice = sellNum * simplePrice;
 				
 				Sale sale = new Sale();
@@ -246,7 +320,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\yh\\库存.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -269,7 +343,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		} else if (SupplyEnum.CQ_ZB.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\cqzb\\库存.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -279,6 +353,52 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				String simpleBarCode = row.getCell(3).getStringCellValue();
 				Double stockNum = Double.valueOf(row.getCell(14).getStringCellValue());
 				Double stockPrice = Double.valueOf(row.getCell(15).getStringCellValue());
+				
+				Stock stock = new Stock();
+				stock.setStoreCode(storeCode);
+				stock.setSimpleCode(simpleCode);
+				stock.setSimpleBarCode(simpleBarCode);
+				stock.setStockNum(stockNum.intValue());
+				stock.setStockPrice(stockPrice);
+				stockList.add(stock);
+			}
+			wb.close();
+		} else if (SupplyEnum.BBG.getCode().equals(sysId)) {
+			String filePath = "E:\\excel\\bbg\\库存.xls";
+			FileInputStream input = new FileInputStream(filePath);
+			Workbook wb = new XSSFWorkbook(input);
+			Sheet sheet = wb.getSheetAt(0);
+			
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				String storeCode = row.getCell(2).getStringCellValue();
+				storeCode = storeCode.substring(storeCode.lastIndexOf("(")+1, storeCode.lastIndexOf(")"));
+				String simpleCode = row.getCell(4).getStringCellValue();
+				simpleCode = simpleCode.substring(simpleCode.lastIndexOf("(")+1, simpleCode.lastIndexOf(")"));
+				Double stockNum = Double.valueOf(row.getCell(6).getStringCellValue());
+				Double stockPrice = Double.valueOf(row.getCell(9).getStringCellValue());
+				
+				Stock stock = new Stock();
+				stock.setStoreCode(storeCode);
+				stock.setSimpleCode(simpleCode);
+				stock.setStockNum(stockNum.intValue());
+				stock.setStockPrice(stockPrice);
+				stockList.add(stock);
+			}
+			wb.close();
+		} else if (SupplyEnum.XSJ.getCode().equals(sysId)) {
+			String filePath = "E:\\excel\\xsj\\库存.xls";
+			FileInputStream input = new FileInputStream(filePath);
+			Workbook wb = new XSSFWorkbook(input);
+			Sheet sheet = wb.getSheetAt(0);
+			
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				String storeCode = row.getCell(0).getStringCellValue();
+				String simpleCode = row.getCell(3).getStringCellValue();
+				String simpleBarCode = row.getCell(5).getStringCellValue();
+				Double stockNum = Double.valueOf(row.getCell(7).getStringCellValue());
+				Double stockPrice = Double.valueOf(row.getCell(8).getStringCellValue());
 				
 				Stock stock = new Stock();
 				stock.setStoreCode(storeCode);
@@ -314,7 +434,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
 			String filePath = "E:\\excel\\yh\\退单.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new HSSFWorkbook(input);
+			Workbook wb = new XSSFWorkbook(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -345,7 +465,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		getSaleExcel("by1834198");
+		getSaleExcel("by321");
 	}
 	/**
 	 * 设置分页
