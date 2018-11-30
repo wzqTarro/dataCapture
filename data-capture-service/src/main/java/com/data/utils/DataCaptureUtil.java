@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -53,7 +54,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public String getDataByWeb(String queryDate, TemplateSupply supply, String dataType) throws IOException{		
+	public String getDataByWeb(String queryDate, TemplateSupply supply, String dataType) throws Exception{		
 		String start = null;
 		String end = null;
 		
@@ -82,7 +83,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		
 		// 退单
 		if (WebConstant.REJECT.equals(dataType)) {
-			if (supply.getSysId().equals(SupplyEnum.BBG.getCode()) 
+			if (SupplyEnum.BBG_HUNAN.getCode().equals(supply.getSysId())
+					|| SupplyEnum.BBG_SC_1.getCode().equals(supply.getSysId())
+					|| SupplyEnum.BBG_SC_2.getCode().equals(supply.getSysId())
 					|| supply.getSysId().equals(SupplyEnum.XSJ.getCode())
 					|| supply.getSysId().equals(SupplyEnum.CQ_ZB.getCode())) {
 				throw new DataException("供应链此功能尚未开通");
@@ -91,7 +94,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		
 		// 销售
 		if (WebConstant.SALE.equals(dataType)) {
-			if (supply.getSysId().equals(SupplyEnum.BBG.getCode())) {
+			if (SupplyEnum.BBG_HUNAN.getCode().equals(supply.getSysId())
+					|| SupplyEnum.BBG_SC_1.getCode().equals(supply.getSysId())
+					|| SupplyEnum.BBG_SC_2.getCode().equals(supply.getSysId())) {
 				throw new DataException("供应链此功能尚未开通");
 			}
 		}
@@ -110,13 +115,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		sb.append(supply.getLoginPassword());
 		sb.append("&venderCode=");
 		sb.append(supply.getCompanyCode());
+		sb.append("&sysId=");
+		sb.append(supply.getSysId());
 		logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
 		String json = restTemplate.getForObject(sb.toString(), String.class);
 		
 		
 		
 		// 测试数据
-		// String json = FileUtils.readFileToString(new File("D:\\sale.txt"));
+		// String json = FileUtils.readFileToString(new File("D:/sale.txt"));
 		// json转List
 		// List<T> list = (List<T>) FastJsonUtil.jsonToList(json, clazz);
 		// logger.info("抓取数据数量:" + list.size());
@@ -129,7 +136,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public static List<Order> getOrderExcel(String sysId) throws IOException, ParseException {
+	public List<Order> getOrderExcel(String sysId) throws IOException, ParseException {
 		List<Order> orderList = new ArrayList<>();
 		// 永辉
 		if (SupplyEnum.YH_AH.getCode().equals(sysId) || SupplyEnum.YH_BJ.getCode().equals(sysId)
@@ -141,9 +148,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_HUNAN.getCode().equals(sysId)
 				|| SupplyEnum.YH_JX.getCode().equals(sysId)
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\yh\\订单.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_order.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -170,10 +177,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				orderList.add(order);
 			}
 			wb.close();
-		} else if (SupplyEnum.BBG.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\bbg\\订单.xls";
+		} else if (SupplyEnum.BBG_HUNAN.getCode().equals(sysId)
+				|| SupplyEnum.BBG_SC_1.getCode().equals(sysId)
+				|| SupplyEnum.BBG_SC_2.getCode().equals(sysId)) {
+			String filePath = "/usr/python-project/excel/"+ sysId +"_order.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -212,7 +221,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public static List<Sale> getSaleExcel(String sysId) throws IOException, ParseException {
+	public  List<Sale> getSaleExcel(String sysId) throws IOException, ParseException {
 		List<Sale> saleList = new ArrayList<>();
 		// 永辉
 		if (SupplyEnum.YH_AH.getCode().equals(sysId) || SupplyEnum.YH_BJ.getCode().equals(sysId)
@@ -224,9 +233,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_HUNAN.getCode().equals(sysId)
 				|| SupplyEnum.YH_JX.getCode().equals(sysId)
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\yh\\销售.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_sale.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -247,9 +256,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			}
 			wb.close();
 		} else if (SupplyEnum.CQ_ZB.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\cqzb\\销售.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_sale.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -271,9 +280,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			}
 			wb.close();
 		} else if (SupplyEnum.XSJ.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\xsj\\销售.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_sale.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -306,7 +315,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public static List<Stock> getStockExcel(String sysId) throws IOException, ParseException {
+	public List<Stock> getStockExcel(String sysId) throws IOException, ParseException {
 		List<Stock> stockList = new ArrayList<>();
 		// 永辉
 		if (SupplyEnum.YH_AH.getCode().equals(sysId) || SupplyEnum.YH_BJ.getCode().equals(sysId)
@@ -318,9 +327,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_HUNAN.getCode().equals(sysId)
 				|| SupplyEnum.YH_JX.getCode().equals(sysId)
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\yh\\库存.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_inventory.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -341,9 +350,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			}
 			wb.close();
 		} else if (SupplyEnum.CQ_ZB.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\cqzb\\库存.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_inventory.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -363,10 +372,12 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				stockList.add(stock);
 			}
 			wb.close();
-		} else if (SupplyEnum.BBG.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\bbg\\库存.xls";
+		} else if (SupplyEnum.BBG_HUNAN.getCode().equals(sysId)
+				|| SupplyEnum.BBG_SC_1.getCode().equals(sysId)
+				|| SupplyEnum.BBG_SC_2.getCode().equals(sysId)) {
+			String filePath = "/usr/python-project/excel/"+ sysId +"_inventory.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -387,9 +398,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 			}
 			wb.close();
 		} else if (SupplyEnum.XSJ.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\xsj\\库存.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_inventory.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -412,7 +423,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		}
 		return stockList;
 	}
-	
+	private Workbook getWb(FileInputStream input) throws IOException {
+		Workbook wb = null;
+		try {
+			wb = new XSSFWorkbook(input);
+		}catch (Exception e) {
+			wb = new HSSFWorkbook(input);
+		}
+		return wb;
+	}
 	/**
 	 * 读取退单excel
 	 * @param json
@@ -432,9 +451,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				|| SupplyEnum.YH_HUNAN.getCode().equals(sysId)
 				|| SupplyEnum.YH_JX.getCode().equals(sysId)
 				|| SupplyEnum.YH_SC.getCode().equals(sysId)) {
-			String filePath = "E:\\excel\\yh\\退单.xls";
+			String filePath = "/usr/python-project/excel/"+ sysId +"_reject.xls";
 			FileInputStream input = new FileInputStream(filePath);
-			Workbook wb = new XSSFWorkbook(input);
+			Workbook wb = getWb(input);
 			Sheet sheet = wb.getSheetAt(0);
 			
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -465,7 +484,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		getSaleExcel("by321");
+		//getSaleExcel("by321");
 	}
 	/**
 	 * 设置分页

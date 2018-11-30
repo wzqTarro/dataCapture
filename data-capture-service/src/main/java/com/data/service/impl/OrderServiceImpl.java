@@ -122,7 +122,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws IOException, ParseException {		
+	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws Exception {		
 		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");		
 		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
@@ -151,10 +151,10 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				
 				boolean flag = true;
 				
-				while (flag) {
-					try {
+/*				while (flag) {
+					try {*/
 						orderStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER);
-						if (orderStr != null) {
+/*						if (orderStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取订单数据结束<<<<------");
 						}
@@ -163,6 +163,11 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					} catch (Exception e) {
 						flag = true;
 					}
+				}*/
+				if (orderStr == null) {
+					return ResultUtil.error("抓取失败");	
+				}else {
+					logger.info("----->>>>抓取订单数据结束<<<<------");
 				}
 	
 				// 是否导出excel表

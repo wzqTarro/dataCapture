@@ -49,7 +49,7 @@ public class OrderController {
 	@RequestMapping(value = "/getOrderByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取订单数据", httpMethod = "GET")
 	public String getOrderByWeb(String queryDate, Integer limit,
-			@RequestParam(value = "sysId", required = true)String sysId) throws IOException, ParseException {
+			@RequestParam(value = "sysId", required = true)String sysId) throws Exception {
 		ResultUtil result = orderService.getOrderByWeb(queryDate, sysId, limit);
 		return FastJsonUtil.objectToString(result);
 	}
