@@ -29,6 +29,22 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <!-- 根据权限编号查询权限明细 -->
+  <select id="queryFunctionByFunctionId" parameterType="map" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from db_system_function
+    where function_id = #{functionId,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 根据权限表示查询权限 -->
+  <select id="queryFunctionByFunctionAuth" parameterType="map" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from db_system_function
+    where function_auth = #{functionAuth,jdbcType=VARCHAR}
+  </select>
+  
   <!-- 查询所有权限集合 -->
   <select id="queryAllFunctionList" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> FROM db_system_function
@@ -65,6 +81,12 @@
     delete from db_system_function
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  
+  <delete id="deleteSystemFunctionByFunctionId" parameterType="map">
+  	delete from db_system_function
+    where function_id = #{function_id,jdbcType=VARCHAR}
+  </delete>
+  
   <insert id="insert" parameterType="com.data.bean.SystemFunction">
     insert into db_system_function (id, function_id, function_name, 
       function_icon, function_url, function_auth, function_method,
@@ -134,6 +156,69 @@
       </if>
     </trim>
   </insert>
+  
+  <insert id="insertNewSystemFunction" parameterType="map">
+  	insert into db_system_function
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="functionId != null">
+        function_id,
+      </if>
+      <if test="functionName != null">
+        function_name,
+      </if>
+      <if test="functionIcon != null">
+        function_icon,
+      </if>
+      <if test="functionUrl != null">
+        function_url,
+      </if>
+      <if test="functionAuth != null">
+        function_auth,
+      </if>
+      <if test="functionMethod != null">
+      	function_method,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="functionId != null">
+        #{functionId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null">
+        #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionIcon != null">
+        #{functionIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="functionUrl != null">
+        #{functionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="functionAuth != null">
+        #{functionAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="functionMethod != null">
+      	#{functionMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.SystemFunction">
     update db_system_function
     <set>
@@ -164,6 +249,38 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <update id="updateSystemFunctionByFunctionId" parameterType="map">
+  	update db_system_function
+    <set>
+      <if test="functionId != null">
+        function_id = #{functionId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null">
+        function_name = #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionIcon != null">
+        function_icon = #{functionIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="functionUrl != null">
+        function_url = #{functionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="functionAuth != null">
+        function_auth = #{functionAuth,jdbcType=VARCHAR},
+      </if>
+      <if test="functionMethod != null">
+      	function_method = #{functionMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where function_id = #{functionId,jdbcType=VARCHAR}
+  </update>
+  
   <update id="updateByPrimaryKey" parameterType="com.data.bean.SystemFunction">
     update db_system_function
     set function_id = #{functionId,jdbcType=VARCHAR},

@@ -258,4 +258,16 @@ public final class QueryId {
 	
 	/**查询所有权限集合**/
 	public static final String QUERY_ALL_FUNCTION_LIST = "SystemFunctionMapper.queryAllFunctionList";
+	
+	/**查询权限集合分页条数**/
+	public static final String QUERY_COUNT_FUNCTION_PAGE = "SystemFunctionMapper.queryCountFunctionPage";
+	
+	/**查询权限集合分页集合**/
+	public static final String QUERY_LIST_FUNCTION_PAGE = "SystemFunctionMapper.queryListFunctionPage";
+	
+	/**根据权限编号查询权限明细**/
+	public static final String QUERY_FUNCTION_BY_FUNCTION_ID = "SystemFunctionMapper.queryFunctionByFunctionId";
+	
+	/**根据权限表示查询权限**/
+	public static final String QUERY_FUNCTION_BY_FUNCTION_AUTH = "SystemFunctionMapper.queryFunctionByFunctionAuth";
 }

@@ -61,4 +61,6 @@ public final class InsertId {
 	
 	public static final String INSERT_BATCH_USER = "UserMapper.insertBatch";
 	
+	public static final String INSERT_NEW_SYSTEM_FUNCTION = "SystemFunctionMapper.insertNewSystemFunction";
+	
 }

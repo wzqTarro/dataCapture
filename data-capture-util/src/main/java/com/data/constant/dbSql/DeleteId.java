@@ -28,4 +28,6 @@ public final class DeleteId {
 	public static final String DELETE_PROMOTION_DETAIL_BY_ID = "PromotionDetailMapper.deleteByPrimaryKey";
 	
 	public static final String DELETE_ROLE_FUNCTION_BY_ROLE_ID = "SystemRoleFunctionMapper.deleteByRoleId";
+	
+	public static final String DELETE_SYSTEM_FUNCTION_BY_FUNCTION_ID = "SystemFunctionMapper.deleteSystemFunctionByFunctionId";
 }

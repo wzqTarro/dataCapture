@@ -34,4 +34,6 @@ public final class UpdateId {
 	
 	/**根据角色id更新角色信息**/
 	public static final String UPDATE_ROLE_BY_ROLE_ID = "SystemRoleMapper.updateRoleByRoleId";
+	
+	public static final String UPDATE_SYSTEM_FUNCTION_BY_FUNCTION_ID = "SystemFunctionMapper.updateSystemFunctionByFunctionId";
 }
