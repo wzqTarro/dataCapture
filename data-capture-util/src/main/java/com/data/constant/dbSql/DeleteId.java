@@ -30,4 +30,6 @@ public final class DeleteId {
 	public static final String DELETE_ROLE_FUNCTION_BY_ROLE_ID = "SystemRoleFunctionMapper.deleteByRoleId";
 	
 	public static final String DELETE_SYSTEM_FUNCTION_BY_FUNCTION_ID = "SystemFunctionMapper.deleteSystemFunctionByFunctionId";
+	
+	public static final String DELETE_SYSTEM_ROLE_MENU_BY_ROLE_ID = "SystemRoleMenuMapper.deleteSystemRoleMenuByRoleId";
 }

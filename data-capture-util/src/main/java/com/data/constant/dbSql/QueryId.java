@@ -270,4 +270,10 @@ public final class QueryId {
 	
 	/**根据权限表示查询权限**/
 	public static final String QUERY_FUNCTION_BY_FUNCTION_AUTH = "SystemFunctionMapper.queryFunctionByFunctionAuth";
+	
+	/**查询目录集合**/
+	public static final String QUERY_MENU_LIST = "SystemMenuMapper.queryMenuList";
+	
+	/**根据角色编号查询所拥有的目录编号集合**/
+	public static final String QUERY_MENU_ID_LIST_BY_ROLE_ID = "SystemRoleMenuMapper.queryMenuIdListByRoleId";
 }

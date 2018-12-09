@@ -10,6 +10,7 @@ import com.data.bean.SystemMenu;
 import com.data.service.ISystemFunctionService;
 import com.data.service.ISystemMenuService;
 import com.data.service.ISystemRoleFunctionService;
+import com.data.service.ISystemRoleMenuService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -37,6 +38,9 @@ public class SystemController {
 	
 	@Autowired
 	private ISystemFunctionService functionService;
+	
+	@Autowired
+	private ISystemRoleMenuService roleMenuService;
 	
 	/**
 	 * 获取用户动作权限列表
@@ -145,6 +149,30 @@ public class SystemController {
 	@ApiOperation(value = "获取所有权限", httpMethod = "GET")
 	public String queryAllFunctionList() {
 		ResultUtil result = functionService.queryAllFunctionList();
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 更新角色目录权限
+	 * @param menuIds
+	 * @return
+	 */
+	@RequestMapping(value = "/updateRoleMenu", method = RequestMethod.POST)
+	@ApiOperation(value = "更新角色目录", httpMethod = "POST")
+	public String updateRoleMenu(String roleId, String menuIds) {
+		ResultUtil result = roleMenuService.updateRoleMenu(roleId, menuIds);
+		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 查看角色目录
+	 * @param roleId
+	 * @return
+	 */
+	@RequestMapping(value = "/queryRoleMenu", method = RequestMethod.GET)
+	@ApiOperation(value = "查看角色目录", httpMethod = "GET")
+	public String queryRoleMenu(String roleId) {
+		ResultUtil result = roleMenuService.queryRoleMenu(roleId);
 		return FastJsonUtil.objectToString(result);
 	}
 

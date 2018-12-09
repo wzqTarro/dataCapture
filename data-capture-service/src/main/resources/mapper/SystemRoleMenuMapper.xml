@@ -15,10 +15,23 @@
     from db_system_role_menu
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <!-- 根据角色编号查询所拥有的目录编号集合 -->
+  <select id="queryMenuIdListByRoleId" parameterType="java.lang.String" resultType="string">
+  	select menu_id menuId from db_system_role_menu where role_id = #{roleId,jdbcType=VARCHAR}
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_system_role_menu
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  
+  <!-- 根据角色编号删除角色目录关联信息 -->
+  <delete id="deleteSystemRoleMenuByRoleId" parameterType="java.lang.String">
+  	delete from db_system_role_menu
+    where role_id = #{role_id,jdbcType=VARCHAR}
+  </delete>
+  
   <insert id="insert" parameterType="com.data.bean.SystemRoleMenu">
     insert into db_system_role_menu (id, role_id, menu_id
       )
@@ -50,6 +63,33 @@
       </if>
     </trim>
   </insert>
+  
+  <insert id="insertNewRoleMenu" parameterType="map">
+  	insert into db_system_role_menu
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="menuId != null">
+        menu_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuId != null">
+        #{menuId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
   <update id="updateByPrimaryKeySelective" parameterType="com.data.bean.SystemRoleMenu">
     update db_system_role_menu
     <set>

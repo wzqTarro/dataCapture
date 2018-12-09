@@ -63,4 +63,6 @@ public final class InsertId {
 	
 	public static final String INSERT_NEW_SYSTEM_FUNCTION = "SystemFunctionMapper.insertNewSystemFunction";
 	
+	public static final String INSERT_NEW_ROLE_MENU = "SystemRoleMenuMapper.insertNewRoleMenu";
+	
 }

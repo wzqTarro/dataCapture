@@ -27,6 +27,13 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <!-- 查询目录集合 -->
+  <select id="queryMenuList" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from db_system_menu
+  </select>
+  
   <!-- 查询目录总数 -->
   <select id="queryCountMenuByPage" parameterType="map" resultType="int">
   	SELECT COUNT(1) FROM db_system_menu WHERE is_delete='00' 
