@@ -79,7 +79,9 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/systemRole/addSystemRole",
 				"/systemRole/updateSystemRole",
 				"/systemRole/deleteSystemRoleByRoleId",
-				"/systemRole/deleteSystemRoleByIds"
+				"/systemRole/deleteSystemRoleByIds",
+				"/system/updateRoleMenu",
+				"/system/queryRoleMenu"
 				
 		};
 	}
