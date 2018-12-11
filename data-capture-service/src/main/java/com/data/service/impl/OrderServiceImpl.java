@@ -171,11 +171,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				}
 	
 				// 是否导出excel表
-				if ("1".equals(orderStr)) {
-					orderList = dataCaptureUtil.getOrderExcel(supply.getSysId());
-				} else {
-					orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
-				} 
+				orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
 				
 				if (orderList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
