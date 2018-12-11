@@ -117,11 +117,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					flag = true;
 				}
 			}
-			if ("1".equals(stockStr)) {
-				stockList = dataCaptureUtil.getStockExcel(supply.getSysId());
-			} else {
-				stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
-			}
+
+			stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
+			
 			if (stockList.size() == 0) {
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 				return ResultUtil.success(pageRecord);

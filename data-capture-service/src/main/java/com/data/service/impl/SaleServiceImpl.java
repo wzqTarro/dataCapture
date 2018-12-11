@@ -141,11 +141,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					}
 				}
 				
-				if ("1".equals(saleStr)) {
-					saleList = dataCaptureUtil.getSaleExcel(supply.getSysId());
-				} else {
-					saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
-				}
+				saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
+				
 				if (saleList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 					return ResultUtil.success(pageRecord);
