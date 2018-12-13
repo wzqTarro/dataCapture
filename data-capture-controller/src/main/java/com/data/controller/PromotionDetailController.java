@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
 import com.data.dto.CommonDTO;
-import com.data.service.IPromotionDetail;
+import com.data.service.IPromotionDetailService;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 public class PromotionDetailController {
 
 	@Autowired
-	private IPromotionDetail promotionDetailService;
+	private IPromotionDetailService promotionDetailService;
 	
 	@RequestMapping(value = "/getPromotionDetailByCondition", method = RequestMethod.GET)
 	@ApiOperation(value = "多條件分頁查詢", httpMethod = "GET")

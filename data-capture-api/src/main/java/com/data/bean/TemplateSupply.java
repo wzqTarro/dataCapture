@@ -36,8 +36,18 @@ public class TemplateSupply implements Serializable {
     private String sysId;
     
     private String parentId;
+    
+    private String remark;
 
-    public String getParentId() {
+    public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getParentId() {
 		return parentId;
 	}
 

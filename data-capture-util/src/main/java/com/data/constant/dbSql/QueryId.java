@@ -276,4 +276,6 @@ public final class QueryId {
 	
 	/**根据角色编号查询所拥有的目录编号集合**/
 	public static final String QUERY_MENU_ID_LIST_BY_ROLE_ID = "SystemRoleMenuMapper.queryMenuIdListByRoleId";
+	
+	public static final String QUERY_PROMOTION_STORE_LIST_BY_DETAIL_ID = "PromotionStoreListMapper.selectByPromotionDetailId";
 }

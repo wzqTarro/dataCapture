@@ -65,4 +65,7 @@ public final class InsertId {
 	
 	public static final String INSERT_NEW_ROLE_MENU = "SystemRoleMenuMapper.insertNewRoleMenu";
 	
+	public static final String INSERT_PROMOTION_STORE_LIST = "PromotionStoreListMapper.insert";
+	
+	public static final String INSERT_PROMOTION_STORE_LIST_BATCH = "PromotionStoreListMapper.insertBatch";
 }

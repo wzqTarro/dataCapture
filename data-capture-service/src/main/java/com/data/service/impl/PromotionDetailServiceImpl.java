@@ -21,7 +21,7 @@ import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
-import com.data.service.IPromotionDetail;
+import com.data.service.IPromotionDetailService;
 import com.data.utils.CommonUtil;
 import com.data.utils.DateUtil;
 import com.data.utils.ExcelUtil;
@@ -29,7 +29,7 @@ import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
 
 @Service
-public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPromotionDetail{
+public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPromotionDetailService{
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
