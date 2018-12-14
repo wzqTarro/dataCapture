@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.data.service.IFileService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -18,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/file")
+@Api(tags = "模板文件操作接口")
 public class FileController {
 
 	@Autowired

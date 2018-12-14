@@ -6,7 +6,7 @@ import com.data.bean.PromotionDetail;
 import com.data.dto.CommonDTO;
 import com.data.utils.ResultUtil;
 
-public interface IPromotionDetail {
+public interface IPromotionDetailService {
 
 	/**
 	 * 多条件分页查询

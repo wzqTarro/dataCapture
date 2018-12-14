@@ -25,8 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONPath;
 import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
+import com.data.bean.PromotionStoreList;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
@@ -171,11 +173,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				}
 	
 				// 是否导出excel表
-				if ("1".equals(orderStr)) {
-					orderList = dataCaptureUtil.getOrderExcel(supply.getSysId());
-				} else {
-					orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
-				} 
+				orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
 				
 				if (orderList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
@@ -190,10 +188,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				Map<String, Object> param = new HashMap<>(2);
 				param.put("sysId", sysId);
 				param.put("queryDate", queryDate);
-				long start = new Date().getTime();
-				logger.info("----->>>>>>>查询促销开始:{}<<<<<<-------", start);
 				List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
-				logger.info("----->>>>>>>查询促销结束:{}<<<<<<--------", new Date().getTime()-start);
 				
 				PromotionDetail promotionDetail = null;
 				
@@ -302,49 +297,54 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					int promotionSize = 0;
 					for (j = 0, promotionSize = promotionList.size(); j < promotionSize; j++) {
 						promotionDetail = promotionList.get(j);
-						if (simpleBarCode.equals(promotionDetail.getProductCode())) {
-							order.setOrderEffectiveJudge("是促销期内订单");
-							// 促销供价开始、结束时间
-							order.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
-							order.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
-							
-							// 补差方式
-							order.setBalanceWay(promotionDetail.getCompensationType());
-							
-							// 供价方式
-							supplyOrderType = promotionDetail.getSupplyOrderType();
-							
-							if ("特供价入库".equals(supplyOrderType)) {				
+						Integer detailId = promotionDetail.getId();
+						List<PromotionStoreList> promotionStoreList = queryListByObject(QueryId.QUERY_PROMOTION_STORE_LIST_BY_DETAIL_ID, detailId);
+						
+						if (JSONPath.eval(promotionStoreList, "$[storeCode='"+ storeCode +"']") != null) {
+							if (simpleBarCode.equals(promotionDetail.getProductCode())) {
+								order.setOrderEffectiveJudge("是促销期内订单");
+								// 促销供价开始、结束时间
+								order.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
+								order.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
 								
-								// 促销供价
-								supplyPrice = promotionDetail.getSupplyPrice();
-								order.setDiscountPrice(supplyPrice);
+								// 补差方式
+								order.setBalanceWay(promotionDetail.getCompensationType());
 								
-								// 促销供价差异
-								order.setDiffPriceDiscount(buyPriceWithTax.subtract(supplyPrice));
+								// 供价方式
+								supplyOrderType = promotionDetail.getSupplyOrderType();
 								
-								// 促销供价差异汇总
-								order.setDiffPriceDiscountTotal(order.getDiffPriceDiscount().multiply(new BigDecimal(order.getSimpleAmount())));
-								
-								// 供价示警
-								if (buyPriceWithTax.compareTo(supplyPrice) < 0) {
-									order.setDiscountAlarmFlag("订单低于促销供价");
+								if ("特供价入库".equals(supplyOrderType)) {				
+									
+									// 促销供价
+									supplyPrice = promotionDetail.getSupplyPrice();
+									order.setDiscountPrice(supplyPrice);
+									
+									// 促销供价差异
+									order.setDiffPriceDiscount(buyPriceWithTax.subtract(supplyPrice));
+									
+									// 促销供价差异汇总
+									order.setDiffPriceDiscountTotal(order.getDiffPriceDiscount().multiply(new BigDecimal(order.getSimpleAmount())));
+									
+									// 供价示警
+									if (buyPriceWithTax.compareTo(supplyPrice) < 0) {
+										order.setDiscountAlarmFlag("订单低于促销供价");
+									}
+									
+								} else if ("原价入库".equals(supplyOrderType)) {
+									
+									// 合同供价差异
+									order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
+									
+									// 合同供价差异汇总
+									order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
+									
+									if (buyPriceWithTax.compareTo(contractPrice) < 0) {
+										order.setContractAlarmFlag("订单低于合同供价");
+									}
 								}
+								break;
 								
-							} else if ("原价入库".equals(supplyOrderType)) {
-								
-								// 合同供价差异
-								order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
-								
-								// 合同供价差异汇总
-								order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
-								
-								if (buyPriceWithTax.compareTo(contractPrice) < 0) {
-									order.setContractAlarmFlag("订单低于合同供价");
-								}
 							}
-							break;
-							
 						}
 					}
 					

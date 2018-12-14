@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PromotionStoreListMapper" >
+  <resultMap id="BaseResultMap" type="com.data.bean.PromotionStoreList" >
+    <result column="promotion_detail_id" property="promotionDetailId" jdbcType="INTEGER" />
+    <result column="store_code" property="storeCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectByPromotionDetailId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	SELECT *	
+  	FROM db_promotion_store_list
+  	WHERE promotion_detail_id = #{promotionDetailId}
+  </select>
+  <delete id="deleteByPromotionDetailId" parameterType="java.lang.Integer">
+  	DELETE	
+  	FROM db_promotion_store_list
+  	WHERE promotion_detail_id = #{promotionDetailId}
+  </delete>
+  <delete id="deleteByPromotionDetailIdAndStoreCode" parameterType="map">
+  	DELETE	
+  	FROM db_promotion_store_list
+  	WHERE promotion_detail_id = #{promotionDetailId} AND store_code = #{storeCode}
+  </delete>
+  <insert id="insert" parameterType="com.data.bean.PromotionStoreList" >
+    insert into db_promotion_store_list (promotion_detail_id, store_code)
+    values (#{promotionDetailId,jdbcType=INTEGER}, #{storeCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertBatch" parameterType="list" >
+    insert into db_promotion_store_list (promotion_detail_id, store_code)
+    values 
+    <foreach collection="list" item="store" separator=",">
+    (#{store.promotionDetailId,jdbcType=INTEGER}, #{store.storeCode,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.data.bean.PromotionStoreList" >
+    insert into db_promotion_store_list
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="promotionDetailId != null" >
+        promotion_detail_id,
+      </if>
+      <if test="storeCode != null" >
+        store_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="promotionDetailId != null" >
+        #{promotionDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="storeCode != null" >
+        #{storeCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

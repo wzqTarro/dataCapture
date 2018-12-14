@@ -114,11 +114,8 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				}
 				
 				// 判断是否为解析excel表
-				if ("1".equals(rejectStr)) {
-					rejectList = dataCaptureUtil.getRejectExcel(supply.getSysId());
-				}else {
-					rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
-				}
+				rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
+
 				if (rejectList.size() == 0) {
 					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 					return ResultUtil.success(pageRecord);
