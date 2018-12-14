@@ -13,4 +13,10 @@ public interface IPromotionStoreListService {
 	 * @return
 	 */
 	ResultUtil savePromotionStoreList(List<PromotionStoreList> storeList);
+	/**
+	 * 获取促销门店列表
+	 * @param promotionId
+	 * @return
+	 */
+	ResultUtil getPromotionStoreList(Integer promotionDetailId);
 }
