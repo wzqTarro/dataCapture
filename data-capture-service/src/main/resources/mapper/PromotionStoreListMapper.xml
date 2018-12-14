@@ -15,6 +15,11 @@
   	FROM db_promotion_store_list
   	WHERE promotion_detail_id = #{promotionDetailId}
   </delete>
+  <delete id="deleteByPromotionDetailIdAndStoreCode" parameterType="map">
+  	DELETE	
+  	FROM db_promotion_store_list
+  	WHERE promotion_detail_id = #{promotionDetailId} AND store_code = #{storeCode}
+  </delete>
   <insert id="insert" parameterType="com.data.bean.PromotionStoreList" >
     insert into db_promotion_store_list (promotion_detail_id, store_code)
     values (#{promotionDetailId,jdbcType=INTEGER}, #{storeCode,jdbcType=VARCHAR})

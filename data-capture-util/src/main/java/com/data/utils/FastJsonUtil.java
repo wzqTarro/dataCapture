@@ -60,7 +60,7 @@ public class FastJsonUtil {
 	 * @param clazz
 	 * @return
 	 */
- 	public static Object mapToObject(Map<String, String> map, Class<?> clazz) {
+ 	public static Object mapToObject(Map<String, Object> map, Class<?> clazz) {
  		try{
 	 		if (map == null) {
 	 			return null;

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
+import com.data.bean.PromotionStoreList;
+import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
@@ -130,7 +132,76 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 		if (promotionDetailMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
-		insert(InsertId.INSERT_BATCH_PROMOTION_DETAIL, promotionDetailMapList);
+		for (int i = 0; i < promotionDetailMapList.size(); i++) {
+			Map<String, Object> promotionMap = promotionDetailMapList.get(i);
+			
+			// 生效门店
+			String effectiveStore = (String) promotionMap.get("effective_store");
+			
+			// 除外门店
+			String exceptStore = (String) promotionMap.get("except_store");
+			if (StringUtils.isBlank(effectiveStore)) {
+				return ResultUtil.error("生效门店列不能为空");
+			}
+			
+			// 生效门店数组
+			String[] effectiveStoreArray = CommonUtil.parseIdsCollection(effectiveStore, ";");			
+			
+			PromotionDetail promotion = (PromotionDetail) FastJsonUtil.mapToObject(promotionMap, PromotionDetail.class);
+			// 插入促销明细
+			insert(InsertId.INSERT_PROMOTION_DETAIL_BY_MESSAGE, promotion);
+			
+			String sysId = promotion.getSysId();
+			
+			// 插入生效门店
+			if ("全系统".equals(effectiveStore)) {
+				Map<String, Object> paramMap = new HashMap<>(1);
+				paramMap.put("sysId", sysId);
+				
+				// 全部门店
+				List<TemplateStore> allStoreList = queryListByObject(QueryId.QUERY_STORE_TEMPLATE, paramMap);
+				for (int j = 0; j < allStoreList.size(); j++) {
+					TemplateStore store = allStoreList.get(j);
+					String effectiveStoreCode = store.getStoreCode();
+					
+					PromotionStoreList promotionStore = new PromotionStoreList();
+					promotionStore.setPromotionDetailId(promotion.getId());
+					promotionStore.setStoreCode(effectiveStoreCode);
+					
+					insert(InsertId.INSERT_PROMOTION_STORE_LIST, promotionStore);
+				}
+			} else {
+				
+				// 部分生效门店
+				for (int j = 0; j < effectiveStoreArray.length; j++) {
+					String effectiveStoreCode = effectiveStoreArray[j];
+					
+					PromotionStoreList promotionStore = new PromotionStoreList();
+					promotionStore.setPromotionDetailId(promotion.getId());
+					promotionStore.setStoreCode(effectiveStoreCode);
+					
+					insert(InsertId.INSERT_PROMOTION_STORE_LIST, promotionStore);
+				}
+			}
+			
+			// 除外门店数组
+			if (StringUtils.isNoneBlank(exceptStore)) {
+				String[] exceptStoreArray = CommonUtil.parseIdsCollection(exceptStore, ";");
+				
+				for (int j = 0; j < exceptStoreArray.length; j++) {
+					String exceptStoreCode = exceptStoreArray[j];
+					
+					Map<String, Object> paramMap = new HashMap<>(2);
+					paramMap.put("promotionDetailId", promotion.getId());
+					paramMap.put("storeCode", exceptStoreCode);
+					
+					delete(DeleteId.DELETE_PROMOTION_STORE_LIST_BY_DETAIL_ID_AND_STORE_CODE, paramMap);
+				}
+				
+			}
+			
+		}
+		//insert(InsertId.INSERT_BATCH_PROMOTION_DETAIL, promotionDetailMapList);
 		return ResultUtil.success();
 	}
 

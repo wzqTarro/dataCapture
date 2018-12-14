@@ -34,4 +34,6 @@ public final class DeleteId {
 	public static final String DELETE_SYSTEM_ROLE_MENU_BY_ROLE_ID = "SystemRoleMenuMapper.deleteSystemRoleMenuByRoleId";
 	
 	public static final String DELETE_PROMOTION_STORE_LIST_BY_DETAIL_ID = "PromotionStoreListMapper.deleteByPromotionDetailId";
+	
+	public static final String DELETE_PROMOTION_STORE_LIST_BY_DETAIL_ID_AND_STORE_CODE = "PromotionStoreListMapper.deleteByPromotionDetailIdAndStoreCode";
 }

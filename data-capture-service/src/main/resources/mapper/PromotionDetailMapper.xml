@@ -92,7 +92,7 @@
     delete from db_promotion_detail
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.data.bean.PromotionDetail">
+  <insert id="insert" parameterType="com.data.bean.PromotionDetail" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into db_promotion_detail (id, sys_id, sys_name, 
       store_name, supply_price_start_date, supply_price_end_date, 
       sell_price_start_date, sell_price_end_date, supply_name, 
