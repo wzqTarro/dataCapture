@@ -10,6 +10,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -38,32 +39,34 @@ public class RedisUtil {
 	
 	public static StatefulRedisConnection<String, String> conn;
 	
-	//@Value("${spring.redis.host}")
 	//private String host = "127.0.0.1";
 	//private String host = "118.31.52.57";
-	private String host = "47.92.235.52";
+	//private String host = "47.92.235.52";
+	@Value("${spring.redis.host}")
+	private String host;
 	
-	//@Value("${spring.redis.password}")
 	//private String password = "U78nn46pdeVCbnE";
-	private String password = "OIUBmgvR983VVTHvr=";
+	//private String password = "OIUBmgvR983VVTHvr=";
+	@Value("${spring.redis.password}")
+	private String password;
 	
-	//@Value("${spring.redis.port}")
-	private int port = 16379;
+	@Value("${spring.redis.port}")
+	private int port;
 	
-	//@Value("${spring.redis.database}")
-	private int database = 0;
+	@Value("${spring.redis.database}")
+	private int database;
 	
-	//@Value("${spring.redis.lettuce.pool.max-idle}")
-	private int maxIdle = 8;
+	@Value("${spring.redis.lettuce.pool.max-idle}")
+	private int maxIdle;
 	
-	//@Value("${spring.redis.lettuce.pool.min-idle}")
-	private int minIdle = 0;
+	@Value("${spring.redis.lettuce.pool.min-idle}")
+	private int minIdle;
 	
-	//@Value("${spring.redis.lettuce.pool.max-active}")
-	private int maxActive = 8;
+	@Value("${spring.redis.lettuce.pool.max-active}")
+	private int maxActive;
 	
-	//@Value("${spring.redis.lettuce.pool.max-wait}")
-	private int maxWait = -1;
+	@Value("${spring.redis.lettuce.pool.max-wait}")
+	private int maxWait;
 	
 //	static {
 //		RedisURI uri = new RedisURI();
