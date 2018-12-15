@@ -27,6 +27,11 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <!-- 查询父级目录id集合 -->
+  <select id="queryParentMenuIdList" resultType="java.lang.String">
+  	SELECT menu_id menuId FROM db_system_menu WHERE is_parent = '00'
+  </select>
+  
   <!-- 查询目录集合 -->
   <select id="queryMenuList" resultMap="BaseResultMap">
   	select 

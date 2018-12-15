@@ -60,13 +60,17 @@
   
   <!-- 根据角色查询动作按钮 -->
   <select id="queryFunctionByRoleId" parameterType="map" resultMap="BaseResultMap">
-  	SELECT <include refid="Query_Function_List"></include> 
+  	<!-- SELECT <include refid="Query_Function_List"></include> 
   	FROM db_system_function f 
   	INNER JOIN db_system_menu_function mf ON(mf.function_id=f.function_id) 
   	INNER JOIN db_system_menu m ON(m.menu_id=mf.menu_id) 
   	INNER JOIN db_system_role_menu rm ON(rm.menu_id=m.menu_id) 
   	WHERE f.is_enable='00' AND f.is_delete='00' AND m.is_enable='00' AND m.is_delete='00' 
-  		AND rm.role_id=#{roleId}
+  		AND rm.role_id=#{roleId} -->
+  	SELECT <include refid="Query_Function_List"></include> 
+  	FROM db_system_function f 
+  	INNER JOIN db_system_role_function rf ON(rf.function_id = f.function_id) 
+  	WHERE f.is_enable='00' AND f.is_delete='00' AND rf.role_id=#{roleId}
   </select>
   
   <!-- 根据角色查询动作角色权限 -->

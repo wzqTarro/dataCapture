@@ -42,8 +42,9 @@ public class PromotionStoreListController {
 		return FastJsonUtil.objectToString(result);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "getPromotionStoreList", method = RequestMethod.GET)
-	@ApiOperation(value = "获取促销生效门店", httpMethod = "get")
+	@ApiOperation(value = "获取促销生效门店", httpMethod = "GET")
 	public String getPromotionStoreList(Integer promotionDetailId, String sysId) {
 		if (StringUtils.isBlank(sysId)) {
 			return FastJsonUtil.objectToString(ResultUtil.error("系统编号不能为空"));

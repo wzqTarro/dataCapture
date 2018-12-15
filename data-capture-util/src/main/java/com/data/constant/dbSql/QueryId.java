@@ -278,4 +278,7 @@ public final class QueryId {
 	public static final String QUERY_MENU_ID_LIST_BY_ROLE_ID = "SystemRoleMenuMapper.queryMenuIdListByRoleId";
 	
 	public static final String QUERY_PROMOTION_STORE_LIST_BY_DETAIL_ID = "PromotionStoreListMapper.selectByPromotionDetailId";
+	
+	/**查询父级目录id集合**/
+	public static final String QUERY_PARENT_MENU_ID_LIST = "SystemMenuMapper.queryParentMenuIdList";
 }

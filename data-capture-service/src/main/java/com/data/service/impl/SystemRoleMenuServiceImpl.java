@@ -56,7 +56,10 @@ public class SystemRoleMenuServiceImpl extends CommonServiceImpl implements ISys
 		params.put("menuList", menuList);
 		List<String> menuIdList = queryListByObject(QueryId.QUERY_MENU_ID_LIST_BY_ROLE_ID, roleId);
 		params.put("menuIdList", menuIdList);
+		List<String> parentMenuIdList = queryListByObject(QueryId.QUERY_PARENT_MENU_ID_LIST, null);
+		params.put("parentMenuIdList", parentMenuIdList);
 		logger.info("--->>>角色{}可以访问的目录为{}<<<---", roleId, FastJsonUtil.objectToString(menuIdList));
+		logger.info("--->>>角色{}可以访问的父级目录为{}<<<---", roleId, FastJsonUtil.objectToString(parentMenuIdList));
 		return ResultUtil.success(params);
 	}
 
