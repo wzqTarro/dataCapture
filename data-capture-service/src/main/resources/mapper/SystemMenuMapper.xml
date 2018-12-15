@@ -29,14 +29,16 @@
   
   <!-- 查询父级目录id集合 -->
   <select id="queryParentMenuIdList" resultType="java.lang.String">
-  	SELECT menu_id menuId FROM db_system_menu WHERE is_parent = '00'
+  	SELECT menu_id menuId FROM db_system_menu WHERE is_parent = '00' 
+  	ORDER BY menu_id
   </select>
   
   <!-- 查询目录集合 -->
   <select id="queryMenuList" resultMap="BaseResultMap">
   	select 
     <include refid="Base_Column_List" />
-    from db_system_menu
+    from db_system_menu 
+    ORDER BY menu_id
   </select>
   
   <!-- 查询目录总数 -->
@@ -59,7 +61,8 @@
   	SELECT <include refid="Role_Menu_List"></include> 
   	FROM db_system_menu m 
   	INNER JOIN db_system_role_menu rm ON(rm.menu_id=m.menu_id) 
-  	WHERE m.is_enable='00' AND m.is_delete='00' AND rm.role_id=#{roleId}
+  	WHERE m.is_enable='00' AND m.is_delete='00' AND rm.role_id=#{roleId} 
+  	ORDER BY m.menu_id
   </select>
   
   <!-- 根据menuId查询数量 -->

@@ -18,7 +18,8 @@
   
   <!-- 根据角色编号查询所拥有的目录编号集合 -->
   <select id="queryMenuIdListByRoleId" parameterType="java.lang.String" resultType="string">
-  	select menu_id menuId from db_system_role_menu where role_id = #{roleId,jdbcType=VARCHAR}
+  	select menu_id menuId from db_system_role_menu where role_id = #{roleId,jdbcType=VARCHAR} 
+  	ORDER BY menu_id
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

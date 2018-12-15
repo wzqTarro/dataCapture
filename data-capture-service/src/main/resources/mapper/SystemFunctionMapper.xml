@@ -70,7 +70,8 @@
   	SELECT <include refid="Query_Function_List"></include> 
   	FROM db_system_function f 
   	INNER JOIN db_system_role_function rf ON(rf.function_id = f.function_id) 
-  	WHERE f.is_enable='00' AND f.is_delete='00' AND rf.role_id=#{roleId}
+  	WHERE f.is_enable='00' AND f.is_delete='00' AND rf.role_id=#{roleId} 
+  	ORDER BY f.function_id
   </select>
   
   <!-- 根据角色查询动作角色权限 -->
@@ -78,7 +79,8 @@
   	SELECT <include refid="Query_Function_List"></include> 
   	FROM db_system_function f 
   	INNER JOIN db_system_role_function rf ON(rf.function_id=f.function_id) 
-  	WHERE f.is_enable='00' AND f.is_delete='00' AND rf.role_id=#{roleId}
+  	WHERE f.is_enable='00' AND f.is_delete='00' AND rf.role_id=#{roleId} 
+  	ORDER BY f.function_id
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

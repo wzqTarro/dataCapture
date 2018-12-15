@@ -67,7 +67,30 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/system/buildMenuList",
 				"/system/queryAllFunctionList",
 				"/file/downloadTemplateExcel",
+				"/system/queryRoleFunctionByRoleId",
 				
+				//查询列表不拦截
+				"/user/queryUserList",
+				"/supply/querySupplyByCondition",
+				"/store/getTemplateStoreByParam",
+				"/templateProduct/getTemplateProductByParam",
+				"/simpleCode/getSimpleCodeByParam",
+				"/promotionDetail/getPromotionDetailByCondition",
+				"/sale/getDataByParam",
+				"/stock/getStockByParam",
+				"/order/getOrderByCondition",
+				"/reject/getRejectByCondition",
+				"/sale/queryStoreDailySaleReport",
+				"/order/queryOrderAlarmList",
+				"/reject/queryRejectAlarmList",
+				
+				//下拉菜单 免拦截
+				"/store/getRegionMenu",
+				"/templateProduct/getBrandMenu",
+				"/store/getStoreMenu",
+				"/supply/getSupplyMenu",
+				
+				//权限测试 暂时先放在了里面
 				"/system/addMenu",
 				"/system/updateMenu",
 				"/system/deleteMenu",

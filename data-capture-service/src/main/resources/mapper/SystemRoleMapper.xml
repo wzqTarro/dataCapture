@@ -21,7 +21,8 @@
   <!-- 根据角色编号查询角色信息 -->
   <select id="queryRoleByRoleId" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> 
-  	FROM db_system_role WHERE role_id=#{roleId}
+  	FROM db_system_role WHERE role_id=#{roleId} 
+  	ORDER BY role_id
   </select>
   
   <!-- 查询角色分页总数 -->
