@@ -68,6 +68,8 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/system/queryAllFunctionList",
 				"/file/downloadTemplateExcel",
 				"/system/queryRoleFunctionByRoleId",
+				"/user/queryUserDetail",
+				"/user/logout",
 				
 				//查询列表不拦截
 				"/user/queryUserList",
@@ -83,6 +85,7 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/sale/queryStoreDailySaleReport",
 				"/order/queryOrderAlarmList",
 				"/reject/queryRejectAlarmList",
+				"/promotionStoreList/getPromotionStoreList",
 				
 				//下拉菜单 免拦截
 				"/store/getRegionMenu",

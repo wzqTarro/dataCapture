@@ -13,15 +13,14 @@
     <result column="is_val" jdbcType="BIT" property="isVal" />
     <result column="sys_id" jdbcType="CHAR" property="sysId" />
     <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
-    <result column="remark" jdbcType="VARCHAR" property="remark"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, sys_id
-    is_val, parent_id, remark
+    is_val, parent_id
   </sql>
   <sql id="Column_List">
     s.id, region, s.sys_name, s.url, s.login_user_name, s.login_password, s.company_code, s.controller_name, 
-    s.is_val, s.sys_id, s.parent_id, s.remark
+    s.is_val, s.sys_id, s.parent_id
   </sql>
   <sql id="Query_Condition">
   	<if test="sysName != null and sysName != ''">

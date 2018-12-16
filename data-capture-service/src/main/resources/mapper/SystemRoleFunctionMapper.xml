@@ -19,7 +19,7 @@
   <!-- 根据roleId查询角色权限数量 -->
   <select id="queryCountRoleFunctionByRoleId" parameterType="map" resultType="int">
   	SELECT COUNT(1) FROM db_system_role_function 
-  	WHERE rold_id=#{roleId}
+  	WHERE role_id=#{roleId}
   </select>
   
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

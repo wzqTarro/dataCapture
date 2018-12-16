@@ -47,7 +47,8 @@
   
   <!-- 查询所有权限集合 -->
   <select id="queryAllFunctionList" resultMap="BaseResultMap">
-  	SELECT <include refid="Base_Column_List"></include> FROM db_system_function
+  	SELECT <include refid="Base_Column_List"></include> FROM db_system_function 
+  	WHERE is_enable='00' AND is_delete='00'
   </select>
   
   <!-- 根据目录编号查询动作按钮集合 -->
@@ -55,7 +56,7 @@
   	SELECT <include refid="Query_Function_List"></include> 
   	FROM db_system_function f 
   	INNER JOIN db_system_menu_function mf ON(mf.function_id=f.function_id) 
-  	WHERE mf.menu_id=#{menuId}
+  	WHERE mf.menu_id=#{menuId} AND f.is_enable='00' AND f.is_delete='00'
   </select>
   
   <!-- 根据角色查询动作按钮 -->
