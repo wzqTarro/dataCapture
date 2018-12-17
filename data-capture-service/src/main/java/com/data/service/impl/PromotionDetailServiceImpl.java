@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,13 +155,16 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			
 			String sysId = promotion.getSysId();
 			
+			List<PromotionStoreList> effectiveStoreList = new ArrayList<>();
+			
 			// 插入生效门店
 			if ("全系统".equals(effectiveStore)) {
 				Map<String, Object> paramMap = new HashMap<>(1);
 				paramMap.put("sysId", sysId);
 				
 				// 全部门店
-				List<TemplateStore> allStoreList = queryListByObject(QueryId.QUERY_STORE_TEMPLATE, paramMap);
+				List<TemplateStore> allStoreList = queryListByObject(QueryId.QUERY_STORE_BY_PARAM, paramMap);
+				
 				for (int j = 0; j < allStoreList.size(); j++) {
 					TemplateStore store = allStoreList.get(j);
 					String effectiveStoreCode = store.getStoreCode();
@@ -169,7 +173,7 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 					promotionStore.setPromotionDetailId(promotion.getId());
 					promotionStore.setStoreCode(effectiveStoreCode);
 					
-					insert(InsertId.INSERT_PROMOTION_STORE_LIST, promotionStore);
+					effectiveStoreList.add(promotionStore);
 				}
 			} else {
 				
@@ -181,9 +185,12 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 					promotionStore.setPromotionDetailId(promotion.getId());
 					promotionStore.setStoreCode(effectiveStoreCode);
 					
-					insert(InsertId.INSERT_PROMOTION_STORE_LIST, promotionStore);
+					effectiveStoreList.add(promotionStore);
 				}
 			}
+			
+
+			insert(InsertId.INSERT_PROMOTION_STORE_LIST_BATCH, effectiveStoreList);
 			
 			// 除外门店数组
 			if (StringUtils.isNoneBlank(exceptStore)) {

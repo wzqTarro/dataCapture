@@ -133,7 +133,7 @@
     	</foreach>
   </insert>
   
-  <insert id="insertSelective" parameterType="com.data.bean.PromotionDetail">
+  <insert id="insertSelective" parameterType="com.data.bean.PromotionDetail" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into db_promotion_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
