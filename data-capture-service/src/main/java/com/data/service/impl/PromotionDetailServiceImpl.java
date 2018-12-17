@@ -137,10 +137,10 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			Map<String, Object> promotionMap = promotionDetailMapList.get(i);
 			
 			// 生效门店
-			String effectiveStore = (String) promotionMap.get("effective_store");
+			String effectiveStore = (String) promotionMap.get("effectiveStore");
 			
 			// 除外门店
-			String exceptStore = (String) promotionMap.get("except_store");
+			String exceptStore = (String) promotionMap.get("exceptStore");
 			if (StringUtils.isBlank(effectiveStore)) {
 				return ResultUtil.error("生效门店列不能为空");
 			}
