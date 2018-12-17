@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.data.bean.PromotionDetail;
 import com.data.bean.PromotionStoreList;
 import com.data.bean.TemplateStore;
@@ -136,10 +137,10 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			Map<String, Object> promotionMap = promotionDetailMapList.get(i);
 			
 			// 生效门店
-			String effectiveStore = (String) promotionMap.get("effective_store");
+			String effectiveStore = (String) promotionMap.get("effectiveStore");
 			
 			// 除外门店
-			String exceptStore = (String) promotionMap.get("except_store");
+			String exceptStore = (String) promotionMap.get("exceptStore");
 			if (StringUtils.isBlank(effectiveStore)) {
 				return ResultUtil.error("生效门店列不能为空");
 			}
@@ -147,7 +148,7 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			// 生效门店数组
 			String[] effectiveStoreArray = CommonUtil.parseIdsCollection(effectiveStore, ";");			
 			
-			PromotionDetail promotion = (PromotionDetail) FastJsonUtil.mapToObject(promotionMap, PromotionDetail.class);
+			PromotionDetail promotion = JSON.parseObject(JSON.toJSONString(promotionMap), PromotionDetail.class);
 			// 插入促销明细
 			insert(InsertId.INSERT_PROMOTION_DETAIL_BY_MESSAGE, promotion);
 			
