@@ -37,8 +37,16 @@ public class PromotionStoreListController {
 	@RequestMapping(value = "savePromotionStoreList", method = RequestMethod.POST)
 	@ApiOperation(value = "保存促销生效门店", httpMethod = "POST")
 	public String savePromotionStoreList(String param) {
-		List<PromotionStoreList> storeList = JSON.parseArray(param, PromotionStoreList.class);
-		ResultUtil result = promotionStoreListService.savePromotionStoreList(storeList);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj = JSON.parseObject(param);
+		
+		// 促销明细ID
+		Integer promotionDetailId = (Integer)JSONPath.eval(jsonObj, "$.promotionDetailId");
+		
+		// 促销门店
+		JSONArray jsonArray = (JSONArray) JSONPath.eval(jsonObj, "$.storeList");
+		List<PromotionStoreList> storeList =  jsonArray.toJavaList(PromotionStoreList.class);
+		ResultUtil result = promotionStoreListService.savePromotionStoreList(promotionDetailId, storeList);
 		return FastJsonUtil.objectToString(result);
 	}
 	

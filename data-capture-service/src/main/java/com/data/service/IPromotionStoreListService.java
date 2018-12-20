@@ -9,10 +9,11 @@ public interface IPromotionStoreListService {
 
 	/**
 	 * 保存促销生效门店
+	 * @param promotionDetailId 
 	 * @param storeList
 	 * @return
 	 */
-	ResultUtil savePromotionStoreList(List<PromotionStoreList> storeList);
+	ResultUtil savePromotionStoreList(Integer promotionDetailId, List<PromotionStoreList> storeList);
 	/**
 	 * 获取促销门店列表
 	 * @param promotionId
