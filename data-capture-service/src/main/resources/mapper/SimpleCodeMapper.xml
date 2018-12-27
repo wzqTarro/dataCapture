@@ -42,17 +42,13 @@
   	</if>
   </sql>
   <select id="selectByParam" parameterType="map" resultMap="BaseResultMap">
-  	SELECT <include refid="Column_List"></include>
-  	FROM db_simple_code s
-  	INNER JOIN (
-  		SELECT id
-  		FROM db_simple_code
-  		WHERE 1=1 
-  		<include refid="Query_Condition"></include>
-  		<if test="pageNum != null and pageSize != null">
-  			LIMIT #{pageNum}, #{pageSize}
-  		</if>	
-  	) sc ON(sc.id = s.id)
+  	SELECT <include refid="Base_Column_List"></include>
+  	FROM db_simple_code
+  	WHERE 1=1 
+  	<include refid="Query_Condition"></include>
+  	<if test="pageNum != null and pageSize != null">
+  		LIMIT #{pageNum}, #{pageSize}
+  	</if>	
   	
   </select>
   

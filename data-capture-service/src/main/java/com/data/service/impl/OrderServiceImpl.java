@@ -219,10 +219,12 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					String storeCode = order.getStoreCode();
 					
 					// 条码信息
-					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-					if (CommonUtil.isBlank(simpleBarCode)) {
-						order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-						continue;
+					if (StringUtils.isBlank(simpleBarCode)) {
+						simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+						if (CommonUtil.isBlank(simpleBarCode)) {
+							order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+							continue;
+						}
 					}
 					
 					order.setSysName(supply.getRegion() + sysName);

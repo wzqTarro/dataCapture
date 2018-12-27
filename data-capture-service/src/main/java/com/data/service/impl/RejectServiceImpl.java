@@ -70,7 +70,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	private ICodeDictService codeDictService;
 
 	@Override
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws IOException, ParseException {
+	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws Exception {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
 		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
@@ -99,10 +99,10 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				
 				boolean flag = true;
 				
-				while (flag) {
-					try {
+				/*while (flag) {
+					try {*/
 						rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
-						if (rejectStr != null) {
+						/*if (rejectStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取退单数据结束<<<<------");
 						}
@@ -111,7 +111,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					} catch (Exception e) {
 						flag = true;
 					}
-				}
+				}*/
 				
 				// 判断是否为解析excel表
 				rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
@@ -163,10 +163,12 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					String storeCode = reject.getRejectDepartmentId();
 					
 					// 条码信息
-					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-					if (CommonUtil.isBlank(simpleBarCode)) {
-						reject.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-						continue;
+					if (StringUtils.isBlank(simpleBarCode)) {
+						simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+						if (CommonUtil.isBlank(simpleBarCode)) {
+							reject.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+							continue;
+						}
 					}
 	
 					reject.setSysName(supply.getRegion() + sysName);

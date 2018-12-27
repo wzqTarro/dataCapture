@@ -126,11 +126,11 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				
 				boolean flag = true;
 				
-				while (flag) {
-					try {
+				/*while (flag) {
+					try {*/
 						// 抓取数据
 						saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
-						if (saleStr != null) {
+						/*if (saleStr != null) {
 							flag = false;
 							logger.info("----->>>>抓取销售数据结束<<<<------");
 						}
@@ -139,7 +139,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					} catch (Exception e) {
 						flag = true;
 					}
-				}
+				}*/
 				
 				saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
 				
@@ -166,10 +166,12 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					
 					// 单品条码
 					String simpleBarCode = sale.getSimpleBarCode();
-					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-					if (CommonUtil.isBlank(simpleBarCode)) {
-						sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-						continue;
+					if (StringUtils.isBlank(simpleBarCode)) {
+						simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+						if (CommonUtil.isBlank(simpleBarCode)) {
+							sale.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+							continue;
+						}
 					}
 	
 					sale.setSysName(supply.getRegion() + sysName);

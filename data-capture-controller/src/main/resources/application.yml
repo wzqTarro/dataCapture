@@ -18,7 +18,7 @@ spring:
     multipart: 
       tempDir: /srv/data/data-capture
   profiles:     #選擇開發環境     舊的服務器作爲測試環境dev     新的服務器作爲正式環境prod
-    active: dev
+    active: prod
      
 mybatis:
   mapper-locations: classpath:mapper/*.xml

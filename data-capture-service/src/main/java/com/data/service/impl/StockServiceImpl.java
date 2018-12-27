@@ -103,11 +103,11 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			String stockStr = null;
 			boolean flag = true;
 			
-			while (flag) {
-				try {
+			/*while (flag) {
+				try {*/
 					// 抓取数据
 					stockStr = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK);
-					if (stockStr != null) {
+					/*if (stockStr != null) {
 						flag = false;
 						logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
 					}
@@ -116,7 +116,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				} catch (Exception e) {
 					flag = true;
 				}
-			}
+			}*/
 
 			stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
 			
@@ -146,10 +146,12 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				String simpleBarCode = stock.getSimpleBarCode();
 	
 				// 标准条码匹配信息
-				simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-				if (CommonUtil.isBlank(simpleBarCode)) {
-					stock.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-					continue;
+				if (StringUtils.isBlank(simpleBarCode)) {				
+					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+					if (CommonUtil.isBlank(simpleBarCode)) {
+						stock.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+						continue;
+					}
 				}
 				stock.setSimpleBarCode(simpleBarCode);
 	

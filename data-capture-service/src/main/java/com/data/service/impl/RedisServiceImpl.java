@@ -218,6 +218,9 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		}
 		Map<String, Object> param = new HashMap<>(2);
 		SimpleCodeEnum simpleCodeEnum = SimpleCodeEnum.getEnum(sysName);
+		if (simpleCodeEnum == null) {
+			return null;
+		}
 		String column = simpleCodeEnum.getValue();
 		param.put("columnName", column);
 		param.put("simpleCode", simpleCode);
