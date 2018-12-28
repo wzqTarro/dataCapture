@@ -74,6 +74,32 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		if (false == supply.getIsVal()) {
 			throw new DataException("供应链尚未开通");
 		}
+//		// 订单
+//		if (WebConstant.ORDER.equals(dataType)) {
+//			if (supply.getSysId().equals(SupplyEnum.XSJ.getCode())) {
+//				throw new DataException("供应链此功能尚未开通");
+//			}
+//		}
+//		
+//		// 退单
+//		if (WebConstant.REJECT.equals(dataType)) {
+//			if (SupplyEnum.BBG_HUNAN.getCode().equals(supply.getSysId())
+//					|| SupplyEnum.BBG_SC_1.getCode().equals(supply.getSysId())
+//					|| SupplyEnum.BBG_SC_2.getCode().equals(supply.getSysId())
+//					|| supply.getSysId().equals(SupplyEnum.XSJ.getCode())
+//					|| supply.getSysId().equals(SupplyEnum.CQ_ZB.getCode())) {
+//				throw new DataException("供应链此功能尚未开通");
+//			}
+//		}
+//		
+//		// 销售
+//		if (WebConstant.SALE.equals(dataType)) {
+//			if (SupplyEnum.BBG_HUNAN.getCode().equals(supply.getSysId())
+//					|| SupplyEnum.BBG_SC_1.getCode().equals(supply.getSysId())
+//					|| SupplyEnum.BBG_SC_2.getCode().equals(supply.getSysId())) {
+//				throw new DataException("供应链此功能尚未开通");
+//			}
+//		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(WebConstant.WEB);
 		sb.append(supply.getControllerName());
@@ -91,7 +117,7 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		sb.append(supply.getCompanyCode());
 		sb.append("&sysId=");
 		sb.append(supply.getSysId());
-		logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
+		//logger.info("------>>>>>>抓取数据Url：" + sb.toString() + "<<<<<<--------");
 		String json = restTemplate.getForObject(sb.toString(), String.class);
 		
 		

@@ -169,6 +169,10 @@ public class DataInterceptor implements HandlerInterceptor {
 			token = token.substring(5);
 			logger.error("--->>>后台保存的token: {} <<<---", token);
 			if(CommonUtil.isBlank(token)) {
+				/**
+				 * TODO
+				 * 此处做单一用户登录
+				 */
 				throw new AuthException("520");
 			}
 			if(!token.equals(accessToken)) {
