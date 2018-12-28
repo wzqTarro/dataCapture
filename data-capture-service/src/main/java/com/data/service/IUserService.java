@@ -26,14 +26,14 @@ public interface IUserService {
 	 * @param user
 	 * @return
 	 */
-	ResultUtil saveUser(User user);
+	ResultUtil saveUser(User user, String roleId);
 	
 	/**
 	 * 更新用户
 	 * @param user
 	 * @return
 	 */
-	ResultUtil updateUser(User user);
+	ResultUtil updateUser(User user, String roleId);
 	
 	/**
 	 * 查询用户详情

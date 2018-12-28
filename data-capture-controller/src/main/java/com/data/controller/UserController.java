@@ -51,8 +51,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/saveUser", method = RequestMethod.POST)
 	@ApiOperation(value = "保存用户信息", httpMethod = "POST")
-	public String saveUser(User user) {
-		ResultUtil result = userService.saveUser(user);
+	public String saveUser(User user, String roleId) {
+		ResultUtil result = userService.saveUser(user, roleId);
 		return FastJsonUtil.objectToString(result);
 	}
 	
@@ -63,8 +63,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
 	@ApiOperation(value = "更新用户信息", httpMethod = "POST")
-	public String updateUser(User user) {
-		ResultUtil result = userService.updateUser(user);
+	public String updateUser(User user, String roleId) {
+		ResultUtil result = userService.updateUser(user, roleId);
 		return FastJsonUtil.objectToString(result);
 	}
 	

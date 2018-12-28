@@ -68,7 +68,7 @@
         role_id = #{roleId,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where work_no = #{workNo,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.data.bean.SystemUserRole">
     update db_system_user_role

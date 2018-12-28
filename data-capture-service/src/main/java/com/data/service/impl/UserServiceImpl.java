@@ -89,31 +89,45 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil saveUser(User user) {
+	public ResultUtil saveUser(User user, String roleId) {
 		logger.info("--->>>保存用户信息: {}<<<---", FastJsonUtil.objectToString(user));
 		if(CommonUtil.isBlank(user)) {
 			//throw new DataException("401");
 			return ResultUtil.error("传入用户信息不存在");
 		}
+		if(CommonUtil.isBlank(roleId)) {
+			return ResultUtil.error("用户角色编号错误");
+		}
 		user.setWorkNo(CommonUtil.createWorkNo());
 		user.setPassword(EncryptUtil.Md5Encrypt("123456"));
 		insert(InsertId.INSERT_NEW_USER_MESSAGE, user);
+		SystemUserRole userRole = new SystemUserRole();
+		userRole.setWorkNo(user.getWorkNo());
+		userRole.setRoleId(roleId);
+		insert(InsertId.INSERT_NEW_SYSTEM_USER_ROLE, userRole);
 		return ResultUtil.success();
 	}
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil updateUser(User user) {
+	public ResultUtil updateUser(User user, String roleId) {
 		logger.info("--->>>更新用户信息: {}<<<---", FastJsonUtil.objectToString(user));
 		if(CommonUtil.isBlank(user)) {
 			//throw new DataException("401");
 			return ResultUtil.error("传入用户信息不存在");
 		}
+		if(CommonUtil.isBlank(roleId)) {
+			return ResultUtil.error("用户角色编号错误");
+		}
 		String password = user.getPassword();
 		if(CommonUtil.isNotBlank(password)) {
 			user.setPassword(EncryptUtil.Md5Encrypt(password));
 		}
+		SystemUserRole userRole = new SystemUserRole();
+		userRole.setWorkNo(user.getWorkNo());
+		userRole.setRoleId(roleId);
 		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
+		update(UpdateId.UPDATE_SYSTEM_USER_ROLE_BY_WORK_NO, userRole);
 		return ResultUtil.success();
 	}
 

@@ -68,4 +68,6 @@ public final class InsertId {
 	public static final String INSERT_PROMOTION_STORE_LIST = "PromotionStoreListMapper.insert";
 	
 	public static final String INSERT_PROMOTION_STORE_LIST_BATCH = "PromotionStoreListMapper.insertBatch";
+	
+	public static final String INSERT_NEW_SYSTEM_USER_ROLE = "SystemUserRoleMapper.insertSelective";
 }
