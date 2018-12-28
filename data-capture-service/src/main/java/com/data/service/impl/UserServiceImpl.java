@@ -181,6 +181,10 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		String workNo = user.getWorkNo();
 		Map<String, Object> params = new HashMap<>(4);
 		params.put("workNo", workNo);
+		/**
+		 * TODO
+		 * 此处做单一用户登录
+		 */
 		SystemUserRole userRole = (SystemUserRole) queryObjectByParameter(QueryId.QUERY_USER_ROLE_BY_WORK_NO, params);
 		String roleId = userRole.getRoleId();
 		//生成token并且放入缓存中
