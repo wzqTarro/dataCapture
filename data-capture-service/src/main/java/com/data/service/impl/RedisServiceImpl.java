@@ -210,7 +210,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 	}
 	
 	@Override
-	public String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode) {
+	public String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode) throws Exception {
 		String key = RedisAPI.getPrefix(RedisAPI.SIMPLE_CODE_TEMPLATE, sysName, simpleCode);
 		String simpleBarCode = redisUtil.get(key);
 		if (CommonUtil.isNotBlank(simpleBarCode)) {
@@ -224,7 +224,12 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		String column = simpleCodeEnum.getValue();
 		param.put("columnName", column);
 		param.put("simpleCode", simpleCode);
-		SimpleCode code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
+		SimpleCode code = null;
+		try {
+			code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
+		} catch (Exception e) {
+			throw new Exception("条码表中"+sysName+"系统的编码"+simpleCode+"对应多个商品，需修改");
+		}
 		if (null != code) {
 			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, code.getBarCode());
 			return code.getBarCode();
