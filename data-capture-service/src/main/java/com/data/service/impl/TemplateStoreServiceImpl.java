@@ -3,16 +3,23 @@ package com.data.service.impl;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONPath;
+import com.data.bean.TemplateStore;
 import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
 import com.data.constant.RedisAPI;
@@ -23,6 +30,7 @@ import com.data.constant.dbSql.UpdateId;
 import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.model.RegionMenu;
+import com.data.service.IRedisService;
 import com.data.service.ITemplateStoreService;
 import com.data.utils.CommonUtil;
 import com.data.utils.ExcelUtil;
@@ -34,6 +42,9 @@ import com.data.utils.ResultUtil;
 public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemplateStoreService{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private IRedisService redisService;
 
 	@Override
 	public ResultUtil getTemplateStoreByParam(TemplateStore store, Integer page, Integer limit) throws Exception {
@@ -163,8 +174,41 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		if (storeMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
-		insert(InsertId.INSERT_BATCH_STORE, storeMapList);
-		//insert(InsertId.INSERT_BATCH_STORE, storeList);
+		String storeStr = JSON.toJSONString(storeMapList);
+		List<TemplateStore> storeList = JSON.parseArray(storeStr, TemplateStore.class);
+		
+		// 原有模板商品
+		List<TemplateStore> TemplateStoreList = redisService.queryTemplateStoreList();
+		
+		Iterator<TemplateStore> it = storeList.iterator();
+		while (it.hasNext()) {
+			TemplateStore store = it.next();
+			
+			// 条码
+			String simpleBarCode = (String) JSONPath.eval(store, "$.simpleBarCode");
+			
+			// 系统编号
+			String sysId = (String) JSONPath.eval(store, "$.sysId");
+			
+			if (StringUtils.isBlank(simpleBarCode)) {
+				return ResultUtil.error("条码不能为空");
+			} 
+			if (StringUtils.isBlank(sysId)) {
+				return ResultUtil.error("系统编号不能为空");
+			}
+			
+			// 查询原有数据中是否存在
+			List<TemplateStore> tempList = (List<TemplateStore>) JSONPath.eval(TemplateStoreList, "$[sysId = '"+ sysId +"']"); 
+			tempList = (List<TemplateStore>) JSONPath.eval(tempList, "$[simpleBarCode = '"+ simpleBarCode +"']"); 
+			
+			if (!CollectionUtils.isEmpty(tempList)) {
+				Integer id = tempList.get(0).getId();
+				store.setId(id);
+				update(UpdateId.UPDATE_STORE_BY_MESSAGE, store);
+				it.remove();
+			}
+		}
+		insert(InsertId.INSERT_BATCH_STORE_LIST, storeList);
 		return ResultUtil.success();
 	}
 }

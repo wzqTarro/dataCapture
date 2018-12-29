@@ -23,6 +23,8 @@ public final class InsertId {
 	
 	public static final String INSERT_BATCH_PRODUCT = "TemplateProductMapper.insertBatch";
 	
+	public static final String INSERT_BATCH_PRODUCT_LIST = "TemplateProductMapper.insertBatchList";
+	
 	public static final String INSERT_SALE_BY_MESSAGE = "SaleMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_SALE = "SaleMapper.insertBatch";
@@ -36,6 +38,8 @@ public final class InsertId {
 	public static final String INSERT_STORE_BY_MESSAGE = "TemplateStoreMapper.insertSelective";
 	
 	public static final String INSERT_BATCH_STORE = "TemplateStoreMapper.insertBatch";
+	
+	public static final String INSERT_BATCH_STORE_LIST = "TemplateStoreMapper.insertBatchList";
 	
 	public static final String INSERT_REJECT_BY_MESSAGE = "RejectMapper.insertSelective";
 	

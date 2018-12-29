@@ -73,9 +73,9 @@ public class ExcelUtil<T> {
 	
 	public String[] templateOrderHeaderArray = {"order_id","no","contract_code","good_name","good_bar_code","good_code","order_type","good_type","order_shop","address","sell_price","count","simple_count","little_count","real_count","unit","stage_count","order_state","end_time","create_time","operator_name","company_code","brand","part_content","persent_num","contain_tax_price","contain_tax_money","remark"};
 	
-	public String[] templateProductHeaderArray = {"product_id","sys_id","sys_name","simple_code","simple_bar_code","stock_code","simple_name","standard_name","brand","classify","series","func","material","pieces_num","box_standard","stock_no","sell_price","exclude_tax_price","include_tax_price"};
+	public String[] templateProductHeaderArray = {"productId","sysId","sysName","simpleCode","simpleBarCode","stockCode","simpleName","standardName","brand","classify","series","func","material","piecesNum","boxStandard","stockNo","sellPrice","excludeTaxPrice","includeTaxPrice"};
 	
-	public String[] templateStoreExcelHeaderArray = {"sys_id","sys_name","store_code","order_store_name","return_store_name","sale_store_name","standard_store_name","store_market","store_city","store_manager","logistics_model","practice_time","distribution_code","distribution_name","distribution_user","region","province_area","ascription","ascription_sole"};
+	public String[] templateStoreExcelHeaderArray = {"sysId","sysName","storeCode","orderStoreName","returnStoreName","saleStoreName","standardStoreName","storeMarket","storeCity","storeManager","logisticsModel","practiceTime","distributionCode","distributionName","distributionUser","region","provinceArea","ascription","ascriptionSole"};
 	
 	public String[] templateSupplyHeaderArray = {"region","sys_name","url","login_user_name","login_password","company_code","controller_name","is_val","sys_id","parent_id"};
 	
