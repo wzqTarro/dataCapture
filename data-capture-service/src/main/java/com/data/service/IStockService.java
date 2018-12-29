@@ -15,7 +15,7 @@ public interface IStockService {
 	 * @param common
 	 * @return
 	 */
-	ResultUtil getStockByWeb(String sysId, Integer limit) throws Exception;
+	ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception;
 	/**
 	 * 多条件查询库存
 	 * @param common

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -124,23 +125,23 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	}
 
 	@Override
-	public ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws Exception {		
+	public ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception {		
 		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");		
-		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
+		logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		if (CommonUtil.isBlank(sysId)) {
-			throw new DataException("503");
+		if (id == null || id == 0) {
+			throw new Exception("id不能为空");
 		}
 		
 		// 同步
-		synchronized(sysId) {
+		synchronized(id) {
 			logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("queryDate", queryDate);
-			queryParam.put("sysId", sysId);
+			queryParam.put("id", id);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
 			
 			logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
@@ -149,9 +150,11 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			String orderStr = null;
 			
 			if (count == 0) {
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				boolean flag = true;
+				String sysId = supply.getSysId();
+				
+				//boolean flag = true;
 				
 /*				while (flag) {
 					try {*/
@@ -175,7 +178,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 				// 是否导出excel表
 				orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
 				
-				if (orderList.size() == 0) {
+				if (CollectionUtils.isEmpty(orderList)) {
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 					return ResultUtil.success(pageRecord);
 				}

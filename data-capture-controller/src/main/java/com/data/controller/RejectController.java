@@ -49,8 +49,8 @@ public class RejectController {
 	@RequestMapping(value = "/getRejectByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取退单数据", httpMethod = "GET")
 	public String getRejectByWeb(String queryDate, Integer limit, 
-			@RequestParam(value = "sysId", required = true)String sysId) throws Exception {
-		ResultUtil result = rejectService.getRejectByWeb(queryDate, sysId, limit);
+			@RequestParam(value = "id", required = true)Integer id) throws Exception {
+		ResultUtil result = rejectService.getRejectByWeb(queryDate, id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**

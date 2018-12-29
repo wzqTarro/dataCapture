@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
@@ -99,22 +100,22 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	private StockDataUtil stockDataUtil;
 
 	@Override
-	public ResultUtil getSaleByWeb(String queryDate, String sysId, Integer limit) throws Exception{
+	public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception{
 		PageRecord<Sale> pageRecord = null;
 		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
+		logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		if (CommonUtil.isBlank(sysId)) {
-			throw new DataException("503");
+		if (id == null || id == 0) {
+			throw new Exception("id不能为空");
 		}
 		// 同步
-		synchronized (sysId) {
+		synchronized (id) {
 			logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("queryDate", queryDate);
-			queryParam.put("sysId", sysId);
+			queryParam.put("id", id);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
 			
 			logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
@@ -122,9 +123,11 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			String saleStr = null;
 			if (count == 0) {
 				
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				boolean flag = true;
+				String sysId = supply.getSysId();
+				
+				//boolean flag = true;
 				
 				/*while (flag) {
 					try {*/
@@ -143,7 +146,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				
 				saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
 				
-				if (saleList.size() == 0) {
+				if (CollectionUtils.isEmpty(saleList)) {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 					return ResultUtil.success(pageRecord);
 				}

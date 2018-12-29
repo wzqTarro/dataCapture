@@ -48,8 +48,8 @@ public class SaleController {
 	@RequestMapping(value = "/getDataByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "python抓取销售数据", httpMethod = "GET")
 	public String getDataByWeb(String queryDate, Integer limit, 
-			@RequestParam(value = "sysId", required = true)String sysId) throws Exception{
-		ResultUtil result = saleService.getSaleByWeb(queryDate, sysId, limit);
+			@RequestParam(value = "id", required = true)Integer id) throws Exception{
+		ResultUtil result = saleService.getSaleByWeb(queryDate, id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.Sale;
@@ -86,22 +87,23 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	private ExportUtil exportUtil;
 	
 	@Override
-	public ResultUtil getStockByWeb(String sysId, Integer limit) throws Exception {
+	public ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception {
 		logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
-		logger.info("------>>>>>>前端传递sysId:{}<<<<<<<-------", sysId);
+		logger.info("------>>>>>>前端传递Id:{}<<<<<<<-------", id);
 		
 		PageRecord<Stock> pageRecord = null;
 		
 		// 同步
-		synchronized(sysId) {
+		synchronized(id) {
 			logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
-			Map<String, Object> queryParam = new HashMap<>(2);
-			queryParam.put("sysId", sysId);
 			
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
+			
+			String sysId = supply.getSysId();
+			
 			List<Stock> stockList = null;
 			String stockStr = null;
-			boolean flag = true;
+			//boolean flag = true;
 			
 			/*while (flag) {
 				try {*/
@@ -120,7 +122,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 
 			stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
 			
-			if (stockList.size() == 0) {
+			if (CollectionUtils.isEmpty(stockList)) {
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 				return ResultUtil.success(pageRecord);
 			}

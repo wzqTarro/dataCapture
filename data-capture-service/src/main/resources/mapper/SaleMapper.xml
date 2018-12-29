@@ -59,6 +59,9 @@
     s.remark, s.store_manager, s.local_name
   </sql>
   <sql id="Query_Condition">
+  	<if test="id != null">
+  		AND id = #{id}
+  	</if>
   	<if test="simpleCode != null and simpleCode != ''">
   		AND simple_code = #{simpleCode}
   	</if>

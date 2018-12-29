@@ -16,7 +16,7 @@ public interface ISaleService {
 	 * @param para
 	 * @return
 	 */
-	ResultUtil getSaleByWeb(String queryDate, String sysId, Integer limit) throws Exception;
+	ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception;
 	/**
 	 * 多条件查询销售数据
 	 * @param param

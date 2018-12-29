@@ -23,6 +23,9 @@
     s.is_val, s.sys_id, s.parent_id
   </sql>
   <sql id="Query_Condition">
+  	<if test="id != null">
+  		id = #{id}
+  	</if>
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
   	</if>

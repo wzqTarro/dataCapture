@@ -41,8 +41,8 @@ public class StockController {
 	 */
 	@RequestMapping(value = "getStockByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取库存数据", httpMethod = "GET")
-	public String getStockByWeb(@RequestParam(value = "sysId", required = true)String sysId, Integer limit) throws Exception {
-		ResultUtil result = stockServiceImpl.getStockByWeb(sysId, limit);
+	public String getStockByWeb(@RequestParam(value = "id", required = true)Integer id, Integer limit) throws Exception {
+		ResultUtil result = stockServiceImpl.getStockByWeb(id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.data.bean.Order;
@@ -65,15 +67,15 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				
 				// 禁止查询当天
 				if (Integer.parseInt(DateUtil.format(new Date(), "yyyyMMdd"))<=Integer.valueOf(start.replace("-", ""))) {
-					throw new DataException("只可以查询今天之前的数据");
+					throw new Exception("只可以查询今天之前的数据");
 				}		
 			}
 		} else {
-			throw new DataException("查询时间不能为空");
+			throw new Exception("查询时间不能为空");
 		}		
-		if (false == supply.getIsVal()) {
-			throw new DataException("供应链尚未开通");
-		}
+		/*if (false == supply.getIsVal()) {
+			throw new Exception("供应链尚未开通");
+		}*/
 //		// 订单
 //		if (WebConstant.ORDER.equals(dataType)) {
 //			if (supply.getSysId().equals(SupplyEnum.XSJ.getCode())) {
@@ -147,11 +149,17 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		} else {
 			pageRecord.setPageSize(limit);
 		}
-		pageRecord.setPageTotal(list.size());
-		if (list.size() > pageRecord.getPageSize()) {
-			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
+		
+		if (!CollectionUtils.isEmpty(list)) {
+			pageRecord.setPageTotal(list.size());
+			if (list.size() > pageRecord.getPageSize()) {
+				pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), pageRecord.getPageSize()));
+			} else {
+				pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), list.size()));
+			}
 		} else {
-			pageRecord.setList(list.subList((pageRecord.getPageNum() - 1)*pageRecord.getPageSize(), list.size()));
+			pageRecord.setPageTotal(0);
+			pageRecord.setList(new ArrayList<T>());
 		}
 		return pageRecord;
 	}

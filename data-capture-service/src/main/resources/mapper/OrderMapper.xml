@@ -54,6 +54,9 @@
     o.diff_price_contract, o.diff_price_contract_total, o.contract_alarm_flag, o.diff_price, o.remark
   </sql>
   <sql id="Query_Condition">
+  	<if test="id != null">
+  		AND id = #{id}
+  	</if>
   	<if test="sysId != null and sysId != ''">
   		AND sys_id = #{sysId}
   	</if>

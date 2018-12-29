@@ -19,7 +19,7 @@ public interface IOrderService {
 	 * @param limit
 	 * @return
 	 */
-	ResultUtil getOrderByWeb(String queryDate, String sysId, Integer limit) throws Exception  ;
+	ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception  ;
 	/**
 	 * 分页查询
 	 * @param queryDate

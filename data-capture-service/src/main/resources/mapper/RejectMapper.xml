@@ -49,6 +49,9 @@
     r.diff_price, r.remark
   </sql>
   <sql id="Query_Condition">
+  	<if test="id != null">
+  		AND id = #{id}
+  	</if>
   	<if test="sysId != null and sysId != ''">
   		AND sys_id = #{sysId}
   	</if>

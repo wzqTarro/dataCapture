@@ -49,8 +49,8 @@ public class OrderController {
 	@RequestMapping(value = "/getOrderByWeb", method = RequestMethod.GET)
 	@ApiOperation(value = "抓取订单数据", httpMethod = "GET")
 	public String getOrderByWeb(String queryDate, Integer limit,
-			@RequestParam(value = "sysId", required = true)String sysId) throws Exception {
-		ResultUtil result = orderService.getOrderByWeb(queryDate, sysId, limit);
+			@RequestParam(value = "id", required = true)Integer id) throws Exception {
+		ResultUtil result = orderService.getOrderByWeb(queryDate, id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
 	/**

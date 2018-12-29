@@ -22,7 +22,7 @@ public interface IRejectService {
 	 * @param limit
 	 * @return
 	 */
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws Exception;
+	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception;
 	/**
 	 * 多条件查询退单数据
 	 * @param common

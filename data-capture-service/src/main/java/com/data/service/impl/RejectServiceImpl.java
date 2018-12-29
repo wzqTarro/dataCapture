@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.data.bean.PromotionDetail;
@@ -70,23 +71,23 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	private ICodeDictService codeDictService;
 
 	@Override
-	public ResultUtil getRejectByWeb(String queryDate, String sysId, Integer limit) throws Exception {
+	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception {
 		PageRecord<Reject> pageRecord = null;
 		logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
-		logger.info("------>>>>>>系统编号sysId:{},查询时间queryDate:{}<<<<<<<-------", sysId, queryDate);
+		logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
-		if (CommonUtil.isBlank(sysId)) {
-			throw new DataException("503");
+		if (id == null || id == 0) {
+			throw new Exception("id不能为空");
 		}
 		
 		// 同步
-		synchronized (sysId) {
+		synchronized (id) {
 			logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("queryDate", queryDate);
-			queryParam.put("sysId", sysId);
+			queryParam.put("id", id);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
 			
 			logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
@@ -95,9 +96,11 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			String rejectStr = null;
 			
 			if (count == 0) {
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				boolean flag = true;
+				String sysId = supply.getSysId();
+				
+				//boolean flag = true;
 				
 				/*while (flag) {
 					try {*/
@@ -116,7 +119,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 				// 判断是否为解析excel表
 				rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
 
-				if (rejectList.size() == 0) {
+				if (CollectionUtils.isEmpty(rejectList)) {
 					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 					return ResultUtil.success(pageRecord);
 				}
