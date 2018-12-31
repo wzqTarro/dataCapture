@@ -19,7 +19,7 @@
     <result column="role_name" jdbcType="VARCHAR" property="roleName" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, work_no, username, gender, mobile_code, email, department, position, 
+    id, work_no, password, username, gender, mobile_code, email, department, position, 
     login_times, last_login_date, remark, is_alive
   </sql>
   
