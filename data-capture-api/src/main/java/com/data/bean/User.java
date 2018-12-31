@@ -36,8 +36,28 @@ public class User implements Serializable {
     private String remark;
 
     private String isAlive;
+    
+    private String roleId;
+    
+    private String roleName;
+    
+    public String getRoleName() {
+		return roleName;
+	}
 
-    public Integer getId() {
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(String roleId) {
+		this.roleId = roleId;
+	}
+
+	public Integer getId() {
         return id;
     }
 

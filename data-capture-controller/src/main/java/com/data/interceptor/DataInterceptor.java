@@ -87,6 +87,14 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/reject/queryRejectAlarmList",
 				"/promotionStoreList/getPromotionStoreList",
 				
+				//查询详情面拦截
+				"/promotionDetail/queryPromotionInfo",
+				"/simpleCode/querySimpleCodeInfo",
+				"/templateProduct/queryProductInfo",
+				"/store/queryStoreInfo",
+				"/supply/querySupplyInfo",
+				"/user/queryUserDetail",
+				
 				//下拉菜单 免拦截
 				"/store/getRegionMenu",
 				"/templateProduct/getBrandMenu",

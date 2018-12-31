@@ -46,15 +46,14 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 	public User getUserModel(String workNo) {
 		String key = RedisAPI.getPrefix(RedisAPI.REDIS_USER_DATABASE, workNo);
 		String json = redisUtil.get(key);
-		if(CommonUtil.isNotBlank(json)) {
-			User user = FastJsonUtil.jsonToObject(json, User.class);
-			if(user == null) {
-				user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_WORK_NO, workNo);
-				redisUtil.setex(key, RedisAPI.EXPIRE_30_MINUTES, FastJsonUtil.objectToString(user));
-			}
+		User user;
+		if(CommonUtil.isBlank(json)) {
+			user = (User) queryObjectByParameter(QueryId.QUERY_USER_BY_WORK_NO, workNo);
+			redisUtil.setex(key, RedisAPI.EXPIRE_30_MINUTES, FastJsonUtil.objectToString(user));
 			return user;
 		}
-		return null;
+		user = FastJsonUtil.jsonToObject(json, User.class);
+		return user;
 	}
 
 	@Override

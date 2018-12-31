@@ -127,6 +127,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		userRole.setWorkNo(user.getWorkNo());
 		userRole.setRoleId(roleId);
 		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
+		//更新缓存
+		redisService.updateUserModel(user);
 		update(UpdateId.UPDATE_SYSTEM_USER_ROLE_BY_WORK_NO, userRole);
 		return ResultUtil.success();
 	}
@@ -139,9 +141,8 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 			return ResultUtil.error("用工号不能为空");
 		}
 		User user = redisService.getUserModel(workNo);
-		if(CommonUtil.isBlank(user)) {
-			user = (User) queryObjectByParameter(QueryId.QUERY_USER_DETAIL, workNo);
-		}
+		SystemUserRole userRole = (SystemUserRole) queryObjectByParameter(QueryId.QUERY_USER_ROLE_BY_WORK_NO, workNo);
+		user.setRoleId(userRole.getRoleId());
 		logger.info("--->>>查询用户详情: {} <<<---", FastJsonUtil.objectToString(user));
 		return ResultUtil.success(user);
 	}
