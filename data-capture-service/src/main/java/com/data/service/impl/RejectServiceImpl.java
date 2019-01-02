@@ -86,8 +86,19 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		synchronized (id) {
 			logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
-			queryParam.put("queryDate", queryDate);
 			queryParam.put("id", id);
+			
+			// 供应链数据
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			if (supply == null) {
+				return ResultUtil.error("供应链未找到");
+			}
+			String sysId = supply.getSysId();
+			
+			// 查询退单数据是否已存在
+			queryParam.clear();
+			queryParam.put("sysId", sysId);
+			queryParam.put("queryDate", queryDate);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
 			
 			logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
@@ -96,7 +107,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			String rejectStr = null;
 			
 			if (count == 0) {
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
+				
 				
 				//boolean flag = true;
 				
@@ -122,7 +133,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					return ResultUtil.success(pageRecord);
 				}
 				
-				String sysId = supply.getSysId();
+				
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();

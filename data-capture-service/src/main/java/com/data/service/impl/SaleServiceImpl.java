@@ -114,8 +114,16 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		synchronized (id) {
 			logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
+			queryParam.put("id", id);	
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			if (supply == null) {
+				return ResultUtil.error("供应链未找到");
+			}
+			String sysId = supply.getSysId();
+			
+			queryParam.clear();
+			queryParam.put("sysId", sysId);
 			queryParam.put("queryDate", queryDate);
-			queryParam.put("id", id);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
 			
 			logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
@@ -123,7 +131,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			String saleStr = null;
 			if (count == 0) {
 				
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
 				//boolean flag = true;
 				
@@ -148,8 +155,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 					return ResultUtil.success(pageRecord);
 				}
-				
-				String sysId = supply.getSysId();
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();

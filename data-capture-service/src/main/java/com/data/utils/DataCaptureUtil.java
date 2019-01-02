@@ -78,9 +78,9 @@ public class DataCaptureUtil extends CommonServiceImpl {
 		} else {
 			throw new Exception("查询时间不能为空");
 		}		
-		/*if (false == supply.getIsVal()) {
+		if (false == supply.getIsVal()) {
 			throw new Exception("供应链尚未开通");
-		}*/
+		}
 //		// 订单
 //		if (WebConstant.ORDER.equals(dataType)) {
 //			if (supply.getSysId().equals(SupplyEnum.XSJ.getCode())) {

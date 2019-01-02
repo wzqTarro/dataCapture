@@ -97,7 +97,13 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		synchronized(id) {
 			logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
 			
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
+			Map<String, Object> queryParam = new HashMap<>(1);
+			queryParam.put("id", id);	
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			if (supply == null) {
+				return ResultUtil.error("供应链未找到");
+			}	
+			String sysId = supply.getSysId();
 			
 			List<Stock> stockList = null;
 			String stockStr = null;
@@ -124,8 +130,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 				return ResultUtil.success(pageRecord);
 			}
-			
-			String sysId = supply.getSysId();
 	
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();

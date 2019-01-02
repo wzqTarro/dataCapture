@@ -140,8 +140,16 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		synchronized(id) {
 			logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
+			queryParam.put("id", id);	
+			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+			if (supply == null) {
+				return ResultUtil.error("供应链未找到");
+			}
+			String sysId = supply.getSysId();
+			
+			queryParam.clear();
 			queryParam.put("queryDate", queryDate);
-			queryParam.put("id", id);
+			queryParam.put("sysId", sysId);
 			int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
 			
 			logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
@@ -150,7 +158,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			String orderStr = null;
 			
 			if (count == 0) {
-				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
 				//boolean flag = true;
 				
@@ -180,8 +187,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 					return ResultUtil.success(pageRecord);
 				}
-				
-				String sysId = supply.getSysId();
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();
