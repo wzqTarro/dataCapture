@@ -152,8 +152,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			if (count == 0) {
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				String sysId = supply.getSysId();
-				
 				//boolean flag = true;
 				
 /*				while (flag) {
@@ -182,6 +180,8 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
 					return ResultUtil.success(pageRecord);
 				}
+				
+				String sysId = supply.getSysId();
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();

@@ -99,8 +99,6 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 			
-			String sysId = supply.getSysId();
-			
 			List<Stock> stockList = null;
 			String stockStr = null;
 			//boolean flag = true;
@@ -126,6 +124,8 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
 				return ResultUtil.success(pageRecord);
 			}
+			
+			String sysId = supply.getSysId();
 	
 			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 			List<TemplateProduct> productList = redisService.queryTemplateProductList();

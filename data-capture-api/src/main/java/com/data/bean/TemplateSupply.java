@@ -30,7 +30,6 @@ public class TemplateSupply implements Serializable {
     @JSONField(serialize=false)
     private String controllerName;
 
-    @JSONField(serialize=false)
     private Boolean isVal;
     
     private String sysId;

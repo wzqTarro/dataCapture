@@ -125,8 +125,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				String sysId = supply.getSysId();
-				
 				//boolean flag = true;
 				
 				/*while (flag) {
@@ -150,6 +148,8 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
 					return ResultUtil.success(pageRecord);
 				}
+				
+				String sysId = supply.getSysId();
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();

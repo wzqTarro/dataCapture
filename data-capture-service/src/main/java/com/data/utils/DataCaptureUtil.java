@@ -57,6 +57,11 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @throws IOException 
 	 */
 	public String getDataByWeb(String queryDate, TemplateSupply supply, String dataType) throws Exception{		
+		
+		if (supply == null) {
+			throw new Exception("供应链尚未开通");
+		}
+		
 		String start = null;
 		String end = null;
 		

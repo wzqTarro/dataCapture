@@ -98,8 +98,6 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			if (count == 0) {
 				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_ID, id);
 				
-				String sysId = supply.getSysId();
-				
 				//boolean flag = true;
 				
 				/*while (flag) {
@@ -123,6 +121,8 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 					return ResultUtil.success(pageRecord);
 				}
+				
+				String sysId = supply.getSysId();
 				
 				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 				List<TemplateProduct> productList = redisService.queryTemplateProductList();

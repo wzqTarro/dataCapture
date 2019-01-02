@@ -13,18 +13,19 @@
     <result column="is_val" jdbcType="BIT" property="isVal" />
     <result column="sys_id" jdbcType="CHAR" property="sysId" />
     <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+    <result column="remark" jdbcType="VARCHAR" property="remark"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, region, sys_name, url, login_user_name, login_password, company_code, controller_name, sys_id
-    is_val, parent_id
+    is_val, parent_id, remark
   </sql>
   <sql id="Column_List">
     s.id, region, s.sys_name, s.url, s.login_user_name, s.login_password, s.company_code, s.controller_name, 
-    s.is_val, s.sys_id, s.parent_id
+    s.is_val, s.sys_id, s.parent_id, s.remark
   </sql>
   <sql id="Query_Condition">
   	<if test="id != null">
-  		id = #{id}
+  		AND id = #{id}
   	</if>
   	<if test="sysName != null and sysName != ''">
   		AND sys_name = #{sysName}
@@ -68,14 +69,14 @@
   <!-- 按id查询供应商信息 -->
   <select id="querySupplyInfoById" parameterType="map" resultMap="BaseResultMap">
   	SELECT <include refid="Base_Column_List"></include> 
-  	FROM db_template_supply WHERE id=#{id}
+  	FROM db_template_supply WHERE id=#{id} AND is_val = 1
   </select>
   
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from db_template_supply
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER} AND is_val = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_template_supply
