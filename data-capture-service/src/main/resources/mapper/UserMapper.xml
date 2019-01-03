@@ -214,9 +214,9 @@
   <update id="updateUserMessageByWorkNo" parameterType="com.data.bean.User">
     update db_user
     <set>
-      <if test="workNo != null">
+<!--       <if test="workNo != null">
         work_no = #{workNo,jdbcType=VARCHAR},
-      </if>
+      </if> -->
       <if test="username != null">
         username = #{username,jdbcType=VARCHAR},
       </if>
