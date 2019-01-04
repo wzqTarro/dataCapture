@@ -85,26 +85,26 @@
   <insert id="insert" parameterType="com.data.bean.TemplateSupply">
     insert into db_template_supply (id, region, sys_name, 
       url, login_user_name, login_password, 
-      company_code, controller_name, is_val, sys_id, parent_id
+      company_code, controller_name, is_val, sys_id, parent_id, remark
       )
     values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{loginUserName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, 
       #{companyCode,jdbcType=VARCHAR}, #{controllerName,jdbcType=VARCHAR}, #{isVal,jdbcType=BIT},
-      #{sysId,jdbcType=CHAR}, #{parentId,jdbcType=VARCHAR}
+      #{sysId,jdbcType=CHAR}, #{parentId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}
       )
   </insert>
   
   <insert id="insertBatch" parameterType="list">
     insert into db_template_supply (region, sys_name, 
       url, login_user_name, login_password, 
-      company_code, controller_name, is_val, sys_id, parent_id
+      company_code, controller_name, is_val, sys_id, parent_id, remark
       )
     values 
       <foreach collection="templateSupplyMapList" item="supply" separator=",">
 	    (#{supply.region,jdbcType=VARCHAR}, #{supply.sys_name,jdbcType=VARCHAR}, 
 	      #{supply.url,jdbcType=VARCHAR}, #{supply.login_user_name,jdbcType=VARCHAR}, #{supply.login_password,jdbcType=VARCHAR}, 
 	      #{supply.company_code,jdbcType=VARCHAR}, #{supply.controller_name,jdbcType=VARCHAR}, #{supply.is_val,jdbcType=BIT},
-	      #{supply.sys_id,jdbcType=CHAR}, #{supply.parent_id,jdbcType=VARCHAR}
+	      #{supply.sys_id,jdbcType=CHAR}, #{supply.parent_id,jdbcType=VARCHAR}, #{supply.remark,jdbcType=VARCHAR}
 	      )
       </foreach>
   </insert>
@@ -145,6 +145,9 @@
       <if test="parentId != null">
       	parent_id,
       </if>
+      <if test="remark != null">
+      	remark,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -179,6 +182,9 @@
       </if>
       <if test="parentId != null">
       	#{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+      	#{remark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -215,6 +221,9 @@
       <if test="parentId != null">
       	parent_id = #{parentId,jdbcType=VARCHAR},
       </if>
+      <if test="remark != null">
+      	remark = #{remark,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -229,7 +238,8 @@
       controller_name = #{controllerName,jdbcType=VARCHAR},
       is_val = #{isVal,jdbcType=BIT},
       sys_id = #{sysId, jdbcType=CHAR},
-      parent_id = #{parentId,jdbcType=VARCHAR}
+      parent_id = #{parentId,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
