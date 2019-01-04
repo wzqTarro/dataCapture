@@ -125,7 +125,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 
 	@Override
 	public ResultUtil getSupplyMenu() {
-		Map<String, Object> param = new HashMap<>(1);
+		Map<String, Object> param = new HashMap<>(2);
 		param.put("column", " DISTINCT sys_id as sysId, sys_name as sysName, region ");
 		param.put("isVal", 1);
 		List<Map<String, Object>> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_ANY_COLUMN, param);
@@ -135,9 +135,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	@Override
 	public ResultUtil querySupplyInfo(String id) {
 		if(CommonUtil.isNotBlank(id)) {
-			Map<String, Object> params = new HashMap<>(4);
+			Map<String, Object> params = new HashMap<>(1);
 			params.put("id", Integer.parseInt(id));
-			TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_INFO_BY_ID, params);
+			TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, params);
 			return ResultUtil.success(supply);
 		}
 		return null;

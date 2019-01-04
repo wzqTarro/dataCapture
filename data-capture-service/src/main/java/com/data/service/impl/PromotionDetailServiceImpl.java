@@ -68,10 +68,14 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
 		promotionDetail.setId(null);
-		promotionDetail.setSellPriceEndDate(DateUtil.stringToDate(sellPriceEndTime));
-		promotionDetail.setSellPriceStartDate(DateUtil.stringToDate(sellPriceStartTime));
-		promotionDetail.setSupplyPriceEndDate(DateUtil.stringToDate(supplyPriceEndTime));
-		promotionDetail.setSupplyPriceStartDate(DateUtil.stringToDate(supplyPriceStartTime));
+		try {
+			promotionDetail.setSellPriceEndDate(DateUtil.stringToDate(sellPriceEndTime));
+			promotionDetail.setSellPriceStartDate(DateUtil.stringToDate(sellPriceStartTime));
+			promotionDetail.setSupplyPriceEndDate(DateUtil.stringToDate(supplyPriceEndTime));
+			promotionDetail.setSupplyPriceStartDate(DateUtil.stringToDate(supplyPriceStartTime));
+		} catch (Exception e) {
+			return ResultUtil.error("日期格式错误,格式:2018-11-12");
+		}
 		insert(InsertId.INSERT_PROMOTION_DETAIL_BY_MESSAGE, promotionDetail);
 		return ResultUtil.success();
 	}
