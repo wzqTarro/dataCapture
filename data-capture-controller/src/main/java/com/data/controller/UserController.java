@@ -75,8 +75,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/queryUserDetail", method = RequestMethod.GET)
 	@ApiOperation(value = "查看用户信息", httpMethod = "GET")
-	public String queryUserDetail(String id) {
-		ResultUtil result = userService.queryUserDetail(id);
+	public String queryUserDetail(String workNo) {
+		ResultUtil result = userService.queryUserDetail(workNo);
 		return FastJsonUtil.objectToString(result);
 	}
 	
@@ -87,8 +87,8 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
 	@ApiOperation(value = "删除用户信息", httpMethod = "POST")
-	public String deleteUser(String id) {
-		ResultUtil result = userService.deleteUser(id);
+	public String deleteUser(String workNo) {
+		ResultUtil result = userService.deleteUser(workNo);
 		return FastJsonUtil.objectToString(result);
 	}
 	

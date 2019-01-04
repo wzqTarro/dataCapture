@@ -26,7 +26,7 @@ public class DataBaseException {
 
 	@ResponseBody
 	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.OK)
+	//@ResponseStatus(HttpStatus.OK)
 	public String resolveException(Exception e) {
         
 //        StringWriter stringWriter = new StringWriter();
@@ -75,7 +75,7 @@ public class DataBaseException {
 	 */
 	@ResponseBody
 	@ExceptionHandler(AuthException.class)
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	//@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public String resolveAuthException(AuthException e) {
 		ResultUtil result = new ResultUtil();
 		String errorCode, errorMessage;
