@@ -233,7 +233,6 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		user.setLoginTimes(oldUser.getLoginTimes() + 1);
 		user.setLastLoginDate(new Date(System.currentTimeMillis()));
 		update(UpdateId.UPDATE_USER_MESSAGE_BY_WORK_NO, user);
-		logger.info("--->>>更新用户登录信息成功<<<---");
 	}
 
 	@Override
