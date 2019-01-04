@@ -163,6 +163,9 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 			
 			// 插入生效门店
 			if ("全系统".equals(effectiveStore)) {
+
+				promotion.setStoreName("全系统");
+				
 				Map<String, Object> paramMap = new HashMap<>(1);
 				paramMap.put("sysId", sysId);
 				
@@ -179,8 +182,9 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 					
 					effectiveStoreList.add(promotionStore);
 				}
-			} else {
 				
+			} else {
+				promotion.setStoreName("部分门店");
 				// 部分生效门店
 				for (int j = 0; j < effectiveStoreArray.length; j++) {
 					String effectiveStoreCode = effectiveStoreArray[j];
@@ -193,7 +197,7 @@ public class PromotionDetailServiceImpl extends CommonServiceImpl implements IPr
 				}
 			}
 			
-
+			update(UpdateId.UPDATE_PROMOTION_DETAIL_BY_MESSAGE, promotion);
 			insert(InsertId.INSERT_PROMOTION_STORE_LIST_BATCH, effectiveStoreList);
 			
 			// 除外门店数组
