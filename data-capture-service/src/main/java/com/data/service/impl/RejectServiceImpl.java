@@ -1,10 +1,8 @@
 package com.data.service.impl;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +68,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	@Autowired
 	private ICodeDictService codeDictService;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception {
 		PageRecord<Reject> pageRecord = null;
@@ -491,6 +490,9 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		List<Map<String, Object>> rejectMapList = excelUtil.getExcelList(file, ExcelEnum.REJECT_TEMPLATE_TYPE.value());
 		if (rejectMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
+		}
+		if(rejectMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
 		insert(InsertId.INSERT_BATCH_REJECT, rejectMapList);
 		return ResultUtil.success();

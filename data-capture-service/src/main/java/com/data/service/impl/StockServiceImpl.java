@@ -86,6 +86,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	@Autowired
 	private ExportUtil exportUtil;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception {
 		logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
@@ -2032,6 +2033,9 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		List<Map<String, Object>> stockMapList = excelUtil.getExcelList(file, ExcelEnum.STOCK_TEMPLATE_TYPE.value());
 		if (stockMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
+		}
+		if(stockMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
 		insert(InsertId.INSERT_BATCH_STOCK, stockMapList);
 		return ResultUtil.success();

@@ -99,6 +99,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	@Autowired
 	private StockDataUtil stockDataUtil;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception{
 		PageRecord<Sale> pageRecord = null;
@@ -2883,6 +2884,9 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		List<Map<String, Object>> saleMapList = excelUtil.getExcelList(file, ExcelEnum.SALE_TEMPLATE_TYPE.value());
 		if (saleMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
+		}
+		if(saleMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
 		insert(InsertId.INSERT_BATCH_SALE, saleMapList);
 		return ResultUtil.success();

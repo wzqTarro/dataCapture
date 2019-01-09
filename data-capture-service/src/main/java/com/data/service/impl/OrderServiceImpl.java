@@ -1,14 +1,9 @@
 package com.data.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +117,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return ResultUtil.success(pageRecord);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception {		
 		PageRecord<Order> pageRecord = null;
@@ -525,7 +519,10 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (orderMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
-		insert(InsertId.INSERT_BATCH_ORDER, orderMapList);
+		if(orderMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
+		}
+		insert(InsertId.INSERT_ORDER_BATCH, orderMapList);
 		return ResultUtil.success();
 	}
 

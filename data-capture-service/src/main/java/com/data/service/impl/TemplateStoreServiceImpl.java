@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONPath;
 import com.data.bean.TemplateStore;
-import com.data.bean.TemplateStore;
 import com.data.constant.PageRecord;
 import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.DeleteId;
@@ -164,6 +163,7 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
 	public ResultUtil uploadTemplateStoreData(MultipartFile file) throws IOException {

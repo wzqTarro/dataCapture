@@ -151,6 +151,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		if (templateSupplyMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
+		if(templateSupplyMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
+		}
 		insert(InsertId.INSERT_BATCH_ORDER, templateSupplyMapList);
 		return ResultUtil.success();
 	}
