@@ -2037,7 +2037,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		if(stockMapList.size() == 0) {
 			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
-		insert(InsertId.INSERT_BATCH_STOCK, stockMapList);
+		insert(InsertId.INSERT_STOCK_BATCH, stockMapList);
 		return ResultUtil.success();
 	}
 }

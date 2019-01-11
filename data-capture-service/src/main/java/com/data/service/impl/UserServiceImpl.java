@@ -242,6 +242,9 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 		if (userMapList == null) {
 			return ResultUtil.error("格式不符，导入失败");
 		}
+		if(userMapList.size() == 0) {
+			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
+		}
 		insert(InsertId.INSERT_BATCH_USER, userMapList);
 		return ResultUtil.success();
 	}

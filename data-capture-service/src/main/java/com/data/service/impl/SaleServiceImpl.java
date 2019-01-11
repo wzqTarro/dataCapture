@@ -2888,7 +2888,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		if(saleMapList.size() == 0) {
 			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
-		insert(InsertId.INSERT_BATCH_SALE, saleMapList);
+		insert(InsertId.INSERT_SALE_BATCH, saleMapList);
 		return ResultUtil.success();
 	}
 	

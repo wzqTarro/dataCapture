@@ -116,13 +116,15 @@
       login_times, last_login_date, remark, 
       is_alive)
     values 
-    	<foreach collection="userMapList" item="user" separator=",">
-	    (#{work_no,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
-	      #{password,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{mobile_code,jdbcType=VARCHAR}, 
-	      #{email,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
-	      #{login_times,jdbcType=INTEGER}, #{last_login_date,jdbcType=DATE}, #{remark,jdbcType=VARCHAR}, 
-	      #{is_alive,jdbcType=VARCHAR}) 
-    	</foreach>
+    <foreach collection="list" item="user" separator=",">
+		(#{user.workNo,jdbcType=VARCHAR}, #{user.username,jdbcType=VARCHAR},
+		#{user.password,jdbcType=VARCHAR}, #{user.gender,jdbcType=VARCHAR},
+		#{user.mobileCode,jdbcType=VARCHAR},
+		#{user.email,jdbcType=VARCHAR}, #{user.department,jdbcType=VARCHAR},
+		#{user.position,jdbcType=VARCHAR},
+		#{user.loginTimes,jdbcType=INTEGER}, #{user.lastLoginDate,jdbcType=DATE}, #{user.remark,jdbcType=VARCHAR},
+		#{user.isAlive,jdbcType=VARCHAR})
+	</foreach>
   </insert>
   
   <insert id="insertSelective" parameterType="com.data.bean.User">

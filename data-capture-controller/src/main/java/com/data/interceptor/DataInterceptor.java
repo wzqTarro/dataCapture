@@ -117,6 +117,15 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/system/updateRoleMenu",
 				"/system/queryRoleMenu"
 				
+				//测试上传 暂时面拦截
+//				"/order/uploadOrderExcel",
+//				"/reject/uploadRejectExcel",
+//				"/sale/uploadSaleExcel",
+//				"/simpleCode/uploadSimpleCodeExcel",
+//				"/stock/uploadStockExcel",
+//				"/supply/uploadTemplateSupplyExcel",
+//				"/user/uploadUserExcel"
+				
 		};
 	}
 	
