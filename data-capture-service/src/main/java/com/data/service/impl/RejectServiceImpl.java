@@ -494,7 +494,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if(rejectMapList.size() == 0) {
 			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
 		}
-		insert(InsertId.INSERT_REJECT_BATCH, rejectMapList);
+		insert(InsertId.INSERT_BATCH_REJECT, rejectMapList);
 		return ResultUtil.success();
 	}
 }

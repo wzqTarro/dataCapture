@@ -101,10 +101,10 @@
       )
     values 
       <foreach collection="list" item="supply" separator=",">
-	    (#{supply.region,jdbcType=VARCHAR}, #{supply.sysName,jdbcType=VARCHAR}, 
-	      #{supply.url,jdbcType=VARCHAR}, #{supply.loginUserName,jdbcType=VARCHAR}, #{supply.loginPassword,jdbcType=VARCHAR}, 
-	      #{supply.companyCode,jdbcType=VARCHAR}, #{supply.controllerName,jdbcType=VARCHAR}, #{supply.isVal,jdbcType=BIT},
-	      #{supply.sysId,jdbcType=CHAR}, #{supply.parentId,jdbcType=VARCHAR}, #{supply.remark,jdbcType=VARCHAR}
+	    (#{supply.region,jdbcType=VARCHAR}, #{supply.sys_name,jdbcType=VARCHAR}, 
+	      #{supply.url,jdbcType=VARCHAR}, #{supply.login_user_name,jdbcType=VARCHAR}, #{supply.login_password,jdbcType=VARCHAR}, 
+	      #{supply.company_code,jdbcType=VARCHAR}, #{supply.controller_name,jdbcType=VARCHAR}, #{supply.is_val,jdbcType=BIT},
+	      #{supply.sys_id,jdbcType=CHAR}, #{supply.parent_id,jdbcType=VARCHAR}, #{supply.remark,jdbcType=VARCHAR}
 	      )
       </foreach>
   </insert>

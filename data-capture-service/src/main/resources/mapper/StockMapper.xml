@@ -214,16 +214,7 @@
       stock_num, tax_cost_price, stock_price, 
       create_time, remark, local_name) 
     values
-    <foreach collection="stockMapList" item="stock" separator=",">
-    <!-- (#{stock.id}, #{stock.sysId}, #{stock.sysName}, 
-      #{stock.storeCode}, #{stock.storeName}, #{stock.region}, 
-      #{stock.provinceArea}, #{stock.ascription}, #{stock.ascriptionSole}, 
-      #{stock.simpleCode}, #{stock.simpleBarCode}, #{stock.stockCode}, 
-      #{stock.simpleName}, #{stock.brand}, #{stock.classify}, 
-      #{stock.series}, #{stock.dayNight}, #{stock.material}, 
-      #{stock.piecesNum}, #{stock.boxStandard}, #{stock.stockNo}, 
-      #{stock.stockNum}, #{stock.taxCostPrice}, #{stock.stockPrice}, 
-      #{stock.createTime}, #{stock.remark}, #{stock.localName}) -->
+    <foreach collection="list" item="stock" separator=",">
       (#{stock.sys_id}, #{stock.sys_name}, 
       #{stock.store_code}, #{stock.store_name}, #{stock.region}, 
       #{stock.province_area}, #{stock.ascription}, #{stock.ascription_sole}, 

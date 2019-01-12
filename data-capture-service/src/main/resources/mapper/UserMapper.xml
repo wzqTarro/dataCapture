@@ -117,13 +117,13 @@
       is_alive)
     values 
     <foreach collection="list" item="user" separator=",">
-		(#{user.workNo,jdbcType=VARCHAR}, #{user.username,jdbcType=VARCHAR},
+		(#{user.work_no,jdbcType=VARCHAR}, #{user.username,jdbcType=VARCHAR},
 		#{user.password,jdbcType=VARCHAR}, #{user.gender,jdbcType=VARCHAR},
-		#{user.mobileCode,jdbcType=VARCHAR},
+		#{user.mobile_code,jdbcType=VARCHAR},
 		#{user.email,jdbcType=VARCHAR}, #{user.department,jdbcType=VARCHAR},
 		#{user.position,jdbcType=VARCHAR},
-		#{user.loginTimes,jdbcType=INTEGER}, #{user.lastLoginDate,jdbcType=DATE}, #{user.remark,jdbcType=VARCHAR},
-		#{user.isAlive,jdbcType=VARCHAR})
+		#{user.login_times,jdbcType=INTEGER}, #{user.last_login_date,jdbcType=DATE}, #{user.remark,jdbcType=VARCHAR},
+		#{user.is_alive,jdbcType=VARCHAR})
 	</foreach>
   </insert>
   

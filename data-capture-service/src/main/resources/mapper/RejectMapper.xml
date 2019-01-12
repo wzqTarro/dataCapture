@@ -249,7 +249,7 @@
       contract_price, diff_price_contract, diff_price_contract_total, 
       contract_alarm_flag, diff_price, remark)
     values 
-    <foreach collection="rejectMapList" item="reject" separator=",">
+    <foreach collection="list" item="reject" separator=",">
     (#{reject.sys_id,jdbcType=CHAR}, #{reject.sys_name,jdbcType=VARCHAR}, 
       #{reject.reject_department_id,jdbcType=VARCHAR}, #{reject.region,jdbcType=VARCHAR}, #{reject.province_area,jdbcType=VARCHAR}, 
       #{reject.reject_department_name,jdbcType=VARCHAR}, #{reject.receipt_code,jdbcType=VARCHAR}, #{reject.simple_code,jdbcType=VARCHAR}, 

@@ -430,16 +430,7 @@
       sell_price, create_time, remark, 
       store_manager, local_name)
     values 
-    <foreach collection="saleMapList" item="sale" separator=",">
-    <!-- (#{sale.id,jdbcType=INTEGER}, #{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
-      #{sale.storeCode,jdbcType=VARCHAR}, #{sale.storeName,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
-      #{sale.provinceArea,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascriptionSole,jdbcType=CHAR}, 
-      #{sale.simpleCode,jdbcType=VARCHAR}, #{sale.simpleBarCode,jdbcType=VARCHAR}, #{sale.stockCode,jdbcType=VARCHAR}, 
-      #{sale.simpleName,jdbcType=VARCHAR}, #{sale.brand,jdbcType=VARCHAR}, #{sale.series,jdbcType=VARCHAR}, 
-      #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
-      #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
-      #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	 -->
+    <foreach collection="list" item="sale" separator=",">
       (#{sale.sys_id,jdbcType=CHAR}, #{sale.sys_name,jdbcType=VARCHAR}, 
       #{sale.store_code,jdbcType=VARCHAR}, #{sale.store_name,jdbcType=VARCHAR}, #{sale.region,jdbcType=VARCHAR}, 
       #{sale.province_area,jdbcType=VARCHAR}, #{sale.ascription,jdbcType=CHAR}, #{sale.ascription_sole,jdbcType=CHAR}, 
