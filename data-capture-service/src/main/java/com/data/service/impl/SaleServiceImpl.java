@@ -2879,16 +2879,23 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadSaleData(MultipartFile file) throws Exception {
+	public ResultUtil uploadSaleData(MultipartFile file) {
 		ExcelUtil<Sale> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> saleMapList = excelUtil.getExcelList(file, ExcelEnum.SALE_TEMPLATE_TYPE.value());
-		if (saleMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> saleMapList;
+		try {
+			saleMapList = excelUtil.getExcelList(file, ExcelEnum.SALE_TEMPLATE_TYPE.value());
+			if (saleMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if(saleMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_SALE, saleMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(saleMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_BATCH_SALE, saleMapList);
 		return ResultUtil.success();
 	}
 	

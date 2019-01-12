@@ -45,6 +45,7 @@ import com.data.constant.WebConstant;
 import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.StockEnum;
 import com.data.constant.enums.TipsEnum;
@@ -2028,16 +2029,23 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadStockData(MultipartFile file) throws Exception {
+	public ResultUtil uploadStockData(MultipartFile file) {
 		ExcelUtil<Stock> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> stockMapList = excelUtil.getExcelList(file, ExcelEnum.STOCK_TEMPLATE_TYPE.value());
-		if (stockMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> stockMapList;
+		try {
+			stockMapList = excelUtil.getExcelList(file, ExcelEnum.STOCK_TEMPLATE_TYPE.value());
+			if (stockMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if(stockMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_STOCK, stockMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(stockMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_STOCK_BATCH, stockMapList);
 		return ResultUtil.success();
 	}
 }

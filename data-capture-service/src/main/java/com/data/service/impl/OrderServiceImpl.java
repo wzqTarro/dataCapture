@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -513,16 +514,23 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadOrderData(MultipartFile file) throws Exception {
+	public ResultUtil uploadOrderData(MultipartFile file) {
 		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> orderMapList = excelUtil.getExcelList(file, ExcelEnum.ORDER_TEMPLATE_TYPE.value());
-		if (orderMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> orderMapList;
+		try {
+			orderMapList = excelUtil.getExcelList(file, ExcelEnum.ORDER_TEMPLATE_TYPE.value());
+			if (orderMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if (orderMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_ORDER_BATCH, orderMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(orderMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_ORDER_BATCH, orderMapList);
 		return ResultUtil.success();
 	}
 

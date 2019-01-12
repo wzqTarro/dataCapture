@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.data.constant.PageRecord;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.ExcelEnum;
 import com.data.exception.DataException;
 import com.data.service.IRedisService;
@@ -236,16 +238,24 @@ public class UserServiceImpl extends CommonServiceImpl implements IUserService {
 	}
 
 	@Override
-	public ResultUtil uploadUserData(MultipartFile file) throws Exception {
+	@Transactional(rollbackFor = { Exception.class })
+	public ResultUtil uploadUserData(MultipartFile file) {
 		ExcelUtil<User> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> userMapList = excelUtil.getExcelList(file, ExcelEnum.USER_TEMPLATE_TYPE.value());
-		if (userMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> userMapList;
+		try {
+			userMapList = excelUtil.getExcelList(file, ExcelEnum.USER_TEMPLATE_TYPE.value());
+			if (userMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if (userMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_USER, userMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(userMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_BATCH_USER, userMapList);
 		return ResultUtil.success();
 	}
 

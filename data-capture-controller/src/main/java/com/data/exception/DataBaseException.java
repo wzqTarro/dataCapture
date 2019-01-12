@@ -2,11 +2,9 @@ package com.data.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.data.constant.enums.CodeEnum;
 import com.data.utils.CommonUtil;
@@ -63,7 +61,7 @@ public class DataBaseException {
 			}
 		} else {
 			result.setCode(CodeEnum.RESPONSE_99_CODE.value());
-			result.setMsg(e.getMessage());
+			result.setMsg(CodeEnum.RESPONSE_99_DESC.value());
 		}
 		return FastJsonUtil.objectToString(result);
 	}

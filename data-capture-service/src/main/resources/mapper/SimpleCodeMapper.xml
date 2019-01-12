@@ -102,18 +102,12 @@
       drf, wem, zb, cb
       ) values 
     <foreach collection="list" separator="," item="code"></foreach>
-     (#{code.simpleName,jdbcType=VARCHAR}, #{code.barCode,jdbcType=VARCHAR}, 
+      (#{code.simple_name,jdbcType=VARCHAR}, #{code.bar_code,jdbcType=VARCHAR}, 
       #{code.bbg,jdbcType=VARCHAR}, #{code.rrl,jdbcType=VARCHAR}, #{code.jrd,jdbcType=VARCHAR}, #{code.yc,jdbcType=VARCHAR}, 
       #{code.hnth,jdbcType=VARCHAR}, #{code.os,jdbcType=VARCHAR}, #{code.bl,jdbcType=VARCHAR}, #{code.bjhl,jdbcType=VARCHAR}, 
       #{code.ws,jdbcType=VARCHAR}, #{code.gcs,jdbcType=VARCHAR}, #{code.oycb,jdbcType=VARCHAR}, #{code.jh,jdbcType=VARCHAR}, 
       #{code.drf,jdbcType=VARCHAR}, #{code.wem,jdbcType=VARCHAR}, #{code.zb,jdbcType=VARCHAR}, #{code.cb,jdbcType=VARCHAR}
       )
-      <!-- (#{code.simple_name,jdbcType=VARCHAR}, #{code.bar_code,jdbcType=VARCHAR}, 
-      #{code.bbg,jdbcType=VARCHAR}, #{code.rrl,jdbcType=VARCHAR}, #{code.jrd,jdbcType=VARCHAR}, #{code.yc,jdbcType=VARCHAR}, 
-      #{code.hnth,jdbcType=VARCHAR}, #{code.os,jdbcType=VARCHAR}, #{code.bl,jdbcType=VARCHAR}, #{code.bjhl,jdbcType=VARCHAR}, 
-      #{code.ws,jdbcType=VARCHAR}, #{code.gcs,jdbcType=VARCHAR}, #{code.oycb,jdbcType=VARCHAR}, #{code.jh,jdbcType=VARCHAR}, 
-      #{code.drf,jdbcType=VARCHAR}, #{code.wem,jdbcType=VARCHAR}, #{code.zb,jdbcType=VARCHAR}, #{code.cb,jdbcType=VARCHAR}
-      ) -->
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.SimpleCode" >
     insert into db_simple_code

@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -485,16 +486,23 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadRejectData(MultipartFile file) throws Exception {
+	public ResultUtil uploadRejectData(MultipartFile file) {
 		ExcelUtil<Reject> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> rejectMapList = excelUtil.getExcelList(file, ExcelEnum.REJECT_TEMPLATE_TYPE.value());
-		if (rejectMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> rejectMapList;
+		try {
+			rejectMapList = excelUtil.getExcelList(file, ExcelEnum.REJECT_TEMPLATE_TYPE.value());
+			if (rejectMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if(rejectMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_REJECT, rejectMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(rejectMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_BATCH_REJECT, rejectMapList);
 		return ResultUtil.success();
 	}
 }

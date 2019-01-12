@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateSupplyService;
@@ -145,16 +147,23 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadTemplateSupplyData(MultipartFile file) throws Exception {
+	public ResultUtil uploadTemplateSupplyData(MultipartFile file) {
 		ExcelUtil<TemplateSupply> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> templateSupplyMapList = excelUtil.getExcelList(file, ExcelEnum.TEMPLATE_SUPPLY_TEMPLATE_TYPE.value());
-		if (templateSupplyMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> templateSupplyMapList;
+		try {
+			templateSupplyMapList = excelUtil.getExcelList(file, ExcelEnum.TEMPLATE_SUPPLY_TEMPLATE_TYPE.value());
+			if (templateSupplyMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if(templateSupplyMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_SUPPLY, templateSupplyMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(templateSupplyMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_BATCH_ORDER, templateSupplyMapList);
 		return ResultUtil.success();
 	}
 }

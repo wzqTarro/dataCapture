@@ -1,5 +1,6 @@
 package com.data.service.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.data.constant.dbSql.DeleteId;
 import com.data.constant.dbSql.InsertId;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.dbSql.UpdateId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ISimpleCodeService;
@@ -102,16 +104,23 @@ public class SimpleCodeServiceImpl extends CommonServiceImpl implements ISimpleC
 
 	@Override
 	@Transactional(rollbackFor = { Exception.class })
-	public ResultUtil uploadSimpleCodeData(MultipartFile file) throws Exception {
+	public ResultUtil uploadSimpleCodeData(MultipartFile file) {
 		ExcelUtil<SimpleCode> excelUtil = new ExcelUtil<>();
-		List<Map<String, Object>> simpleCodeMapList = excelUtil.getExcelList(file, ExcelEnum.SIMPLE_CODE_TEMPLATE_TYPE.value());
-		if (simpleCodeMapList == null) {
-			return ResultUtil.error("格式不符，导入失败");
+		List<Map<String, Object>> simpleCodeMapList;
+		try {
+			simpleCodeMapList = excelUtil.getExcelList(file, ExcelEnum.SIMPLE_CODE_TEMPLATE_TYPE.value());
+			if (simpleCodeMapList == null) {
+				return ResultUtil.error(CodeEnum.EXCEL_FORMAT_ERROR_DESC.value());
+			}
+			if(simpleCodeMapList.size() == 0) {
+				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
+			}
+			insert(InsertId.INSERT_BATCH_SIMPLE_CODE, simpleCodeMapList);
+		} catch (IOException e) {
+			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
+		} catch (Exception se) {
+			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
-		if(simpleCodeMapList.size() == 0) {
-			return ResultUtil.error("导入数据为空，请检查导入文件是否正确！");
-		}
-		insert(InsertId.INSERT_BATCH_SIMPLE_CODE, simpleCodeMapList);
 		return ResultUtil.success();
 	}
 }
