@@ -678,7 +678,7 @@ public class ExcelUtil<T> {
 					value = cell.getStringCellValue();
 					break;
 				case BLANK: 
-					value = "";
+					//value = null;
 					break;
 				case ERROR: 
 					value = "非法字符";
