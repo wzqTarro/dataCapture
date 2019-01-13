@@ -384,7 +384,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		params.put("province", province);
 		params.put("store", stored);
 		//前一天的数据
-		params.put("saleDate", new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1)));
+		//params.put("saleDate", new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1)));
 		//先判断数量 分批导出
 		int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_LIST_REPORT, params);
 		if(count >= CommonValue.MAX_ROW_COUNT_2007) {
@@ -429,17 +429,19 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					for (int k = 0; k < storeDailyList.size(); k++) {
 						map.put((String) storeDailyList.get(k).get("storeCode"), storeDailyList.get(k));
 					}
-					for (int j = 0; j < saleInfoList.size(); j++) {
-						String storeCode = (String) saleInfoList.get(j).get("storeCode");
-						Map<String, Object> storeDailyMap = (Map<String, Object>) map.get(storeCode);
-						if (map.get(storeCode) != null) {
-							Map<String, Object> sale = saleInfoList.get(j);
-							if (flag) {
-								sale.put(daysList.get(i), 0.0);
-							} else {
-								sale.put(daysList.get(i), storeDailyMap.get("salePrice"));
+					if(CommonUtil.isNotBlank(map)) {
+						for (int j = 0; j < saleInfoList.size(); j++) {
+							String storeCode = (String) saleInfoList.get(j).get("storeCode");
+							Map<String, Object> storeDailyMap = (Map<String, Object>) map.get(storeCode);
+							if (map.get(storeCode) != null) {
+								Map<String, Object> sale = saleInfoList.get(j);
+								if (flag) {
+									sale.put(daysList.get(i), 0.0);
+								} else {
+									sale.put(daysList.get(i), storeDailyMap.get("salePrice"));
+								}
+								saleInfoList.set(j, sale);
 							}
-							saleInfoList.set(j, sale);
 						}
 					}
 				}
