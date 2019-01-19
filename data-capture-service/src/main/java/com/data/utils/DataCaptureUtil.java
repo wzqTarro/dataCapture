@@ -1,39 +1,22 @@
 package com.data.utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.data.bean.Order;
-import com.data.bean.Reject;
-import com.data.bean.Sale;
-import com.data.bean.Stock;
 import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
-import com.data.constant.enums.SupplyEnum;
-import com.data.exception.DataException;
 import com.data.service.impl.CommonServiceImpl;
 
 /**
@@ -43,8 +26,6 @@ import com.data.service.impl.CommonServiceImpl;
  */
 @Component
 public class DataCaptureUtil extends CommonServiceImpl {
-	
-	private static Logger logger = LoggerFactory.getLogger(DataCaptureUtil.class);
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -70,10 +51,14 @@ public class DataCaptureUtil extends CommonServiceImpl {
 				start = queryDate.trim();
 				end = start;
 				
-				// 禁止查询当天
-				if (Integer.parseInt(DateUtil.format(new Date(), "yyyyMMdd"))<=Integer.valueOf(start.replace("-", ""))) {
+//				// 禁止查询当天
+//				if (Integer.parseInt(DateUtil.format(new Date(), "yyyyMMdd"))<=Integer.valueOf(start.replace("-", ""))) {
+//					throw new Exception("只可以查询今天之前的数据");
+//				}
+				Date nowDate = DateUtil.getSystemDate();
+				if((nowDate.compareTo(DateUtil.getDateFromString(start, DateUtil.DATE_PATTERN.YYYY_MM_DD))) <= 0) {
 					throw new Exception("只可以查询今天之前的数据");
-				}		
+				}
 			}
 		} else {
 			throw new Exception("查询时间不能为空");
