@@ -1,12 +1,20 @@
 package com.data.job;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+import com.data.service.IOrderService;
+import com.data.service.IRejectService;
 import com.data.service.ISaleService;
-import com.data.utils.FastJsonUtil;
+import com.data.service.IStockService;
+import com.data.service.ITemplateSupplyService;
+import com.data.utils.CommonUtil;
+import com.data.utils.DateUtil;
 import com.data.utils.ResultUtil;
 
 /**
@@ -85,28 +93,126 @@ import com.data.utils.ResultUtil;
  * 
  *
  */
+@Component
 public class SchedulSaleTask {
 
 	private static final Logger logger = LoggerFactory.getLogger(SchedulSaleTask.class);
 	
+	private static final int LIMIT = 10;
+	
 	@Autowired
 	private ISaleService saleService;
 	
+	@Autowired
+	private IOrderService orderService;
+	
+	@Autowired
+	private IRejectService rejectService;
+	
+	@Autowired
+	private IStockService stockService;
+	
+	@Autowired
+	private ITemplateSupplyService supplyService;
+	
 	/**
 	 * 定时任务跑日销售额到缓存中用于日报表处理用
-	 * 每天早上6点定时刷一遍
+	 * 每天早上7点定时刷一遍
 	 * @return
 	 * @throws Exception 
 	 */
-	@Scheduled(cron = "0 0 6 * * ?")
-	public String schedulCalculateSaleDaily() {
-		ResultUtil result;
+	@Scheduled(cron = "0 0 7 * * ?")
+	public void schedulCalculateSaleDaily() {
 		try {
-			result = saleService.calculateStoreDailySale();			
+			saleService.calculateStoreDailySale();			
 		} catch (Exception e) {
-			logger.error("--->>>日销售定时任务异常<<<---");
-			result = ResultUtil.error("--->>>日销售定时任务异常<<<---");
+			logger.error("日销售定时任务异常");
 		}
-		return FastJsonUtil.objectToString(result);
+	}
+	
+	/**
+	 * 订单数据定时抓取
+	 * 两点30分开始抓
+	 * @throws Exception 
+	 */
+	@Scheduled(cron = "0 30 2 * * ?")
+	public void schedulOrderCapture() throws Exception {
+		String queryDate = DateUtil.getCurrentDateStr();
+		List<Integer> idsList = getSupplyIds();
+		if(CommonUtil.isBlank(idsList)) {
+			for(int i = 0, size = idsList.size(); i < size; i++) {
+				try {
+					orderService.getOrderByWeb(queryDate, idsList.get(i), LIMIT);
+				} catch (Exception e) {
+					logger.error("订单数据抓取异常");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 退单数据定时抓取
+	 * 凌晨四点半开始抓
+	 * @throws Exception 
+	 */
+	@Scheduled(cron = "0 30 4 * * ?")
+	public void schedulRejectCapture() throws Exception {
+		String queryDate = DateUtil.getCurrentDateStr();
+		List<Integer> idsList = getSupplyIds();
+		if(CommonUtil.isBlank(idsList)) {
+			for(int i = 0, size = idsList.size(); i < size; i++) {
+				try {
+					rejectService.getRejectByWeb(queryDate, idsList.get(i), LIMIT);
+				} catch (Exception e) {
+					logger.error("退单数据抓取异常");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 销售数据定时抓取
+	 * 凌晨6点30开始抓
+	 * @throws Exception 
+	 */
+	@Scheduled(cron = "0 30 6 * * ?")
+	public void schedulSaleCapture() throws Exception {
+		String queryDate = DateUtil.getCurrentDateStr();
+		List<Integer> idsList = getSupplyIds();
+		if(CommonUtil.isBlank(idsList)) {
+			for(int i = 0, size = idsList.size(); i < size; i++) {
+				try {
+					saleService.getSaleByWeb(queryDate, idsList.get(i), LIMIT);
+				} catch (Exception e) {
+					logger.error("销售数据抓取异常");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 库存数据定时抓取
+	 * 每两个小时抓一遍
+	 * @throws Exception 
+	 */
+	@Scheduled(cron = "0 0 0/2 * * ?")
+	public void schedulStockCapture() throws Exception {
+		List<Integer> idsList = getSupplyIds();
+		if(CommonUtil.isBlank(idsList)) {
+			for(int i = 0, size = idsList.size(); i < size; i++) {
+				try {
+					stockService.getStockByWeb(idsList.get(i), LIMIT);
+				} catch (Exception e) {
+					logger.error("库存数据抓取异常");
+				}
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Integer> getSupplyIds() {
+		ResultUtil result = supplyService.queryAliveSupplyIds();
+		List<Integer> idsList = (List<Integer>) result.getData();
+		return idsList;
 	}
 }

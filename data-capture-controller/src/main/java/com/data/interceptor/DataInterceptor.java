@@ -161,7 +161,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			try {
 				claims = JwtUtil.parseJwt(accessToken, secret);
 			} catch (Exception e) {
-				logger.error("--->>>token解析失败<<<---");
+				logger.info("--->>>令牌({})token解析失败<<<---", accessToken);
 				throw new AuthException("521");
 			}
 			if(isAuthenticate(accessToken, claims, request)) {
@@ -171,7 +171,7 @@ public class DataInterceptor implements HandlerInterceptor {
 				return true;
 			} else {
 				//认证失败
-				logger.error("--->>>token校验失败<<<---");
+				logger.error("--->>>token({})校验失败<<<---", accessToken);
 				throw new AuthException("521");
 			}
 		}
@@ -184,7 +184,7 @@ public class DataInterceptor implements HandlerInterceptor {
 		try {
 			token = redisService.getAccessToken(CommonValue.ACCESS_TOKEN_KEY + claims.get("userId").toString());
 			token = token.substring(5);
-			logger.error("--->>>后台保存的token: {} <<<---", token);
+			logger.info("--->>>后台保存的token: {} <<<---", token);
 			if(CommonUtil.isBlank(token)) {
 				/**
 				 * TODO
@@ -193,7 +193,7 @@ public class DataInterceptor implements HandlerInterceptor {
 				throw new AuthException("520");
 			}
 			if(!token.equals(accessToken)) {
-				logger.error("--->>>token校验不通过<<<---");
+				logger.info("--->>>token({})校验不通过<<<---", accessToken);
 				throw new AuthException("537");
 			}
 			//动作权限检验
@@ -216,7 +216,7 @@ public class DataInterceptor implements HandlerInterceptor {
 			logger.error("--->>>{}角色没有相关权限<<<---", roleId);
 			throw new AuthException("538");
 		} catch (DataException | GlobalException e) {
-			logger.error("--->>>令牌已失效<<<---");
+			logger.info("--->>>令牌({})已失效<<<---", accessToken);
 			return false;
 		}
 	}

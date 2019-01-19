@@ -735,6 +735,13 @@ public class ExcelUtil<T> {
 			arr = this.templateSupplyHeaderArray;
 			break;
 		}
+		case "user": {
+			arr = this.userHeaderArray;
+			break;
+		}
+		default : {
+			break;
+		}
 		}
 		return arr;
 	}

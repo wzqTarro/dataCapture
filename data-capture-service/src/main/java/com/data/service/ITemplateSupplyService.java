@@ -52,4 +52,10 @@ public interface ITemplateSupplyService {
 	 * @throws Exception
 	 */
 	ResultUtil uploadTemplateSupplyData(MultipartFile file) throws Exception;
+	
+	/**
+	 * 查询可用供应链Id集合
+	 * @return
+	 */
+	ResultUtil queryAliveSupplyIds();
 }

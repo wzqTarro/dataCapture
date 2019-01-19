@@ -166,4 +166,10 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		}
 		return ResultUtil.success();
 	}
+
+	@Override
+	public ResultUtil queryAliveSupplyIds() {
+		List<Integer> idsList = queryListByObject(QueryId.QUERY_SUPPLY_IDS_LIST, null);
+		return ResultUtil.success(idsList);
+	}
 }

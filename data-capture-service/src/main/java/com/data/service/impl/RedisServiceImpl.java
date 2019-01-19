@@ -14,8 +14,9 @@ import com.data.bean.TemplateStore;
 import com.data.bean.User;
 import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.QueryId;
+import com.data.constant.enums.CodeEnum;
 import com.data.constant.enums.SimpleCodeEnum;
-import com.data.exception.GetDataException;
+import com.data.exception.GlobalException;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
@@ -228,7 +229,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		try {
 			code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
 		} catch (Exception e) {
-			throw new GetDataException("条码表中"+sysName+"系统的编码"+simpleCode+"对应多个商品，需修改");
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(), "条码表中" + sysName + "系统的编码" + simpleCode + "对应多个商品，需修改");
 		}
 		if (null != code) {
 			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, code.getBarCode());
@@ -237,6 +238,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<TemplateStore> queryTemplateStoreList() {
 		String key = RedisAPI.getPrefix(RedisAPI.STORE_TEMPLATE);
@@ -252,6 +254,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<SimpleCode> queryTemplateSimpleCodeList() {
 		String key = RedisAPI.getPrefix(RedisAPI.SIMPLE_CODE_TEMPLATE);
@@ -267,6 +270,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<TemplateProduct> queryTemplateProductList() {
 		String key = RedisAPI.getPrefix(RedisAPI.PRODUCT_TEMPLATE);

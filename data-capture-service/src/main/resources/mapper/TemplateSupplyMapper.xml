@@ -37,6 +37,12 @@
   		AND region = #{region}
   	</if>
   </sql>
+  
+  <!-- 查询供应商id集合 -->
+  <select id="querySupplyIds" resultType="int">
+  	SELECT id FROM db_template_supply WHERE is_val = 1
+  </select>
+  
   <select id="selectAnyColumn" resultType="map">
   	SELECT ${column}
   	FROM db_template_supply

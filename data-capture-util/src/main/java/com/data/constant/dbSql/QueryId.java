@@ -281,4 +281,7 @@ public final class QueryId {
 	
 	/**查询父级目录id集合**/
 	public static final String QUERY_PARENT_MENU_ID_LIST = "SystemMenuMapper.queryParentMenuIdList";
+	
+	//查询可用供应商id集合
+	public static final String QUERY_SUPPLY_IDS_LIST = "TemplateSupplyMapper.querySupplyIds";
 }
