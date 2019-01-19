@@ -59,6 +59,9 @@ public class DataBaseException {
 				result.setCode(errorCode);
 				result.setMsg(errorMessage);
 			}
+		} else if(e instanceof GetDataException) {
+			result.setCode(CodeEnum.RESPONSE_99_CODE.value());
+			result.setMsg(e.getMessage());
 		} else {
 			result.setCode(CodeEnum.RESPONSE_99_CODE.value());
 			result.setMsg(CodeEnum.RESPONSE_99_DESC.value());

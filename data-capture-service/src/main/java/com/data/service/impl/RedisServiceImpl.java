@@ -15,6 +15,7 @@ import com.data.bean.User;
 import com.data.constant.RedisAPI;
 import com.data.constant.dbSql.QueryId;
 import com.data.constant.enums.SimpleCodeEnum;
+import com.data.exception.GetDataException;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
 import com.data.utils.FastJsonUtil;
@@ -227,7 +228,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 		try {
 			code = (SimpleCode)queryObjectByParameter(QueryId.QUERY_SIMPLE_CODE_BY_PARAM, param);
 		} catch (Exception e) {
-			throw new Exception("条码表中"+sysName+"系统的编码"+simpleCode+"对应多个商品，需修改");
+			throw new GetDataException("条码表中"+sysName+"系统的编码"+simpleCode+"对应多个商品，需修改");
 		}
 		if (null != code) {
 			redisUtil.setex(key, RedisAPI.EXPIRE_12_HOUR, code.getBarCode());
