@@ -139,7 +139,7 @@ public class SchedulSaleTask {
 	public void schedulOrderCapture() throws Exception {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
-		if(CommonUtil.isBlank(idsList)) {
+		if(CommonUtil.isNotBlank(idsList)) {
 			for(int i = 0, size = idsList.size(); i < size; i++) {
 				try {
 					orderService.getOrderByWeb(queryDate, idsList.get(i), LIMIT);
@@ -159,7 +159,7 @@ public class SchedulSaleTask {
 	public void schedulRejectCapture() throws Exception {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
-		if(CommonUtil.isBlank(idsList)) {
+		if(CommonUtil.isNotBlank(idsList)) {
 			for(int i = 0, size = idsList.size(); i < size; i++) {
 				try {
 					rejectService.getRejectByWeb(queryDate, idsList.get(i), LIMIT);
@@ -179,7 +179,7 @@ public class SchedulSaleTask {
 	public void schedulSaleCapture() throws Exception {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
-		if(CommonUtil.isBlank(idsList)) {
+		if(CommonUtil.isNotBlank(idsList)) {
 			for(int i = 0, size = idsList.size(); i < size; i++) {
 				try {
 					saleService.getSaleByWeb(queryDate, idsList.get(i), LIMIT);
@@ -198,7 +198,7 @@ public class SchedulSaleTask {
 	@Scheduled(cron = "0 0 0/2 * * ?")
 	public void schedulStockCapture() throws Exception {
 		List<Integer> idsList = getSupplyIds();
-		if(CommonUtil.isBlank(idsList)) {
+		if(CommonUtil.isNotBlank(idsList)) {
 			for(int i = 0, size = idsList.size(); i < size; i++) {
 				try {
 					stockService.getStockByWeb(idsList.get(i), LIMIT);
