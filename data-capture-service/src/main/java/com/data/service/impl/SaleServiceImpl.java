@@ -99,18 +99,18 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	@Autowired
 	private StockDataUtil stockDataUtil;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception{
-		PageRecord<Sale> pageRecord = null;
-		logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-		logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
-		if (CommonUtil.isBlank(queryDate)) {
-			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
-		}
-		if (id == null || id == 0) {
-			throw new Exception("id不能为空");
-		}
+		@SuppressWarnings("unchecked")
+		@Override
+		public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception{
+			PageRecord<Sale> pageRecord = null;
+			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
+			logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
+			if (CommonUtil.isBlank(queryDate)) {
+				return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
+			}
+			if (id == null || id == 0) {
+				throw new Exception("id不能为空");
+			}
 		// 同步
 		synchronized (id) {
 			logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");

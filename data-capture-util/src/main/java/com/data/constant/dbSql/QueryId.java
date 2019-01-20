@@ -284,4 +284,10 @@ public final class QueryId {
 	
 	//查询可用供应商id集合
 	public static final String QUERY_SUPPLY_IDS_LIST = "TemplateSupplyMapper.querySupplyIds";
+
+	//条件查询抓取日志列表
+	public static final String QUERY_DATA_LOG_BY_CONDITION = "DataLogMapper.queryDataLogByCondition";
+
+	//条件查抓取日志总数
+	public static final String QUERY_COUNT_DATA_LOG = "DataLogMapper.queryCountDataLog";
 }
