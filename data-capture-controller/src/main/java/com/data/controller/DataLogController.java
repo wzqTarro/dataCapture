@@ -3,6 +3,7 @@ package com.data.controller;
 import com.data.bean.DataLog;
 import com.data.service.IDataLogService;
 import com.data.utils.ResultUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/dataLog")
+@Api(tags = {"抓取数据日志接口"})
 @CrossOrigin(origins="*", maxAge=3600)
 public class DataLogController {
 
