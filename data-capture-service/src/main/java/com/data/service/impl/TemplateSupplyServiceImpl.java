@@ -102,7 +102,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	}
 
 	@Override
-	public ResultUtil querySupplyByConditiion(TemplateSupply supply, Integer page, Integer limit) throws Exception {
+	public ResultUtil querySupplyByConditiion(TemplateSupply supply, Integer kind, String queryDate, Integer page, Integer limit) throws Exception {
 		logger.info("----->>>>>supply:{}<<<<<------", FastJsonUtil.objectToString(supply));
 		logger.info("----->>>>>page:{}, limit:{}<<<<<------", page, limit);
 		Map<String, Object> map = Maps.newHashMap();
@@ -121,6 +121,32 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		logger.info("------>>>>>供应链查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
 		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, 
 				QueryId.QUERY_SUPPLY_BY_CONDITION, map, page, limit);
+		if (kind != null) {
+			List<TemplateSupply> supplyList = pageRecord.getList();
+			for (int i = 0; i < supplyList.size(); i++) {
+				TemplateSupply templateSupply = supplyList.get(i);
+				String sysId = templateSupply.getSysId();
+				map.clear();
+				map.put("sysId", sysId);
+				map.put("queryDate", queryDate);
+				int count = 0;
+				if (kind == 0) {
+					count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
+				} else if (kind == 1) {
+					count = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
+				} else if (kind == 2) {
+					count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);					
+				} else if (kind == 3) {
+					count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
+				} 
+				if (count == 0) {
+					templateSupply.setStatus("数据为空");
+				} else {
+					templateSupply.setStatus("已抓取");
+				}
+			}
+			pageRecord.setList(supplyList);
+		}
 		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
 		return ResultUtil.success(pageRecord);
 	}

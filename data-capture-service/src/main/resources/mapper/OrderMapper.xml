@@ -36,6 +36,7 @@
     <result column="contract_alarm_flag" property="contractAlarmFlag" jdbcType="VARCHAR" />
     <result column="diff_price" property="diffPrice" jdbcType="DECIMAL" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sys_id, sys_name, region, province_area, store_code, store_name, receipt_code, 
@@ -43,7 +44,7 @@
     buying_price_with_rate, buying_price, deliver_start_date, deliver_end_date, deliver_address, 
     discount_price, discount_start_date, discount_end_date, order_effective_judge, balance_way, 
     diff_price_discount, diff_price_discount_total, discount_alarm_flag, contract_price, 
-    diff_price_contract, diff_price_contract_total, contract_alarm_flag, diff_price, remark
+    diff_price_contract, diff_price_contract_total, contract_alarm_flag, diff_price, remark, status
   </sql>
   <sql id="Column_List" >
     o.id, o.sys_id, o.sys_name, o.region, o.province_area, o.store_code, o.store_name, o.receipt_code, 
@@ -51,7 +52,7 @@
     o.buying_price_with_rate, o.buying_price, o.deliver_start_date, o.deliver_end_date, o.deliver_address, 
     o.discount_price, o.discount_start_date, o.discount_end_date, o.order_effective_judge, o.balance_way, 
     o.diff_price_discount, o.diff_price_discount_total, o.discount_alarm_flag, o.contract_price, 
-    o.diff_price_contract, o.diff_price_contract_total, o.contract_alarm_flag, o.diff_price, o.remark
+    o.diff_price_contract, o.diff_price_contract_total, o.contract_alarm_flag, o.diff_price, o.remark, o.status
   </sql>
   <sql id="Query_Condition">
   	<if test="id != null">
@@ -81,6 +82,9 @@
   	</if>
   	<if test="queryDate != null and queryDate != ''">
   		AND deliver_start_date = '${queryDate}'
+  	</if>
+  	<if test="status != null">
+  		AND status = #{status}
   	</if>
   </sql>
   
@@ -225,6 +229,12 @@
     delete from db_order
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteByParam" parameterType="map">
+  	DELETE
+  	FROM db_order
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </delete>
   <insert id="insert" parameterType="com.data.bean.Order" >
     insert into db_order (id, sys_id, sys_name, 
       region, province_area, store_code, 
@@ -237,7 +247,7 @@
       balance_way, diff_price_discount, diff_price_discount_total, 
       discount_alarm_flag, contract_price, diff_price_contract, 
       diff_price_contract_total, contract_alarm_flag, 
-      diff_price, remark)
+      diff_price, remark, status)
     values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{region,jdbcType=VARCHAR}, #{provinceArea,jdbcType=VARCHAR}, #{storeCode,jdbcType=VARCHAR}, 
       #{storeName,jdbcType=VARCHAR}, #{receiptCode,jdbcType=VARCHAR}, #{simpleCode,jdbcType=VARCHAR}, 
@@ -249,7 +259,7 @@
       #{balanceWay,jdbcType=VARCHAR}, #{diffPriceDiscount,jdbcType=DECIMAL}, #{diffPriceDiscountTotal,jdbcType=DECIMAL}, 
       #{discountAlarmFlag,jdbcType=VARCHAR}, #{contractPrice,jdbcType=DECIMAL}, #{diffPriceContract,jdbcType=DECIMAL}, 
       #{diffPriceContractTotal,jdbcType=DECIMAL}, #{contractAlarmFlag,jdbcType=VARCHAR}, 
-      #{diffPrice,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR})
+      #{diffPrice,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
   </insert>
   <insert id="insertBatch" parameterType="list" >
     insert into db_order (id, sys_id, sys_name, 
@@ -263,7 +273,7 @@
       balance_way, diff_price_discount, diff_price_discount_total, 
       discount_alarm_flag, contract_price, diff_price_contract, 
       diff_price_contract_total, contract_alarm_flag, 
-      diff_price, remark)
+      diff_price, remark, status)
     values 
     <foreach collection="orderMapList" item="order" separator=",">
 	      (#{order.sys_id,jdbcType=CHAR}, #{order.sys_name,jdbcType=VARCHAR}, 
@@ -277,7 +287,7 @@
 	      #{order.balance_way,jdbcType=VARCHAR}, #{order.diff_price_discount,jdbcType=DECIMAL}, #{order.diff_price_discount_total,jdbcType=DECIMAL}, 
 	      #{order.discount_alarmFlag,jdbcType=VARCHAR}, #{order.contract_price,jdbcType=DECIMAL}, #{order.diff_price_contract,jdbcType=DECIMAL}, 
 	      #{order.diff_price_contract_total,jdbcType=DECIMAL}, #{order.contract_alarm_flag,jdbcType=VARCHAR}, 
-	      #{order.diff_price,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR})
+	      #{order.diff_price,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR}, #{order.status,jdbcType=INTEGER})
       </foreach>
   </insert>
   <insert id="insertOrderBatch" parameterType="list" >
@@ -292,7 +302,7 @@
       balance_way, diff_price_discount, diff_price_discount_total, 
       discount_alarm_flag, contract_price, diff_price_contract, 
       diff_price_contract_total, contract_alarm_flag, 
-      diff_price, remark)
+      diff_price, remark, status)
     values 
     <foreach collection="list" item="order" separator=",">
     (#{order.sys_id,jdbcType=CHAR}, #{order.sys_name,jdbcType=VARCHAR}, 
@@ -306,7 +316,36 @@
       #{order.balance_way,jdbcType=VARCHAR}, #{order.diff_price_discount,jdbcType=DECIMAL}, #{order.diff_price_discount_total,jdbcType=DECIMAL}, 
       #{order.discount_alarm_flag,jdbcType=VARCHAR}, #{order.contract_price,jdbcType=DECIMAL}, #{order.diff_price_contract,jdbcType=DECIMAL}, 
       #{order.diff_price_contract_total,jdbcType=DECIMAL}, #{order.contract_alarm_flag,jdbcType=VARCHAR}, 
-      #{order.diff_price,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR})
+      #{order.diff_price,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR}, #{order.status,jdbcType=INTEGER})
+      </foreach>
+  </insert>
+  <insert id="insertOrderBatchNew" parameterType="list" >
+    insert into db_order (sys_id, sys_name, 
+      region, province_area, store_code, 
+      store_name, receipt_code, simple_code, 
+      simple_bar_code, stock_code, simple_name, 
+      tax_rate, box_standard, simple_amount, 
+      buying_price_with_rate, buying_price, deliver_start_date, 
+      deliver_end_date, deliver_address, discount_price, 
+      discount_start_date, discount_end_date, order_effective_judge, 
+      balance_way, diff_price_discount, diff_price_discount_total, 
+      discount_alarm_flag, contract_price, diff_price_contract, 
+      diff_price_contract_total, contract_alarm_flag, 
+      diff_price, remark, status)
+    values 
+    <foreach collection="list" item="order" separator=",">
+    (#{order.sysId,jdbcType=CHAR}, #{order.sysName,jdbcType=VARCHAR}, 
+      #{order.region,jdbcType=VARCHAR}, #{order.provinceArea,jdbcType=VARCHAR}, #{order.storeCode,jdbcType=VARCHAR}, 
+      #{order.storeName,jdbcType=VARCHAR}, #{order.receiptCode,jdbcType=VARCHAR}, #{order.simpleCode,jdbcType=VARCHAR}, 
+      #{order.simpleBarCode,jdbcType=VARCHAR}, #{order.stockCode,jdbcType=VARCHAR}, #{order.simpleName,jdbcType=VARCHAR}, 
+      #{order.taxRate,jdbcType=DECIMAL}, #{order.boxStandard,jdbcType=VARCHAR}, #{order.simpleAmount,jdbcType=DECIMAL}, 
+      #{order.buyingPriceWithRate,jdbcType=DECIMAL}, #{order.buyingPrice,jdbcType=DECIMAL}, #{order.deliverStartDate,jdbcType=DATE}, 
+      #{order.deliverEndDate,jdbcType=DATE}, #{order.deliverAddress,jdbcType=VARCHAR}, #{order.discountPrice,jdbcType=DECIMAL}, 
+      #{order.discountStartDate,jdbcType=DATE}, #{order.discountEndDate,jdbcType=DATE}, #{order.orderEffectiveJudge,jdbcType=VARCHAR}, 
+      #{order.balanceWay,jdbcType=VARCHAR}, #{order.diffPriceDiscount,jdbcType=DECIMAL}, #{order.diffPriceDiscountTotal,jdbcType=DECIMAL}, 
+      #{order.discountAlarmFlag,jdbcType=VARCHAR}, #{order.contractPrice,jdbcType=DECIMAL}, #{order.diffPriceContract,jdbcType=DECIMAL}, 
+      #{order.diffPriceContractTotal,jdbcType=DECIMAL}, #{order.contractAlarmFlag,jdbcType=VARCHAR}, 
+      #{order.diffPrice,jdbcType=DECIMAL}, #{order.remark,jdbcType=VARCHAR}, #{order.status,jdbcType=INTEGER})
       </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.Order" >
@@ -414,6 +453,9 @@
       <if test="remark != null" >
         remark,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -517,6 +559,9 @@
       </if>
       <if test="remark != null" >
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -622,6 +667,9 @@
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -659,7 +707,8 @@
       diff_price_contract_total = #{diffPriceContractTotal,jdbcType=DECIMAL},
       contract_alarm_flag = #{contractAlarmFlag,jdbcType=VARCHAR},
       diff_price = #{diffPrice,jdbcType=DECIMAL},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

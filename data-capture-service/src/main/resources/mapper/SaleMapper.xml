@@ -28,6 +28,7 @@
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="store_manager" property="storeManager" jdbcType="CHAR" />
     <result column="local_name" property="localName" jdbcType="CHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
   </resultMap>
   <resultMap type="com.data.model.SysSaleModel" id="SysSaleMap">
   	<result column="sys_id" property="sysId" jdbcType="CHAR" />
@@ -50,13 +51,13 @@
     id, sys_id, sys_name, store_code, store_name, region, province_area, ascription, 
     ascription_sole, simple_code, simple_bar_code, stock_code, simple_name, brand, series, 
     day_night, material, pieces_num, box_standard, stock_no, sell_num, sell_price, create_time,
-    remark, store_manager, local_name
+    remark, store_manager, local_name, status
   </sql>
   <sql id="Column_List" >
     s.id, sys_id, s.sys_name, s.store_code, s.store_name, s.region, s.province_area, s.ascription, 
     s.ascription_sole, s.simple_code, s.simple_bar_code, s.stock_code, s.simple_name, s.brand, s.series, 
     s.day_night, s.material, s.pieces_num, s.box_standard, s.stock_no, s.sell_num, s.sell_price, s.create_time,
-    s.remark, s.store_manager, s.local_name
+    s.remark, s.store_manager, s.local_name, s.status
   </sql>
   <sql id="Query_Condition">
   	<if test="id != null">
@@ -102,6 +103,9 @@
   	<if test="queryDate != null and queryDate != ''">
   		AND create_time = #{queryDate}
   	</if>
+  	<if test="status != null">
+  		AND status = #{status}
+  	</if>
   </sql>
   
   <sql id="Sale_List_Report">
@@ -121,6 +125,12 @@
   		AND create_time=#{saleDate}
   	</if>
   </sql>
+  <delete id="deleteByParam" parameterType="map">
+  	DELETE
+  	FROM db_sale
+  	WHERE 1=1
+  	<include refid="Query_Condition"></include>
+  </delete>
   <!-- 按系统分组 -->
   <select id="selectSysSaleByCondition" resultMap = "SysSaleMap" parameterType="map">
   	SELECT sys_id, sys_name, store_code, brand
@@ -407,7 +417,7 @@
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
       sell_price, create_time, remark,
-      store_manager, local_name)
+      store_manager, local_name, status)
     values (#{id,jdbcType=INTEGER}, #{sysId,jdbcType=CHAR}, #{sysName,jdbcType=VARCHAR}, 
       #{storeCode,jdbcType=VARCHAR}, #{storeName,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR}, 
       #{provinceArea,jdbcType=VARCHAR}, #{ascription,jdbcType=CHAR}, #{ascriptionSole,jdbcType=CHAR}, 
@@ -416,7 +426,7 @@
       #{dayNight,jdbcType=VARCHAR}, #{material,jdbcType=VARCHAR}, #{piecesNum,jdbcType=INTEGER}, 
       #{boxStandard,jdbcType=VARCHAR}, #{stockNo,jdbcType=VARCHAR}, #{sellNum,jdbcType=INTEGER}, 
       #{sellPrice,jdbcType=DOUBLE}, #{createTime,jdbcType=DATE}, #{remark,jdbcType=VARCHAR},
-      #{storeManager,jdbcType=CHAR},  #{localName,jdbcType=CHAR} )
+      #{storeManager,jdbcType=CHAR},  #{localName,jdbcType=CHAR}, #{status,jdbcType=INTEGER} )
   </insert>
   
   <insert id="insertBatch" parameterType="list" >
@@ -428,7 +438,7 @@
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
       sell_price, create_time, remark, 
-      store_manager, local_name)
+      store_manager, local_name, status)
     values 
     <foreach collection="list" item="sale" separator=",">
       (#{sale.sys_id,jdbcType=CHAR}, #{sale.sys_name,jdbcType=VARCHAR}, 
@@ -439,7 +449,7 @@
       #{sale.day_night,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.pieces_num,jdbcType=INTEGER}, 
       #{sale.box_standard,jdbcType=VARCHAR}, #{sale.stock_no,jdbcType=VARCHAR}, #{sale.sell_num,jdbcType=INTEGER}, 
       #{sale.sell_price,jdbcType=DOUBLE}, #{sale.create_time,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.store_manager,jdbcType=CHAR}, #{sale.local_name,jdbcType=CHAR})
+      #{sale.store_manager,jdbcType=CHAR}, #{sale.local_name,jdbcType=CHAR}, #{sale.status,jdbcType=INTEGER})
     </foreach>
   </insert>
   
@@ -452,7 +462,7 @@
       day_night, material, pieces_num, 
       box_standard, stock_no, sell_num, 
       sell_price, create_time, remark, 
-      store_manager, local_name)
+      store_manager, local_name, status)
     values 
     <foreach collection="list" item="sale" separator=",">
     (#{sale.sysId,jdbcType=CHAR}, #{sale.sysName,jdbcType=VARCHAR}, 
@@ -463,7 +473,7 @@
       #{sale.dayNight,jdbcType=VARCHAR}, #{sale.material,jdbcType=VARCHAR}, #{sale.piecesNum,jdbcType=INTEGER}, 
       #{sale.boxStandard,jdbcType=VARCHAR}, #{sale.stockNo,jdbcType=VARCHAR}, #{sale.sellNum,jdbcType=INTEGER}, 
       #{sale.sellPrice,jdbcType=DOUBLE}, #{sale.createTime,jdbcType=DATE}, #{sale.remark,jdbcType=VARCHAR},
-      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR})    	
+      #{sale.storeManager,jdbcType=CHAR}, #{sale.localName,jdbcType=CHAR}, #{sale.status,jdbcType=INTEGER})    	
     </foreach>
   </insert>
   
@@ -548,6 +558,9 @@
       <if test="localName != null" >
         local_name,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -627,6 +640,9 @@
       </if>
       <if test="localName != null" >
         #{localName,jdbcType=CHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -708,6 +724,9 @@
       <if test="localName != null" >
         local_name = #{localName,jdbcType=CHAR},
       </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -737,7 +756,8 @@
       create_time = #{createTime,jdbcType=DATE},
       remark = #{remark,jdbcType=VARCHAR},
       store_manager=#{storeManager,jdbcType=CHAR},
-      local_name=#{localName, jdbcType=CHAR}
+      local_name=#{localName, jdbcType=CHAR},
+      status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
