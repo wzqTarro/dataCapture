@@ -94,7 +94,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	@Autowired
 	private IDataService dataService;
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception {
 		logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
@@ -103,7 +103,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		PageRecord<Stock> pageRecord = null;
 		
 		// 同步
-		synchronized(id) {
+		//synchronized(id) {
 			logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
 			
 			Map<String, Object> queryParam = new HashMap<>(1);
@@ -148,7 +148,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			insert(InsertId.INSERT_STOCK_BATCH, stockList);
 			
 			pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
-		}
+		//}
 		return ResultUtil.success(pageRecord);
 	}
 	/**
@@ -2160,7 +2160,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			logger.info("------>>>>>>前端传递Id:{}<<<<<<<-------", id);
 			
 			// 同步
-			synchronized(id) {
+			//synchronized(id) {
 				logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
 				
 				Map<String, Object> queryParam = new HashMap<>(1);
@@ -2195,7 +2195,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					}
 				}	
 				
-			}
+			//}
 			latch.countDown();
 		}
 		

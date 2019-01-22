@@ -107,7 +107,6 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	@Autowired
 	private IDataService dataService;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception {
 		PageRecord<Sale> pageRecord = null;
@@ -120,7 +119,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			return ResultUtil.error("id不能为空");
 		}
 		// 同步
-		synchronized (id) {
+		//synchronized (id) {
 			logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("id", id);
@@ -173,7 +172,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			}
 
 			pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
-		}
+		//}
 		return ResultUtil.success(pageRecord);
 	}
 
@@ -3017,7 +3016,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			if (CommonUtil.isBlank(queryDate) && id != null && id != 0) {
 				
 				// 同步
-				synchronized (id) {
+				//synchronized (id) {
 					logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");
 					Map<String, Object> queryParam = new HashMap<>(2);
 					queryParam.put("id", id);
@@ -3059,7 +3058,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 					}
 				}
-			}
+			//}
 			latch.countDown();
 		}
 		

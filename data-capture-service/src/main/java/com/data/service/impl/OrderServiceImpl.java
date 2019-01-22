@@ -29,7 +29,6 @@ import com.data.bean.DataLog;
 import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.PromotionStoreList;
-import com.data.bean.Sale;
 import com.data.bean.TemplateProduct;
 import com.data.bean.TemplateStore;
 import com.data.bean.TemplateSupply;
@@ -140,7 +139,6 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return ResultUtil.success(pageRecord);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception {		
 		PageRecord<Order> pageRecord = null;
@@ -154,7 +152,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		}
 		
 		// 同步
-		synchronized(id) {
+		//synchronized(id) {
 			logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("id", id);	
@@ -216,7 +214,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			}*/
 			
 			pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
-		}
+		//}
 		return ResultUtil.success(pageRecord);
 	}
 	
@@ -670,7 +668,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 			if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
 				// 同步
-				synchronized(id) {
+				//synchronized(id) {
 					logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
 					Map<String, Object> queryParam = new HashMap<>(2);
 					queryParam.put("id", id);	
@@ -713,7 +711,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 						}
 					}
 				}
-			}
+			//}
 			latch.countDown();
 		}
 		

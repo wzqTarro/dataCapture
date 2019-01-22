@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.data.bean.DataLog;
-import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
@@ -80,7 +79,6 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	@Autowired
 	private IDataService dataService;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception {
 		PageRecord<Reject> pageRecord = null;
@@ -94,7 +92,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		}
 		
 		// 同步
-		synchronized (id) {
+		//synchronized (id) {
 			logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
 			Map<String, Object> queryParam = new HashMap<>(2);
 			queryParam.put("id", id);
@@ -154,7 +152,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			
 			pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
 			
-		}
+		//}
 		return ResultUtil.success(pageRecord);
 	}
 	
@@ -623,7 +621,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
 	
 				// 同步
-				synchronized (id) {
+				//synchronized (id) {
 					logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
 					Map<String, Object> queryParam = new HashMap<>(2);
 					queryParam.put("id", id);
@@ -667,7 +665,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	
 					}
 				}
-			}
+			//}
 			latch.countDown();
 		}
 		
