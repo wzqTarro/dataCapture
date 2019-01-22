@@ -211,7 +211,7 @@ public class RedisServiceImpl extends CommonServiceImpl implements IRedisService
 	}
 	
 	@Override
-	public String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode) throws Exception {
+	public String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode){
 		String key = RedisAPI.getPrefix(RedisAPI.SIMPLE_CODE_TEMPLATE, sysName, simpleCode);
 		String simpleBarCode = redisUtil.get(key);
 		if (CommonUtil.isNotBlank(simpleBarCode)) {

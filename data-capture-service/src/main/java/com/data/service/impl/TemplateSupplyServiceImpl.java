@@ -102,7 +102,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	}
 
 	@Override
-	public ResultUtil querySupplyByConditiion(TemplateSupply supply, Integer kind, String queryDate, Integer page, Integer limit) throws Exception {
+	public ResultUtil querySupplyByConditiion(TemplateSupply supply, String queryDate, Integer page, Integer limit) throws Exception {
 		logger.info("----->>>>>supply:{}<<<<<------", FastJsonUtil.objectToString(supply));
 		logger.info("----->>>>>page:{}, limit:{}<<<<<------", page, limit);
 		Map<String, Object> map = Maps.newHashMap();
@@ -119,34 +119,76 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 			}
 		}
 		logger.info("------>>>>>供应链查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, 
+		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION,
 				QueryId.QUERY_SUPPLY_BY_CONDITION, map, page, limit);
-		if (kind != null) {
-			List<TemplateSupply> supplyList = pageRecord.getList();
-			for (int i = 0; i < supplyList.size(); i++) {
-				TemplateSupply templateSupply = supplyList.get(i);
-				String sysId = templateSupply.getSysId();
-				map.clear();
-				map.put("sysId", sysId);
-				map.put("queryDate", queryDate);
-				int count = 0;
-				if (kind == 0) {
-					count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
-				} else if (kind == 1) {
-					count = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
-				} else if (kind == 2) {
-					count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);					
-				} else if (kind == 3) {
-					count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
-				} 
-				if (count == 0) {
-					templateSupply.setStatus("数据为空");
+		List<TemplateSupply> supplyList = pageRecord.getList();
+		for (int i = 0; i < supplyList.size(); i++) {
+			TemplateSupply templateSupply = supplyList.get(i);
+			String sysId = templateSupply.getSysId();
+			map.clear();
+			map.put("sysId", sysId);
+			map.put("queryDate", queryDate);
+			int saleCount = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
+
+			int stockCount = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
+
+			int	orderCount = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);
+
+			int rejectCount = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
+
+			if (saleCount == 0) {
+				templateSupply.setSaleStatus("数据为空");
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				saleCount = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
+				if (saleCount == 0) {
+					templateSupply.setSaleStatus("抓取成功");
 				} else {
-					templateSupply.setStatus("已抓取");
+					templateSupply.setSaleStatus("数据异常");
 				}
 			}
-			pageRecord.setList(supplyList);
+			
+			if (stockCount == 0) {
+				templateSupply.setStockStatus("数据为空");
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				stockCount = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
+				if (saleCount == 0) {
+					templateSupply.setStockStatus("抓取成功");
+				} else {
+					templateSupply.setStockStatus("数据异常");
+				}
+			}
+			
+			if (orderCount == 0) {
+				templateSupply.setOrderStatus("数据为空");
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				orderCount = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);
+				if (orderCount == 0) {
+					templateSupply.setOrderStatus("抓取成功");
+				} else {
+					templateSupply.setOrderStatus("数据异常");
+				}
+			}
+			
+			if (rejectCount == 0) {
+				templateSupply.setRejectStatus("数据为空");
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				rejectCount = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
+				if (rejectCount == 0) {
+					templateSupply.setRejectStatus("抓取成功");
+				} else {
+					templateSupply.setRejectStatus("数据异常");
+				}
+			}
 		}
+		pageRecord.setList(supplyList);
 		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
 		return ResultUtil.success(pageRecord);
 	}

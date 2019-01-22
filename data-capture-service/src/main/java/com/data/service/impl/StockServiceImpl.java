@@ -132,8 +132,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 					flag = true;
 				}
 			}*/
-
-			stockList = (List<Stock>) FastJsonUtil.jsonToList(stockStr, Stock.class);
+			stockList = JSON.parseArray(stockStr, Stock.class);
 			
 			if (CollectionUtils.isEmpty(stockList)) {
 				pageRecord = dataCaptureUtil.setPageRecord(stockList, limit);
@@ -158,7 +157,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	 * @param stockList
 	 * @throws Exception 
 	 */
-	private void mateData(TemplateSupply supply, List<Stock> stockList) throws Exception {
+	private void mateData(TemplateSupply supply, List<Stock> stockList){
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 		List<TemplateProduct> productList = redisService.queryTemplateProductList();
 		String sysId = supply.getSysId();
@@ -483,7 +482,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			output.flush();
 			output.close();
 			throw new DataException("542");*/
-			saleDayList = Collections.EMPTY_LIST;
+			saleDayList = Collections.emptyList();
 			Row row = sheet.getRow(2);
 			row.createCell(header.length).setCellValue("该门店前一天单品销售数量");
 		}
@@ -502,7 +501,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 		param.put("column", " simple_bar_code, sell_num ");
 		List<Sale> saleWeekList = queryListByObject(QueryId.QUERY_SALE_BY_ANY_COLUMN, param);
 		if (CommonUtil.isBlank(saleDayList)) {
-			saleWeekList = Collections.EMPTY_LIST;
+			saleWeekList = Collections.emptyList();
 		}
 		
 		int rowIndex = 3;
@@ -637,7 +636,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			 * LAST_DAY_SALE_IS_NULL.getValue()); wb.write(output);
 			 * output.flush(); output.close(); throw new DataException("542");
 			 */
-			saleList = Collections.EMPTY_LIST;
+			saleList = Collections.emptyList();
 			Row row = sheet.getRow(2);
 			row.createCell(header.length).setCellValue("该系统昨日销售数量为0");
 		}
@@ -691,7 +690,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			 * LAST_DAY_SALE_IS_NULL.getValue()); wb.write(output);
 			 * output.flush(); output.close(); throw new DataException("542");
 			 */
-			saleList = Collections.EMPTY_LIST;
+			saleList = Collections.emptyList();
 			Row row = sheet.getRow(2);
 			row.createCell(header.length).setCellValue("该大区昨日销售数量为0");
 		}
@@ -2124,5 +2123,82 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
 		return ResultUtil.success();
+	}
+	@Override
+	public ResultUtil getStockByIds(String ids) throws Exception {
+		List<Integer> idList = JSON.parseArray(ids, Integer.class);
+		if (idList == null || idList.size() == 0) {
+			return ResultUtil.error("请选择要抓取的供应链");
+		}
+		CountDownLatch latch = new CountDownLatch(idList.size());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				executorService.execute(new createBatch(latch, id));
+			}
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
+		}
+		latch.await();
+		return ResultUtil.success();
+	}
+	private class createBatch implements Runnable{
+		private CountDownLatch latch;
+		private Integer id;
+		
+		public createBatch(CountDownLatch latch, Integer id) {
+			this.latch = latch;
+			this.id = id;
+		}
+
+		@Override
+		public void run() {
+			logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
+			logger.info("------>>>>>>前端传递Id:{}<<<<<<<-------", id);
+			
+			// 同步
+			synchronized(id) {
+				logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
+				
+				Map<String, Object> queryParam = new HashMap<>(1);
+				queryParam.put("id", id);	
+				TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+				if (supply != null) {
+					
+					String sysId = supply.getSysId();
+					
+					List<Stock> stockList = null;
+					String stockStr = null;
+	
+					// 抓取数据
+					try {
+						stockStr = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK);
+					} catch (Exception e) {
+						logger.info(e.getMessage());
+					}
+					
+					if (StringUtils.isNoneBlank(stockStr)) {
+						stockList = JSON.parseArray(stockStr, Stock.class);
+						
+						if (!CollectionUtils.isEmpty(stockList)) {
+							mateData(supply, stockList);
+							
+							logger.info("---->>>开始删除库存数据<<<------");
+							delete(DeleteId.DELETE_STOCK_BY_SYS_ID, sysId);
+							
+							logger.info("---->>>开始插入库存数据<<<-----");
+							insert(InsertId.INSERT_STOCK_BATCH, stockList);
+						}
+					}
+				}	
+				
+			}
+			latch.countDown();
+		}
+		
+		
 	}
 }

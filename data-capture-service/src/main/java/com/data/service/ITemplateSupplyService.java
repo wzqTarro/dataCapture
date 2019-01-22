@@ -31,7 +31,7 @@ public interface ITemplateSupplyService {
 	 * @param pageSize
 	 * @return
 	 */
-	ResultUtil querySupplyByConditiion(TemplateSupply templateSupply, Integer kind, String queryDate, Integer page, Integer limit) throws Exception ;
+	ResultUtil querySupplyByConditiion(TemplateSupply templateSupply, String queryDate, Integer page, Integer limit) throws Exception ;
 	/**
 	 * 获取供应链菜单
 	 * @return

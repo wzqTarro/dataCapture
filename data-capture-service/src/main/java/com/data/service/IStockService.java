@@ -17,6 +17,13 @@ public interface IStockService {
 	 */
 	ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception;
 	/**
+	 * 批量抓取
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil getStockByIds(String ids) throws Exception;
+	/**
 	 * 多条件查询库存
 	 * @param common
 	 * @param stock

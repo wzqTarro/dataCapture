@@ -112,6 +112,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			String storeCode = order.getStoreCode();
 		
 			order.setStatus(1);
+			order.setSysName(region+sysName);
 			// 条码信息
 			if (StringUtils.isBlank(simpleBarCode)) {
 				try {
@@ -335,6 +336,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			String storeCode = sale.getStoreCode();
 			
 			sale.setStatus(1);
+			sale.setSysName(region+sysName);
 			if (StringUtils.isBlank(simpleBarCode)) {
 				try {
 					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
@@ -498,7 +500,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			Date queryDate = reject.getRejectDate();
 			
 			reject.setStatus(1);
-			
+			reject.setSysName(region+sysName);
 			// 条码信息
 			if (StringUtils.isBlank(simpleBarCode)) {
 				try {
@@ -711,7 +713,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			
 			Date now = stock.getCreateTime();
 			stock.setStatus(1);
-
+			stock.setSysName(region+sysName);
 			// 标准条码匹配信息
 			if (StringUtils.isBlank(simpleBarCode)) {				
 				try {

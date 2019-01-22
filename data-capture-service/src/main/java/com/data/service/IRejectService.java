@@ -22,6 +22,14 @@ public interface IRejectService {
 	 */
 	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception;
 	/**
+	 * 批量抓取数据
+	 * @param queryDate
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	public ResultUtil getRejectByIds(String queryDate, String ids) throws Exception;
+	/**
 	 * 多条件查询退单数据
 	 * @param common
 	 * @param reject

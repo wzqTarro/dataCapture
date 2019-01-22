@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,7 +40,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.data.bean.DataLog;
-import com.data.bean.Reject;
 import com.data.bean.Sale;
 import com.data.bean.Stock;
 import com.data.bean.TemplateProduct;
@@ -117,7 +117,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
 		if (id == null || id == 0) {
-			throw new Exception("id不能为空");
+			return ResultUtil.error("id不能为空");
 		}
 		// 同步
 		synchronized (id) {
@@ -155,7 +155,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				 * } }
 				 */
 
-				saleList = (List<Sale>) FastJsonUtil.jsonToList(saleStr, Sale.class);
+				saleList = JSON.parseArray(saleStr, Sale.class);
 
 				if (CollectionUtils.isEmpty(saleList)) {
 					pageRecord = dataCaptureUtil.setPageRecord(saleList, limit);
@@ -185,7 +185,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	 * @param saleList
 	 * @throws Exception
 	 */
-	private void mateData(String queryDate, TemplateSupply supply, List<Sale> saleList) throws Exception {
+	private void mateData(String queryDate, TemplateSupply supply, List<Sale> saleList){
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 		List<TemplateProduct> productList = redisService.queryTemplateProductList();
 		String sysId = supply.getSysId();
@@ -2976,4 +2976,93 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		return ResultUtil.success();
 	}
 	
+	@Transactional(rollbackFor = {Exception.class})
+	@Override
+	public ResultUtil getSaleByIds(String queryDate, String ids) throws Exception {
+		List<Integer> idList = JSON.parseArray(ids, Integer.class);
+		if (idList == null || idList.size() == 0) {
+			return ResultUtil.error("请选择要抓取的供应链");
+		}
+		CountDownLatch latch = new CountDownLatch(idList.size());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				executorService.execute(new createBatch(latch, id, queryDate));
+			}
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
+		}
+		latch.await();
+		return ResultUtil.success();
+	}
+	
+	private class createBatch implements Runnable{
+		private CountDownLatch latch;
+		private Integer id;
+		private String queryDate;
+		
+		public createBatch(CountDownLatch latch, Integer id, String queryDate) {
+			this.latch = latch;
+			this.id = id;
+			this.queryDate = queryDate;
+		}
+
+		@Override
+		public void run() {
+			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
+			logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
+			if (CommonUtil.isBlank(queryDate) && id != null && id != 0) {
+				
+				// 同步
+				synchronized (id) {
+					logger.info("------->>>>>>>进入抓取销售同步代码块<<<<<<<-------");
+					Map<String, Object> queryParam = new HashMap<>(2);
+					queryParam.put("id", id);
+					TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION,
+							queryParam);
+					if (supply != null) {
+						
+						String sysId = supply.getSysId();
+		
+						queryParam.clear();
+						queryParam.put("sysId", sysId);
+						queryParam.put("queryDate", queryDate);
+						int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
+		
+						logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
+						List<Sale> saleList = null;
+						String saleStr = null;
+						if (count == 0) {
+		
+							// 抓取数据
+							try {
+								saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
+							} catch (Exception e) {
+								logger.info(e.getMessage());
+							}
+		
+							saleList = JSON.parseArray(saleStr, Sale.class);
+		
+							if (!CollectionUtils.isEmpty(saleList)) {
+								// 匹配数据
+								mateData(queryDate, supply, saleList);
+								
+								// 数据插入数据库
+								logger.info("------>>>>>开始插入销售数据<<<<<-------");
+								insert(InsertId.INSERT_SALE_BATCH, saleList);
+									
+							}
+						}
+	
+					}
+				}
+			}
+			latch.countDown();
+		}
+		
+		
+	}
 }

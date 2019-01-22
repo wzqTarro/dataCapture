@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.data.bean.DataLog;
+import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.Reject;
 import com.data.bean.TemplateProduct;
@@ -86,7 +90,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
 		if (id == null || id == 0) {
-			throw new Exception("id不能为空");
+			return ResultUtil.error("id不能为空");
 		}
 		
 		// 同步
@@ -132,7 +136,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 					}
 				}*/
 				
-				rejectList = (List<Reject>) FastJsonUtil.jsonToList(rejectStr, Reject.class);
+				rejectList = JSON.parseArray(rejectStr, Reject.class);
 
 				if (CollectionUtils.isEmpty(rejectList)) {
 					pageRecord = dataCaptureUtil.setPageRecord(rejectList, limit);
@@ -161,7 +165,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 	 * @param rejectList
 	 * @throws Exception
 	 */
-	private void mateData(String queryDate, TemplateSupply supply, List<Reject> rejectList) throws Exception {
+	private void mateData(String queryDate, TemplateSupply supply, List<Reject> rejectList) {
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 		List<TemplateProduct> productList = redisService.queryTemplateProductList();
 		Reject  reject = null;
@@ -577,5 +581,96 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 			return ResultUtil.error(CodeEnum.SQL_ERROR_DESC.value());
 		}
 		return ResultUtil.success();
+	}
+	@Transactional(rollbackFor = {Exception.class})
+	@Override
+	public ResultUtil getRejectByIds(String queryDate, String ids) throws Exception {
+		List<Integer> idList = JSON.parseArray(ids, Integer.class);
+		if (idList == null || idList.size() == 0) {
+			return ResultUtil.error("请选择要抓取的供应链");
+		}
+		CountDownLatch latch = new CountDownLatch(idList.size());
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				executorService.execute(new createBatch(latch, id, queryDate));
+			}
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
+		}
+		latch.await();
+		return ResultUtil.success();
+	}
+	
+	private class createBatch implements Runnable{
+		private CountDownLatch latch;
+		private Integer id;
+		private String queryDate;
+		
+		public createBatch(CountDownLatch latch, Integer id, String queryDate) {
+			this.latch = latch;
+			this.id = id;
+			this.queryDate = queryDate;
+		}
+
+		@Override
+		public void run() {
+			logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
+			logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
+			if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
+	
+				// 同步
+				synchronized (id) {
+					logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
+					Map<String, Object> queryParam = new HashMap<>(2);
+					queryParam.put("id", id);
+					
+					// 供应链数据
+					TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+					if (supply != null) {
+						
+						String sysId = supply.getSysId();
+						
+						// 查询退单数据是否已存在
+						queryParam.clear();
+						queryParam.put("sysId", sysId);
+						queryParam.put("queryDate", queryDate);
+						int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
+						
+						logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
+						List<Reject> rejectList = null;
+						
+						String rejectStr = null;
+						
+						if (count == 0) {
+							try {
+								rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
+							} catch (Exception e) {
+								logger.info(e.getMessage());
+							}
+							if (StringUtils.isNoneBlank(rejectStr)) {
+								rejectList = JSON.parseArray(rejectStr, Reject.class);
+			
+								if (!CollectionUtils.isEmpty(rejectList)) {
+									mateData(queryDate, supply, rejectList);
+									
+									// 插入数据
+									logger.info("------>>>>>开始插入退单数据<<<<<-------");
+									insert(InsertId.INSERT_REJECT_BATCH, rejectList);
+								}
+							}
+		
+						}
+	
+					}
+				}
+			}
+			latch.countDown();
+		}
+		
+		
 	}
 }
