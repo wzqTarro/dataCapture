@@ -3013,7 +3013,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		public void run() {
 			logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 			logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
-			if (CommonUtil.isBlank(queryDate) && id != null && id != 0) {
+			if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
 				
 				// 同步
 				//synchronized (id) {
