@@ -2900,5 +2900,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		}
 		return ResultUtil.success();
 	}
-	
+
+	@Override
+	public void scheduleSaleJob() throws Exception {
+		String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1));
+		List<Map<String, Object>> dataList = queryListByObject(QueryId.QUERY_DAILY_STORE_SALE_LIST_BY_GROUP, dateStr);
+		//将一天的门店信息存入缓存
+		redisService.setSaleDailyMessageByStore(dateStr, dataList);
+	}
+
 }

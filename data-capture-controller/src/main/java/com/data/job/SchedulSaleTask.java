@@ -121,10 +121,10 @@ public class SchedulSaleTask {
 	 * @return
 	 * @throws Exception 
 	 */
-	@Scheduled(cron = "0 0 7 * * ?")
-	public void schedulCalculateSaleDaily() {
+	@Scheduled(cron = "0 0 8 * * ?")
+	public void schedulSaleJob() {
 		try {
-			saleService.calculateStoreDailySale();			
+			saleService.scheduleSaleJob();
 		} catch (Exception e) {
 			logger.error("日销售定时任务异常");
 		}

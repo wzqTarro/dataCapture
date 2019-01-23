@@ -117,4 +117,9 @@ public interface ISaleService {
 	 * @throws Exception
 	 */
 	ResultUtil uploadSaleData(MultipartFile file) throws Exception;
+
+	/**
+	 * 定时任务将数据放入缓存
+	 */
+	void scheduleSaleJob() throws Exception;
 }
