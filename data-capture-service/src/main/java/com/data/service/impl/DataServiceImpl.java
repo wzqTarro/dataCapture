@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -49,57 +52,175 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 	@Autowired
 	private TemplateDataUtil templateDataUtil;
 	
-	@Transactional(rollbackFor = {Exception.class})
+	//@Transactional(rollbackFor = {Exception.class})
 	@Override
-	public ResultUtil completionData() throws Exception {
-		Map<String, Object> mapObj = new HashMap<>(1);
-		mapObj.put("status", 0);
-		List<Order> orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, mapObj);
-		List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, mapObj);
-		List<Reject> rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, mapObj);
-		List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, mapObj);
+	public ResultUtil completionData() throws InterruptedException{
 		
-		// 删除未匹配数据
-		delete(DeleteId.DELETE_ORDER_BY_PARAM, mapObj);
-		delete(DeleteId.DELETE_SALE_BY_PARAM, mapObj);
-		delete(DeleteId.DELETE_REJECT_BY_PARAM, mapObj);
-		delete(DeleteId.DELETE_STOCK_BY_PARAM, mapObj);
+		// 删除数据异常日志信息
+		delete(DeleteId.DELETE_DATA_LOG_ALL, null);
 		
 		// 模板门店列表
 		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
 		// 模板商品列表
 		List<TemplateProduct> productList = redisService.queryTemplateProductList();
 		// 供应链列表
-		List<TemplateSupply> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_BY_CONDITION, mapObj);
+		List<TemplateSupply> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_BY_CONDITION, new HashMap<>());
 		
-		if (!CollectionUtils.isEmpty(orderList)) {
-			logger.info("匹配订单数据");
-			mateOrderData(supplyList, storeList, productList, orderList);
+		CountDownLatch latch = new CountDownLatch(4);
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			executorService.execute(new createOrderMate(supplyList, storeList, productList, latch));
+			executorService.execute(new createRejectMate(supplyList, storeList, productList, latch));
+			executorService.execute(new createSaleMate(supplyList, storeList, productList, latch));
+			executorService.execute(new createStockMate(supplyList, storeList, productList, latch));
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
 		}
-		if (!CollectionUtils.isEmpty(saleList)) {
-			logger.info("匹配销售数据");
-			mateSaleData(supplyList, storeList, productList, saleList);
-		}
-		if (!CollectionUtils.isEmpty(stockList)) {
-			logger.info("匹配库存数据");
-			mateStockData(supplyList, storeList, productList, stockList);
-		}
-		if (!CollectionUtils.isEmpty(rejectList)) {
-			logger.info("匹配退单数据");
-			mateRejectData(supplyList, storeList, productList, rejectList);
-		}
-		logger.info("插入订单数据");
-		insert(InsertId.INSERT_ORDER_BATCH_NEW, orderList);
-		logger.info("插入退单数据");
-		insert(InsertId.INSERT_REJECT_BATCH, rejectList);
-		logger.info("插入销售数据");
-		insert(InsertId.INSERT_SALE_BATCH, saleList);
-		logger.info("插入库存数据");
-		insert(InsertId.INSERT_STOCK_BATCH, stockList);
+		latch.await();
 		return ResultUtil.success();
 	}
-	
-	public void mateOrderData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Order> orderList) throws Exception {
+	private class createOrderMate implements Runnable{
+		private List<TemplateSupply> supplyList;
+		private List<TemplateStore> storeList;
+		private List<TemplateProduct> productList;
+		private CountDownLatch latch;
+		
+		public createOrderMate(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, 
+				CountDownLatch latch) {
+			this.supplyList = supplyList;
+			this.storeList = storeList;
+			this.productList = productList;
+			this.latch = latch;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Map<String, Object> mapObj = new HashMap<>(1);
+				mapObj.put("status", 0);
+				List<Order> orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, mapObj);
+				// 删除未匹配数据
+				delete(DeleteId.DELETE_ORDER_BY_PARAM, mapObj);
+				if (!CollectionUtils.isEmpty(orderList)) {
+					logger.info("匹配订单数据");
+					mateOrderData(supplyList, storeList, productList, orderList);
+					logger.info("插入订单数据");
+					insert(InsertId.INSERT_ORDER_BATCH_NEW, orderList);
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			} finally {
+				latch.countDown();
+			}
+		}
+	}
+	private class createRejectMate implements Runnable{
+		private List<TemplateSupply> supplyList;
+		private List<TemplateStore> storeList;
+		private List<TemplateProduct> productList;
+		private CountDownLatch latch;
+		
+		public createRejectMate(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, 
+				CountDownLatch latch) {
+			this.supplyList = supplyList;
+			this.storeList = storeList;
+			this.productList = productList;
+			this.latch = latch;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Map<String, Object> mapObj = new HashMap<>(1);
+				mapObj.put("status", 0);
+				List<Reject> rejectList = queryListByObject(QueryId.QUERY_REJECT_BY_PARAM, mapObj);
+				delete(DeleteId.DELETE_REJECT_BY_PARAM, mapObj);
+				if (!CollectionUtils.isEmpty(rejectList)) {
+					logger.info("匹配退单数据");
+					mateRejectData(supplyList, storeList, productList, rejectList);
+					logger.info("插入退单数据");
+					insert(InsertId.INSERT_REJECT_BATCH, rejectList);
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			} finally {
+				latch.countDown();
+			}
+		}
+	}
+	private class createSaleMate implements Runnable{
+		private List<TemplateSupply> supplyList;
+		private List<TemplateStore> storeList;
+		private List<TemplateProduct> productList;
+		private CountDownLatch latch;
+		
+		public createSaleMate(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, 
+				CountDownLatch latch) {
+			this.supplyList = supplyList;
+			this.storeList = storeList;
+			this.productList = productList;
+			this.latch = latch;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Map<String, Object> mapObj = new HashMap<>(1);
+				mapObj.put("status", 0);	
+				List<Sale> saleList = queryListByObject(QueryId.QUERY_SALE_BY_PARAM, mapObj);
+				delete(DeleteId.DELETE_SALE_BY_PARAM, mapObj);
+				if (!CollectionUtils.isEmpty(saleList)) {
+					logger.info("匹配销售数据");
+					mateSaleData(supplyList, storeList, productList, saleList);
+					logger.info("插入销售数据");
+					insert(InsertId.INSERT_SALE_BATCH, saleList);
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			} finally {
+				latch.countDown();
+			}
+		}
+	}
+	private class createStockMate implements Runnable{
+		private List<TemplateSupply> supplyList;
+		private List<TemplateStore> storeList;
+		private List<TemplateProduct> productList;
+		private CountDownLatch latch;
+		
+		public createStockMate(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, 
+				 CountDownLatch latch) {
+			this.supplyList = supplyList;
+			this.storeList = storeList;
+			this.productList = productList;
+			this.latch = latch;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Map<String, Object> mapObj = new HashMap<>(1);
+				mapObj.put("status", 0);
+				List<Stock> stockList = queryListByObject(QueryId.QUERY_STOCK_BY_PARAM, mapObj);
+				delete(DeleteId.DELETE_STOCK_BY_PARAM, mapObj);
+				if (!CollectionUtils.isEmpty(stockList)) {
+					logger.info("匹配库存数据");
+					mateStockData(supplyList, storeList, productList, stockList);
+					logger.info("插入库存数据");
+					insert(InsertId.INSERT_STOCK_BATCH, stockList);
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			} finally {
+				latch.countDown();
+			}
+		}
+	}
+	public void mateOrderData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Order> orderList){
 		for (int i = 0; i < orderList.size(); i++) {
 			Order order = orderList.get(i);
 			String sysId = order.getSysId();
@@ -323,7 +444,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			}
 		}
 	}
-	public void mateSaleData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Sale> saleList) throws Exception {
+	public void mateSaleData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Sale> saleList){
 		for (int i = 0; i < saleList.size(); i++) {
 			Sale sale = saleList.get(i);
 			String sysId = sale.getSysId();
@@ -478,7 +599,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			}
 		}
 	}
-	public void mateRejectData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Reject> rejectList) throws Exception {
+	public void mateRejectData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Reject> rejectList){
 		for (int i = 0, size = rejectList.size(); i < size; i++) {
 			Reject reject = rejectList.get(i);
 			
@@ -690,7 +811,7 @@ public class DataServiceImpl extends CommonServiceImpl implements IDataService{
 			}
 		}
 	}
-	public void mateStockData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Stock> stockList) throws Exception {
+	public void mateStockData(List<TemplateSupply> supplyList, List<TemplateStore> storeList, List<TemplateProduct> productList, List<Stock> stockList){
 		for (int i = 0, size = stockList.size(); i < size; i++) {
 			Stock stock = stockList.get(i);
 			

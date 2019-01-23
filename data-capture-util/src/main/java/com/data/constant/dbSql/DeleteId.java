@@ -44,4 +44,6 @@ public final class DeleteId {
 	public static final String DELETE_STOCK_BY_PARAM = "StockMapper.deleteByParam";
 	
 	public static final String DELETE_REJECT_BY_PARAM = "RejectMapper.deleteByParam";
+	
+	public static final String DELETE_DATA_LOG_ALL = "DataLogMapper.deleteAll";
 }

@@ -188,8 +188,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			stock.setSysId(sysId);
 			stock.setCreateTime(now);
-			sysName = supply.getRegion() + sysName;
-			stock.setSysName(sysName);
+			stock.setSysName(supply.getRegion() + sysName);
 			stock.setStatus(1);
 			
 			Double stockPrice = stock.getStockPrice();

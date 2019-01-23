@@ -180,7 +180,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		Map<String, Object> param = new HashMap<>(2);
 		param.put("sysId", sysId);
 		param.put("queryDate", queryDate);
-		long start = new Date().getTime();
+		//long start = new Date().getTime();
 		//logger.info("----->>>>>>>查询促销:{}<<<<<<-------", start);
 		List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
 		//logger.info("----->>>>>>>查询结束:{}<<<<<<--------", new Date().getTime()-start);

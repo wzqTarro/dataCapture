@@ -49,6 +49,9 @@
     <include refid="Base_condition"></include>
   </select>
 
+  <delete id="deleteAll">
+    delete from db_data_log
+  </delete>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_data_log
     where id = #{id,jdbcType=INTEGER}
