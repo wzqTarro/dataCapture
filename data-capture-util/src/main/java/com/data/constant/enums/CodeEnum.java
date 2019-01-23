@@ -19,6 +19,11 @@ public enum CodeEnum {
 	RESPONSE_99_CODE("99"),
 	RESPONSE_99_DESC("系统异常"),
 	
+	/** 数据为空 **/
+	RESPONSE_02_CODE("02"),
+	/** 数据异常 **/
+	RESPONSE_03_CODE("03"),
+	
 	
 	/**字典服务编码**/
 	CODE_DICT_DAILY_STORE_REPORT("DAILY_STORE_REPORT"),
