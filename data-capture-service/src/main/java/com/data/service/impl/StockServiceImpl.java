@@ -98,37 +98,21 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 	public ResultUtil getStockByWeb(Integer id, Integer limit) throws Exception {
 		logger.info("------>>>>>>开始抓取库存数据<<<<<<---------");
 		//logger.info("------>>>>>>前端传递Id:{}<<<<<<<-------", id);
+		Map<String, Object> queryParam = new HashMap<>(3);
+		queryParam.put("id", id);	
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+		if (supply == null) {
+			return ResultUtil.error("供应链未找到");
+		}	
+		String sysId = supply.getSysId();
 		
 		// 同步
 		//synchronized(id) {
 			//logger.info("------>>>>>进入抓取库存同步代码块<<<<<-------");
-			
-			Map<String, Object> queryParam = new HashMap<>(1);
-			queryParam.put("id", id);	
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-			if (supply == null) {
-				return ResultUtil.error("供应链未找到");
-			}	
-			String sysId = supply.getSysId();
-			
 			List<Stock> stockList = null;
 			String stockStr = null;
-			//boolean flag = true;
-			
-			/*while (flag) {
-				try {*/
-					// 抓取数据
-					stockStr = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK);
-					/*if (stockStr != null) {
-						flag = false;
-						logger.info("------>>>>>>结束抓取库存数据<<<<<<---------");
-					}
-				} catch (DataException e) {
-					return ResultUtil.error(e.getMessage());
-				} catch (Exception e) {
-					flag = true;
-				}
-			}*/
+			// 抓取数据
+			stockStr = dataCaptureUtil.getDataByWeb("1900-01-01", supply, WebConstant.STOCK);
 			if (StringUtils.isBlank(stockStr)) {
 				return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
 			}	
@@ -145,7 +129,7 @@ public class StockServiceImpl extends CommonServiceImpl implements IStockService
 			
 			logger.info("---->>>开始插入库存数据<<<-----");
 			insert(InsertId.INSERT_STOCK_BATCH, stockList);
-		// }
+		//}
 		queryParam.clear();
 		queryParam.put("sysId", sysId);
 		queryParam.put("status", 0);

@@ -89,67 +89,52 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if (id == null || id == 0) {
 			return ResultUtil.error("id不能为空");
 		}
+		Map<String, Object> queryParam = new HashMap<>(3);
+		queryParam.put("id", id);
 		
+		// 供应链数据
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+		if (supply == null) {
+			return ResultUtil.error("供应链未找到");
+		}
+		String sysId = supply.getSysId();
+		int count = 0;
 		// 同步
-		//synchronized (id) {
+		synchronized (id) {
 			//logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
-			Map<String, Object> queryParam = new HashMap<>(2);
-			queryParam.put("id", id);
-			
-			// 供应链数据
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-			if (supply == null) {
-				return ResultUtil.error("供应链未找到");
-			}
-			String sysId = supply.getSysId();
-			
+
 			// 查询退单数据是否已存在
 			queryParam.clear();
 			queryParam.put("sysId", sysId);
 			queryParam.put("queryDate", queryDate);
-			int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
-			
-			//logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
-			List<Reject> rejectList = null;
-			
-			String rejectStr = null;
-			
-			if (count == 0) {
-				
-				
-				//boolean flag = true;
-				
-				/*while (flag) {
-					try {*/
-						rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
-						/*if (rejectStr != null) {
-							flag = false;
-							logger.info("----->>>>抓取退单数据结束<<<<------");
-						}
-					} catch (DataException e) {
-						return ResultUtil.error(e.getMessage());
-					} catch (Exception e) {
-						flag = true;
-					}
-				}*/
-				if (StringUtils.isBlank(rejectStr)) {
-					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());	
-				}
-				
-				rejectList = JSON.parseArray(rejectStr, Reject.class);
+			count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
+		
 
+			// logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
+			List<Reject> rejectList = null;
+	
+			String rejectStr = null;
+	
+			if (count == 0) {
+	
+				rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
+				if (StringUtils.isBlank(rejectStr)) {
+					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
+				}
+	
+				rejectList = JSON.parseArray(rejectStr, Reject.class);
+	
 				if (CollectionUtils.isEmpty(rejectList)) {
 					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
 				}
-				
+	
 				mateData(queryDate, supply, rejectList);
-				
+	
 				// 插入数据
 				logger.info("------>>>>>开始插入退单数据<<<<<-------");
 				insert(InsertId.INSERT_REJECT_BATCH, rejectList);
 			}
-			
-		//}
+		}
 		queryParam.clear();
 		queryParam.put("sysId", sysId);
 		queryParam.put("queryDate", queryDate);
@@ -160,6 +145,7 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if (count == 0) {
 			return ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue());
 		}
+		
 		return new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(), TipsEnum.DATA_EXCEPTION.getValue());
 	}
 	
@@ -410,11 +396,11 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		if (null == common) {
 			common =  new CommonDTO();
 		}
-		if (CommonUtil.isNotBlank(common.getStartDate()) && CommonUtil.isNotBlank(common.getEndDate())) {
-			map.put("startDate", common.getStartDate());	
+		if (CommonUtil.isNotBlank(common.getStartDate())){
+			map.put("startDate", common.getStartDate());
+		}
+		if (CommonUtil.isNotBlank(common.getEndDate())) {	
 			map.put("endDate", common.getEndDate());
-		} else {
-			throw new DataException("534");
 		}
 		if (null != reject) {
 			if (CommonUtil.isNotBlank(reject.getSysId())) {
@@ -600,7 +586,51 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		try {
 			for (int i = 0; i < idList.size(); i++) {
 				Integer id = idList.get(i);
-				executorService.execute(new createBatch(latch, id, queryDate, tipMap));
+				if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
+					// logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
+					Map<String, Object> queryParam = new HashMap<>(2);
+					queryParam.put("id", id);
+
+					// 供应链数据
+					TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION,
+							queryParam);
+					if (supply != null) {
+
+						String sysId = supply.getSysId();
+
+						int count = 0;
+						// 同步
+						synchronized (id) {
+							// 查询退单数据是否已存在
+							queryParam.clear();
+							queryParam.put("sysId", sysId);
+							queryParam.put("queryDate", queryDate);
+							count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
+
+							// logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
+	
+							if (count == 0) {
+								executorService.execute(new createBatch(latch, id, queryDate, supply, tipMap));
+							} else {
+								queryParam.clear();
+								queryParam.put("sysId", sysId);
+								queryParam.put("queryDate", queryDate);
+								queryParam.put("status", 0);
+	
+								// 是否存在异常数据
+								count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
+								if (count == 0) {
+									tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
+								} else {
+									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
+											TipsEnum.DATA_EXCEPTION.getValue()));
+								}
+								latch.countDown();
+							}
+						}
+					}
+				}
+				
 			}
 		} finally {
 			if (executorService != null) {
@@ -616,11 +646,13 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		private Integer id;
 		private String queryDate;
 		private Map<Integer, ResultUtil> tipMap;
+		private TemplateSupply supply;
 		
-		public createBatch(CountDownLatch latch, Integer id, String queryDate, Map<Integer, ResultUtil> tipMap) {
+		public createBatch(CountDownLatch latch, Integer id, String queryDate, TemplateSupply supply, Map<Integer, ResultUtil> tipMap) {
 			this.latch = latch;
 			this.id = id;
 			this.queryDate = queryDate;
+			this.supply = supply;
 			this.tipMap = tipMap;
 		}
 
@@ -628,82 +660,41 @@ public class RejectServiceImpl extends CommonServiceImpl implements IRejectServi
 		public void run() {
 			try {
 				logger.info("------>>>>>>开始抓取退单数据<<<<<<---------");
-				//logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
-				if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
-		
-					// 同步
-					//synchronized (id) {
-						//logger.info("------->>>>>>>进入抓取退单同步代码块<<<<<<<-------");
-						Map<String, Object> queryParam = new HashMap<>(2);
-						queryParam.put("id", id);
+				String rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
+
+				if (StringUtils.isNoneBlank(rejectStr)) {
+					List<Reject> rejectList = JSON.parseArray(rejectStr, Reject.class);
+
+					if (!CollectionUtils.isEmpty(rejectList)) {
+						mateData(queryDate, supply, rejectList);
+
+						// 插入数据
+						logger.info("------>>>>>开始插入退单数据<<<<<-------");
+						insert(InsertId.INSERT_REJECT_BATCH, rejectList);
 						
-						// 供应链数据
-						TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-						if (supply != null) {
-							
-							String sysId = supply.getSysId();
-							
-							// 查询退单数据是否已存在
-							queryParam.clear();
-							queryParam.put("sysId", sysId);
-							queryParam.put("queryDate", queryDate);
-							int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
-							
-							//logger.info("------>>>>>>原数据库中退单数据数量count:{}<<<<<<-------", count);
-							List<Reject> rejectList = null;
-							
-							String rejectStr = null;
-							
-							if (count == 0) {
-	
-								rejectStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.REJECT);
-								
-								if (StringUtils.isNoneBlank(rejectStr)) {
-									rejectList = JSON.parseArray(rejectStr, Reject.class);
-				
-									if (!CollectionUtils.isEmpty(rejectList)) {
-										mateData(queryDate, supply, rejectList);
-										
-										// 插入数据
-										logger.info("------>>>>>开始插入退单数据<<<<<-------");
-										insert(InsertId.INSERT_REJECT_BATCH, rejectList);
-										
-										queryParam.clear();
-										queryParam.put("sysId", sysId);
-										queryParam.put("queryDate", queryDate);
-										queryParam.put("status", 0);
-	
-										// 是否存在异常数据
-										count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
-										if (count == 0) {
-											tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
-										} else {
-											tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(), TipsEnum.DATA_EXCEPTION.getValue()));
-										}
-									} else {
-										tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue()));
-									}
-								} else {
-									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue()));
-								}
-			
-							} else {
-								queryParam.clear();
-								queryParam.put("sysId", sysId);
-								queryParam.put("queryDate", queryDate);
-								queryParam.put("status", 0);
-	
-								// 是否存在异常数据
-								count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
-								if (count == 0) {
-									tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
-								} else {
-									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(), TipsEnum.DATA_EXCEPTION.getValue()));
-								}
-							}
+						String sysId = supply.getSysId();
+						Map<String, Object> queryParam = new HashMap<>(3);
+						queryParam.put("sysId", sysId);
+						queryParam.put("queryDate", queryDate);
+						queryParam.put("status", 0);
+
+						// 是否存在异常数据
+						int count = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, queryParam);
+						if (count == 0) {
+							tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
+						} else {
+							tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
+									TipsEnum.DATA_EXCEPTION.getValue()));
 						}
+					} else {
+						tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+								TipsEnum.DATA_IS_NULL.getValue()));
 					}
-				//}
+				} else {
+					tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+							TipsEnum.DATA_IS_NULL.getValue()));
+				}
+
 			} catch (Exception e) {
 				tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
 				logger.info(e.getMessage());
