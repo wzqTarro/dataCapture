@@ -2972,7 +2972,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		return ResultUtil.success();
 	}
 	
-	@Transactional(rollbackFor = {Exception.class})
+	//@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil getSaleByIds(String queryDate, String ids) throws Exception {
 		List<Integer> idList = JSON.parseArray(ids, Integer.class);
@@ -2993,39 +2993,14 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION,
 							queryParam);
 					if (supply != null) {
-
-						String sysId = supply.getSysId();
-
-						// 同步
-						int count = 0;
-						synchronized (id) {
-							queryParam.clear();
-							queryParam.put("sysId", sysId);
-							queryParam.put("queryDate", queryDate);
-							count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
-						
-
-							// logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
-							if (count == 0) {
-								executorService.execute(new createBatch(latch, id, queryDate, supply, tipMap));
-							} else {
-								queryParam.clear();
-								queryParam.put("sysId", sysId);
-								queryParam.put("queryDate", queryDate);
-								queryParam.put("status", 0);
-	
-								// 是否存在异常数据
-								count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
-								if (count == 0) {
-									tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
-								} else {
-									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
-											TipsEnum.DATA_EXCEPTION.getValue()));
-								}
-								latch.countDown();
-							}
-						}
+						executorService.execute(new createBatch(latch, id, queryDate, supply, tipMap));
+					} else {
+						tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
+						latch.countDown();
 					}
+				} else {
+					tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
+					latch.countDown();
 				}
 				
 			}
@@ -3055,42 +3030,68 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 		@Override
 		public void run() {
+			
 			try {
-				logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
-				// 抓取数据
-				String saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
+				synchronized (id) {
+					String sysId = supply.getSysId();
+					Map<String, Object> queryParam = new HashMap<>(3);
+					queryParam.put("sysId", sysId);
+					queryParam.put("queryDate", queryDate);
+					int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
+				
 
-				if (StringUtils.isNoneBlank(saleStr)) {
-					List<Sale> saleList = JSON.parseArray(saleStr, Sale.class);
+					// logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
+					if (count == 0) {
+						logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
+						// 抓取数据
+						String saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
 
-					if (!CollectionUtils.isEmpty(saleList)) {
-						// 匹配数据
-						mateData(queryDate, supply, saleList);
+						if (StringUtils.isNoneBlank(saleStr)) {
+							List<Sale> saleList = JSON.parseArray(saleStr, Sale.class);
 
-						// 数据插入数据库
-						logger.info("------>>>>>开始插入销售数据<<<<<-------");
-						insert(InsertId.INSERT_SALE_BATCH, saleList);
-						String sysId = supply.getSysId();
-						Map<String, Object> queryParam = new HashMap<>(3);
+							if (!CollectionUtils.isEmpty(saleList)) {
+								// 匹配数据
+								mateData(queryDate, supply, saleList);
+
+								// 数据插入数据库
+								logger.info("------>>>>>开始插入销售数据<<<<<-------");
+								insert(InsertId.INSERT_SALE_BATCH, saleList);
+								
+								queryParam.put("sysId", sysId);
+								queryParam.put("queryDate", queryDate);
+								queryParam.put("status", 0);
+
+								// 是否存在异常数据
+								count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
+								if (count == 0) {
+									tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
+								} else {
+									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
+											TipsEnum.DATA_EXCEPTION.getValue()));
+								}
+							} else {
+								tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+										TipsEnum.DATA_IS_NULL.getValue()));
+							}
+						} else {
+							tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+									TipsEnum.DATA_IS_NULL.getValue()));
+						}
+					} else {
+						queryParam.clear();
 						queryParam.put("sysId", sysId);
 						queryParam.put("queryDate", queryDate);
 						queryParam.put("status", 0);
 
 						// 是否存在异常数据
-						int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
+						count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
 						if (count == 0) {
 							tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
 						} else {
 							tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
 									TipsEnum.DATA_EXCEPTION.getValue()));
 						}
-					} else {
-						tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
-								TipsEnum.DATA_IS_NULL.getValue()));
 					}
-				} else {
-					tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
-							TipsEnum.DATA_IS_NULL.getValue()));
 				}
 			} catch (Exception e) {
 				tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
