@@ -23,6 +23,7 @@ import com.data.constant.enums.ExcelEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.service.ITemplateSupplyService;
 import com.data.utils.CommonUtil;
+import com.data.utils.DateUtil;
 import com.data.utils.ExcelUtil;
 import com.data.utils.FastJsonUtil;
 import com.data.utils.ResultUtil;
@@ -39,7 +40,7 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 		if (null == supply) {
 			return ResultUtil.error(TipsEnum.OPERATE_DATA_ERROR.getValue());
 		}
-		logger.info("----->>>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<<-------");
+		//logger.info("----->>>>>>supply:"+ FastJsonUtil.objectToString(supply) +"<<<<<<-------");
 		// 区域
 		if (StringUtils.isBlank(supply.getRegion())) {
 			return ResultUtil.error(TipsEnum.REGION_IS_NULL.getValue());
@@ -102,9 +103,9 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 	}
 
 	@Override
-	public ResultUtil querySupplyByConditiion(TemplateSupply supply, Integer page, Integer limit) throws Exception {
-		logger.info("----->>>>>supply:{}<<<<<------", FastJsonUtil.objectToString(supply));
-		logger.info("----->>>>>page:{}, limit:{}<<<<<------", page, limit);
+	public ResultUtil querySupplyByConditiion(TemplateSupply supply, String queryDate, Integer page, Integer limit) throws Exception {
+		//logger.info("----->>>>>supply:{}<<<<<------", FastJsonUtil.objectToString(supply));
+		//logger.info("----->>>>>page:{}, limit:{}<<<<<------", page, limit);
 		Map<String, Object> map = Maps.newHashMap();
 		if (null != supply) {
 			
@@ -119,9 +120,78 @@ public class TemplateSupplyServiceImpl extends CommonServiceImpl implements ITem
 			}
 		}
 		logger.info("------>>>>>供应链查询条件:{}<<<<<------", FastJsonUtil.objectToString(map));
-		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION, 
+		PageRecord<TemplateSupply> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_SUPPLY_BY_CONDITION,
 				QueryId.QUERY_SUPPLY_BY_CONDITION, map, page, limit);
-		logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
+		List<TemplateSupply> supplyList = pageRecord.getList();
+		for (int i = 0; i < supplyList.size(); i++) {
+			TemplateSupply templateSupply = supplyList.get(i);
+			String sysId = templateSupply.getSysId();
+			map.clear();
+			map.put("sysId", sysId);
+			map.put("queryDate", queryDate);
+			int saleCount = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
+
+			int	orderCount = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);
+
+			int rejectCount = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
+
+			if (saleCount == 0) {
+				templateSupply.setSaleStatus(TipsEnum.DATA_IS_NULL.getValue());
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				saleCount = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, map);
+				if (saleCount == 0) {
+					templateSupply.setSaleStatus(TipsEnum.GRAB_SUCCESS.getValue());
+				} else {
+					templateSupply.setSaleStatus(TipsEnum.DATA_EXCEPTION.getValue());
+				}
+			}
+			
+			if (orderCount == 0) {
+				templateSupply.setOrderStatus(TipsEnum.DATA_IS_NULL.getValue());
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				orderCount = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, map);
+				if (orderCount == 0) {
+					templateSupply.setOrderStatus(TipsEnum.GRAB_SUCCESS.getValue());
+				} else {
+					templateSupply.setOrderStatus(TipsEnum.DATA_EXCEPTION.getValue());
+				}
+			}
+			
+			if (rejectCount == 0) {
+				templateSupply.setRejectStatus(TipsEnum.DATA_IS_NULL.getValue());
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				rejectCount = queryCountByObject(QueryId.QUERY_COUNT_REJECT_BY_PARAM, map);
+				if (rejectCount == 0) {
+					templateSupply.setRejectStatus(TipsEnum.GRAB_SUCCESS.getValue());
+				} else {
+					templateSupply.setRejectStatus(TipsEnum.DATA_EXCEPTION.getValue());
+				}
+			}
+			
+			map.put("queryDate", DateUtil.getCurrentDateStr());
+			int stockCount = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
+			if (stockCount == 0) {
+				templateSupply.setStockStatus(TipsEnum.DATA_IS_NULL.getValue());
+			} else {				
+				map.put("status", 0);
+				// 是否存在异常数据
+				stockCount = queryCountByObject(QueryId.QUERY_COUNT_STOCK_BY_PARAM, map);
+				if (saleCount == 0) {
+					templateSupply.setStockStatus(TipsEnum.GRAB_SUCCESS.getValue());
+				} else {
+					templateSupply.setStockStatus(TipsEnum.DATA_EXCEPTION.getValue());
+				}
+			}
+
+		}
+		pageRecord.setList(supplyList);
+		//logger.info("---->>>>>供应链分页结果:"+ FastJsonUtil.objectToString(pageRecord) +"<<<<<<--------");
 		return ResultUtil.success(pageRecord);
 	}
 

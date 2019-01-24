@@ -12,6 +12,7 @@ spring:
     maxWait: 1000
     testOnBorrow: true
     validationQuery: select 1 from dual
+    validationQueryTimeout: 1
     #打开PSCache，并且指定每一个连接上PSCache的大小
     poolPreparedStatements: true
     maxPoolPreparedStatementPerConnectionSize: 20

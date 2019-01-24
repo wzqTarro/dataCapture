@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONPath;
+import com.data.bean.DataLog;
 import com.data.bean.Order;
 import com.data.bean.PromotionDetail;
 import com.data.bean.PromotionStoreList;
@@ -38,8 +43,10 @@ import com.data.constant.enums.OrderEnum;
 import com.data.constant.enums.TipsEnum;
 import com.data.dto.CommonDTO;
 import com.data.exception.DataException;
+import com.data.exception.GlobalException;
 import com.data.model.OrderModel;
 import com.data.service.ICodeDictService;
+import com.data.service.IDataService;
 import com.data.service.IOrderService;
 import com.data.service.IRedisService;
 import com.data.utils.CommonUtil;
@@ -71,11 +78,25 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 	@Autowired
 	private ICodeDictService codeDictService;
 	
+	@Autowired
+	private IDataService dataService;
+	
 	public static void main(String[] args) {
-		List<String> list = new ArrayList<>();
-		list.add("123");
-		list.add("132");
-		System.err.println(FastJsonUtil.objectToString(list.subList(0, 100)));
+		List<Order> list = new ArrayList<>();
+		Order o1 = new Order();
+		Order o2 = new Order();
+		o1.setId(1);
+		o1.setSysId("1");
+		o2.setSysId("2");
+		o2.setId(2);
+		list.add(o1);
+		list.add(o2);
+		for (int i = 0; i < list.size(); i++){
+			Order o = list.get(i);
+			o.setId(i);
+		}
+		System.err.println(JSON.toJSONString(list));
+		
 	}
 	@Override
 	public ResultUtil getOrderByCondition(CommonDTO common, Order order, Integer page, Integer limit) throws Exception {
@@ -85,11 +106,11 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (null == common) {
 			common =  new CommonDTO();
 		}
-		if (CommonUtil.isNotBlank(common.getStartDate()) && CommonUtil.isNotBlank(common.getEndDate())) {
-			map.put("startDate", common.getStartDate());	
+		if (CommonUtil.isNotBlank(common.getStartDate())){
+			map.put("startDate", common.getStartDate());
+		}
+		if (CommonUtil.isNotBlank(common.getEndDate())) {	
 			map.put("endDate", common.getEndDate());
-		} else {
-			throw new DataException("534");
 		}
 		
 		if (null != order) {
@@ -118,280 +139,334 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return ResultUtil.success(pageRecord);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception {		
-		PageRecord<Order> pageRecord = null;
 		logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");		
-		logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
+		//logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
 		}
 		if (id == null || id == 0) {
-			throw new Exception("id不能为空");
+			return ResultUtil.error("id不能为空");
 		}
+		Map<String, Object> queryParam = new HashMap<>(3);
+		queryParam.put("id", id);	
+		TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
+		if (supply == null) {
+			return ResultUtil.error("供应链未找到");
+		}
+		String sysId = supply.getSysId();
+		int count = 0;
 		
 		// 同步
 		synchronized(id) {
-			logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
-			Map<String, Object> queryParam = new HashMap<>(2);
-			queryParam.put("id", id);	
-			TemplateSupply supply = (TemplateSupply)queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION, queryParam);
-			if (supply == null) {
-				return ResultUtil.error("供应链未找到");
-			}
-			String sysId = supply.getSysId();
-			
+			//logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
 			queryParam.clear();
 			queryParam.put("queryDate", queryDate);
 			queryParam.put("sysId", sysId);
-			int count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
-			
-			logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
+			count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
+		
+			// logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
 			List<Order> orderList = null;
-			
+	
 			String orderStr = null;
-			
+	
 			if (count == 0) {
-				
-				//boolean flag = true;
-				
-/*				while (flag) {
-					try {*/
-						orderStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER);
-/*						if (orderStr != null) {
-							flag = false;
-							logger.info("----->>>>抓取订单数据结束<<<<------");
-						}
-					} catch (DataException e) {
-						return ResultUtil.error(e.getMessage());
-					} catch (Exception e) {
-						flag = true;
-					}
-				}*/
-				if (orderStr == null) {
-					return ResultUtil.error("抓取失败");	
-				}else {
-					logger.info("----->>>>抓取订单数据结束<<<<------");
+	
+				orderStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER);
+	
+				if (StringUtils.isBlank(orderStr)) {
+					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
 				}
 	
-				// 是否导出excel表
-				orderList = (List<Order>) FastJsonUtil.jsonToList(orderStr, Order.class);
-				
+				orderList = JSON.parseArray(orderStr, Order.class);
+	
 				if (CollectionUtils.isEmpty(orderList)) {
-					pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
-					return ResultUtil.success(pageRecord);
+					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
+				}
+	
+				// 匹配数据
+				mateData(queryDate, supply, orderList);
+	
+				// 插入数据
+				logger.info("----->>>>>>开始插入订单数据<<<<<<------");
+				insert(InsertId.INSERT_ORDER_BATCH_NEW, orderList);
+				// dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
+			}
+		}
+		queryParam.clear();
+		queryParam.put("sysId", sysId);
+		queryParam.put("queryDate", queryDate);
+		queryParam.put("status", 0);
+
+		// 是否存在异常数据
+		count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
+		if (count == 0) {
+			return ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue());
+		}
+		return new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(), TipsEnum.DATA_EXCEPTION.getValue());
+	}
+	
+	/**
+	 * 匹配数据
+	 * @param queryDate
+	 * @param supply
+	 * @param orderList
+	 * @throws Exception
+	 */
+	private void mateData(String queryDate, TemplateSupply supply, List<Order> orderList) {
+		List<TemplateStore> storeList = redisService.queryTemplateStoreList();
+		List<TemplateProduct> productList = redisService.queryTemplateProductList();
+		
+		String sysId = supply.getSysId();
+		
+		Order order = null;
+		
+		// 查询促销明细
+		Map<String, Object> param = new HashMap<>(2);
+		param.put("sysId", sysId);
+		param.put("queryDate", queryDate);
+		List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
+		
+		PromotionDetail promotionDetail = null;
+		
+		// 入库方式
+		String supplyOrderType = null;
+		
+		// 含税进价
+		BigDecimal buyPriceWithTax = null;
+		
+		// 促销供价
+		BigDecimal supplyPrice = null;
+		
+		// 含税合同供价
+		BigDecimal contractPrice = null;
+		for (int i = 0, size = orderList.size(); i < size; i++) {
+			order = orderList.get(i);
+			
+			String region = supply.getRegion();
+			
+			// 系统名称
+			String sysName = supply.getSysName();
+			
+			// 单品编码
+			String simpleCode = order.getSimpleCode();
+			
+			// 单品条码
+			String simpleBarCode = order.getSimpleBarCode();
+			
+			// 门店编号
+			String storeCode = order.getStoreCode();
+			
+			order.setSysId(sysId);
+			order.setSysName(supply.getRegion() + sysName);
+			order.setStatus(1);
+			
+			// 条码信息
+			if (StringUtils.isBlank(simpleBarCode)) {
+				try {
+					simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
+					if (CommonUtil.isBlank(simpleBarCode)) {
+						
+						// 错误日志
+						DataLog log = new DataLog();
+						log.setRegion(region);
+						log.setLogDate(DateUtil.stringToDate(queryDate));
+						log.setSysId(sysId);
+						log.setSysName(sysName);
+						log.setLogRemark("编码"+simpleCode+"商品"+TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+						insert(InsertId.INSERT_DATA_LOG, log);
+						order.setStatus(0);
+						//order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
+						continue;
+					}
+				} catch (GlobalException e) {
+					// 错误日志
+					DataLog log = new DataLog();
+					log.setRegion(region);
+					log.setLogDate(DateUtil.stringToDate(queryDate));
+					log.setSysId(sysId);
+					log.setSysName(sysName);
+					log.setLogRemark(e.getErrorMsg());
+					insert(InsertId.INSERT_DATA_LOG, log);
+					order.setStatus(0);
+					continue;
 				}
 				
-				List<TemplateStore> storeList = redisService.queryTemplateStoreList();
-				List<TemplateProduct> productList = redisService.queryTemplateProductList();
-				Order order = null;
+			}
+			
+			// 单品条码
+			order.setSimpleBarCode(simpleBarCode);
+			
+			// 单品模板信息
+			TemplateProduct product = null;
+			String tempSysId = null;
+			String tempSimpleBarCode = null;
+			for (int j = 0, len = productList.size(); j < len; j++) {
+				product = productList.get(j);
+				tempSysId = product.getSysId();
+				tempSimpleBarCode = product.getSimpleBarCode();
+				if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
+					break;
+				}
+				product = null;
+			}
+			if (CommonUtil.isBlank(product)) {
 				
-				// 查询促销明细
-				Map<String, Object> param = new HashMap<>(2);
-				param.put("sysId", sysId);
-				param.put("queryDate", queryDate);
-				List<PromotionDetail> promotionList = queryListByObject(QueryId.QUERY_PROMOTION_DETAIL_BY_PARAM, param);
+				// 错误日志
+				DataLog log = new DataLog();
+				log.setRegion(region);
+				log.setLogDate(DateUtil.stringToDate(queryDate));
+				log.setSysId(sysId);
+				log.setSysName(sysName);
+				log.setLogRemark("条码"+simpleBarCode+"商品"+TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+				insert(InsertId.INSERT_DATA_LOG, log);
+				order.setStatus(0);
+				//order.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
+				//continue;
+			} else {
 				
-				PromotionDetail promotionDetail = null;
+				// 单品箱规
+				order.setBoxStandard(product.getBoxStandard());
 				
-				// 入库方式
-				String supplyOrderType = null;
-				
-				// 含税进价
-				BigDecimal buyPriceWithTax = null;
-				
-				// 促销供价
-				BigDecimal supplyPrice = null;
+				// 单品名称
+				order.setSimpleName(product.getStandardName());
+					
+				// 箱规
+				order.setBoxStandard(product.getBoxStandard());
+					
+				// 库存编号
+				order.setStockCode(product.getStockCode());
 				
 				// 含税合同供价
-				BigDecimal contractPrice = null;
-				for (int i = 0, size = orderList.size(); i < size; i++) {
-					order = orderList.get(i);
-					order.setSysId(sysId);
-					// 系统名称
-					String sysName = supply.getSysName();
+				contractPrice = product.getIncludeTaxPrice();
+				order.setContractPrice(contractPrice);
+				
+				// 含税进价
+				buyPriceWithTax = order.getBuyingPriceWithRate();
+				
+				int j = 0;
+				int promotionSize = 0;
+				for (j = 0, promotionSize = promotionList.size(); j < promotionSize; j++) {
+					promotionDetail = promotionList.get(j);
+					Integer detailId = promotionDetail.getId();
+					List<PromotionStoreList> promotionStoreList = queryListByObject(QueryId.QUERY_PROMOTION_STORE_LIST_BY_DETAIL_ID, detailId);
 					
-					// 单品编码
-					String simpleCode = order.getSimpleCode();
-					
-					// 单品条码
-					String simpleBarCode = order.getSimpleBarCode();
-					
-					// 门店编号
-					String storeCode = order.getStoreCode();
-					
-					// 条码信息
-					if (StringUtils.isBlank(simpleBarCode)) {
-						simpleBarCode = templateDataUtil.getBarCodeMessage(simpleBarCode, sysName, simpleCode);
-						if (CommonUtil.isBlank(simpleBarCode)) {
-							order.setRemark(TipsEnum.SIMPLE_CODE_IS_NULL.getValue());
-							continue;
-						}
-					}
-					
-					order.setSysName(supply.getRegion() + sysName);
-					
-					// 单品模板信息
-					TemplateProduct product = null;
-					String tempSysId = null;
-					String tempSimpleBarCode = null;
-					for (int j = 0, len = productList.size(); j < len; j++) {
-						product = productList.get(j);
-						tempSysId = product.getSysId();
-						tempSimpleBarCode = product.getSimpleBarCode();
-						if (sysId.equals(tempSysId) && simpleBarCode.equals(tempSimpleBarCode)) {
+					if (JSONPath.eval(promotionStoreList, "$[storeCode='"+ storeCode +"']") != null) {
+						if (simpleBarCode.equals(promotionDetail.getProductCode())) {
+							order.setOrderEffectiveJudge("是促销期内订单");
+							// 促销供价开始、结束时间
+							order.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
+							order.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
+							
+							// 补差方式
+							order.setBalanceWay(promotionDetail.getCompensationType());
+							
+							// 供价方式
+							supplyOrderType = promotionDetail.getSupplyOrderType();
+							
+							if ("特供价入库".equals(supplyOrderType)) {				
+								
+								// 促销供价
+								supplyPrice = promotionDetail.getSupplyPrice();
+								order.setDiscountPrice(supplyPrice);
+								
+								// 促销供价差异
+								order.setDiffPriceDiscount(buyPriceWithTax.subtract(supplyPrice));
+								
+								// 促销供价差异汇总
+								order.setDiffPriceDiscountTotal(order.getDiffPriceDiscount().multiply(new BigDecimal(order.getSimpleAmount())));
+								
+								// 供价示警
+								if (buyPriceWithTax.compareTo(supplyPrice) < 0) {
+									order.setDiscountAlarmFlag("订单低于促销供价");
+								}
+								
+							} else if ("原价入库".equals(supplyOrderType)) {
+								
+								// 合同供价差异
+								order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
+								
+								// 合同供价差异汇总
+								order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
+								
+								if (buyPriceWithTax.compareTo(contractPrice) < 0) {
+									order.setContractAlarmFlag("订单低于合同供价");
+								}
+							}
 							break;
+							
 						}
-						product = null;
 					}
-					if (CommonUtil.isBlank(product)) {
-						order.setRemark(TipsEnum.PRODUCT_MESSAGE_IS_NULL.getValue());
-						continue;
-					}
-					// 单品门店信息
-					TemplateStore store = null;
-					String tempStoreCode = null;
-					String tempOrderStoreName = null;
-					for (int j = 0, len = storeList.size(); j < len; j++) {
-						store = storeList.get(j);
-						tempSysId = store.getSysId();
-						tempStoreCode = store.getStoreCode();
-						tempOrderStoreName = store.getOrderStoreName() == null ? "" : store.getOrderStoreName();
-						if (sysId.equals(tempSysId) && (storeCode.equals(tempStoreCode) || tempOrderStoreName.contains(storeCode))) {
-							break;
-						}
-						store = null;
-					}
-					if (null == store) {
-						order.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
-						continue;
-					}
-					// 大区
-					order.setRegion(store.getRegion());
-						
-					// 省区
-					order.setProvinceArea(store.getProvinceArea());
-						
-					// 门店名称
-					order.setStoreName(store.getStandardStoreName());
-					
-					// 单品条码
-					order.setSimpleBarCode(simpleBarCode);
-					
-					// 单品箱规
-					order.setBoxStandard(product.getBoxStandard());
-					
-					// 单品名称
-					order.setSimpleName(product.getStandardName());
-						
-					// 箱规
-					order.setBoxStandard(product.getBoxStandard());
-						
-					// 库存编号
-					order.setStockCode(product.getStockCode());
-					
+				}
+				
+				// 不处于促销范围之内
+				if (j == promotionSize) {
+					order.setOrderEffectiveJudge("非促销期内订单");
 					// 含税合同供价
 					contractPrice = product.getIncludeTaxPrice();
 					order.setContractPrice(contractPrice);
 					
-					// 含税进价
-					buyPriceWithTax = order.getBuyingPriceWithRate();
+					// 合同供价差异
+					order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
 					
-					int j = 0;
-					int promotionSize = 0;
-					for (j = 0, promotionSize = promotionList.size(); j < promotionSize; j++) {
-						promotionDetail = promotionList.get(j);
-						Integer detailId = promotionDetail.getId();
-						List<PromotionStoreList> promotionStoreList = queryListByObject(QueryId.QUERY_PROMOTION_STORE_LIST_BY_DETAIL_ID, detailId);
-						
-						if (JSONPath.eval(promotionStoreList, "$[storeCode='"+ storeCode +"']") != null) {
-							if (simpleBarCode.equals(promotionDetail.getProductCode())) {
-								order.setOrderEffectiveJudge("是促销期内订单");
-								// 促销供价开始、结束时间
-								order.setDiscountStartDate(promotionDetail.getSupplyPriceStartDate());
-								order.setDiscountEndDate(promotionDetail.getSupplyPriceEndDate());
-								
-								// 补差方式
-								order.setBalanceWay(promotionDetail.getCompensationType());
-								
-								// 供价方式
-								supplyOrderType = promotionDetail.getSupplyOrderType();
-								
-								if ("特供价入库".equals(supplyOrderType)) {				
-									
-									// 促销供价
-									supplyPrice = promotionDetail.getSupplyPrice();
-									order.setDiscountPrice(supplyPrice);
-									
-									// 促销供价差异
-									order.setDiffPriceDiscount(buyPriceWithTax.subtract(supplyPrice));
-									
-									// 促销供价差异汇总
-									order.setDiffPriceDiscountTotal(order.getDiffPriceDiscount().multiply(new BigDecimal(order.getSimpleAmount())));
-									
-									// 供价示警
-									if (buyPriceWithTax.compareTo(supplyPrice) < 0) {
-										order.setDiscountAlarmFlag("订单低于促销供价");
-									}
-									
-								} else if ("原价入库".equals(supplyOrderType)) {
-									
-									// 合同供价差异
-									order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
-									
-									// 合同供价差异汇总
-									order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
-									
-									if (buyPriceWithTax.compareTo(contractPrice) < 0) {
-										order.setContractAlarmFlag("订单低于合同供价");
-									}
-								}
-								break;
-								
-							}
-						}
+					// 合同供价差异汇总
+					order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
+					
+					if (buyPriceWithTax.compareTo(contractPrice) < 0) {
+						order.setContractAlarmFlag("订单低于合同供价");
 					}
-					
-					// 不处于促销范围之内
-					if (j == promotionSize) {
-						order.setOrderEffectiveJudge("非促销期内订单");
-						// 含税合同供价
-						contractPrice = product.getIncludeTaxPrice();
-						order.setContractPrice(contractPrice);
-						
-						// 合同供价差异
-						order.setDiffPriceContract(buyPriceWithTax.subtract(contractPrice));
-						
-						// 合同供价差异汇总
-						order.setDiffPriceContractTotal(order.getDiffPriceContract().multiply(new BigDecimal(order.getSimpleAmount())));
-						
-						if (buyPriceWithTax.compareTo(contractPrice) < 0) {
-							order.setContractAlarmFlag("订单低于合同供价");
-						}
-					}
-					
-					// 汇总差异
-					order.setDiffPrice(order.getDiffPriceContractTotal().add(order.getDiffPriceDiscountTotal()==null?new BigDecimal(0):order.getDiffPriceDiscountTotal()));
-					
 				}
-				// 插入数据
-				logger.info("----->>>>>>开始插入订单数据<<<<<<------");
-				insert(InsertId.INSERT_ORDER_BATCH, orderList);
-				// dataCaptureUtil.insertData(orderList, InsertId.INSERT_BATCH_ORDER);
-			} else {
-				orderList = queryListByObject(QueryId.QUERY_ORDER_BY_CONDITION, queryParam);
+				
+				// 汇总差异
+				order.setDiffPrice(order.getDiffPriceContractTotal().add(order.getDiffPriceDiscountTotal()==null?new BigDecimal(0):order.getDiffPriceDiscountTotal()));
 			}
 			
-			pageRecord = dataCaptureUtil.setPageRecord(orderList, limit);
+			
+			// 单品门店信息
+			TemplateStore store = null;
+			String tempStoreCode = null;
+			String tempOrderStoreName = null;
+			for (int j = 0, len = storeList.size(); j < len; j++) {
+				store = storeList.get(j);
+				tempSysId = store.getSysId();
+				tempStoreCode = store.getStoreCode();
+				tempOrderStoreName = store.getOrderStoreName() == null ? "" : store.getOrderStoreName();
+				if (sysId.equals(tempSysId) && (storeCode.equals(tempStoreCode) || tempOrderStoreName.contains(storeCode))) {
+					break;
+				}
+				store = null;
+			}
+			if (null == store) {
+				// 错误日志
+				DataLog log = new DataLog();
+				log.setRegion(region);
+				log.setLogDate(DateUtil.stringToDate(queryDate));
+				log.setSysId(sysId);
+				log.setSysName(sysName);
+				log.setLogRemark("条码"+simpleBarCode+"商品"+TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+				insert(InsertId.INSERT_DATA_LOG, log);
+				order.setStatus(0);
+				//order.setRemark(TipsEnum.STORE_MESSAGE_IS_NULL.getValue());
+				//continue;
+			} else {
+				// 大区
+				order.setRegion(store.getRegion());
+					
+				// 省区
+				order.setProvinceArea(store.getProvinceArea());
+					
+				// 门店名称
+				order.setStoreName(store.getStandardStoreName());
+			}
+			
 		}
-		return ResultUtil.success(pageRecord);
 	}
 	@Override
 	public void exportOrderExcel(String stockNameStr, CommonDTO common, Order order, OutputStream output) throws Exception {
 		logger.info("----->>>>自定义字段：{}<<<<------", stockNameStr);
-		logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
-		logger.info("----->>>>order：{}<<<<------", FastJsonUtil.objectToString(order));
+		//logger.info("----->>>>common：{}<<<<------", FastJsonUtil.objectToString(common));
+		//logger.info("----->>>>order：{}<<<<------", FastJsonUtil.objectToString(order));
 		exportUtil.exportConditionJudge(common, order, stockNameStr);
 		String[] header = CommonUtil.parseIdsCollection(stockNameStr, ",");
 		Map<String, Object> map = exportUtil.joinColumn(OrderEnum.class, header);
@@ -423,7 +498,7 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		if (CommonUtil.isNotBlank(order.getReceiptCode())) {
 			param.put("receiptCode", order.getReceiptCode());
 		}
-		logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
+		//logger.info("------->>>>>导出条件：{}<<<<<-------", FastJsonUtil.objectToString(param));
 		List<Order> dataList = queryListByObject(QueryId.QUERY_ORDER_BY_ANY_COLUMN, param);
 		ExcelUtil<Order> excelUtil = new ExcelUtil<>();
 		excelUtil.exportCustom2007("订单信息", header, methodNameArray, dataList, output);
@@ -525,7 +600,17 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 			if (orderMapList.size() == 0) {
 				return ResultUtil.error(CodeEnum.DATA_EMPTY_ERROR_DESC.value());
 			}
-			insert(InsertId.INSERT_ORDER_BATCH, orderMapList);
+			String orderStr = JSON.toJSONString(orderMapList);
+			List<Order> orderList = JSON.parseArray(orderStr, Order.class);
+			// 模板门店列表
+			List<TemplateStore> storeList = redisService.queryTemplateStoreList();
+			// 模板商品列表
+			List<TemplateProduct> productList = redisService.queryTemplateProductList();
+			// 供应链列表
+			List<TemplateSupply> supplyList = queryListByObject(QueryId.QUERY_SUPPLY_BY_CONDITION, new HashMap<>(1));
+			dataService.mateOrderData(supplyList, storeList, productList, orderList);
+			insert(InsertId.INSERT_ORDER_BATCH_NEW, orderList);
+			//insert(InsertId.INSERT_ORDER_BATCH, orderMapList);
 		} catch (IOException e) {
 			return ResultUtil.error(CodeEnum.UPLOAD_ERROR_DESC.value());
 		} catch (Exception se) {
@@ -534,4 +619,134 @@ public class OrderServiceImpl extends CommonServiceImpl implements IOrderService
 		return ResultUtil.success();
 	}
 
+	@Override
+	public ResultUtil getOrderByIds(String queryDate, String ids) throws Exception {
+		List<Integer> idList = JSON.parseArray(ids, Integer.class);
+		if (idList == null || idList.size() == 0) {
+			return ResultUtil.error("请选择要抓取的供应链");
+		}
+		CountDownLatch latch = new CountDownLatch(idList.size());
+		Map<Integer, ResultUtil> tipMap = new HashMap<>();
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		try {
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);	
+				if (CommonUtil.isNotBlank(queryDate) && id != null && id != 0) {
+
+					// logger.info("------>>>>>进入抓取订单同步代码块<<<<<-------");
+					Map<String, Object> queryParam = new HashMap<>(2);
+					queryParam.put("id", id);
+					TemplateSupply supply = (TemplateSupply) queryObjectByParameter(QueryId.QUERY_SUPPLY_BY_CONDITION,
+							queryParam);
+					if (supply != null) {
+						executorService.execute(new createBatch(latch, id, queryDate, supply, tipMap));
+					} else {
+						tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
+						latch.countDown();
+					}
+				} else {
+					tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
+					latch.countDown();
+				}
+				
+			}
+		} finally {
+			if (executorService != null) {
+				executorService.shutdown();
+			}
+		}
+		latch.await();
+		return ResultUtil.success(tipMap);
+	}
+	
+	private class createBatch implements Runnable{
+		private CountDownLatch latch;
+		private Integer id;
+		private String queryDate;
+		private Map<Integer, ResultUtil> tipMap;
+		private TemplateSupply supply;
+		
+		public createBatch(CountDownLatch latch, Integer id, String queryDate, TemplateSupply supply, Map<Integer, ResultUtil> tipMap) {
+			this.latch = latch;
+			this.id = id;
+			this.queryDate = queryDate;
+			this.supply = supply;
+			this.tipMap = tipMap;
+		}
+
+		@Override
+		public void run() {
+			try {
+				String sysId = supply.getSysId();
+				int count = 0;
+				synchronized (id) {
+					Map<String, Object> queryParam = new HashMap<>(3);
+					queryParam.put("queryDate", queryDate);
+					queryParam.put("sysId", sysId);
+					count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);	
+
+					// logger.info("------>>>>>>原数据库中订单数据数量count:{}<<<<<<-------", count);
+
+					if (count == 0) {
+						
+						logger.info("------>>>>>>开始抓取订单数据<<<<<<---------");	
+						String orderStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.ORDER);
+
+						if (StringUtils.isNoneBlank(orderStr)) {
+							// logger.info("----->>>>抓取订单数据结束<<<<------");
+							List<Order> orderList = JSON.parseArray(orderStr, Order.class);
+
+							if (!CollectionUtils.isEmpty(orderList)) {
+								// 匹配数据
+								mateData(queryDate, supply, orderList);
+
+								// 插入数据
+								logger.info("----->>>>>>开始插入订单数据<<<<<<------");
+								insert(InsertId.INSERT_ORDER_BATCH_NEW, orderList);
+								
+								queryParam.put("sysId", sysId);
+								queryParam.put("queryDate", queryDate);
+								queryParam.put("status", 0);
+
+								// 是否存在异常数据
+								count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
+								if (count == 0) {
+									tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
+								} else {
+									tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
+											TipsEnum.DATA_EXCEPTION.getValue()));
+								}
+							} else {
+								tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+										TipsEnum.DATA_IS_NULL.getValue()));
+							}
+						} else {
+							tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(),
+									TipsEnum.DATA_IS_NULL.getValue()));
+						}
+					} else {
+						queryParam.clear();
+						queryParam.put("sysId", sysId);
+						queryParam.put("queryDate", queryDate);
+						queryParam.put("status", 0);
+
+						// 是否存在异常数据
+						count = queryCountByObject(QueryId.QUERY_COUNT_ORDER_BY_CONDITION, queryParam);
+						if (count == 0) {
+							tipMap.put(id, ResultUtil.success(TipsEnum.GRAB_SUCCESS.getValue()));
+						} else {
+							tipMap.put(id, new ResultUtil(CodeEnum.RESPONSE_03_CODE.value(),
+									TipsEnum.DATA_EXCEPTION.getValue()));
+						}
+					}
+				}
+				
+			} catch (Exception e) {
+				tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
+				logger.info(e.getMessage());
+			} finally {
+				latch.countDown();
+			}
+		}
+	}
 }

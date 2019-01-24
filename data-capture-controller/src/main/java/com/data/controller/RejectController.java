@@ -53,6 +53,12 @@ public class RejectController {
 		ResultUtil result = rejectService.getRejectByWeb(queryDate, id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
+	@RequestMapping(value = "/getRejectByIds", method = RequestMethod.GET)
+	@ApiOperation(value = "批量抓取退单数据", httpMethod = "GET")
+	public String getRejectByIds(String queryDate, String ids) throws Exception {
+		ResultUtil result = rejectService.getRejectByIds(queryDate, ids);
+		return FastJsonUtil.objectToString(result);
+	}
 	/**
 	 * 分页多条件查询
 	 * @param order

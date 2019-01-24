@@ -52,6 +52,19 @@ public class SaleController {
 		ResultUtil result = saleService.getSaleByWeb(queryDate, id, limit);
 		return FastJsonUtil.objectToString(result);
 	}
+	/**
+	 * 批量抓取
+	 * @param queryDate
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getDataByIds", method = RequestMethod.GET)
+	@ApiOperation(value = "批量抓取销售数据", httpMethod = "GET")
+	public String getDataByIds(String queryDate, String ids) throws Exception{
+		ResultUtil result = saleService.getSaleByIds(queryDate, ids);
+		return FastJsonUtil.objectToString(result);
+	}
 	
 	/**
 	 * 多条件分页查询销售数据

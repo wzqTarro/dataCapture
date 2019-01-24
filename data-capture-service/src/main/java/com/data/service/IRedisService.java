@@ -138,7 +138,7 @@ public interface IRedisService {
 	 * @param simpleCode
 	 * @return
 	 */
-	String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode) throws Exception;
+	String queryBarCodeBySysNameAndSimpleCode(String sysName, String simpleCode);
 	
 	/**
 	 * 查询门店模板列表

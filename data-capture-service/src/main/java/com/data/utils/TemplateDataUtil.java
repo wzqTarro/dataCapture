@@ -42,7 +42,7 @@ public class TemplateDataUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws Exception 
 	 */
-	public String getBarCodeMessage(String simpleBarCode, String sysName, String simpleCode) throws Exception {
+	public String getBarCodeMessage(String simpleBarCode, String sysName, String simpleCode){
 		if (CommonUtil.isBlank(simpleBarCode)) {
 			if (CommonUtil.isBlank(sysName) || CommonUtil.isBlank(simpleCode)) {
 				return null;

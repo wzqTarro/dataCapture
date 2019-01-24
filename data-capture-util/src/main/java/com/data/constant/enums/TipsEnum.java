@@ -42,7 +42,11 @@ public enum TipsEnum {
 	NOW_STOCK_IS_NULL("当天库存为空，请查看是否抓取过数据"),
 	
 	// 销售数据
-	LAST_DAY_SALE_IS_NULL("前一天的销售数据为空，请确保销售数据已经抓取")
+	LAST_DAY_SALE_IS_NULL("前一天的销售数据为空，请确保销售数据已经抓取"),
+	
+	DATA_IS_NULL("数据为空"),
+	GRAB_SUCCESS("抓取成功"),
+	DATA_EXCEPTION("数据异常")
 	;
 	
 	String value;

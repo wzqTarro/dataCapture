@@ -17,6 +17,8 @@ import com.data.bean.TemplateSupply;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
+import com.data.constant.enums.CodeEnum;
+import com.data.exception.GlobalException;
 import com.data.service.impl.CommonServiceImpl;
 
 /**
@@ -37,10 +39,10 @@ public class DataCaptureUtil extends CommonServiceImpl {
 	 * @return
 	 * @throws IOException 
 	 */
-	public String getDataByWeb(String queryDate, TemplateSupply supply, String dataType) throws Exception{		
+	public String getDataByWeb(String queryDate, TemplateSupply supply, String dataType){		
 		
 		if (supply == null) {
-			throw new Exception("供应链尚未开通");
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(),"供应链尚未开通");
 		}
 		
 		String start = null;
@@ -57,14 +59,14 @@ public class DataCaptureUtil extends CommonServiceImpl {
 //				}
 				Date nowDate = DateUtil.getSystemDate();
 				if((nowDate.compareTo(DateUtil.getDateFromString(start, DateUtil.DATE_PATTERN.YYYY_MM_DD))) <= 0) {
-					throw new Exception("只可以查询今天之前的数据");
+					throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(),"只可以查询今天之前的数据");
 				}
 			}
 		} else {
-			throw new Exception("查询时间不能为空");
+			throw new GlobalException(CodeEnum.RESPONSE_99_CODE.value(),"查询时间不能为空");
 		}		
 		if (false == supply.getIsVal()) {
-			throw new Exception("供应链尚未开通");
+			throw  new GlobalException(CodeEnum.RESPONSE_99_CODE.value(),"供应链尚未开通");
 		}
 //		// 订单
 //		if (WebConstant.ORDER.equals(dataType)) {

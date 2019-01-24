@@ -14,7 +14,6 @@
   </sql>
 
   <sql id="Base_condition">
-    <where>
       <if test="sysId != null and sysId != ''">
         AND sys_id = #{sysId}
       </if>
@@ -24,7 +23,6 @@
       <if test="logDate != null">
         AND log_date = #{logDate}
       </if>
-    </where>
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -37,36 +35,38 @@
   <select id="queryDataLogByCondition" parameterType="map" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"></include>
     FROM db_data_log
+    WHERE 1=1 
     <include refid="Base_condition"></include>
-    <if test="page != null and page != '' and limit != null and limit != ''">
-        LIMIT #{page}, #{limit}
-    </if>
     ORDER BY log_date DESC
+    <if test="pageNow != null and pageNow != '' and pageSize != null and pageSize != ''">
+        LIMIT #{pageNow}, #{pageSize}
+    </if>
   </select>
 
-  <select id="queryCountDataLog">
+  <select id="queryCountDataLog" resultType="int" parameterType="map">
     SELECT COUNT(1) FROM db_data_log
+    WHERE 1=1
     <include refid="Base_condition"></include>
   </select>
 
+  <delete id="deleteAll">
+    delete from db_data_log
+  </delete>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from db_data_log
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.data.bean.DataLog">
-    insert into db_data_log (id, region, sys_id, 
+    insert into db_data_log (region, sys_id, 
       sys_name, log_date, log_remark
       )
-    values (#{id,jdbcType=INTEGER}, #{region,jdbcType=VARCHAR}, #{sysId,jdbcType=VARCHAR}, 
+    values (#{region,jdbcType=VARCHAR}, #{sysId,jdbcType=VARCHAR}, 
       #{sysName,jdbcType=VARCHAR}, #{logDate,jdbcType=DATE}, #{logRemark,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.data.bean.DataLog">
     insert into db_data_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
       <if test="region != null">
         region,
       </if>
@@ -84,9 +84,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
       <if test="region != null">
         #{region,jdbcType=VARCHAR},
       </if>

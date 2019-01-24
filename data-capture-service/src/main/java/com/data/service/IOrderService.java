@@ -21,6 +21,14 @@ public interface IOrderService {
 	 */
 	ResultUtil getOrderByWeb(String queryDate, Integer id, Integer limit) throws Exception  ;
 	/**
+	 * 批量抓取
+	 * @param queryDate
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil getOrderByIds(String queryDate, String ids) throws Exception  ;
+	/**
 	 * 分页查询
 	 * @param queryDate
 	 * @param pageNum

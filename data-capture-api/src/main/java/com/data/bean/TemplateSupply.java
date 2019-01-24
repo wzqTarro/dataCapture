@@ -37,8 +37,46 @@ public class TemplateSupply implements Serializable {
     private String parentId;
     
     private String remark;
+    
+    // 抓取状态
+    private String orderStatus;
+    private String saleStatus;
+    private String stockStatus;
+    private String rejectStatus;
 
-    public String getRemark() {
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public String getSaleStatus() {
+		return saleStatus;
+	}
+
+	public void setSaleStatus(String saleStatus) {
+		this.saleStatus = saleStatus;
+	}
+
+	public String getStockStatus() {
+		return stockStatus;
+	}
+
+	public void setStockStatus(String stockStatus) {
+		this.stockStatus = stockStatus;
+	}
+
+	public String getRejectStatus() {
+		return rejectStatus;
+	}
+
+	public void setRejectStatus(String rejectStatus) {
+		this.rejectStatus = rejectStatus;
+	}
+
+	public String getRemark() {
 		return remark;
 	}
 

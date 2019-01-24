@@ -23,8 +23,9 @@ public class DataLogServiceImpl extends CommonServiceImpl implements IDataLogSer
         params.put("sysId", dataLog.getSysId());
         params.put("sysName", dataLog.getSysName());
         params.put("logDate", dataLog.getLogDate());
-        PageRecord<DataLog> pageRecord = queryPageByObject(QueryId.QUERY_DATA_LOG_BY_CONDITION, QueryId.QUERY_COUNT_DATA_LOG,
+        PageRecord<DataLog> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_DATA_LOG, QueryId.QUERY_DATA_LOG_BY_CONDITION, 
                 params, page, limit);
         return ResultUtil.success(pageRecord);
     }
+
 }

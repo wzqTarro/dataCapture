@@ -76,8 +76,8 @@
   	SELECT DISTINCT brand
   	FROM db_template_product 
 	WHERE 1=1 AND brand IS NOT NULL AND brand != ''
-	<if test="sysId != null and sysId != ''">
-		AND sys_id = #{sysId}
+	<if test="_parameter != null and _parameter != ''">
+		AND sys_id = #{_parameter}
 	</if>
 	
   </select>

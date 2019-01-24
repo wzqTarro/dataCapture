@@ -54,6 +54,20 @@ public class OrderController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
+	 * 批量抓取
+	 * @param queryDate
+	 * @param limit
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getOrderByIds", method = RequestMethod.GET)
+	@ApiOperation(value = "批量抓取订单数据", httpMethod = "GET")
+	public String getOrderByIds(String queryDate, String ids) throws Exception {
+		ResultUtil result = orderService.getOrderByIds(queryDate, ids);
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
 	 * 分页多条件查询
 	 * @param order
 	 * @param common

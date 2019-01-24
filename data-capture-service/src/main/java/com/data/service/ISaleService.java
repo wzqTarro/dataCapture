@@ -18,6 +18,14 @@ public interface ISaleService {
 	 */
 	ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception;
 	/**
+	 * 批量抓取
+	 * @param queryDate
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	ResultUtil getSaleByIds(String queryDate, String ids) throws Exception;
+	/**
 	 * 多条件查询销售数据
 	 * @param param
 	 * @return

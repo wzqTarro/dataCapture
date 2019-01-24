@@ -1,8 +1,6 @@
 package com.data.service;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.text.ParseException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +21,14 @@ public interface IRejectService {
 	 * @return
 	 */
 	public ResultUtil getRejectByWeb(String queryDate, Integer id, Integer limit) throws Exception;
+	/**
+	 * 批量抓取数据
+	 * @param queryDate
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	public ResultUtil getRejectByIds(String queryDate, String ids) throws Exception;
 	/**
 	 * 多条件查询退单数据
 	 * @param common

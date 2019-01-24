@@ -36,4 +36,14 @@ public final class DeleteId {
 	public static final String DELETE_PROMOTION_STORE_LIST_BY_DETAIL_ID = "PromotionStoreListMapper.deleteByPromotionDetailId";
 	
 	public static final String DELETE_PROMOTION_STORE_LIST_BY_DETAIL_ID_AND_STORE_CODE = "PromotionStoreListMapper.deleteByPromotionDetailIdAndStoreCode";
+	
+	public static final String DELETE_ORDER_BY_PARAM = "OrderMapper.deleteByParam";
+	
+	public static final String DELETE_SALE_BY_PARAM = "SaleMapper.deleteByParam";
+	
+	public static final String DELETE_STOCK_BY_PARAM = "StockMapper.deleteByParam";
+	
+	public static final String DELETE_REJECT_BY_PARAM = "RejectMapper.deleteByParam";
+	
+	public static final String DELETE_DATA_LOG_ALL = "DataLogMapper.deleteAll";
 }

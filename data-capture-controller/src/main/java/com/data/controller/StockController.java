@@ -46,6 +46,19 @@ public class StockController {
 		return FastJsonUtil.objectToString(result);
 	}
 	/**
+	 * 批量抓取
+	 * @param id
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "getStockByIds", method = RequestMethod.GET)
+	@ApiOperation(value = "批量抓取库存数据", httpMethod = "GET")
+	public String getStockByIds(String ids) throws Exception {
+		ResultUtil result = stockServiceImpl.getStockByIds(ids);
+		return FastJsonUtil.objectToString(result);
+	}
+	/**
 	 * 多条件查询
 	 * @param common
 	 * @param stock
