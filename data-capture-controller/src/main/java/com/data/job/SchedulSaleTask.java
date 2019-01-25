@@ -2,6 +2,7 @@ package com.data.job;
 
 import java.util.List;
 
+import com.data.utils.FastJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,10 +122,10 @@ public class SchedulSaleTask {
 	 * @return
 	 * @throws Exception 
 	 */
-	@Scheduled(cron = "0 0 7 * * ?")
-	public void schedulCalculateSaleDaily() {
+	@Scheduled(cron = "0 0 8 * * ?")
+	public void schedulSaleJob() {
 		try {
-			saleService.calculateStoreDailySale();			
+			saleService.scheduleSaleJob();
 		} catch (Exception e) {
 			logger.error("日销售定时任务异常");
 		}
@@ -140,13 +141,7 @@ public class SchedulSaleTask {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
 		if(CommonUtil.isNotBlank(idsList)) {
-			for(int i = 0, size = idsList.size(); i < size; i++) {
-				try {
-					orderService.getOrderByWeb(queryDate, idsList.get(i), LIMIT);
-				} catch (Exception e) {
-					logger.error("订单数据抓取异常");
-				}
-			}
+			orderService.getOrderByIds(queryDate, FastJsonUtil.objectToString(idsList));
 		}
 	}
 	
@@ -160,13 +155,7 @@ public class SchedulSaleTask {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
 		if(CommonUtil.isNotBlank(idsList)) {
-			for(int i = 0, size = idsList.size(); i < size; i++) {
-				try {
-					rejectService.getRejectByWeb(queryDate, idsList.get(i), LIMIT);
-				} catch (Exception e) {
-					logger.error("退单数据抓取异常");
-				}
-			}
+			rejectService.getRejectByIds(queryDate, FastJsonUtil.objectToString(idsList));
 		}
 	}
 	
@@ -180,13 +169,7 @@ public class SchedulSaleTask {
 		String queryDate = DateUtil.getCurrentDateStr();
 		List<Integer> idsList = getSupplyIds();
 		if(CommonUtil.isNotBlank(idsList)) {
-			for(int i = 0, size = idsList.size(); i < size; i++) {
-				try {
-					saleService.getSaleByWeb(queryDate, idsList.get(i), LIMIT);
-				} catch (Exception e) {
-					logger.error("销售数据抓取异常");
-				}
-			}
+			saleService.getSaleByIds(queryDate, FastJsonUtil.objectToString(idsList));
 		}
 	}
 	
@@ -199,13 +182,7 @@ public class SchedulSaleTask {
 	public void schedulStockCapture() throws Exception {
 		List<Integer> idsList = getSupplyIds();
 		if(CommonUtil.isNotBlank(idsList)) {
-			for(int i = 0, size = idsList.size(); i < size; i++) {
-				try {
-					stockService.getStockByWeb(idsList.get(i), LIMIT);
-				} catch (Exception e) {
-					logger.error("库存数据抓取异常");
-				}
-			}
+			stockService.getStockByIds(FastJsonUtil.objectToString(idsList));
 		}
 	}
 	

@@ -1,50 +1,7 @@
 package com.data.service.impl;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.alibaba.fastjson.JSON;
-import com.data.bean.DataLog;
-import com.data.bean.Sale;
-import com.data.bean.Stock;
-import com.data.bean.TemplateProduct;
-import com.data.bean.TemplateStore;
-import com.data.bean.TemplateSupply;
+import com.data.bean.*;
 import com.data.constant.CommonValue;
 import com.data.constant.PageRecord;
 import com.data.constant.WebConstant;
@@ -64,18 +21,31 @@ import com.data.service.ICodeDictService;
 import com.data.service.IDataService;
 import com.data.service.IRedisService;
 import com.data.service.ISaleService;
-import com.data.utils.CommonUtil;
-import com.data.utils.DataCaptureUtil;
 import com.data.utils.DateUtil;
-import com.data.utils.ExcelUtil;
-import com.data.utils.ExportUtil;
-import com.data.utils.FastJsonUtil;
-import com.data.utils.JsonUtil;
-import com.data.utils.ResultUtil;
-import com.data.utils.StockDataUtil;
-import com.data.utils.TemplateDataUtil;
+import com.data.utils.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
@@ -103,13 +73,13 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 	
 	@Autowired
 	private StockDataUtil stockDataUtil;
-	
+
 	@Autowired
 	private IDataService dataService;
 
 	@Override
 	public ResultUtil getSaleByWeb(String queryDate, Integer id, Integer limit) throws Exception {
-		
+
 		//logger.info("------>>>>>>系统id:{},查询时间queryDate:{}<<<<<<<-------", id, queryDate);
 		if (CommonUtil.isBlank(queryDate)) {
 			return ResultUtil.error(TipsEnum.DATE_IS_NULL.getValue());
@@ -133,7 +103,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 			queryParam.put("sysId", sysId);
 			queryParam.put("queryDate", queryDate);
 			count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
-		
+
 			// logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
 			List<Sale> saleList = null;
 			String saleStr = null;
@@ -141,20 +111,20 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				logger.info("------>>>>>>开始抓取销售数据<<<<<<---------");
 				// 抓取数据
 				saleStr = dataCaptureUtil.getDataByWeb(queryDate, supply, WebConstant.SALE);
-	
+
 				if (StringUtils.isBlank(saleStr)) {
 					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
 				}
-	
+
 				saleList = JSON.parseArray(saleStr, Sale.class);
-	
+
 				if (CollectionUtils.isEmpty(saleList)) {
 					return new ResultUtil(CodeEnum.RESPONSE_02_CODE.value(), TipsEnum.DATA_IS_NULL.getValue());
 				}
-	
+
 				// 匹配数据
 				mateData(queryDate, supply, saleList);
-	
+
 				// 数据插入数据库
 				logger.info("------>>>>>开始插入销售数据<<<<<-------");
 				insert(InsertId.INSERT_SALE_BATCH, saleList);
@@ -175,7 +145,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 	/**
 	 * 匹配数据
-	 * 
+	 *
 	 * @param queryDate
 	 * @param supply
 	 * @param saleList
@@ -356,7 +326,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		if (CommonUtil.isNotBlank(common.getStartDate())){
 			map.put("startDate", common.getStartDate());
 		}
-		if (CommonUtil.isNotBlank(common.getEndDate())) {	
+		if (CommonUtil.isNotBlank(common.getEndDate())) {
 			map.put("endDate", common.getEndDate());
 		}
 		logger.info("--------->>>>>>map:{}<<<<<---------", FastJsonUtil.objectToString(map));
@@ -436,6 +406,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		return ResultUtil.success(resultList);
 	}
 	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ResultUtil storeDailyexcel(String system, String region, String province, String stored, HttpServletResponse response) throws Exception {
@@ -2971,7 +2942,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		}
 		return ResultUtil.success();
 	}
-	
+
 	//@Transactional(rollbackFor = {Exception.class})
 	@Override
 	public ResultUtil getSaleByIds(String queryDate, String ids) throws Exception {
@@ -3002,7 +2973,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					tipMap.put(id, ResultUtil.error(CodeEnum.RESPONSE_99_DESC.value()));
 					latch.countDown();
 				}
-				
+
 			}
 		} finally {
 			if (executorService != null) {
@@ -3012,14 +2983,14 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 		latch.await();
 		return ResultUtil.success(tipMap);
 	}
-	
+
 	private class createBatch implements Runnable{
 		private CountDownLatch latch;
 		private Integer id;
 		private String queryDate;
 		private Map<Integer, ResultUtil> tipMap;
 		private TemplateSupply supply;
-		
+
 		public createBatch(CountDownLatch latch, Integer id, String queryDate, TemplateSupply supply, Map<Integer, ResultUtil> tipMap) {
 			this.latch = latch;
 			this.id = id;
@@ -3030,7 +3001,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 
 		@Override
 		public void run() {
-			
+
 			try {
 				synchronized (id) {
 					String sysId = supply.getSysId();
@@ -3038,7 +3009,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 					queryParam.put("sysId", sysId);
 					queryParam.put("queryDate", queryDate);
 					int count = queryCountByObject(QueryId.QUERY_COUNT_SALE_BY_PARAM, queryParam);
-				
+
 
 					// logger.info("------>>>>>>原数据库中销售数据数量count:{}<<<<<<-------", count);
 					if (count == 0) {
@@ -3056,7 +3027,7 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 								// 数据插入数据库
 								logger.info("------>>>>>开始插入销售数据<<<<<-------");
 								insert(InsertId.INSERT_SALE_BATCH, saleList);
-								
+
 								queryParam.put("sysId", sysId);
 								queryParam.put("queryDate", queryDate);
 								queryParam.put("status", 0);
@@ -3100,7 +3071,16 @@ public class SaleServiceImpl extends CommonServiceImpl implements ISaleService {
 				latch.countDown();
 			}
 		}
-		
-		
+
+
 	}
+
+	@Override
+	public void scheduleSaleJob() throws Exception {
+		String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getCustomDate(-1));
+		List<Map<String, Object>> dataList = queryListByObject(QueryId.QUERY_DAILY_STORE_SALE_LIST_BY_GROUP, dateStr);
+		//将一天的门店信息存入缓存
+		redisService.setSaleDailyMessageByStore(dateStr, dataList);
+	}
+
 }
