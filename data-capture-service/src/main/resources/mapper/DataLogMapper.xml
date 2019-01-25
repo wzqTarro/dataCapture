@@ -38,8 +38,8 @@
     WHERE 1=1 
     <include refid="Base_condition"></include>
     ORDER BY log_date DESC
-    <if test="pageNow != null and pageNow != '' and pageSize != null and pageSize != ''">
-        LIMIT #{pageNow}, #{pageSize}
+    <if test="pageNum != null and pageSize != null">
+        LIMIT #{pageNum}, #{pageSize}
     </if>
   </select>
 
