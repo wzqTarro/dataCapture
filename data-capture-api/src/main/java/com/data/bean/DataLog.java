@@ -3,13 +3,20 @@ package com.data.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 抓取数据日志类
  * alex
  */
 public class DataLog implements Serializable {
 
-    private Integer id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8005459005137352961L;
+
+	private Integer id;
 
     private String region;
 
@@ -17,6 +24,7 @@ public class DataLog implements Serializable {
 
     private String sysName;
 
+    @JSONField(format = "yyyy-MM-dd")
     private Date logDate;
 
     private String logRemark;

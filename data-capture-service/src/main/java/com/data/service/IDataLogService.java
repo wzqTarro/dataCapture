@@ -1,6 +1,5 @@
 package com.data.service;
 
-import com.data.bean.DataLog;
 import com.data.utils.ResultUtil;
 
 public interface IDataLogService {
@@ -10,5 +9,5 @@ public interface IDataLogService {
      * @param dataLog
      * @return
      */
-    ResultUtil queryDataLogByCondition(DataLog dataLog, String page, String limit) throws Exception;
+    ResultUtil queryDataLogByCondition(String sysId, String logDate, String page, String limit) throws Exception;
 }

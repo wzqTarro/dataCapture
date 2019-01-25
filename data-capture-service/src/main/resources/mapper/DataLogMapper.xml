@@ -19,8 +19,8 @@
       <if test="sysName != null and sysName != ''">
         AND sys_name = #{sysName}
       </if>
-      <if test="logDate != null">
-        AND log_date = #{logDate}
+      <if test="logDate != null and logDate != ''">
+        AND log_date = #{logDate} 
       </if>
   </sql>
 

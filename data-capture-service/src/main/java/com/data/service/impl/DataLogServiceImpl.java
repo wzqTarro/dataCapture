@@ -4,7 +4,6 @@ import com.data.bean.DataLog;
 import com.data.constant.PageRecord;
 import com.data.constant.dbSql.QueryId;
 import com.data.service.IDataLogService;
-import com.data.utils.CommonUtil;
 import com.data.utils.ResultUtil;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +14,10 @@ import java.util.Map;
 public class DataLogServiceImpl extends CommonServiceImpl implements IDataLogService {
 
     @Override
-    public ResultUtil queryDataLogByCondition(DataLog dataLog, String page, String limit) throws Exception {
-        if(CommonUtil.isBlank(dataLog)) {
-            return ResultUtil.error("查询参数错误");
-        }
-        Map<String, Object> params = new HashMap<>(6);
-        params.put("sysId", dataLog.getSysId());
-        params.put("sysName", dataLog.getSysName());
-        params.put("logDate", dataLog.getLogDate());
+    public ResultUtil queryDataLogByCondition(String sysId, String logDate, String page, String limit) throws Exception {
+        Map<String, Object> params = new HashMap<>(2);
+        params.put("sysId", sysId);
+        params.put("logDate", logDate);
         PageRecord<DataLog> pageRecord = queryPageByObject(QueryId.QUERY_COUNT_DATA_LOG, QueryId.QUERY_DATA_LOG_BY_CONDITION, 
                 params, page, limit);
         return ResultUtil.success(pageRecord);

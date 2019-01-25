@@ -1,8 +1,7 @@
 package com.data.controller;
 
-import com.data.bean.DataLog;
 import com.data.service.IDataLogService;
-import com.data.utils.ResultUtil;
+import com.data.utils.FastJsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class DataLogController {
      */
     @RequestMapping(value = "/queryDataLogByCondition", method = RequestMethod.GET)
     @ApiOperation(value = "多条件查询日志列表", httpMethod = "GET")
-    public ResultUtil queryDataLogByCondition(DataLog dataLog, String page, String limit) throws Exception {
-        return dataLogService.queryDataLogByCondition(dataLog, page, limit);
+    public String queryDataLogByCondition(String sysId, String logDate, String page, String limit) throws Exception {
+        return FastJsonUtil.objectToString(dataLogService.queryDataLogByCondition(sysId, logDate, page, limit));
     }
 }
