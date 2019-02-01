@@ -209,6 +209,9 @@ public class TemplateStoreServiceImpl extends CommonServiceImpl implements ITemp
 			}
 		}
 		insert(InsertId.INSERT_BATCH_STORE_LIST, storeList);
+		String key = RedisAPI.getPrefix(RedisAPI.STORE_TEMPLATE);
+		RedisUtil.del(key);
+		redisService.queryTemplateStoreList();
 		return ResultUtil.success();
 	}
 }

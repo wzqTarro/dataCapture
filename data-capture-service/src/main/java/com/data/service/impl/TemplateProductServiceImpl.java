@@ -207,6 +207,8 @@ public class TemplateProductServiceImpl extends CommonServiceImpl implements ITe
 			}
 		}
 		insert(InsertId.INSERT_BATCH_PRODUCT_LIST, productList);
+		RedisUtil.del(RedisAPI.PRODUCT_TEMPLATE);
+		redisService.queryTemplateProductList();
 		return ResultUtil.success();
 	}
 	
