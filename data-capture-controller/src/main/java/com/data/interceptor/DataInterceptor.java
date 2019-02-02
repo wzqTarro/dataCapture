@@ -117,6 +117,11 @@ public class DataInterceptor implements HandlerInterceptor {
 				"/systemRole/deleteSystemRoleByIds",
 				"/system/updateRoleMenu",
 				"/system/queryRoleMenu"
+
+				//服务器测试
+//				"/sale/getDataByWeb",
+//				"/order/getOrderByWeb",
+//				"/stock/getStockByWeb"
 				
 				//测试上传 暂时面拦截
 //				"/order/uploadOrderExcel",

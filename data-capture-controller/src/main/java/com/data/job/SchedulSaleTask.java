@@ -178,7 +178,7 @@ public class SchedulSaleTask {
 	 * 每两个小时抓一遍
 	 * @throws Exception 
 	 */
-	@Scheduled(cron = "0 0 0/2 * * ?")
+	@Scheduled(cron = "0 0 0/4 * * ?")
 	public void schedulStockCapture() throws Exception {
 		List<Integer> idsList = getSupplyIds();
 		if(CommonUtil.isNotBlank(idsList)) {
